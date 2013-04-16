@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taglib version="2.0" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd">
+	<description>Sysstate Tags</description>
+	<display-name>SysStateTags</display-name>
+	<tlib-version>1.0</tlib-version>
+	<short-name>sse</short-name>
+	<uri>http://www.unionsoft.nl/sse/</uri>
+    <tag>
+        <name>projectEnvironmentForProjectAndEnvironment</name>
+        <tag-class>
+            nl.unionsoft.sysstate.web.tags.viewresult.ProjectEnvironmentTag
+        </tag-class>
+        <body-content>JSP</body-content>
+        <attribute>
+            <name>var</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+		<attribute>
+            <name>project</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>nl.unionsoft.sysstate.common.dto.ProjectDto</type>
+        </attribute>
+        <attribute>
+            <name>environment</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>nl.unionsoft.sysstate.common.dto.EnvironmentDto</type>
+        </attribute>
+		<attribute>
+            <name>viewResult</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>nl.unionsoft.sysstate.common.dto.ViewResultDto</type>
+        </attribute>
+    </tag>
+	<function>
+		<description>xmlToDateTime</description>
+		<name>xmlToDateTime</name>
+		<function-class>nl.unionsoft.sysstate.util.XmlUtil</function-class>
+		<function-signature>org.joda.time.DateTime xmlToDateTime(javax.xml.datatype.XMLGregorianCalendar)</function-signature>
+	</function>
+
+</taglib>

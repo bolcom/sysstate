@@ -1,0 +1,72 @@
+<mavenModuleSet>
+	<description></description>
+	<displayName>PRJ_Project</displayName>
+	<name>PRJ_Project</name>
+	<url>http://jenkins/jenkins/job/PRJ_Project/</url>
+	<buildable>true</buildable>
+	<build>
+		<number>875</number>
+		<url>http://jenkins/jenkins/job/PRJ_Project/875/</url>
+	</build>
+	<build>
+		<number>874</number>
+		<url>http://jenkins/jenkins/job/PRJ_Project/874/</url>
+	</build>
+	<color>blue</color>
+	<firstBuild>
+		<number>864</number>
+		<url>http://jenkins/jenkins/job/PRJ_Project/864/</url>
+	</firstBuild>
+	<healthReport>
+		<description>Build stability: 4 out of the last 5 builds failed.</description>
+		<iconUrl>health-00to19.png</iconUrl>
+		<score>20</score>
+	</healthReport>
+	<healthReport>
+		<description>Test Result: 0 tests failing out of a total of 5 tests.</description>
+		<iconUrl>health-80plus.png</iconUrl>
+		<score>100</score>
+	</healthReport>
+	<healthReport>
+		<description>Cobertura Coverage: 88% (46/52) Methods</description>
+		<iconUrl>health-80plus.png</iconUrl>
+		<score>100</score>
+	</healthReport>
+	<inQueue>false</inQueue>
+	<keepDependencies>false</keepDependencies>
+	<lastBuild>
+		<number>875</number>
+		<url>http://jenkins/jenkins/job/PRJ_Project/875/</url>
+	</lastBuild>
+	<lastCompletedBuild>
+		<number>875</number>
+		<url>http://jenkins/jenkins/job/PRJ_Project/875/</url>
+	</lastCompletedBuild>
+	<lastFailedBuild>
+		<number>874</number>
+		<url>http://jenkins/jenkins/job/PRJ_Project/874/</url>
+	</lastFailedBuild>
+	<lastStableBuild>
+		<number>875</number>
+		<url>http://jenkins/jenkins/job/PRJ_Project/875/</url>
+	</lastStableBuild>
+	<lastSuccessfulBuild>
+		<number>875</number>
+		<url>http://jenkins/jenkins/job/PRJ_Project/875/</url>
+	</lastSuccessfulBuild>
+	<lastUnsuccessfulBuild>
+		<number>874</number>
+		<url>http://jenkins/jenkins/job/PRJ_Project/874/</url>
+	</lastUnsuccessfulBuild>
+	<nextBuildNumber>876</nextBuildNumber>
+	<property></property>
+	<property></property>
+	<concurrentBuild>false</concurrentBuild>
+	<scm></scm>
+	<module>
+		<name>nl.unionsoft:project</name>
+		<url>http://jenkins/jenkins/job/PRJ_Project/nl.unionsoft$project/</url>
+		<color>blue</color>
+		<displayName>Auto Complete Service</displayName>
+	</module>
+</mavenModuleSet>

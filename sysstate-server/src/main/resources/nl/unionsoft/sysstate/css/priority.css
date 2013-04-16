@@ -1,0 +1,47 @@
+body {
+	background-color: black;	
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+
+.print_ERROR {
+	background-color: #FF0000;
+	
+}
+
+.print_UNSTABLE {
+	background-color: #FFFF00;
+	
+}
+.print_STABLE {
+	background-color: #00FF00;
+}
+
+.card{
+	position:absolute;
+	background-color: black;
+}
+	
+
+.print {
+	border-radius: 10px;
+	height: 95%;
+	width: 95%;
+	margin: 10px auto;
+	
+}
+.prjEnvName {
+	font-size: 22px;
+	font-weight: bold;
+}
+
+
+
+
+.state {
+	padding:10px;
+	
+}
+
+body {
+	margin: 0px;
+}

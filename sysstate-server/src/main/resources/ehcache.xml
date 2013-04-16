@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd" 
+name="ehcache-application">
+
+	<diskStore path="java.io.tmpdir/STE_EH_CACHE_OVERFLOW_APP" />
+
+	<defaultCache maxElementsInMemory="10000" eternal="false" timeToIdleSeconds="300" timeToLiveSeconds="600" overflowToDisk="true" diskSpoolBufferSizeMB="30" maxElementsOnDisk="10000000"
+		diskPersistent="false" diskExpiryThreadIntervalSeconds="120" memoryStoreEvictionPolicy="LRU" statistics="true" />
+
+	<cache name="viewResultCache" maxElementsInMemory="100" eternal="false" timeToLiveSeconds="30" overflowToDisk="false" statistics="true" diskPersistent="false"/>
+	<cache name="statisticsCache" maxElementsInMemory="10" eternal="false" timeToLiveSeconds="30" overflowToDisk="false" statistics="true" diskPersistent="false"/>
+</ehcache>

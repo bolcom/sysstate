@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>				
+<selfdiagnose 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:noNamespaceSchemaLocation="http://selfdiagnose.sourceforge.net/selfdiagnose-2.0.xsd">
+	<tasks>
+		<checksystemproperty property="java.version" />
+		<reportmavenpomproperties comment="Maven POM properties" name="/META-INF/maven/nl.unionsoft.sysstate/sysstate/pom.properties" />
+	</tasks>
+</selfdiagnose>

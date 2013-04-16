@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+
+<tiles-definitions>
+
+	<definition name="clear" template="/WEB-INF/templates/clear.jsp">
+		<put-attribute name="contents" value="" />
+	</definition>
+
+
+	<definition name="manager" template="/WEB-INF/templates/manager.jsp">
+		<put-attribute name="menu" value="/WEB-INF/jsp/common/menu.jsp" />
+		<put-attribute name="contents" value="" />
+		<put-attribute name="related-activities" value="" />
+		<put-attribute name="page-heading" value="" />
+	</definition>
+
+	<!-- Clear -->
+	<definition name="message-clear" extends="clear">
+		<put-attribute name="contents" value="/WEB-INF/jsp/common/message.jsp" />
+	</definition>
+	
+
+	<!-- Manager -->
+	<definition name="home-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/manager/home.jsp" />
+		<put-attribute name="page-heading" value="Dashboard" />
+	</definition>
+
+	<!-- ProjectEnvironment -->
+	<definition name="update-project-environment-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/projectenvironment/create_or_update.jsp" />
+		<put-attribute name="page-heading" value="Project Environment" />
+	</definition>
+
+	<definition name="details-project-environment-manager" extends="clear">
+		<put-attribute name="contents" value="/WEB-INF/jsp/projectenvironment/details.jsp" />
+	</definition>
+
+	<!-- Environments -->
+	
+	<definition name="list-environment-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/environment/environments.jsp" />
+		<put-attribute name="page-heading" value="Environments" />
+	</definition>
+	
+		
+	<definition name="delete-environment-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/environment/delete.jsp" />
+		<put-attribute name="page-heading" value="Delete Environment" />
+	</definition>
+
+	<definition name="create-update-environment-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/environment/create_or_update.jsp" />
+		<put-attribute name="page-heading" value="Environment" />
+	</definition>
+
+	<!-- Instance -->
+	<definition name="delete-instance-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/instance/delete.jsp" />
+		<put-attribute name="page-heading" value="Delete Instance" />
+	</definition>
+	
+	<definition name="details-instance-clear" extends="clear">
+		<put-attribute name="contents" value="/WEB-INF/jsp/instance/details.jsp" />
+	</definition>
+	
+	<!-- Text -->
+	<definition name="list-text-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/text/texts.jsp" />
+		<put-attribute name="page-heading" value="Texts" />
+	</definition>
+	
+	<definition name="delete-text-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/text/delete.jsp" />
+		<put-attribute name="page-heading" value="Delete Text" />
+	</definition>
+
+	<definition name="create-update-text-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/text/create_or_update.jsp" />
+		<put-attribute name="page-heading" value="Text" />
+	</definition>	
+	
+	<!-- Settings -->
+	<definition name="settings-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/settings/settings.jsp" />
+		<put-attribute name="page-heading" value="Settings" />
+	</definition>
+
+	<definition name="create-update-instance-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/instance/create_or_update.jsp" />
+		<put-attribute name="page-heading" value="Create/Update Instance" />
+		<put-attribute name="related-activities" value="/WEB-INF/jsp/instance/related_activities.jsp" />
+	</definition>
+	
+	<definition name="copy-update-instance-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/instance/create_or_update.jsp" />
+		<put-attribute name="page-heading" value="Copy Instance" />
+		<put-attribute name="related-activities" value="/WEB-INF/jsp/instance/related_activities.jsp" />
+	</definition>	
+	
+	<!-- Instance Multi-->
+	<definition name="multi-delete-instance-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/instance/multi/delete.jsp" />
+		<put-attribute name="page-heading" value="Delete Instance(s)" />
+	</definition>
+	
+	<!-- Instance Notifiers -->
+	<definition name="create-update-instance-notifier-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/instancenotifier/create_or_update.jsp" />
+		<put-attribute name="page-heading" value="Instance Action" />
+	</definition>
+
+	<definition name="list-instance-notifier-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/instancenotifier/instancenotifiers.jsp" />
+		<put-attribute name="page-heading" value="Instance Actions" />
+	</definition>
+
+	<definition name="delete-instance-notifier-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/instancenotifier/delete.jsp" />
+		<put-attribute name="page-heading" value="Delete Instance Action" />
+	</definition>
+
+	<!-- Plugin -->
+	<definition name="update-plugin-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/plugin/update.jsp" />
+		<put-attribute name="page-heading" value="Plugin" />
+	</definition>
+
+	<definition name="list-plugin-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/plugin/plugins.jsp" />
+		<put-attribute name="page-heading" value="Plugins" />
+	</definition>
+
+	<!-- Projects -->
+	<definition name="list-project-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/project/projects.jsp" />
+		<put-attribute name="page-heading" value="Projects" />
+	</definition>
+	
+	<definition name="delete-project-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/project/delete.jsp" />
+		<put-attribute name="page-heading" value="Delete Project" />
+	</definition>
+
+	<definition name="create-update-project-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/project/create_or_update.jsp" />
+		<put-attribute name="page-heading" value="Project" />
+	</definition>
+
+	<!-- Views -->
+	<definition name="list-view-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/view/views.jsp" />
+		<put-attribute name="page-heading" value="Views" />
+	</definition>
+
+	<definition name="delete-view-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/view/delete.jsp" />
+		<put-attribute name="page-heading" value="Delete View" />
+	</definition>
+
+	<definition name="create-update-view-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/view/create_or_update.jsp" />
+		<put-attribute name="page-heading" value="View" />
+	</definition>
+
+
+	<definition name="details-view-manager" extends="clear">
+		<put-attribute name="contents" value="/WEB-INF/jsp/overview/table.jsp" />
+		<put-attribute name="page-heading" value="Details" />
+	</definition>
+
+	<!-- Properties -->
+	<definition name="delete-property-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/property/delete.jsp" />
+	</definition>
+
+	<definition name="create-update-property-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/property/create_or_update.jsp" />
+		<put-attribute name="page-heading" value="Property" />
+	</definition>
+
+	<definition name="list-property-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/property/properties.jsp" />
+		<put-attribute name="page-heading" value="Properties" />
+	</definition>
+
+	<!-- Templates -->
+	<definition name="create-update-template-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/template/create_or_update.jsp" />
+		<put-attribute name="page-heading" value="Template" />
+	</definition>
+	<definition name="delete-template-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/template/delete.jsp" />
+		<put-attribute name="page-heading" value="Delete Template" />
+	</definition>
+	<definition name="restore-template-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/template/restore.jsp" />
+		<put-attribute name="page-heading" value="Restore Template" />
+	</definition>
+
+	<definition name="list-template-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/template/templates.jsp" />
+		<put-attribute name="page-heading" value="Templates" />
+	</definition>
+
+	<!-- Filters -->
+
+	<definition name="search-filter-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/filter/search.jsp" />
+		<put-attribute name="page-heading" value="Search" />
+	</definition>
+
+
+	<definition name="list-filter-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/filter/filters.jsp" />
+		<put-attribute name="page-heading" value="Filters" />
+	</definition>
+
+	<!-- Users -->
+	<definition name="list-user-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/user/users.jsp" />
+		<put-attribute name="page-heading" value="Users" />
+	</definition>
+
+	<definition name="create-update-user-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/user/create_or_update.jsp" />
+		<put-attribute name="page-heading" value="User" />
+	</definition>
+
+	<definition name="delete-user-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/user/delete.jsp" />
+		<put-attribute name="page-heading" value="Delete User" />
+	</definition>
+
+	<!-- Authentication -->
+
+	<definition name="login" template="/WEB-INF/jsp/login.jsp" />
+
+
+	<!-- Queue -->
+	<definition name="queue-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/queue/stats.jsp" />
+		<put-attribute name="page-heading" value="Queue" />
+	</definition>
+
+	<definition name="queue-stacktrace" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/queue/stacktrace.jsp" />
+		<put-attribute name="page-heading" value="StackTrace" />
+	</definition>
+
+	<!-- Cache -->
+	<definition name="cache-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/cache/caches.jsp" />
+		<put-attribute name="page-heading" value="Cache" />
+	</definition>
+
+	<definition name="cache-stats" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/cache/cache-stats.jsp" />
+		<put-attribute name="page-heading" value="Cache Statistics" />
+	</definition>
+
+
+
+	<!-- Discovery Manager -->
+	<definition name="discovery-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/discovery/discover.jsp" />
+		<put-attribute name="page-heading" value="Discovery" />
+	</definition>
+
+
+
+	<!-- Overviews -->
+
+	<definition name="overview" template="/WEB-INF/templates/overview.jsp">
+		<put-attribute name="body" value="" />
+	</definition>
+
+	<definition name="maintenance-overview" extends="overview">
+		<put-attribute name="body" value="/WEB-INF/jsp/overview/maintenance.jsp" />
+	</definition>
+
+
+
+	<definition name="table-overview" extends="overview">
+		<put-attribute name="body" value="/WEB-INF/jsp/overview/table.jsp" />
+	</definition>
+
+	<definition name="priority-overview" extends="overview">
+		<put-attribute name="body" value="/WEB-INF/jsp/overview/priority.jsp" />
+	</definition>
+	
+	<definition name="drilldown-overview" extends="overview">
+		<put-attribute name="body" value="/WEB-INF/jsp/overview/drilldown.jsp" />
+	</definition>
+
+
+</tiles-definitions>
+                

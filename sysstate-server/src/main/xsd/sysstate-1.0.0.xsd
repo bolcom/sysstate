@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://sysstate.unionsoft.nl/sysstate-1.0.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://sysstate.unionsoft.nl/sysstate-1.0.0" elementFormDefault="qualified">
+	<xs:annotation>
+		<xs:documentation>
+			ladieda
+		</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="instance">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="state" minOccurs="0" maxOccurs="1" />
+
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="state">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
+				<xs:element name="state" type="xs:string" minOccurs="0" maxOccurs="1" />
+				<xs:element name="message" type="xs:string" minOccurs="0" maxOccurs="1" />
+				<xs:element name="responseTime" type="xs:long" minOccurs="0" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>

@@ -1,0 +1,183 @@
+package nl.unionsoft.sysstate.domain;
+
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+@Entity
+@Table(name = "SSE_INSTANCE")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+public class Instance {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ID")
+    private Long id;
+
+    @Column(name = "NAME", nullable = true)
+    private String name;
+
+    @Column(name = "HOMEPAGE_URL", nullable = true, length = 4096)
+    private String homepageUrl;
+
+    @Column(name = "CONFIGURATION", nullable = true, length = 8192)
+    private String configuration;
+
+    @Column(name = "REFRESH_TIMEOUT", nullable = true)
+    private int refreshTimeout;
+
+    @Column(name = "TAGS", nullable = true, length = 512)
+    private String tags;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "NEXT_UPDATE", nullable = true)
+    private Date nextUpdate;
+
+    @Column(name = "PLUGIN", nullable = true, length = 512)
+    private String pluginClass;
+
+    @Column(name = "ENABLED", nullable = false)
+    private boolean enabled;
+
+    @OneToMany(mappedBy = "instance", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<State> states;
+
+    // @OneToOne()
+    // @JoinColumn(name="LAST_STE_ID")
+    // private State lastState;
+
+    @OneToMany(mappedBy = "instance", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs;
+
+    @ManyToOne
+    @JoinColumn(name = "PET_ID", nullable = false)
+    private ProjectEnvironment projectEnvironment;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public String getConfiguration() {
+        return configuration;
+    }
+
+    public void setConfiguration(final String configuration) {
+        this.configuration = configuration;
+    }
+
+    public String getPluginClass() {
+        return pluginClass;
+    }
+
+    public void setPluginClass(String pluginClass) {
+        this.pluginClass = pluginClass;
+    }
+
+    public List<State> getStates() {
+        return states;
+    }
+
+    public void setStates(final List<State> states) {
+        this.states = states;
+    }
+
+    public int getRefreshTimeout() {
+        return refreshTimeout;
+    }
+
+    public void setRefreshTimeout(final int refreshTimeout) {
+        this.refreshTimeout = refreshTimeout;
+    }
+
+    public Date getNextUpdate() {
+        return nextUpdate;
+    }
+
+    public void setNextUpdate(final Date nextUpdate) {
+        this.nextUpdate = nextUpdate;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(final boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = StringUtils.lowerCase(tags);
+    }
+
+    public String getHomepageUrl() {
+        return homepageUrl;
+    }
+
+    public void setHomepageUrl(final String homepageUrl) {
+        this.homepageUrl = homepageUrl;
+    }
+
+    public List<InstanceWorkerPluginConfig> getInstanceNotifiers() {
+        return instanceWorkerPluginConfigs;
+    }
+
+    public void setInstanceNotifiers(List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs) {
+        this.instanceWorkerPluginConfigs = instanceWorkerPluginConfigs;
+    }
+
+    public ProjectEnvironment getProjectEnvironment() {
+        return projectEnvironment;
+    }
+
+    public void setProjectEnvironment(ProjectEnvironment projectEnvironment) {
+        this.projectEnvironment = projectEnvironment;
+    }
+
+    public List<InstanceWorkerPluginConfig> getInstanceWorkerPluginConfigs() {
+        return instanceWorkerPluginConfigs;
+    }
+
+    public void setInstanceWorkerPluginConfigs(List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs) {
+        this.instanceWorkerPluginConfigs = instanceWorkerPluginConfigs;
+    }
+
+    @Override
+    public String toString() {
+        return "Instance [id=" + id + ", name=" + name + "]";
+    }
+
+}
