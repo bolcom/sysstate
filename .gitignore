@@ -4,3 +4,7 @@ sysstate-common/.project
 sysstate-server/.project
 sysstate-server/.classpath
 sysstate-common/.classpath
+sysstate-server/src/main/generated/nl/unionsoft/sysstate/sysstate_1_0/package-info.java
+sysstate-server/src/main/generated/nl/unionsoft/sysstate/sysstate_1_0/ObjectFactory.java
+sysstate-server/src/main/generated/nl/unionsoft/sysstate/sysstate_1_0/Instance.java
+sysstate-server/src/main/generated/nl/unionsoft/sysstate/sysstate_1_0/State.java

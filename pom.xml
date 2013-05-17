@@ -543,7 +543,7 @@
 						<downloadSources>true</downloadSources>
 						<downloadJavadocs>false</downloadJavadocs>
 						<ajdtVersion>none</ajdtVersion>
-						<useProjectReferences>false</useProjectReferences>
+						<useProjectReferences>true</useProjectReferences>
 						<projectnatures>
 							<projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
 							<projectnature>org.eclipse.jdt.core.javanature</projectnature>
