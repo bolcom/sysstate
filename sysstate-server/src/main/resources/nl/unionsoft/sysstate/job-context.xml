@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:context="http://www.springframework.org/schema/context" xmlns:oxm="http://www.springframework.org/schema/oxm"
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:oxm="http://www.springframework.org/schema/oxm"
 	xsi:schemaLocation="
         http://www.springframework.org/schema/beans 
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
@@ -9,17 +9,14 @@
         ">
 
 	<!-- Scheduling -->
-	 
-	 	 
-	 
+
+
+
 	<bean id="handleStateCleanupTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
 		<property name="jobDetail">
-			<bean class="nl.unionsoft.sysstate.processor.MethodInvokingJobFactory">
-			    <property name="name" value="cleanStates"/>
-				<property name="targetObjectRef" value="stateLogic" />
-				<property name="targetMethodName" value="clean" />
-				<property name="concurrent" value="false" />
-				<property name="callMethod" value="ONCE"/>
+			<bean class="org.springframework.scheduling.quartz.JobDetailBean">
+				<property name="jobClass" value="nl.unionsoft.sysstate.job.StateCleanupJob" />
+				<property name="name" value="stateCleanupJob" />
 			</bean>
 		</property>
 		<property name="startDelay" value="30000" />
@@ -27,19 +24,30 @@
 		<property name="repeatInterval" value="300000" /> <!-- every 300 seconds -->
 		<property name="volatility" value="false" />
 	</bean>
-	
+
 	<bean id="handleHttpClientCleanupTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
 		<property name="jobDetail">
-			<bean class="nl.unionsoft.sysstate.processor.MethodInvokingJobFactory">
-			    <property name="name" value="cleanHttpClient"/>
-				<property name="targetObjectRef" value="httpClientLogic" />
-				<property name="targetMethodName" value="closeIdleConnections" />
-				<property name="concurrent" value="false" />
-				<property name="callMethod" value="ONCE"/>
+			<bean class="org.springframework.scheduling.quartz.JobDetailBean">
+				<property name="jobClass" value="nl.unionsoft.sysstate.job.HttpClientCleanUpJob" />
+				<property name="name" value="httpClientCleanUpJob" />
 			</bean>
 		</property>
 		<property name="startDelay" value="10000" />
 		<property name="repeatCount" value="-1" />
+		<property name="repeatInterval" value="10000" /> <!-- every 10 seconds -->
+		<property name="volatility" value="false" />
+	</bean>
+
+
+	<bean id="initializeInstanceJobsTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+		<property name="jobDetail">
+			<bean class="org.springframework.scheduling.quartz.JobDetailBean">
+				<property name="jobClass" value="nl.unionsoft.sysstate.job.InitializeInstanceJobsJob" />
+				<property name="name" value="initializeInstanceJobsJob" />
+			</bean>
+		</property>
+		<property name="startDelay" value="10000" />
+		<property name="repeatCount" value="0" />
 		<property name="repeatInterval" value="10000" /> <!-- every 10 seconds -->
 		<property name="volatility" value="false" />
 	</bean>
@@ -52,10 +60,9 @@
 		</property>
 		<property name="triggers">
 			<list>
-				<!-- 
 				<ref bean="handleStateCleanupTrigger" />
 				<ref bean="handleHttpClientCleanupTrigger" />
-				 -->
+				<ref bean="initializeInstanceJobsTrigger"/>
 			</list>
 		</property>
 		<!-- <property name="dataSource" ref="dataSource" /> -->
@@ -69,7 +76,7 @@
 				<!-- <prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.StdJDBCDelegate</prop> -->
 				<!-- <prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.oracle.OracleDelegate</prop> -->
 				<!-- <prop key="org.quartz.jobStore.tablePrefix">dgf.DGF_QRTZ_</prop> -->
-				<!-- <prop key="org.quartz.jobStore.isClustered">true</prop>  -->
+				<!-- <prop key="org.quartz.jobStore.isClustered">true</prop> -->
 				<!-- <prop key="org.quartz.jobStore.useProperties">true</prop> -->
 				<prop key="org.quartz.threadPool.class">org.quartz.simpl.SimpleThreadPool</prop>
 				<prop key="org.quartz.threadPool.threadCount">4</prop>

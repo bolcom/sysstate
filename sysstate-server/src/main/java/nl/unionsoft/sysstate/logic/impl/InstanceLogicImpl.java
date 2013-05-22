@@ -40,16 +40,13 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service("instanceLogic")
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-public class InstanceLogicImpl implements InstanceLogic, ApplicationContextAware {
+public class InstanceLogicImpl implements InstanceLogic {
 
     private static final Logger LOG = LoggerFactory.getLogger(InstanceLogicImpl.class);
 
@@ -93,22 +90,14 @@ public class InstanceLogicImpl implements InstanceLogic, ApplicationContextAware
         updateTriggerJob(instanceDao.getInstance(instanceId));
     }
 
-    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
-
-        for (final Instance instance : instanceDao.getInstances()) {
-
-            addTriggerJob(instance);
-        }
-
-    }
-
     private void updateTriggerJob(final Instance instance) {
         LOG.info("Creating or updating queue job for instance with id: {}", instance.getId());
         removeTriggerJob(instance.getId());
-        addTriggerJob(instance);
+        addTriggerJob(instance.getId());
     }
 
-    private void addTriggerJob(final Instance instance) {
+    public void addTriggerJob(final long instanceId) {
+        Instance instance = instanceDao.getInstance(instanceId);
         if (instance != null) {
             final long id = instance.getId();
             final String jobName = "instance-" + id + "-job";

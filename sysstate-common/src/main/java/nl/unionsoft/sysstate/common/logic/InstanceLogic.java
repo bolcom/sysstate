@@ -27,4 +27,6 @@ public interface InstanceLogic {
 
     public ListResponse<InstanceDto> getInstances(FilterDto filter);
 
+    public void addTriggerJob(final long instanceId);
+
 }

@@ -61,12 +61,10 @@ public class SchedulerController {
                 }
             }
         } catch (SchedulerException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
         final ModelAndView modelAndView = new ModelAndView("scheduler-manager");
-        modelAndView.addObject("tasks", tasks);
         return modelAndView;
     }
 
