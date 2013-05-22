@@ -53,7 +53,7 @@ public class StateLogicImpl implements StateLogic {
         return stateDao.getStates(listRequest);
     }
 
-    public void createOrUpdate(StateDto dto) {
+    public void createOrUpdate(final StateDto dto) {
         final InstanceDto instance = dto.getInstance();
         if (instance != null) {
             final Long instanceId = instance.getId();
@@ -81,7 +81,9 @@ public class StateLogicImpl implements StateLogic {
         }
     }
 
-    public StateDto requestStateForInstance(InstanceDto instance) {
+
+
+    public StateDto requestStateForInstance(final InstanceDto instance) {
         final StateDto state = new StateDto();
         state.setInstance(instance);
 
@@ -125,7 +127,7 @@ public class StateLogicImpl implements StateLogic {
         return state;
     }
 
-    public StateDto requestState(String pluginClass, String configuration) {
+    public StateDto requestState(final String pluginClass, final String configuration) {
         final StateDto state = new StateDto();
 
         final Long now = System.currentTimeMillis();
@@ -159,7 +161,7 @@ public class StateLogicImpl implements StateLogic {
         return state;
     }
 
-    public static boolean match(StateDto dto, State state) {
+    public static boolean match(final StateDto dto, final State state) {
 
         boolean result = false;
         if (state != null) {
@@ -170,7 +172,7 @@ public class StateLogicImpl implements StateLogic {
 
     }
 
-    public static boolean match(StateDto thisState, StateDto otherState) {
+    public static boolean match(final StateDto thisState, final StateDto otherState) {
 
         boolean result = false;
         if (otherState != null) {
@@ -181,7 +183,7 @@ public class StateLogicImpl implements StateLogic {
 
     }
 
-    public StateDto getLastStateForInstance(Long instanceId) {
+    public StateDto getLastStateForInstance(final Long instanceId) {
         return stateConverter.convert(stateDao.getLastStateForInstance(instanceId));
     }
 

@@ -58,7 +58,7 @@ user    	//Average Joe
 		<intercept-url pattern="/plugin/**" access="ROLE_ADMIN" />
 		<intercept-url pattern="/projectenvironment/**/update" access="ROLE_ADMIN" />
 		<!--
-			<intercept-url pattern="/queue/**" access="ROLE_ADMIN" />
+			<intercept-url pattern="/scheduler/**" access="ROLE_ADMIN" />
 			<intercept-url pattern="/cache/**" access="ROLE_ADMIN" />
 		 -->
 		<!-- <http-basic /> -->

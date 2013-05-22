@@ -1,6 +1,5 @@
 package nl.unionsoft.sysstate.domain;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -13,10 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cache;
@@ -46,10 +42,6 @@ public class Instance {
 
     @Column(name = "TAGS", nullable = true, length = 512)
     private String tags;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "NEXT_UPDATE", nullable = true)
-    private Date nextUpdate;
 
     @Column(name = "PLUGIN", nullable = true, length = 512)
     private String pluginClass;
@@ -99,7 +91,7 @@ public class Instance {
         return pluginClass;
     }
 
-    public void setPluginClass(String pluginClass) {
+    public void setPluginClass(final String pluginClass) {
         this.pluginClass = pluginClass;
     }
 
@@ -119,14 +111,6 @@ public class Instance {
         this.refreshTimeout = refreshTimeout;
     }
 
-    public Date getNextUpdate() {
-        return nextUpdate;
-    }
-
-    public void setNextUpdate(final Date nextUpdate) {
-        this.nextUpdate = nextUpdate;
-    }
-
     public boolean isEnabled() {
         return enabled;
     }
@@ -139,7 +123,7 @@ public class Instance {
         return tags;
     }
 
-    public void setTags(String tags) {
+    public void setTags(final String tags) {
         this.tags = StringUtils.lowerCase(tags);
     }
 
@@ -155,7 +139,7 @@ public class Instance {
         return instanceWorkerPluginConfigs;
     }
 
-    public void setInstanceNotifiers(List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs) {
+    public void setInstanceNotifiers(final List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs) {
         this.instanceWorkerPluginConfigs = instanceWorkerPluginConfigs;
     }
 
@@ -163,7 +147,7 @@ public class Instance {
         return projectEnvironment;
     }
 
-    public void setProjectEnvironment(ProjectEnvironment projectEnvironment) {
+    public void setProjectEnvironment(final ProjectEnvironment projectEnvironment) {
         this.projectEnvironment = projectEnvironment;
     }
 
@@ -171,7 +155,7 @@ public class Instance {
         return instanceWorkerPluginConfigs;
     }
 
-    public void setInstanceWorkerPluginConfigs(List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs) {
+    public void setInstanceWorkerPluginConfigs(final List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs) {
         this.instanceWorkerPluginConfigs = instanceWorkerPluginConfigs;
     }
 

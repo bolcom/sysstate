@@ -1,4 +1,4 @@
-package nl.unionsoft.sysstate.queue;
+package nl.unionsoft.sysstate.job;
 
 import java.util.List;
 
@@ -13,66 +13,69 @@ import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.plugins.NotifierPlugin;
 import nl.unionsoft.sysstate.common.plugins.RatingPlugin;
 import nl.unionsoft.sysstate.common.plugins.RatingPlugin.Rating;
-import nl.unionsoft.sysstate.common.queue.ReferenceRunnable;
-import nl.unionsoft.sysstate.converter.StateConverter;
 import nl.unionsoft.sysstate.domain.InstanceWorkerPluginConfig;
 import nl.unionsoft.sysstate.logic.InstanceWorkerPluginLogic;
 import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
 
 import org.apache.commons.lang.StringUtils;
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
-public class FetchStateWorker implements ReferenceRunnable {
-    private static final Logger LOG = LoggerFactory.getLogger(FetchStateWorker.class);
-    private final InstanceDto instance;
+public class UpdateInstanceJob extends AutowiringJob {
 
-    @Inject
-    @Named("pluginLogic")
-    private PluginLogic pluginLogic;
-
-    @Inject
-    @Named("stateLogic")
-    private StateLogic stateLogic;
+    private static final Logger LOG = LoggerFactory.getLogger(UpdateInstanceJob.class);
 
     @Inject
     @Named("instanceLogic")
     private InstanceLogic instanceLogic;
 
     @Inject
+    @Named("stateLogic")
+    private StateLogic stateLogic;
+
+    @Inject
     @Named("instanceWorkerPluginLogic")
     private InstanceWorkerPluginLogic instanceWorkerPluginLogic;
 
     @Inject
-    @Named("stateConverter")
-    private StateConverter stateConverter;
+    @Named("pluginLogic")
+    private PluginLogic pluginLogic;
 
-    public FetchStateWorker (InstanceDto instance) {
-        this.instance = instance;
-    }
+    @Override
+    public void execute(final JobExecutionContext context, final ApplicationContext applicationContext) throws JobExecutionException {
 
-    public void run() {
+        JobDetail jobDetail = context.getJobDetail();
+        JobDataMap jobDataMap = jobDetail.getJobDataMap();
+        long instanceId = jobDataMap.getLong("instanceId");
+
+        InstanceDto instance = instanceLogic.getInstance(instanceId);
         LOG.info("Starting job with instance '{}'", instance);
         try {
+
             final StateDto state = stateLogic.requestStateForInstance(instance);
-            finalizeState(state);
+            finalizeState(instance, state);
             LOG.info("job for instance '{}' completed, state: {}", instance, state);
-        } catch(final Exception e) {
+        } catch (final Exception e) {
             LOG.error("job for instance '{}' failed, caught Exception!", e);
         }
 
     }
 
-    private void finalizeState(StateDto state) {
+    private void finalizeState(final InstanceDto instance, final StateDto state) {
         final Long instanceId = instance.getId();
         final List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs = instanceWorkerPluginLogic.getInstanceWorkerPluginConfigs(instanceId);
-        handleRatings(instanceWorkerPluginConfigs, state);
+        handleRatings(instanceWorkerPluginConfigs, state, instance);
         stateLogic.createOrUpdate(state);
-        handleNotifiers(instanceWorkerPluginConfigs, state);
+        handleNotifiers(instanceWorkerPluginConfigs, state, instance);
     }
 
-    private void handleNotifiers(List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs, StateDto state) {
+    private void handleNotifiers(final List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs, final StateDto state, final InstanceDto instance) {
         if (instance.isEnabled()) {
             if (instanceWorkerPluginConfigs != null) {
                 for (final InstanceWorkerPluginConfig instanceWorkerPluginConfig : instanceWorkerPluginConfigs) {
@@ -87,7 +90,7 @@ public class FetchStateWorker implements ReferenceRunnable {
         }
     }
 
-    private void handleRatings(List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs, StateDto state) {
+    private void handleRatings(final List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs, final StateDto state, final InstanceDto instance) {
         int stateRating = 100;
         int ratingCount = 0;
         if (instance.isEnabled()) {
@@ -136,25 +139,7 @@ public class FetchStateWorker implements ReferenceRunnable {
         } else {
             state.setRating(-1);
         }
-    }
 
-    public String getReference() {
-        return "fetchStateWorker-" + String.valueOf(instance.getId());
-    }
-
-    public String getDescription() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Fetching state for instance with name:");
-        stringBuilder.append(instance.getName());
-        stringBuilder.append("\nProject:");
-        stringBuilder.append(instance.getProjectEnvironment().getProject().getName());
-        stringBuilder.append("\nEnvironment:");
-        stringBuilder.append(instance.getProjectEnvironment().getEnvironment().getName());
-        stringBuilder.append("\nConfiguration:");
-        stringBuilder.append(instance.getConfiguration());
-
-        
-        return stringBuilder.toString();
     }
 
 }

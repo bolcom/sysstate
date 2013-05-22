@@ -9,8 +9,6 @@ import nl.unionsoft.sysstate.common.dto.InstanceDto;
 
 public interface InstanceLogic {
 
-    public void handleUpdates();
-
     public List<InstanceDto> getInstances();
 
     public InstanceDto getInstance(Long instanceId);

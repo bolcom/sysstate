@@ -1,6 +1,7 @@
 package nl.unionsoft.sysstate.logic.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -26,13 +27,19 @@ import nl.unionsoft.sysstate.dao.StateDao;
 import nl.unionsoft.sysstate.domain.Instance;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
 import nl.unionsoft.sysstate.domain.State;
+import nl.unionsoft.sysstate.job.UpdateInstanceJob;
+import nl.unionsoft.sysstate.logic.InstanceWorkerPluginLogic;
 import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
-import nl.unionsoft.sysstate.queue.FetchStateWorker;
-import nl.unionsoft.sysstate.queue.ReferenceWorker;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SimpleTrigger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -44,7 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class InstanceLogicImpl implements InstanceLogic, ApplicationContextAware {
 
-    // private static final Logger LOG = LoggerFactory.getLogger(InstanceLogicImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(InstanceLogicImpl.class);
 
     @Inject
     @Named("instanceDao")
@@ -67,8 +74,9 @@ public class InstanceLogicImpl implements InstanceLogic, ApplicationContextAware
     private PluginLogic pluginLogic;
 
     @Inject
-    @Named("referenceWorker")
-    private ReferenceWorker referenceWorker;
+    @Named("scheduler")
+    private Scheduler scheduler;
+
     @Inject
     @Named("instanceConverter")
     private Converter<InstanceDto, Instance> instanceConverter;
@@ -77,52 +85,62 @@ public class InstanceLogicImpl implements InstanceLogic, ApplicationContextAware
     @Named("stateConverter")
     private Converter<StateDto, State> stateConverter;
 
-    private ApplicationContext applicationContext;
-
-    public void handleUpdates() {
-        final List<Instance> instances = instanceDao.getExpiredInstances();
-        for (final Instance instance : instances) {
-
-            int refrehTimeout = instance.getRefreshTimeout();
-            if (refrehTimeout == 0) {
-                refrehTimeout = 60000;
-            }
-            final DateTime nextUpdate = new DateTime().plusMillis(refrehTimeout);
-            instance.setNextUpdate(nextUpdate.toDate());
-            instanceDao.createOrUpdate(instance);
-
-            final FetchStateWorker instanceEnvironmentWorker = createInstanceWorker(instance);
-
-            referenceWorker.enqueue(instanceEnvironmentWorker);
-        }
-    }
+    @Inject
+    @Named("instanceWorkerPluginLogic")
+    private InstanceWorkerPluginLogic instanceWorkerPluginLogic;
 
     public void queueForUpdate(final Long instanceId) {
-        final Instance instance = instanceDao.getInstance(instanceId);
-        if (instance != null) {
-            int refrehTimeout = instance.getRefreshTimeout();
-            if (refrehTimeout == 0) {
-                refrehTimeout = 60000;
-            }
-            final DateTime nextUpdate = new DateTime().plusMillis(refrehTimeout);
-            instance.setNextUpdate(nextUpdate.toDate());
-            instanceDao.createOrUpdate(instance);
-
-            final FetchStateWorker instanceEnvironmentWorker = createInstanceWorker(instance);
-            referenceWorker.enqueue(instanceEnvironmentWorker);
-        }
-    }
-
-    private FetchStateWorker createInstanceWorker(final Instance instance) {
-        InstanceDto instanceDto = instanceConverter.convert(instance);
-        setLastStatesForInstance(instanceDto);
-        final FetchStateWorker instanceEnvironmentWorker = new FetchStateWorker(instanceDto);
-        return instanceEnvironmentWorker;
+        updateTriggerJob(instanceDao.getInstance(instanceId));
     }
 
     public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
 
+        for (final Instance instance : instanceDao.getInstances()) {
+
+            addTriggerJob(instance);
+        }
+
+    }
+
+    private void updateTriggerJob(final Instance instance) {
+        LOG.info("Creating or updating queue job for instance with id: {}", instance.getId());
+        removeTriggerJob(instance.getId());
+        addTriggerJob(instance);
+    }
+
+    private void addTriggerJob(final Instance instance) {
+        if (instance != null) {
+            final long id = instance.getId();
+            final String jobName = "instance-" + id + "-job";
+            final String triggerName = "instance-" + id + "-trigger";
+            final String groupName = "instances";
+
+            final long refreshTimeout = instance.getRefreshTimeout();
+            final SimpleTrigger trigger = new SimpleTrigger(triggerName, groupName);
+            trigger.setRepeatCount(-1);
+            trigger.setRepeatInterval(refreshTimeout < 30000 ? 30000 : refreshTimeout);
+            trigger.setStartTime(new Date(System.currentTimeMillis() + 5000));
+
+            final JobDetail jobDetail = new JobDetail(jobName, groupName, UpdateInstanceJob.class);
+            final JobDataMap jobDataMap = jobDetail.getJobDataMap();
+            jobDataMap.put("instanceId", id);
+
+            try {
+                scheduler.scheduleJob(jobDetail, trigger);
+            } catch (final SchedulerException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void removeTriggerJob(final long id) {
+        try {
+            final String jobName = "instance-" + id + "-job";
+            final String groupName = "instances";
+            scheduler.deleteJob(jobName, groupName);
+        } catch (final SchedulerException e1) {
+            e1.printStackTrace();
+        }
     }
 
     public List<InstanceDto> getInstances() {
@@ -133,9 +151,9 @@ public class InstanceLogicImpl implements InstanceLogic, ApplicationContextAware
         return getInstance(instanceId, false);
     }
 
-    public InstanceDto getInstance(Long instanceId, boolean states) {
+    public InstanceDto getInstance(final Long instanceId, final boolean states) {
 
-        InstanceDto result = instanceConverter.convert(instanceDao.getInstance(instanceId));
+        final InstanceDto result = instanceConverter.convert(instanceDao.getInstance(instanceId));
         if (states) {
             setLastStatesForInstance(result);
         }
@@ -143,9 +161,9 @@ public class InstanceLogicImpl implements InstanceLogic, ApplicationContextAware
 
     }
 
-    private void setLastStatesForInstance(InstanceDto instance) {
+    private void setLastStatesForInstance(final InstanceDto instance) {
         if (instance != null && instance.getId() != null) {
-            Long instanceId = instance.getId();
+            final Long instanceId = instance.getId();
             instance.setState(stateConverter.convert(stateDao.getLastStateForInstance(instanceId)));
             instance.setLastStable(stateConverter.convert(stateDao.getLastStateForInstance(instanceId, StateType.STABLE)));
             instance.setLastUnstable(stateConverter.convert(stateDao.getLastStateForInstance(instanceId, StateType.UNSTABLE)));
@@ -162,10 +180,6 @@ public class InstanceLogicImpl implements InstanceLogic, ApplicationContextAware
         instance.setEnabled(dto.isEnabled());
         instance.setHomepageUrl(dto.getHomepageUrl());
         instance.setName(dto.getName());
-        final DateTime nextUpdate = dto.getNextUpdate();
-        if (nextUpdate != null) {
-            instance.setNextUpdate(nextUpdate.toDate());
-        }
         instance.setPluginClass(dto.getPluginClass());
         final ProjectEnvironment projectEnvironment = new ProjectEnvironment();
         projectEnvironment.setId(dto.getProjectEnvironment().getId());
@@ -173,17 +187,19 @@ public class InstanceLogicImpl implements InstanceLogic, ApplicationContextAware
         instance.setRefreshTimeout(dto.getRefreshTimeout());
         instance.setTags(dto.getTags());
         instanceDao.createOrUpdate(instance);
+        updateTriggerJob(instance);
     }
 
     public void delete(final Long instanceId) {
         instanceDao.delete(instanceId);
+        removeTriggerJob(instanceId);
     }
 
-    public List<InstanceDto> getInstancesForPrefixes(String projectPrefix, String environmentPrefix) {
+    public List<InstanceDto> getInstancesForPrefixes(final String projectPrefix, final String environmentPrefix) {
         return ListConverter.convert(instanceConverter, instanceDao.getInstancesForPrefixes(projectPrefix, environmentPrefix));
     }
 
-    public ListResponse<InstanceDto> getInstances(ListRequest listRequest) {
+    public ListResponse<InstanceDto> getInstances(final ListRequest listRequest) {
         final ListResponse<InstanceDto> listResponse = listRequestDao.getResults(Instance.class, listRequest, instanceConverter);
         for (final InstanceDto instance : listResponse.getResults()) {
             instance.setState(stateConverter.convert(stateDao.getLastStateForInstance(instance.getId())));
@@ -191,18 +207,18 @@ public class InstanceLogicImpl implements InstanceLogic, ApplicationContextAware
         return listResponse;
     }
 
-    public ListResponse<InstanceDto> getInstances(FilterDto filter) {
+    public ListResponse<InstanceDto> getInstances(final FilterDto filter) {
         final ListResponse<InstanceDto> listResponse = handleFilterData(filter);
         handleInstancesFilter(filter, listResponse);
         return listResponse;
     }
 
-    private void handleInstancesFilter(FilterDto filter, ListResponse<InstanceDto> listResponse) {
+    private void handleInstancesFilter(final FilterDto filter, final ListResponse<InstanceDto> listResponse) {
         final List<?> results = listResponse.getResults();
         final BeanListRequestWorkerImpl beanListRequestWorkerImpl = new BeanListRequestWorkerImpl() {
             @Override
             @SuppressWarnings({ "unchecked", "hiding" })
-            public <Object> List<Object> fetchData(Class<Object> dtoClass, ListRequest listRequest) {
+            public <Object> List<Object> fetchData(final Class<Object> dtoClass, final ListRequest listRequest) {
                 return (List<Object>) results;
             }
         };
@@ -224,7 +240,7 @@ public class InstanceLogicImpl implements InstanceLogic, ApplicationContextAware
         }
     }
 
-    private ListResponse<InstanceDto> handleFilterData(FilterDto filter) {
+    private ListResponse<InstanceDto> handleFilterData(final FilterDto filter) {
         final ListRequest listRequest = new ListRequest();
         // listRequest.addSort(new Sort("last.state", Direction.ASC));
         listRequest.setFirstResult(0);

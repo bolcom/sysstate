@@ -21,10 +21,6 @@ public class DiscoveryWorker implements ReferenceRunnable {
     @Named("pluginLogic")
     private PluginLogic pluginLogic;
 
-    @Inject
-    @Named("referenceWorker")
-    private ReferenceWorker referenceWorker;
-
     private String plugin;
     private Properties properties;
 
@@ -34,9 +30,9 @@ public class DiscoveryWorker implements ReferenceRunnable {
 
     private static long count = 0;
 
-    private long id;
+    private final long id;
 
-    public DiscoveryWorker () {
+    public DiscoveryWorker() {
         id = count++;
     }
 
@@ -44,7 +40,7 @@ public class DiscoveryWorker implements ReferenceRunnable {
         return discovered;
     }
 
-    public void setDiscovered(List<ReferenceRunnable> discovered) {
+    public void setDiscovered(final List<ReferenceRunnable> discovered) {
         this.discovered = discovered;
     }
 
@@ -60,7 +56,7 @@ public class DiscoveryWorker implements ReferenceRunnable {
             LOG.info("Discovery returned {} runnables...", results.size());
         }
         for (ReferenceRunnable referenceRunnable : results) {
-            referenceWorker.enqueue(referenceRunnable);
+            //            referenceWorker.enqueue(referenceRunnable);
         }
     }
 
@@ -72,7 +68,7 @@ public class DiscoveryWorker implements ReferenceRunnable {
         return plugin;
     }
 
-    public void setPlugin(String plugin) {
+    public void setPlugin(final String plugin) {
         this.plugin = plugin;
     }
 
@@ -80,7 +76,7 @@ public class DiscoveryWorker implements ReferenceRunnable {
         return properties;
     }
 
-    public void setProperties(Properties properties) {
+    public void setProperties(final Properties properties) {
         this.properties = properties;
     }
 

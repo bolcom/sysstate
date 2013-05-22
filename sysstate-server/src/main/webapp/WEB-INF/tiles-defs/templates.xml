@@ -241,9 +241,9 @@
 
 
 	<!-- Queue -->
-	<definition name="queue-manager" extends="manager">
-		<put-attribute name="contents" value="/WEB-INF/jsp/queue/stats.jsp" />
-		<put-attribute name="page-heading" value="Queue" />
+	<definition name="scheduler-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/scheduler/index.jsp" />
+		<put-attribute name="page-heading" value="Scheduler" />
 	</definition>
 
 	<definition name="queue-stacktrace" extends="manager">

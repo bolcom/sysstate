@@ -5,14 +5,12 @@ import javax.inject.Named;
 
 import net.xeoh.plugins.base.Plugin;
 import nl.unionsoft.common.converter.Converter;
-import nl.unionsoft.common.converter.ConverterWithConfig;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.plugins.StateResolverPlugin;
 import nl.unionsoft.sysstate.domain.Instance;
 import nl.unionsoft.sysstate.logic.PluginLogic;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
 @Service("instanceConverter")
@@ -30,7 +28,7 @@ public class InstanceConverter implements Converter<InstanceDto, Instance> {
     @Named("stateConverter")
     private StateConverter stateConverter;
 
-    public InstanceDto convert(Instance instance) {
+    public InstanceDto convert(final Instance instance) {
         InstanceDto result = null;
         if (instance != null) {
             result = new InstanceDto();
@@ -51,7 +49,6 @@ public class InstanceConverter implements Converter<InstanceDto, Instance> {
 
             result.setEnabled(instance.isEnabled());
             result.setTags(instance.getTags());
-            result.setNextUpdate(new DateTime(instance.getNextUpdate()));
             result.setRefreshTimeout(instance.getRefreshTimeout());
         }
         return result;

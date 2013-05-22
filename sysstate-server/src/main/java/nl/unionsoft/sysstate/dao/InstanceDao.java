@@ -2,14 +2,13 @@ package nl.unionsoft.sysstate.dao;
 
 import java.util.List;
 
-import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.domain.Instance;
 
 public interface InstanceDao {
 
     public void createOrUpdate(Instance instance);
 
-    public List<Instance> getExpiredInstances();
+
 
     public List<Instance> getInstancesForProjectAndEnvironment(Long projectId, Long environmentId);
 

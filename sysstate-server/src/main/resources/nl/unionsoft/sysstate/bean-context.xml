@@ -36,10 +36,6 @@
 	</bean>
 
 
-	<bean name="referenceWorker" class="nl.unionsoft.sysstate.queue.ReferenceWorkerImpl">
-		<constructor-arg index="0" value="${worker.corePoolSize}" />
-		<constructor-arg index="1" value="${worker.maxPoolSize}" />
-	</bean>
 	<context:component-scan base-package="nl.unionsoft.sysstate" />
 
 </beans>

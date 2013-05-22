@@ -12,7 +12,6 @@ import nl.unionsoft.sysstate.common.logic.DiscoveryLogic;
 import nl.unionsoft.sysstate.common.plugins.DiscoveryPlugin;
 import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.queue.DiscoveryWorker;
-import nl.unionsoft.sysstate.queue.ReferenceWorker;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +25,7 @@ public class DiscoveryLogicImpl implements DiscoveryLogic {
     @Named("pluginLogic")
     private PluginLogic pluginLogic;
 
-    @Inject
-    @Named("referenceWorker")
-    private ReferenceWorker referenceWorker;
+
 
     private List<InstanceDto> discoveredInstances;
 
@@ -36,7 +33,7 @@ public class DiscoveryLogicImpl implements DiscoveryLogic {
         discoveredInstances = new ArrayList<InstanceDto>();
     }
 
-    public void discover(String plugin, Properties properties) {
+    public void discover(final String plugin, final Properties properties) {
         LOG.info("Starting discovery for pluginName '{}' and config '{}'.", plugin, properties);
         discoveredInstances.clear();
         final DiscoveryPlugin discoveryPlugin = pluginLogic.getPlugin(plugin);
@@ -46,7 +43,7 @@ public class DiscoveryLogicImpl implements DiscoveryLogic {
         DiscoveryWorker discovery = new DiscoveryWorker();
         discovery.setPlugin(plugin);
         discovery.setProperties(properties);
-        referenceWorker.enqueue(discovery);
+        //        referenceWorker.enqueue(discovery);
 
     }
 
@@ -54,11 +51,11 @@ public class DiscoveryLogicImpl implements DiscoveryLogic {
         return discoveredInstances;
     }
 
-    public void setDiscoveredInstances(List<InstanceDto> discoveredInstances) {
+    public void setDiscoveredInstances(final List<InstanceDto> discoveredInstances) {
         this.discoveredInstances = discoveredInstances;
     }
 
-    public void addDiscoveredInstance(InstanceDto instanceDto) {
+    public void addDiscoveredInstance(final InstanceDto instanceDto) {
         discoveredInstances.add(instanceDto);
     }
 

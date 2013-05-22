@@ -12,22 +12,6 @@
 	 
 	 	 
 	 
-	<bean id="handleStateUpdateTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-		<property name="jobDetail">
-			<bean class="nl.unionsoft.sysstate.processor.MethodInvokingJobFactory">
-			    <property name="name" value="handleUpdatesForInstances"/>
-				<property name="targetObjectRef" value="instanceLogic" />
-				<property name="targetMethodName" value="handleUpdates" />
-				<property name="concurrent" value="false" />
-				<property name="callMethod" value="ONCE"/>
-			</bean>
-		</property>
-		<property name="startDelay" value="3000" />
-		<property name="repeatCount" value="-1" />
-		<property name="repeatInterval" value="10000" /> <!-- every 10 seconds -->
-		<property name="volatility" value="false" />
-	</bean>
-	
 	<bean id="handleStateCleanupTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
 		<property name="jobDetail">
 			<bean class="nl.unionsoft.sysstate.processor.MethodInvokingJobFactory">
@@ -62,21 +46,22 @@
 
 
 	<!-- FactoryConfig -->
-	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	<bean name="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="applicationContextSchedulerContextKey">
 			<value>applicationContext</value>
 		</property>
 		<property name="triggers">
 			<list>
-				<ref bean="handleStateUpdateTrigger" />
+				<!-- 
 				<ref bean="handleStateCleanupTrigger" />
 				<ref bean="handleHttpClientCleanupTrigger" />
+				 -->
 			</list>
 		</property>
 		<!-- <property name="dataSource" ref="dataSource" /> -->
 		<property name="quartzProperties">
 			<props>
-				<prop key="org.quartz.scheduler.instanceName">powBatchScheduler</prop>
+				<prop key="org.quartz.scheduler.instanceName">sysStateBatchScheduler</prop>
 				<prop key="org.quartz.scheduler.instanceId">AUTO</prop>
 				<prop key="org.quartz.jobStore.misfireThreshold">60000</prop>
 				<prop key="org.quartz.jobStore.class">org.quartz.simpl.RAMJobStore</prop>
