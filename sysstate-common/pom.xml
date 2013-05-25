@@ -53,12 +53,6 @@
 
 
 		<!-- END: UnionSoft Commons -->
-		<!-- START: Plugins -->
-		<dependency>
-			<groupId>jspf</groupId>
-			<artifactId>jspf-core</artifactId>
-		</dependency>
-		<!-- END: Plugins -->
 		<!-- START: Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>

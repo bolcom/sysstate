@@ -2,16 +2,14 @@ package nl.unionsoft.sysstate.plugins.impl.rating;
 
 import java.util.Properties;
 
-import net.xeoh.plugins.base.annotations.Capabilities;
-import net.xeoh.plugins.base.annotations.PluginImplementation;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.plugins.RatingPlugin;
+import nl.unionsoft.sysstate.common.extending.RatingResolver;
 
-@PluginImplementation
-public class StabilityRatingPluginImpl implements RatingPlugin {
+// @PluginImplementation
+public class StabilityRatingImpl implements RatingResolver {
 
-    public Rating rating(StateDto state, Properties properties) {
+    public Rating rating(final StateDto state, final Properties properties) {
 
         final Rating rating = new Rating();
         final StateType stateType = state.getState();
@@ -36,11 +34,6 @@ public class StabilityRatingPluginImpl implements RatingPlugin {
         return rating;
     }
 
-    @Capabilities
-    public String[] capabilities() {
-        return new String[] { "stabilityRatingPlugin" };
-    }
-
     public void stop() {
 
     }
@@ -49,11 +42,11 @@ public class StabilityRatingPluginImpl implements RatingPlugin {
 
     }
 
-    public void setActionId(Long id) {
+    public void setActionId(final Long id) {
 
     }
 
-    public void config(Properties configuration) {
+    public void config(final Properties configuration) {
 
     }
 

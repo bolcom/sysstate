@@ -2,25 +2,24 @@ package nl.unionsoft.sysstate.plugins.impl.resolver;
 
 import java.util.Random;
 
-import net.xeoh.plugins.base.annotations.Capabilities;
-import net.xeoh.plugins.base.annotations.PluginImplementation;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.plugins.StateResolverPlugin;
+import nl.unionsoft.sysstate.common.extending.StateResolver;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Service;
 
-@PluginImplementation
-public class MockStateResolverPluginImpl implements StateResolverPlugin {
+@Service("mockStateResolverPlugin")
+public class MockStateResolverPluginImpl implements StateResolver {
 
-    private Random random;
+    private final Random random;
 
-    public MockStateResolverPluginImpl () {
+    public MockStateResolverPluginImpl() {
         random = new Random();
     }
 
-    public void setState(final InstanceDto instance, StateDto state) {
+    public void setState(final InstanceDto instance, final StateDto state) {
         final String configuration = instance.getConfiguration();
         final String[] parts = StringUtils.split(configuration, ',');
 
@@ -35,9 +34,9 @@ public class MockStateResolverPluginImpl implements StateResolverPlugin {
         state.setDescription(stateStr);
         try {
             Thread.sleep(Long.valueOf(getPart(parts, 1, "0")));
-        } catch(final NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             e.printStackTrace();
-        } catch(final InterruptedException e) {
+        } catch (final InterruptedException e) {
             e.printStackTrace();
         }
         if (StringUtils.equalsIgnoreCase("exception", getPart(parts, 2, ""))) {
@@ -46,12 +45,7 @@ public class MockStateResolverPluginImpl implements StateResolverPlugin {
 
     }
 
-    @Capabilities
-    public String[] capabilities() {
-        return new String[] { "mockStateResolver" };
-    }
-
-    public static String getPart(String[] parts, int index, String defaultValue) {
+    public static String getPart(final String[] parts, final int index, final String defaultValue) {
         String result = defaultValue;
         if (parts.length > index) {
             result = parts[index];
@@ -59,7 +53,7 @@ public class MockStateResolverPluginImpl implements StateResolverPlugin {
         return result;
     }
 
-    public String generateHomePageUrl(InstanceDto instance) {
+    public String generateHomePageUrl(final InstanceDto instance) {
         return "http://localhost/";
     }
 

@@ -1,21 +1,21 @@
-package nl.unionsoft.sysstate.common.plugins;
+package nl.unionsoft.sysstate.common.extending;
 
 import java.util.Properties;
 
 import nl.unionsoft.sysstate.common.dto.StateDto;
 
-public interface RatingPlugin extends PostWorkerPlugin {
+public interface RatingResolver {
     public Rating rating(StateDto state, Properties properties);
 
     public static class Rating {
         private int rating;
         private String message;
 
-        public Rating () {
+        public Rating() {
             rating = 100;
         }
 
-        public void setRating(int rating) {
+        public void setRating(final int rating) {
             if (rating > 100) {
                 this.rating = 100;
             } else {
@@ -23,7 +23,7 @@ public interface RatingPlugin extends PostWorkerPlugin {
             }
         }
 
-        public void setMessage(String message) {
+        public void setMessage(final String message) {
             this.message = message;
         }
 

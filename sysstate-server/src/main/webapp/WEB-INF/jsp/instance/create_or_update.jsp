@@ -43,8 +43,6 @@
 					</jsp:include>
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 						<jsp:param name="path" value="pluginClass"/>
-						<jsp:param name="itemLabel" value="simpleName"/>
-						<jsp:param name="itemValue" value="name"/>
 						<jsp:param name="label" value="Type"/>
 						<jsp:param name="type" value="select"/>
 						<jsp:param name="items" value="stateResolverNames"/>

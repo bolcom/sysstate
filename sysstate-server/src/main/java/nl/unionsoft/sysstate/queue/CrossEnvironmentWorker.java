@@ -7,9 +7,7 @@ import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.logic.DiscoveryLogic;
-import nl.unionsoft.sysstate.common.plugins.StateResolverPlugin;
 import nl.unionsoft.sysstate.common.queue.ReferenceRunnable;
-import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
 
 import org.slf4j.Logger;
@@ -19,7 +17,7 @@ public class CrossEnvironmentWorker implements ReferenceRunnable {
 
     private static long count = 0;
 
-    private long id;
+    private final long id;
 
     private InstanceDto instance;
 
@@ -33,11 +31,7 @@ public class CrossEnvironmentWorker implements ReferenceRunnable {
     @Named("discoveryLogic")
     private DiscoveryLogic discoveryLogic;
 
-    @Inject
-    @Named("pluginLogic")
-    private PluginLogic pluginLogic;
-
-    public CrossEnvironmentWorker () {
+    public CrossEnvironmentWorker() {
         id = count++;
     }
 
@@ -48,9 +42,9 @@ public class CrossEnvironmentWorker implements ReferenceRunnable {
         LOG.info("Validating configuration:\n{}", instance.getConfiguration());
         if (StateType.STABLE.equals(state.getState()) || StateType.UNSTABLE.equals(state.getState())) {
             LOG.info("Instance validated!");
-            final StateResolverPlugin stateResolver = pluginLogic.getPlugin(pluginClass);
-            instance.setHomepageUrl(stateResolver.generateHomePageUrl(instance));
-            discoveryLogic.addDiscoveredInstance(instance);
+            // final StateResolver stateResolver = pluginLogic.getPlugin(pluginClass);
+            // instance.setHomepageUrl(stateResolver.generateHomePageUrl(instance));
+            // discoveryLogic.addDiscoveredInstance(instance);
         } else {
             LOG.info("Configuration invalid, got state: {}", state.getState());
         }
@@ -64,7 +58,7 @@ public class CrossEnvironmentWorker implements ReferenceRunnable {
         return instance;
     }
 
-    public void setInstance(InstanceDto instance) {
+    public void setInstance(final InstanceDto instance) {
         this.instance = instance;
     }
 

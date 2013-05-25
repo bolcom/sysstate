@@ -15,9 +15,9 @@ import org.jsoup.parser.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JSoupDiscoveryPluginImpl extends HttpDiscoveryPluginImpl {
+public class JSoupDiscoveryImpl extends HttpDiscoveryImpl {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JSoupDiscoveryPluginImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JSoupDiscoveryImpl.class);
 
     @Override
     public Collection<? extends InstanceDto> handleEntity(HttpEntity httpEntity, Properties configuration) throws IOException {

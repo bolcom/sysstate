@@ -12,9 +12,9 @@ import org.apache.http.HttpEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JSONStateResolverPluginImpl extends HttpStateResolverPluginImpl {
+public class JSONStateResolverImpl extends HttpStateResolverImpl {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JSONStateResolverPluginImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JSONStateResolverImpl.class);
 
     @Override
     public void handleEntity(final HttpEntity httpEntity, final Properties configuration, final StateDto state) throws IOException {

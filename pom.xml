@@ -63,13 +63,6 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<!-- START: Plugins -->
-			<dependency>
-				<groupId>jspf</groupId>
-				<artifactId>jspf-core</artifactId>
-				<version>1.0.2</version>
-			</dependency>
-			<!-- END: Plugins -->
 			<!-- START: Cache -->
 			<dependency>
 				<groupId>net.sf.ehcache</groupId>

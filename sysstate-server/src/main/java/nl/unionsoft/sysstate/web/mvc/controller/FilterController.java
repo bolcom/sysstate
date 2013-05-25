@@ -10,11 +10,9 @@ import javax.validation.Valid;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
-import nl.unionsoft.sysstate.common.plugins.StateResolverPlugin;
 import nl.unionsoft.sysstate.dto.MessageDto;
 import nl.unionsoft.sysstate.logic.FilterLogic;
 import nl.unionsoft.sysstate.logic.MessageLogic;
-import nl.unionsoft.sysstate.logic.PluginLogic;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -34,9 +32,9 @@ public class FilterController {
     @Named("instanceLogic")
     private InstanceLogic instanceLogic;
 
-    @Inject
-    @Named("pluginLogic")
-    private PluginLogic pluginLogic;
+    // @Inject
+    // @Named("pluginLogic")
+    // private PluginLogic pluginLogic;
 
     @Inject
     @Named("filterLogic")
@@ -53,26 +51,26 @@ public class FilterController {
         modelAndView.addObject("listResponse", instanceLogic.getInstances(filter));
         modelAndView.addObject("filter", filter);
         modelAndView.addObject("states", StateType.values());
-        modelAndView.addObject("stateResolvers", pluginLogic.getPluginInstances(StateResolverPlugin.class));
+        //        modelAndView.addObject("stateResolvers", pluginLogic.getPluginInstances(StateResolverPlugin.class));
         return modelAndView;
     }
 
     @RequestMapping(value = "/filter/project/{projectId}/index", method = RequestMethod.GET)
-    public ModelAndView filterProject(final HttpSession session, @PathVariable("projectId") Long projectId) {
+    public ModelAndView filterProject(final HttpSession session, @PathVariable("projectId") final Long projectId) {
         final FilterDto filter = getFilter(session);
         filterProjectEnvironment(filter, projectId, null);
         return new ModelAndView(REDIRECT_FILTER_INDEX_HTML);
     }
 
     @RequestMapping(value = "/filter/environment/{environmentId}/index", method = RequestMethod.GET)
-    public ModelAndView filterEnvironment(final HttpSession session, @PathVariable("environmentId") Long environmentId) {
+    public ModelAndView filterEnvironment(final HttpSession session, @PathVariable("environmentId") final Long environmentId) {
         final FilterDto filter = getFilter(session);
         filterProjectEnvironment(filter, null, environmentId);
         return new ModelAndView(REDIRECT_FILTER_INDEX_HTML);
     }
 
     @RequestMapping(value = "/filter/project/{projectId}/environment/{environmentId}/index", method = RequestMethod.GET)
-    public ModelAndView filterProjectEnvironment(final HttpSession session, @PathVariable("projectId") Long projectId, @PathVariable("environmentId") Long environmentId) {
+    public ModelAndView filterProjectEnvironment(final HttpSession session, @PathVariable("projectId") final Long projectId, @PathVariable("environmentId") final Long environmentId) {
         final FilterDto filter = getFilter(session);
 
         filterProjectEnvironment(filter, projectId, environmentId);
@@ -92,7 +90,7 @@ public class FilterController {
     }
 
     @RequestMapping(value = "/filter/load/{filterId}/index.html", method = RequestMethod.GET)
-    public ModelAndView userFilter(@PathVariable("filterId") Long filterId, final HttpSession session) {
+    public ModelAndView userFilter(@PathVariable("filterId") final Long filterId, final HttpSession session) {
         final FilterDto filter = filterLogic.getFilter(filterId);
         setFilter(session, filter);
         return new ModelAndView(REDIRECT_FILTER_INDEX_HTML);
@@ -109,7 +107,7 @@ public class FilterController {
     }
 
     @RequestMapping(value = "/filter/preset/{preset}.html", method = RequestMethod.GET)
-    public ModelAndView filterPresset(@PathVariable("preset") String preset, final HttpSession session) {
+    public ModelAndView filterPresset(@PathVariable("preset") final String preset, final HttpSession session) {
 
         final FilterDto filter = new FilterDto();
         if (StringUtils.equalsIgnoreCase(preset, "alerts")) {
@@ -138,7 +136,7 @@ public class FilterController {
         return modelAndView;
     }
 
-    private void filterProjectEnvironment(FilterDto filter, Long projectId, Long environmentId) {
+    private void filterProjectEnvironment(final FilterDto filter, final Long projectId, final Long environmentId) {
         if (projectId != null && projectId >= 0) {
             final List<Long> projects = filter.getProjects();
             projects.clear();
@@ -151,7 +149,7 @@ public class FilterController {
         }
     }
 
-    private void mergeStateResolvers(FilterDto filter, FilterDto sessionFilter) {
+    private void mergeStateResolvers(final FilterDto filter, final FilterDto sessionFilter) {
         final List<String> newStateResolvers = filter.getStateResolvers();
         final List<String> sessionStateResolvers = sessionFilter.getStateResolvers();
         sessionStateResolvers.clear();
@@ -161,7 +159,7 @@ public class FilterController {
 
     }
 
-    private void mergeEnvironments(final FilterDto filter, FilterDto sessionFilter) {
+    private void mergeEnvironments(final FilterDto filter, final FilterDto sessionFilter) {
         final List<Long> newEnvironments = filter.getEnvironments();
         final List<Long> sessionEnvironments = sessionFilter.getEnvironments();
         sessionEnvironments.clear();
@@ -170,7 +168,7 @@ public class FilterController {
         }
     }
 
-    private void mergeProjects(final FilterDto filter, FilterDto sessionFilter) {
+    private void mergeProjects(final FilterDto filter, final FilterDto sessionFilter) {
         final List<Long> newProjects = filter.getProjects();
         final List<Long> sessionProjects = sessionFilter.getProjects();
         sessionProjects.clear();
@@ -179,7 +177,7 @@ public class FilterController {
         }
     }
 
-    private void mergeInstanceStates(final FilterDto filter, FilterDto sessionFilter) {
+    private void mergeInstanceStates(final FilterDto filter, final FilterDto sessionFilter) {
         final List<StateType> newStates = filter.getStates();
         final List<StateType> sessionStateType = sessionFilter.getStates();
         sessionStateType.clear();
@@ -197,7 +195,7 @@ public class FilterController {
         return filter;
     }
 
-    public static void setFilter(final HttpSession session, FilterDto filter) {
+    public static void setFilter(final HttpSession session, final FilterDto filter) {
         session.setAttribute(FILTER, filter);
     }
 

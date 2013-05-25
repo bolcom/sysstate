@@ -6,7 +6,6 @@
 	        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
         ">
-	<import resource="classpath:/nl/unionsoft/sysstate/plugin-context.xml" />
 	<import resource="classpath:/nl/unionsoft/sysstate/dbcp-datasource-context.xml" />	 
 	<import resource="classpath:/nl/unionsoft/sysstate/jdbc-context.xml" />
 	<import resource="classpath:/nl/unionsoft/sysstate/security-context.xml" />

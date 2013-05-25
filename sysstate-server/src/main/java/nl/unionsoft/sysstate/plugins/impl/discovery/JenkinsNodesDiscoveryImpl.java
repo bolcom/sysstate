@@ -7,9 +7,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
-import net.xeoh.plugins.base.annotations.PluginImplementation;
 import nl.unionsoft.common.util.PropertiesUtil;
-import nl.unionsoft.sysstate.common.discovery.impl.XmlBeansDiscoveryPluginImpl;
+import nl.unionsoft.sysstate.common.discovery.impl.XmlBeansDiscoveryImpl;
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectDto;
@@ -22,20 +21,20 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-@PluginImplementation
-public class JenkinsNodesDiscoveryPluginImpl extends XmlBeansDiscoveryPluginImpl {
+// @PluginImplementation
+public class JenkinsNodesDiscoveryImpl extends XmlBeansDiscoveryImpl {
 
     private static final String API_XML = "/api/xml";
     private final Properties pluginConfig;
 
-    public JenkinsNodesDiscoveryPluginImpl () {
+    public JenkinsNodesDiscoveryImpl() {
         pluginConfig = new Properties();
         pluginConfig.setProperty("env", "DEV");
         pluginConfig.setProperty("prj", "JEN");
     }
 
     @Override
-    public Collection<? extends InstanceDto> handleXmlObject(XmlObject xmlObject, Properties configuration) {
+    public Collection<? extends InstanceDto> handleXmlObject(final XmlObject xmlObject, final Properties configuration) {
         final List<InstanceDto> instances = new ArrayList<InstanceDto>();
         final Node node = xmlObject.getDomNode();
         final Document document = (Document) node;
@@ -90,7 +89,7 @@ public class JenkinsNodesDiscoveryPluginImpl extends XmlBeansDiscoveryPluginImpl
     }
 
     @Override
-    public String processUri(String uri) {
+    public String processUri(final String uri) {
         final StringBuilder uriBuilder = new StringBuilder();
         uriBuilder.append(super.processUri(uri));
         if (!StringUtils.endsWith(uri, API_XML)) {
@@ -100,7 +99,7 @@ public class JenkinsNodesDiscoveryPluginImpl extends XmlBeansDiscoveryPluginImpl
     }
 
     @Override
-    public void updatePropertiesTemplate(Properties properties) {
+    public void updatePropertiesTemplate(final Properties properties) {
         super.updatePropertiesTemplate(properties);
         properties.setProperty(URL, "http://pathToJenkins/computer/");
     }

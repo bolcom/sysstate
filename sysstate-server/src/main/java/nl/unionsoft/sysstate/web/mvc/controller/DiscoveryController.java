@@ -12,15 +12,9 @@ import nl.unionsoft.sysstate.common.logic.DiscoveryLogic;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
-import nl.unionsoft.sysstate.common.plugins.DiscoveryPlugin;
-import nl.unionsoft.sysstate.common.plugins.StateResolverPlugin;
-import nl.unionsoft.sysstate.common.queue.ReferenceRunnable;
 import nl.unionsoft.sysstate.dto.MessageDto;
 import nl.unionsoft.sysstate.logic.MessageLogic;
-import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.ProjectEnvironmentLogic;
-import nl.unionsoft.sysstate.web.controller.form.DiscoveryListSelector;
-import nl.unionsoft.sysstate.web.controller.form.DiscoveryMultiForm;
 import nl.unionsoft.sysstate.web.controller.form.InstanceListSelector;
 import nl.unionsoft.sysstate.web.controller.form.InstanceMultiForm;
 
@@ -37,10 +31,6 @@ public class DiscoveryController {
     @Inject
     @Named("discoveryLogic")
     private DiscoveryLogic discoveryLogic;
-
-    @Inject
-    @Named("pluginLogic")
-    private PluginLogic pluginLogic;
 
     @Inject
     @Named("projectLogic")
@@ -66,13 +56,13 @@ public class DiscoveryController {
     public ModelAndView index() {
         final ModelAndView modelAndView = new ModelAndView("discovery-manager");
         commons(modelAndView);
-        modelAndView.addObject("discoveryPlugins", pluginLogic.getPluginInstances(DiscoveryPlugin.class));
+        // modelAndView.addObject("discoveryPlugins", pluginLogic.getPluginInstances(DiscoveryPlugin.class));
 
         return modelAndView;
     }
 
     @RequestMapping(value = "/discovery/index", method = RequestMethod.POST)
-    public ModelAndView discover(@RequestParam("plugin") String plugin, @RequestParam("properties") String properties) {
+    public ModelAndView discover(@RequestParam("plugin") final String plugin, @RequestParam("properties") final String properties) {
         discoveryLogic.discover(plugin, PropertiesUtil.stringToProperties(properties));
         return new ModelAndView("redirect:/discovery/index.html");
     }
@@ -80,7 +70,7 @@ public class DiscoveryController {
     private void commons(final ModelAndView modelAndView) {
         modelAndView.addObject("environments", environmentLogic.getEnvironments());
         modelAndView.addObject("projects", projectLogic.getProjects());
-        modelAndView.addObject("stateResolverNames", pluginLogic.getPluginClasses(StateResolverPlugin.class));
+        // modelAndView.addObject("stateResolverNames", pluginLogic.getPluginClasses(StateResolverPlugin.class));
         final InstanceMultiForm multiForm = new InstanceMultiForm();
         for (final InstanceDto instanceDto : discoveryLogic.getDiscoveredInstances()) {
             final InstanceListSelector listSelector = new InstanceListSelector();
@@ -88,11 +78,11 @@ public class DiscoveryController {
             multiForm.addItem(listSelector);
         }
         modelAndView.addObject("multiForm", multiForm);
-        modelAndView.addObject("discoveryPlugins", pluginLogic.getPluginInstances(DiscoveryPlugin.class));
+        // modelAndView.addObject("discoveryPlugins", pluginLogic.getPluginInstances(DiscoveryPlugin.class));
     }
 
     @RequestMapping(value = "/discovery/add", method = RequestMethod.POST)
-    public ModelAndView add(@ModelAttribute("instanceForm") InstanceMultiForm multiForm) {
+    public ModelAndView add(@ModelAttribute("instanceForm") final InstanceMultiForm multiForm) {
         for (final InstanceListSelector instanceListSelector : multiForm.getInstanceListSelectors()) {
             if (instanceListSelector.isSelected()) {
                 final InstanceDto instance = instanceListSelector.getInstance();

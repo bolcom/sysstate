@@ -12,17 +12,16 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import net.xeoh.plugins.base.annotations.PluginImplementation;
 import nl.unionsoft.common.list.model.ListResponse;
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
+import nl.unionsoft.sysstate.common.extending.Discovery;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
-import nl.unionsoft.sysstate.common.plugins.DiscoveryPlugin;
 import nl.unionsoft.sysstate.common.queue.ReferenceRunnable;
 import nl.unionsoft.sysstate.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.queue.CrossEnvironmentWorker;
@@ -31,10 +30,10 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@PluginImplementation
-public class CrossEnvironmentDiscoveryPluginImpl implements DiscoveryPlugin {
+// @PluginImplementation
+public class CrossEnvironmentDiscoveryImpl implements Discovery {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CrossEnvironmentDiscoveryPluginImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CrossEnvironmentDiscoveryImpl.class);
 
     @Inject
     @Named("projectLogic")
@@ -52,7 +51,7 @@ public class CrossEnvironmentDiscoveryPluginImpl implements DiscoveryPlugin {
     @Named("instanceLogic")
     private InstanceLogic instanceLogic;
 
-    public Collection<ReferenceRunnable> discover(Properties properties) {
+    public Collection<ReferenceRunnable> discover(final Properties properties) {
 
         Collection<ReferenceRunnable> results = new ArrayList<ReferenceRunnable>();
         // Collection<InstanceDto> results = new ArrayList<InstanceDto>();
@@ -119,13 +118,13 @@ public class CrossEnvironmentDiscoveryPluginImpl implements DiscoveryPlugin {
         return results;
     }
 
-    private String[] generateConfigurations(String placeHolderConfiguration, EnvironmentDto environment) {
+    private String[] generateConfigurations(final String placeHolderConfiguration, final EnvironmentDto environment) {
         Set<String> replaceables = new HashSet<String>();
         replaceables.addAll(Arrays.asList(StringUtils.split(environment.getTags())));
         return replace(placeHolderConfiguration, replaceables).toArray(new String[] {});
     }
 
-    private Set<String> replace(String originalConfiguration, Set<String> replaceables) {
+    private Set<String> replace(final String originalConfiguration, final Set<String> replaceables) {
         Set<String> results = new LinkedHashSet<String>();
 
         for (String replaceable : replaceables) {
@@ -141,7 +140,7 @@ public class CrossEnvironmentDiscoveryPluginImpl implements DiscoveryPlugin {
         return results;
     }
 
-    private String generatePlaceHolders(String text, EnvironmentDto environment) {
+    private String generatePlaceHolders(final String text, final EnvironmentDto environment) {
 
         String replaceText = text;
         String[] tags = StringUtils.split(environment.getTags());
@@ -154,7 +153,7 @@ public class CrossEnvironmentDiscoveryPluginImpl implements DiscoveryPlugin {
         return replaceText;
     }
 
-    public void updatePropertiesTemplate(Properties properties) {
+    public void updatePropertiesTemplate(final Properties properties) {
         properties.put("keepProtocol", "false");
     }
 

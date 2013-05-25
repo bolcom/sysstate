@@ -13,12 +13,12 @@ import org.junit.Test;
 
 public class JSoupStateResolverPluginImplTest {
 
-    private JSoupStateResolverPluginImpl jSoupStateResolverPlugin;
+    private JSoupStateResolverImpl jSoupStateResolverPlugin;
 
     @Before
     public void before() {
         final HttpClient httpClient = new DefaultHttpClient();
-        jSoupStateResolverPlugin = new JSoupStateResolverPluginImpl();
+        jSoupStateResolverPlugin = new JSoupStateResolverImpl();
         jSoupStateResolverPlugin.setHttpClient(httpClient);
     }
 

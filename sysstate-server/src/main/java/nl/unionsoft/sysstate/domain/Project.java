@@ -27,7 +27,7 @@ public class Project {
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "NAME", nullable = true)
+    @Column(name = "NAME", nullable = true, length=200)
     private String name;
 
     @Column(name = "DEFAULT_ORDER", nullable = true)
@@ -71,7 +71,7 @@ public class Project {
         return defaultInstancePlugin;
     }
 
-    public void setDefaultInstancePlugin(String defaultInstancePlugin) {
+    public void setDefaultInstancePlugin(final String defaultInstancePlugin) {
         this.defaultInstancePlugin = defaultInstancePlugin;
     }
 
@@ -79,7 +79,7 @@ public class Project {
         return projectEnvironments;
     }
 
-    public void setProjectEnvironments(List<ProjectEnvironment> projectEnvironments) {
+    public void setProjectEnvironments(final List<ProjectEnvironment> projectEnvironments) {
         this.projectEnvironments = projectEnvironments;
     }
 

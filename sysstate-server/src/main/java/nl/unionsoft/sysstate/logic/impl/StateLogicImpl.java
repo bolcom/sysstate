@@ -11,13 +11,13 @@ import nl.unionsoft.common.list.model.ListResponse;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.plugins.StateResolverPlugin;
+import nl.unionsoft.sysstate.common.extending.StateResolver;
 import nl.unionsoft.sysstate.common.util.StateUtil;
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.dao.StateDao;
 import nl.unionsoft.sysstate.domain.State;
-import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
+import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
@@ -37,9 +37,13 @@ public class StateLogicImpl implements StateLogic {
     @Named("instanceDao")
     private InstanceDao instanceDao;
 
+    // @Inject
+    // @Named("pluginLogic")
+    // private PluginLogic pluginLogic;
+
     @Inject
-    @Named("pluginLogic")
-    private PluginLogic pluginLogic;
+    @Named("stateResolverLogic")
+    private StateResolverLogic stateResolverLogic;
 
     @Inject
     @Named("stateConverter")
@@ -92,7 +96,7 @@ public class StateLogicImpl implements StateLogic {
 
             final Long now = System.currentTimeMillis();
             try {
-                final StateResolverPlugin stateResolver = pluginLogic.getPlugin(pluginClass);
+                final StateResolver stateResolver = stateResolverLogic.getStateResolver(pluginClass);
                 if (stateResolver == null) {
                     throw new IllegalStateException("No stateResolver found for type '" + pluginClass + "'");
                 }
@@ -132,7 +136,7 @@ public class StateLogicImpl implements StateLogic {
 
         final Long now = System.currentTimeMillis();
         try {
-            final StateResolverPlugin stateResolver = pluginLogic.getPlugin(pluginClass);
+            final StateResolver stateResolver = stateResolverLogic.getStateResolver(pluginClass);
             if (stateResolver == null) {
                 throw new IllegalStateException("No stateResolver found for type '" + pluginClass + "'");
             }

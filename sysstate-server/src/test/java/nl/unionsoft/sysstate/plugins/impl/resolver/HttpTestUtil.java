@@ -9,7 +9,7 @@ import mockit.Mocked;
 import nl.unionsoft.common.util.PropertiesUtil;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
-import nl.unionsoft.sysstate.common.plugins.StateResolverPlugin;
+import nl.unionsoft.sysstate.common.extending.StateResolver;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -18,11 +18,11 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 public class HttpTestUtil {
-    public static StateDto doCall(StateResolverPlugin plugin, final DefaultHttpClient defaultHttpClient, String stream) throws IOException {
+    public static StateDto doCall(StateResolver plugin, final DefaultHttpClient defaultHttpClient, String stream) throws IOException {
         return doCall(plugin, defaultHttpClient, stream, new Properties());
     }
 
-    public static StateDto doCall(StateResolverPlugin plugin, final DefaultHttpClient defaultHttpClient, String stream, Properties properties) throws IOException {
+    public static StateDto doCall(StateResolver plugin, final DefaultHttpClient defaultHttpClient, String stream, Properties properties) throws IOException {
 
         final StateDto state = new StateDto();
         final InstanceDto instance = new InstanceDto();

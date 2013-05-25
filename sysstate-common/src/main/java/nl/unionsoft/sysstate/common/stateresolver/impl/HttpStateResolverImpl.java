@@ -6,13 +6,11 @@ import java.util.Properties;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import net.xeoh.plugins.base.annotations.Capabilities;
-import net.xeoh.plugins.base.annotations.PluginImplementation;
 import nl.unionsoft.common.util.PropertiesUtil;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.plugins.StateResolverPlugin;
+import nl.unionsoft.sysstate.common.extending.StateResolver;
 import nl.unionsoft.sysstate.common.util.StateUtil;
 
 import org.apache.commons.lang.StringUtils;
@@ -24,19 +22,20 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
-@PluginImplementation
-public class HttpStateResolverPluginImpl implements StateResolverPlugin {
+@Service("httpStateResolverPlugin")
+public class HttpStateResolverImpl implements StateResolver {
 
     public static final String URL = "url";
 
-    private static final Logger LOG = LoggerFactory.getLogger(HttpStateResolverPluginImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HttpStateResolverImpl.class);
 
     @Inject
     @Named("httpClient")
     private HttpClient httpClient;
 
-    public void setState(InstanceDto instance, StateDto state) {
+    public void setState(final InstanceDto instance, final StateDto state) {
         state.setState(StateType.STABLE);
         LOG.info("Preparing httpRequest...");
         final Properties configuration = getPropsFromConfiguration(instance.getConfiguration());
@@ -61,7 +60,7 @@ public class HttpStateResolverPluginImpl implements StateResolverPlugin {
             state.setResponseTime(responseTime);
             handleHttpResponse(state, configuration, httpResponse);
 
-        } catch(final Exception e) {
+        } catch (final Exception e) {
             LOG.warn("Caught Exception while performing request: {}", e.getMessage(), e);
             handleStateForException(state, e, startTime);
         } finally {
@@ -69,11 +68,11 @@ public class HttpStateResolverPluginImpl implements StateResolverPlugin {
         }
     }
 
-    public String processUri(String uri) {
+    public String processUri(final String uri) {
         return uri;
     }
 
-    private Properties getPropsFromConfiguration(String configuration) {
+    private Properties getPropsFromConfiguration(final String configuration) {
         Properties properties = new Properties();
         if (StringUtils.isNotBlank(configuration)) {
             boolean isProperties = false;
@@ -97,7 +96,7 @@ public class HttpStateResolverPluginImpl implements StateResolverPlugin {
         return properties;
     }
 
-    private void handleHttpResponse(final StateDto state, Properties configuration, final HttpResponse httpResponse) throws IOException {
+    private void handleHttpResponse(final StateDto state, final Properties configuration, final HttpResponse httpResponse) throws IOException {
         HttpEntity httpEntity = null;
         try {
             final StatusLine statusLine = httpResponse.getStatusLine();
@@ -126,7 +125,7 @@ public class HttpStateResolverPluginImpl implements StateResolverPlugin {
         state.setMessage(StateUtil.exceptionAsMessage(exception));
     }
 
-    public void handleEntity(final HttpEntity httpEntity, Properties configuration, final StateDto state) throws IOException {
+    public void handleEntity(final HttpEntity httpEntity, final Properties configuration, final StateDto state) throws IOException {
 
     }
 
@@ -134,16 +133,11 @@ public class HttpStateResolverPluginImpl implements StateResolverPlugin {
         return httpClient;
     }
 
-    public void setHttpClient(HttpClient httpClient) {
+    public void setHttpClient(final HttpClient httpClient) {
         this.httpClient = httpClient;
     }
 
-    @Capabilities
-    public String[] capabilities() {
-        return new String[] { "httpStateResolver" };
-    }
-
-    public String generateHomePageUrl(InstanceDto instance) {
+    public String generateHomePageUrl(final InstanceDto instance) {
         final Properties configuration = getPropsFromConfiguration(instance.getConfiguration());
         String result = null;
         if (configuration != null) {

@@ -1,13 +1,11 @@
-package nl.unionsoft.sysstate.common.plugins;
+package nl.unionsoft.sysstate.common.extending;
 
 import java.util.Collection;
 import java.util.Properties;
 
-import net.xeoh.plugins.base.Plugin;
-import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.queue.ReferenceRunnable;
 
-public interface DiscoveryPlugin extends Plugin {
+public interface Discovery {
 
     public Collection<? extends ReferenceRunnable> discover(Properties properties);
 

@@ -2,22 +2,19 @@ package nl.unionsoft.sysstate.plugins.impl.rating;
 
 import java.util.Properties;
 
-import net.xeoh.plugins.base.annotations.Capabilities;
-import net.xeoh.plugins.base.annotations.PluginImplementation;
 import nl.unionsoft.common.util.PropertiesUtil;
 import nl.unionsoft.sysstate.common.dto.StateDto;
-import nl.unionsoft.sysstate.common.plugins.LifeCyclePlugin;
-import nl.unionsoft.sysstate.common.plugins.RatingPlugin;
+import nl.unionsoft.sysstate.common.extending.RatingResolver;
 
-@PluginImplementation
-public class ResponseTimeRatingPluginImpl implements RatingPlugin, LifeCyclePlugin {
+// @PluginImplementation
+public class ResponseTimeRatingImpl implements RatingResolver {
 
     private static final String UPPER_BOUND = "25000";
     private static final String LOWER_BOUND = "5000";
 
     private Properties configuration;
 
-    public Rating rating(StateDto state, Properties properties) {
+    public Rating rating(final StateDto state, final Properties properties) {
         final Rating rating = new Rating();
 
         final double lowerBound = Double.valueOf(PropertiesUtil.getProperty(properties, configuration, "lowerBound", LOWER_BOUND));
@@ -35,7 +32,7 @@ public class ResponseTimeRatingPluginImpl implements RatingPlugin, LifeCyclePlug
         return rating;
     }
 
-    private String getHighMessage(StateDto state, double lowerBound, double upperBound, Long responseTime, String text) {
+    private String getHighMessage(final StateDto state, final double lowerBound, final double upperBound, final Long responseTime, final String text) {
         final StringBuilder messageBuilder = new StringBuilder(400);
         messageBuilder.append("Instance '");
         messageBuilder.append(state.getInstance());
@@ -51,24 +48,13 @@ public class ResponseTimeRatingPluginImpl implements RatingPlugin, LifeCyclePlug
         return messageBuilder.toString();
     }
 
-    @Capabilities
-    public String[] capabilities() {
-        return new String[] { "responseTimeRatingPlugin" };
-    }
 
-    public void stop() {
+
+    public void setActionId(final Long id) {
 
     }
 
-    public void start() {
-
-    }
-
-    public void setActionId(Long id) {
-
-    }
-
-    public void config(Properties configuration) {
+    public void config(final Properties configuration) {
         this.configuration = configuration;
     }
 

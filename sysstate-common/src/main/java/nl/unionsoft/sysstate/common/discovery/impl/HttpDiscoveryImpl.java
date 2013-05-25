@@ -13,10 +13,10 @@ import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
+import nl.unionsoft.sysstate.common.extending.Discovery;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
-import nl.unionsoft.sysstate.common.plugins.DiscoveryPlugin;
 import nl.unionsoft.sysstate.common.queue.AddDiscoveredInstancesWorker;
 import nl.unionsoft.sysstate.common.queue.ReferenceRunnable;
 
@@ -30,11 +30,11 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class HttpDiscoveryPluginImpl implements DiscoveryPlugin {
+public abstract class HttpDiscoveryImpl implements Discovery {
 
     public static final String URL = "url";
 
-    private static final Logger LOG = LoggerFactory.getLogger(HttpDiscoveryPluginImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HttpDiscoveryImpl.class);
 
     @Inject
     @Named("environmentLogic")

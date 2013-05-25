@@ -5,20 +5,20 @@ import java.util.Properties;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import net.xeoh.plugins.base.annotations.PluginImplementation;
 import nl.unionsoft.common.util.PropertiesUtil;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.plugins.StateResolverPlugin;
+import nl.unionsoft.sysstate.common.extending.StateResolver;
 import nl.unionsoft.sysstate.logic.PushStateLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
 
 import org.joda.time.DateTime;
+import org.springframework.stereotype.Service;
 
 // pushRequestsStateResolverPlugin
-@PluginImplementation
-public class PushRequestsStateResolverPluginImpl implements StateResolverPlugin {
+@Service("pushRequestsStateResolverPlugin")
+public class PushRequestsStateResolverPluginImpl implements StateResolver {
 
     @Inject
     @Named("pushStateLogic")
@@ -28,7 +28,7 @@ public class PushRequestsStateResolverPluginImpl implements StateResolverPlugin 
     @Named("stateLogic")
     private StateLogic stateLogic;
 
-    public void setState(InstanceDto instance, StateDto state) {
+    public void setState(final InstanceDto instance, final StateDto state) {
         Properties properties = PropertiesUtil.stringToProperties(instance.getConfiguration());
         Long timeout = Long.valueOf(PropertiesUtil.getProperty(properties, "timeout", Long.toString(1000 * 60 * 10)));
 
@@ -65,7 +65,7 @@ public class PushRequestsStateResolverPluginImpl implements StateResolverPlugin 
         return pushStateLogic;
     }
 
-    public void setPushStateLogic(PushStateLogic pushStateLogic) {
+    public void setPushStateLogic(final PushStateLogic pushStateLogic) {
         this.pushStateLogic = pushStateLogic;
     }
 
@@ -73,11 +73,11 @@ public class PushRequestsStateResolverPluginImpl implements StateResolverPlugin 
         return stateLogic;
     }
 
-    public void setStateLogic(StateLogic stateLogic) {
+    public void setStateLogic(final StateLogic stateLogic) {
         this.stateLogic = stateLogic;
     }
 
-    public String generateHomePageUrl(InstanceDto instance) {
+    public String generateHomePageUrl(final InstanceDto instance) {
         return null;
     }
 

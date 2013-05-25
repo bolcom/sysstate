@@ -29,8 +29,31 @@ public class SchedulerController {
     @Named("scheduler")
     private Scheduler scheduler;
 
+    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/scheduler/index", method = RequestMethod.GET)
-    public ModelAndView index() {
+    public ModelAndView active() {
+        List<Task> tasks = new ArrayList<Task>();
+        List<JobExecutionContext> jobExecutionContexts;
+        try {
+            jobExecutionContexts = scheduler.getCurrentlyExecutingJobs();
+            for (JobExecutionContext jobExecutionContext : jobExecutionContexts) {
+                Trigger trigger = jobExecutionContext.getTrigger();
+                JobDetail jobDetail = jobExecutionContext.getJobDetail();
+                Task task = new Task();
+                task.setJobDetail(jobDetail);
+                task.setJobExecutionContext(jobExecutionContext);
+                task.setTriggers(new Trigger[] { trigger });
+                tasks.add(task);
+            }
+        } catch (SchedulerException e) {
+        }
+        final ModelAndView modelAndView = new ModelAndView("scheduler-manager");
+        modelAndView.addObject("tasks", tasks);
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/scheduler/all/index", method = RequestMethod.GET)
+    public ModelAndView all() {
 
         List<Task> tasks = new ArrayList<Task>();
 
@@ -65,6 +88,7 @@ public class SchedulerController {
         }
 
         final ModelAndView modelAndView = new ModelAndView("scheduler-manager");
+        modelAndView.addObject("tasks", tasks);
         return modelAndView;
     }
 

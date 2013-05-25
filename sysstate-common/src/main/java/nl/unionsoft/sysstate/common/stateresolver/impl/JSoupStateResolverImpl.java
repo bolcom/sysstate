@@ -18,9 +18,9 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JSoupStateResolverPluginImpl extends HttpStateResolverPluginImpl {
+public class JSoupStateResolverImpl extends HttpStateResolverImpl {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JSoupStateResolverPluginImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JSoupStateResolverImpl.class);
 
     @Override
     public void handleEntity(final HttpEntity httpEntity, Properties configuration, final StateDto state) throws IOException {

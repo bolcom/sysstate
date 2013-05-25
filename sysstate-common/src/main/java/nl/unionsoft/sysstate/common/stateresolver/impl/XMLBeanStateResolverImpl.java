@@ -6,8 +6,6 @@ import java.util.Properties;
 
 import javax.xml.transform.stream.StreamSource;
 
-import net.xeoh.plugins.base.annotations.Capabilities;
-import net.xeoh.plugins.base.annotations.PluginImplementation;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
 
@@ -18,16 +16,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.xmlbeans.XmlBeansMarshaller;
+import org.springframework.stereotype.Service;
 
-@PluginImplementation
-public abstract class XMLBeanStateResolverPluginImpl extends HttpStateResolverPluginImpl {
-    private static final Logger LOG = LoggerFactory.getLogger(XMLBeanStateResolverPluginImpl.class);
+@Service("xmlBeanStateResolverPlugin")
+public abstract class XMLBeanStateResolverImpl extends HttpStateResolverImpl {
+    private static final Logger LOG = LoggerFactory.getLogger(XMLBeanStateResolverImpl.class);
 
     @Autowired
     private XmlBeansMarshaller xmlBeansMarshaller;
 
     @Override
-    public void handleEntity(final HttpEntity httpEntity, Properties configuration, final StateDto state) throws IOException {
+    public void handleEntity(final HttpEntity httpEntity, final Properties configuration, final StateDto state) throws IOException {
 
         InputStream contentStream = null;
         try {
@@ -37,12 +36,12 @@ public abstract class XMLBeanStateResolverPluginImpl extends HttpStateResolverPl
                 final XmlObject xmlObject = (XmlObject) xmlBeansMarshaller.unmarshal(new StreamSource(contentStream));
                 handleXmlObject(xmlObject, state, configuration);
             }
-        } catch(final IllegalStateException e) {
+        } catch (final IllegalStateException e) {
             LOG.error("Caught IllegalStateException", e);
             state.setState(StateType.ERROR);
             state.setDescription(e.getMessage());
 
-        } catch(final IOException e) {
+        } catch (final IOException e) {
             LOG.error("Caught IOException", e);
             state.setState(StateType.ERROR);
             state.setDescription(e.getMessage());
@@ -53,17 +52,11 @@ public abstract class XMLBeanStateResolverPluginImpl extends HttpStateResolverPl
 
     protected abstract void handleXmlObject(final XmlObject xmlObject, final StateDto state, Properties configuration);
 
-    @Override
-    @Capabilities
-    public String[] capabilities() {
-        return new String[] { "xmlBeanStateResolver" };
-    }
-
     public XmlBeansMarshaller getXmlBeansMarshaller() {
         return xmlBeansMarshaller;
     }
 
-    public void setXmlBeansMarshaller(XmlBeansMarshaller xmlBeansMarshaller) {
+    public void setXmlBeansMarshaller(final XmlBeansMarshaller xmlBeansMarshaller) {
         this.xmlBeansMarshaller = xmlBeansMarshaller;
     }
 

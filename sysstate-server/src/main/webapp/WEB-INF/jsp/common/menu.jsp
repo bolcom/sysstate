@@ -91,9 +91,6 @@
 				<sc:authorize url="/cache">
 					<li><a href="${contextPath}/cache/index.html">Cache</a></li>
 				</sc:authorize>
-				<sc:authorize url="/plugin">
-					<li><a href="${contextPath}/plugin/index.html">Plugins</a></li>
-				</sc:authorize>
 				<sc:authorize url="/template">
 					<li><a href="${contextPath}/template/index.html">Templates</a></li>
 				</sc:authorize>

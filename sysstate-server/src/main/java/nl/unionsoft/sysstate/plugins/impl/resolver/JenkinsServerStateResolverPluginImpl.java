@@ -4,24 +4,23 @@ import static nl.unionsoft.sysstate.util.XmlUtil.getCharacterDataFromObjectWithK
 
 import java.util.Properties;
 
-import net.xeoh.plugins.base.annotations.Capabilities;
-import net.xeoh.plugins.base.annotations.PluginImplementation;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.stateresolver.impl.XMLBeanStateResolverPluginImpl;
+import nl.unionsoft.sysstate.common.stateresolver.impl.XMLBeanStateResolverImpl;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.xmlbeans.XmlObject;
+import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-@PluginImplementation
-public class JenkinsServerStateResolverPluginImpl extends XMLBeanStateResolverPluginImpl {
+@Service("jenkinsServerStateResolverPlugin")
+public class JenkinsServerStateResolverPluginImpl extends XMLBeanStateResolverImpl {
 
     private static final String API_XML = "/api/xml";
 
     @Override
-    protected void handleXmlObject(XmlObject xmlObject, StateDto state, Properties properties) {
+    protected void handleXmlObject(final XmlObject xmlObject, final StateDto state, final Properties properties) {
         final Node node = xmlObject.getDomNode();
         final Document document = (Document) node;
 
@@ -45,19 +44,13 @@ public class JenkinsServerStateResolverPluginImpl extends XMLBeanStateResolverPl
     }
 
     @Override
-    public String processUri(String uri) {
+    public String processUri(final String uri) {
         final StringBuilder uriBuilder = new StringBuilder();
         uriBuilder.append(super.processUri(uri));
         if (!StringUtils.endsWith(uri, API_XML)) {
             uriBuilder.append(API_XML);
         }
         return uriBuilder.toString();
-    }
-
-    @Override
-    @Capabilities
-    public String[] capabilities() {
-        return new String[] { "jenkinsStateResolver" };
     }
 
 }

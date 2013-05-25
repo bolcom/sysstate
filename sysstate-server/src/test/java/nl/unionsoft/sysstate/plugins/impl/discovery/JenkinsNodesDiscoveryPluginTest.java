@@ -13,11 +13,11 @@ import org.springframework.oxm.xmlbeans.XmlBeansMarshaller;
 
 public class JenkinsNodesDiscoveryPluginTest {
 
-    private JenkinsNodesDiscoveryPluginImpl plugin;
+    private JenkinsNodesDiscoveryImpl plugin;
 
     @Before
     public void before() {
-        plugin = new JenkinsNodesDiscoveryPluginImpl();
+        plugin = new JenkinsNodesDiscoveryImpl();
         plugin.setXmlBeansMarshaller(new XmlBeansMarshaller());
         plugin.setHttpClient(new DefaultHttpClient());
     }

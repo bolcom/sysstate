@@ -28,8 +28,6 @@ import nl.unionsoft.sysstate.domain.Instance;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
 import nl.unionsoft.sysstate.domain.State;
 import nl.unionsoft.sysstate.job.UpdateInstanceJob;
-import nl.unionsoft.sysstate.logic.InstanceWorkerPluginLogic;
-import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
 
 import org.apache.commons.lang.StringUtils;
@@ -67,10 +65,6 @@ public class InstanceLogicImpl implements InstanceLogic {
     private StateLogic stateLogic;
 
     @Inject
-    @Named("pluginLogic")
-    private PluginLogic pluginLogic;
-
-    @Inject
     @Named("scheduler")
     private Scheduler scheduler;
 
@@ -81,10 +75,6 @@ public class InstanceLogicImpl implements InstanceLogic {
     @Inject
     @Named("stateConverter")
     private Converter<StateDto, State> stateConverter;
-
-    @Inject
-    @Named("instanceWorkerPluginLogic")
-    private InstanceWorkerPluginLogic instanceWorkerPluginLogic;
 
     public void queueForUpdate(final Long instanceId) {
         updateTriggerJob(instanceDao.getInstance(instanceId));

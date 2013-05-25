@@ -10,15 +10,14 @@ import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
+import nl.unionsoft.sysstate.common.extending.Discovery;
 import nl.unionsoft.sysstate.common.logic.DiscoveryLogic;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
-import nl.unionsoft.sysstate.common.plugins.DiscoveryPlugin;
 import nl.unionsoft.sysstate.domain.Environment;
 import nl.unionsoft.sysstate.logic.impl.DiscoveryLogicImpl;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -26,12 +25,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class DiscoveryLogicTest {
 
     private DiscoveryLogic discoveryLogic;
-
     @Mocked
-    private PluginLogic pluginLogic;
-
-    @Mocked
-    private DiscoveryPlugin discoveryPlugin;
+    private Discovery discoveryPlugin;
 
     @Mocked
     private InstanceLogic instanceLogic;
@@ -45,7 +40,7 @@ public class DiscoveryLogicTest {
     @Before
     public void before() {
         discoveryLogic = new DiscoveryLogicImpl();
-        ReflectionTestUtils.setField(discoveryLogic, "pluginLogic", pluginLogic);
+        //        ReflectionTestUtils.setField(discoveryLogic, "pluginLogic", pluginLogic);
         ReflectionTestUtils.setField(discoveryLogic, "instanceLogic", instanceLogic);
         ReflectionTestUtils.setField(discoveryLogic, "environmentLogic", environmentLogic);
         ReflectionTestUtils.setField(discoveryLogic, "projectLogic", projectLogic);
@@ -67,27 +62,32 @@ public class DiscoveryLogicTest {
 
         new Expectations() {
             {
-                //@formatter:off
-                pluginLogic.getPlugin("discoveryPlugin");result= discoveryPlugin; 
-                discoveryPlugin.discover(properties); result = discoveredInstances; 
-                instanceLogic.getInstances(); result = currentInstances; 
+                // @formatter:off
+                // pluginLogic.getPlugin("discoveryPlugin");
+                result = discoveryPlugin;
+                discoveryPlugin.discover(properties);
+                result = discoveredInstances;
+                instanceLogic.getInstances();
+                result = currentInstances;
                 final ProjectDto project = new ProjectDto();
                 project.setId(1L);
-                projectLogic.findProject("PRJ"); result = project;
+                projectLogic.findProject("PRJ");
+                result = project;
                 final Environment environment = new Environment();
                 environment.setId(2L);
-                environmentLogic.findEnvironment("ENV"); result = environment;
-                //@formatter:on
+                environmentLogic.findEnvironment("ENV");
+                result = environment;
+                // @formatter:on
             }
         };
-//        final List<? extends InstanceDto> instances = (List<? extends InstanceDto>) discoveryLogic.discover("discoveryPlugin", properties);
-//        Assert.assertNotNull(instances);
-//        Assert.assertEquals(1, instances.size());
-//        {
-//            final InstanceDto instance = instances.get(0);
-//            Assert.assertEquals(Long.valueOf(1L), instance.getProjectEnvironment().getProject().getId());
-//            Assert.assertEquals(Long.valueOf(2L), instance.getProjectEnvironment().getEnvironment().getId());
-//        }
+        // final List<? extends InstanceDto> instances = (List<? extends InstanceDto>) discoveryLogic.discover("discoveryPlugin", properties);
+        // Assert.assertNotNull(instances);
+        // Assert.assertEquals(1, instances.size());
+        // {
+        // final InstanceDto instance = instances.get(0);
+        // Assert.assertEquals(Long.valueOf(1L), instance.getProjectEnvironment().getProject().getId());
+        // Assert.assertEquals(Long.valueOf(2L), instance.getProjectEnvironment().getEnvironment().getId());
+        // }
     }
 
     @Test
@@ -113,11 +113,14 @@ public class DiscoveryLogicTest {
 
         new Expectations() {
             {
-                //@formatter:off
-                pluginLogic.getPlugin("discoveryPlugin");result= discoveryPlugin; 
-                discoveryPlugin.discover(properties); result = discoveredInstances; 
-                instanceLogic.getInstances(); result = currentInstances; 
-                //@formatter:on
+                // @formatter:off
+                //                pluginLogic.getPlugin("discoveryPlugin");
+                result = discoveryPlugin;
+                discoveryPlugin.discover(properties);
+                result = discoveredInstances;
+                instanceLogic.getInstances();
+                result = currentInstances;
+                // @formatter:on
             }
         };
         // final List<? extends InstanceDto> instances = (List<? extends InstanceDto>)

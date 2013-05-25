@@ -14,11 +14,10 @@ import nl.unionsoft.sysstate.common.dto.ProjectDto;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
-import nl.unionsoft.sysstate.common.plugins.StateResolverPlugin;
 import nl.unionsoft.sysstate.domain.Instance;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
-import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.ProjectEnvironmentLogic;
+import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -44,8 +43,8 @@ public class InstanceController {
     private ProjectEnvironmentLogic projectEnvironmentLogic;
 
     @Inject
-    @Named("pluginLogic")
-    private PluginLogic pluginLogic;
+    @Named("stateResolverLogic")
+    private StateResolverLogic stateResolverLogic;
 
     @Inject
     @Named("projectLogic")
@@ -88,15 +87,13 @@ public class InstanceController {
         }
 
         instance.setEnabled(true);
-
         modelAndView.addObject("instance", instance);
         addCommons(modelAndView);
-
         return modelAndView;
     }
 
     @RequestMapping(value = "/instance/{instanceId}/configuration", method = RequestMethod.GET)
-    public ModelAndView configuration(@PathVariable("instanceId") Long instanceId) {
+    public ModelAndView configuration(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("message-clear");
         final InstanceDto instance = instanceLogic.getInstance(instanceId);
         modelAndView.addObject("message", instance.getConfiguration());
@@ -104,16 +101,15 @@ public class InstanceController {
     }
 
     @RequestMapping(value = "/instance/{instanceId}/details", method = RequestMethod.GET)
-    public ModelAndView details(@PathVariable("instanceId") Long instanceId) {
+    public ModelAndView details(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("details-instance-clear");
         modelAndView.addObject("instance", instanceLogic.getInstance(instanceId, true));
         return modelAndView;
     }
 
     @RequestMapping(value = "/instance/{instanceId}/copy", method = RequestMethod.GET)
-    public ModelAndView copy(@PathVariable("instanceId") Long instanceId) {
+    public ModelAndView copy(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("copy-update-instance-manager");
-
         final InstanceDto dto = instanceLogic.getInstance(instanceId);
         final Instance instance = new Instance();
         instance.setConfiguration(dto.getConfiguration());
@@ -128,7 +124,6 @@ public class InstanceController {
         instance.setProjectEnvironment(projectEnvironment);
         modelAndView.addObject("instance", instance);
         addCommons(modelAndView);
-
         return modelAndView;
     }
 
@@ -137,7 +132,6 @@ public class InstanceController {
         return handleFormCreate(instance, bindingResult);
     }
 
-    
     @RequestMapping(value = "/instance/{instanceId}/update", method = RequestMethod.GET)
     public ModelAndView getUpdate(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("create-update-instance-manager");
@@ -147,13 +141,15 @@ public class InstanceController {
     }
 
     @RequestMapping(value = "/instance/{instanceId}/refresh", method = RequestMethod.GET)
-    public ModelAndView refresh(@PathVariable(value = "instanceId") final Long instanceId, @RequestParam(value = "redirUrl", required = false) String redirUrl) {
+    public ModelAndView refresh(@PathVariable(value = "instanceId") final Long instanceId,
+            @RequestParam(value = "redirUrl", required = false) final String redirUrl) {
         instanceLogic.queueForUpdate(instanceId);
         return new ModelAndView("redirect:/filter/index.html");
     }
 
     @RequestMapping(value = "/instance/{instanceId}/toggle/enabled", method = RequestMethod.GET)
-    public ModelAndView toggleEnabled(@PathVariable(value = "instanceId") final Long instanceId, @RequestParam(value = "redirUrl", required = false) String redirUrl) {
+    public ModelAndView toggleEnabled(@PathVariable(value = "instanceId") final Long instanceId,
+            @RequestParam(value = "redirUrl", required = false) final String redirUrl) {
         final InstanceDto instance = instanceLogic.getInstance(instanceId);
         instance.setEnabled(!instance.isEnabled());
         instanceLogic.createOrUpdateInstance(instance);
@@ -170,14 +166,15 @@ public class InstanceController {
     }
 
     @RequestMapping(value = "/instance/{instanceId}/delete/confirmed", method = RequestMethod.POST)
-    public ModelAndView handleDelete(@PathVariable("instanceId") final Long instanceId, @RequestParam(value = "redirUrl", required = false) String redirUrl) {
+    public ModelAndView handleDelete(@PathVariable("instanceId") final Long instanceId,
+            @RequestParam(value = "redirUrl", required = false) final String redirUrl) {
         instanceLogic.delete(instanceId);
         return new ModelAndView("redirect:/filter/index.html");
     }
 
     private void addCommons(final ModelAndView modelAndView) {
         modelAndView.addObject("projectEnvironments", projectEnvironmentLogic.getProjectEnvironments());
-        modelAndView.addObject("stateResolverNames", pluginLogic.getPluginClasses(StateResolverPlugin.class));
+        modelAndView.addObject("stateResolverNames", stateResolverLogic.getStateResolverNames());
     }
 
     @RequestMapping(value = "/instance/create", method = RequestMethod.POST)

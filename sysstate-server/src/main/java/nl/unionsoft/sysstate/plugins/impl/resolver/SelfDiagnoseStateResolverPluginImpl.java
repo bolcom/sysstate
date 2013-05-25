@@ -7,27 +7,25 @@ import static nl.unionsoft.sysstate.util.XmlUtil.getElementWithKeyFromElement;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
-import net.xeoh.plugins.base.annotations.Capabilities;
-import net.xeoh.plugins.base.annotations.PluginImplementation;
-import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.stateresolver.impl.XMLBeanStateResolverPluginImpl;
+import nl.unionsoft.sysstate.common.stateresolver.impl.XMLBeanStateResolverImpl;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.xmlbeans.XmlObject;
+import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-@PluginImplementation
-public class SelfDiagnoseStateResolverPluginImpl extends XMLBeanStateResolverPluginImpl {
+@Service("selfDiagnoseStateResolverPlugin")
+public class SelfDiagnoseStateResolverPluginImpl extends XMLBeanStateResolverImpl {
 
     private static final String FORMAT_XML = "?format=xml";
 
     @Override
-    protected void handleXmlObject(final XmlObject xmlObject, final StateDto state, Properties configuration) {
+    protected void handleXmlObject(final XmlObject xmlObject, final StateDto state, final Properties configuration) {
 
         final Node node = xmlObject.getDomNode();
         final Document document = (Document) node;
@@ -87,7 +85,7 @@ public class SelfDiagnoseStateResolverPluginImpl extends XMLBeanStateResolverPlu
     }
 
     @Override
-    public String processUri(String uri) {
+    public String processUri(final String uri) {
         final StringBuilder uriBuilder = new StringBuilder();
         uriBuilder.append(super.processUri(uri));
         if (!StringUtils.endsWith(uri, FORMAT_XML)) {
@@ -96,19 +94,13 @@ public class SelfDiagnoseStateResolverPluginImpl extends XMLBeanStateResolverPlu
         return uriBuilder.toString();
     }
 
-    private void addInfoLineToMessageBuilder(final StringBuilder messageBuilder, final String task, final String message, String status) {
+    private void addInfoLineToMessageBuilder(final StringBuilder messageBuilder, final String task, final String message, final String status) {
         messageBuilder.append(StringUtils.trim(task));
         messageBuilder.append(": ");
         messageBuilder.append(status);
         messageBuilder.append(", ");
         messageBuilder.append(StringUtils.trim(message));
         messageBuilder.append('\n');
-    }
-
-    @Override
-    @Capabilities
-    public String[] capabilities() {
-        return new String[] { "selfDiagnoseStateResolver" };
     }
 
 }

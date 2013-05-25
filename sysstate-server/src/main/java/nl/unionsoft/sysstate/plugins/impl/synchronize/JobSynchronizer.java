@@ -2,17 +2,14 @@ package nl.unionsoft.sysstate.plugins.impl.synchronize;
 
 import java.util.Properties;
 
-import net.xeoh.plugins.base.annotations.Capabilities;
-import nl.unionsoft.sysstate.common.plugins.LifeCyclePlugin;
-
 // @PluginImplementation
-public class JobSynchronizer implements LifeCyclePlugin {
+public class JobSynchronizer {
 
     private Properties configuration;
 
     Thread synchronizer = null;
 
-    public void setActionId(Long id) {
+    public void setActionId(final Long id) {
 
     }
 
@@ -33,7 +30,7 @@ public class JobSynchronizer implements LifeCyclePlugin {
                     while (true) {
                         Thread.sleep(3000);
                     }
-                } catch(final InterruptedException e) {
+                } catch (final InterruptedException e) {
                     e.printStackTrace();
                 }
 
@@ -43,14 +40,9 @@ public class JobSynchronizer implements LifeCyclePlugin {
 
     }
 
-    public void config(Properties configuration) {
+    public void config(final Properties configuration) {
         this.configuration = configuration;
 
-    }
-
-    @Capabilities
-    public String[] capabilities() {
-        return new String[] { "action:jobSynchronizer" };
     }
 
 }

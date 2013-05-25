@@ -9,17 +9,17 @@ import nl.unionsoft.common.util.PropertiesUtil;
 import org.joda.time.DateTime;
 
 public class InstanceDto {
-    
+
     private Long id;
-    
+
     @NotNull()
-    @Size(min = 1, max=10)
+    @Size(min = 1, max = 15)
     private String name;
-    
+
     private String configuration;
-    
+
     private StateDto state;
-    
+
     private String homepageUrl;
 
     @NotNull()
@@ -45,7 +45,7 @@ public class InstanceDto {
         return configuration;
     }
 
-    public void setConfiguration(String configuration) {
+    public void setConfiguration(final String configuration) {
         this.configuration = configuration;
     }
 
@@ -53,7 +53,7 @@ public class InstanceDto {
         return projectEnvironment;
     }
 
-    public void setProjectEnvironment(ProjectEnvironmentDto projectEnvironment) {
+    public void setProjectEnvironment(final ProjectEnvironmentDto projectEnvironment) {
         this.projectEnvironment = projectEnvironment;
     }
 
@@ -61,7 +61,7 @@ public class InstanceDto {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -69,7 +69,7 @@ public class InstanceDto {
         return state;
     }
 
-    public void setState(StateDto state) {
+    public void setState(final StateDto state) {
         this.state = state;
     }
 
@@ -77,7 +77,7 @@ public class InstanceDto {
         return homepageUrl;
     }
 
-    public void setHomepageUrl(String homepageUrl) {
+    public void setHomepageUrl(final String homepageUrl) {
         this.homepageUrl = homepageUrl;
     }
 
@@ -85,7 +85,7 @@ public class InstanceDto {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -93,7 +93,7 @@ public class InstanceDto {
         return pluginClass;
     }
 
-    public void setPluginClass(String pluginClass) {
+    public void setPluginClass(final String pluginClass) {
         this.pluginClass = pluginClass;
     }
 
@@ -101,7 +101,7 @@ public class InstanceDto {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(final boolean enabled) {
         this.enabled = enabled;
     }
 
@@ -109,7 +109,7 @@ public class InstanceDto {
         return refreshTimeout;
     }
 
-    public void setRefreshTimeout(int refreshTimeout) {
+    public void setRefreshTimeout(final int refreshTimeout) {
         this.refreshTimeout = refreshTimeout;
     }
 
@@ -117,7 +117,7 @@ public class InstanceDto {
         return nextUpdate;
     }
 
-    public void setNextUpdate(DateTime nextUpdate) {
+    public void setNextUpdate(final DateTime nextUpdate) {
         this.nextUpdate = nextUpdate;
     }
 
@@ -125,7 +125,7 @@ public class InstanceDto {
         return tags;
     }
 
-    public void setTags(String tags) {
+    public void setTags(final String tags) {
         this.tags = tags;
     }
 
@@ -133,7 +133,7 @@ public class InstanceDto {
         return lastStable;
     }
 
-    public void setLastStable(StateDto lastStable) {
+    public void setLastStable(final StateDto lastStable) {
         this.lastStable = lastStable;
     }
 
@@ -141,7 +141,7 @@ public class InstanceDto {
         return lastUnstable;
     }
 
-    public void setLastUnstable(StateDto lastUnstable) {
+    public void setLastUnstable(final StateDto lastUnstable) {
         this.lastUnstable = lastUnstable;
     }
 
@@ -149,7 +149,7 @@ public class InstanceDto {
         return lastError;
     }
 
-    public void setLastError(StateDto lastError) {
+    public void setLastError(final StateDto lastError) {
         this.lastError = lastError;
     }
 
@@ -157,7 +157,7 @@ public class InstanceDto {
         return lastPending;
     }
 
-    public void setLastPending(StateDto lastPending) {
+    public void setLastPending(final StateDto lastPending) {
         this.lastPending = lastPending;
     }
 
@@ -165,7 +165,7 @@ public class InstanceDto {
         return lastDisabled;
     }
 
-    public void setLastDisabled(StateDto lastDisabled) {
+    public void setLastDisabled(final StateDto lastDisabled) {
         this.lastDisabled = lastDisabled;
     }
 
@@ -184,7 +184,7 @@ public class InstanceDto {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }

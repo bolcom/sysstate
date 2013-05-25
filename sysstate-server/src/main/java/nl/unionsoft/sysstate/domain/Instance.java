@@ -28,7 +28,7 @@ public class Instance {
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "NAME", nullable = true)
+    @Column(name = "NAME", nullable = true, length=200)
     private String name;
 
     @Column(name = "HOMEPAGE_URL", nullable = true, length = 4096)
@@ -55,9 +55,9 @@ public class Instance {
     // @OneToOne()
     // @JoinColumn(name="LAST_STE_ID")
     // private State lastState;
-
-    @OneToMany(mappedBy = "instance", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs;
+    //
+    //    @OneToMany(mappedBy = "instance", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    //    private List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs;
 
     @ManyToOne
     @JoinColumn(name = "PET_ID", nullable = false)
@@ -135,13 +135,13 @@ public class Instance {
         this.homepageUrl = homepageUrl;
     }
 
-    public List<InstanceWorkerPluginConfig> getInstanceNotifiers() {
-        return instanceWorkerPluginConfigs;
-    }
-
-    public void setInstanceNotifiers(final List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs) {
-        this.instanceWorkerPluginConfigs = instanceWorkerPluginConfigs;
-    }
+    //    public List<InstanceWorkerPluginConfig> getInstanceNotifiers() {
+    //        return instanceWorkerPluginConfigs;
+    //    }
+    //
+    //    public void setInstanceNotifiers(final List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs) {
+    //        this.instanceWorkerPluginConfigs = instanceWorkerPluginConfigs;
+    //    }
 
     public ProjectEnvironment getProjectEnvironment() {
         return projectEnvironment;
@@ -151,13 +151,13 @@ public class Instance {
         this.projectEnvironment = projectEnvironment;
     }
 
-    public List<InstanceWorkerPluginConfig> getInstanceWorkerPluginConfigs() {
-        return instanceWorkerPluginConfigs;
-    }
-
-    public void setInstanceWorkerPluginConfigs(final List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs) {
-        this.instanceWorkerPluginConfigs = instanceWorkerPluginConfigs;
-    }
+    //    public List<InstanceWorkerPluginConfig> getInstanceWorkerPluginConfigs() {
+    //        return instanceWorkerPluginConfigs;
+    //    }
+    //
+    //    public void setInstanceWorkerPluginConfigs(final List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs) {
+    //        this.instanceWorkerPluginConfigs = instanceWorkerPluginConfigs;
+    //    }
 
     @Override
     public String toString() {

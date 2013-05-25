@@ -6,9 +6,8 @@ import javax.validation.Valid;
 
 import nl.unionsoft.sysstate.common.dto.ProjectDto;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
-import nl.unionsoft.sysstate.common.plugins.StateResolverPlugin;
 import nl.unionsoft.sysstate.domain.Project;
-import nl.unionsoft.sysstate.logic.PluginLogic;
+import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -25,8 +24,8 @@ public class ProjectController {
     private ProjectLogic projectLogic;
 
     @Inject
-    @Named("pluginLogic")
-    private PluginLogic pluginLogic;
+    @Named("stateResolverLogic")
+    private StateResolverLogic stateResolverLogic;
 
     @RequestMapping(value = "/project/index", method = RequestMethod.GET)
     public ModelAndView list() {
@@ -39,7 +38,7 @@ public class ProjectController {
     public ModelAndView getCreate() {
         final ModelAndView modelAndView = new ModelAndView("create-update-project-manager");
         modelAndView.addObject("project", new Project());
-        modelAndView.addObject("stateResolverNames", pluginLogic.getPluginClasses(StateResolverPlugin.class));
+        modelAndView.addObject("stateResolverNames", stateResolverLogic.getStateResolverNames());
         return modelAndView;
     }
 
@@ -47,7 +46,7 @@ public class ProjectController {
     public ModelAndView getUpdate(@PathVariable("projectId") final Long projectId) {
         final ModelAndView modelAndView = new ModelAndView("create-update-project-manager");
         modelAndView.addObject("project", projectLogic.getProject(projectId));
-        modelAndView.addObject("stateResolverNames", pluginLogic.getPluginClasses(StateResolverPlugin.class));
+        modelAndView.addObject("stateResolverNames", stateResolverLogic.getStateResolverNames());
         return modelAndView;
     }
 
