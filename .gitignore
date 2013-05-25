@@ -10,3 +10,7 @@ sysstate-server/src/main/generated/nl/unionsoft/sysstate/sysstate_1_0/Instance.j
 sysstate-server/src/main/generated/nl/unionsoft/sysstate/sysstate_1_0/State.java
 sysstate-server\target/
 **/target/**
+*.classpath
+*.project
+sysstate-jenkins/.settings/org.eclipse.jdt.core.prefs
+sysstate-selfdiagnose/.settings/org.eclipse.jdt.core.prefs

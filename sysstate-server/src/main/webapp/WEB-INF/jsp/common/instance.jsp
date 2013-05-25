@@ -104,9 +104,6 @@
 			 <sc:authorize url="/instance/${instance.id}/delete">
 				 <a href="${contextPath}/instance/${instance.id}/delete.html?" title="Delete Instance"><img src="${contextPath}/images/delete.gif" /></a>
 			</sc:authorize>
-			<sc:authorize url="/instancenotifier/index">
-				<a href="${contextPath}/instancenotifier/index.html?instanceId=${instance.id}" title="Instance Notification Settings"><img src="${contextPath}/images/broadcast.png" /></a>
-			</sc:authorize>
 			<sc:authorize url="/instance/${instance.id}/toggle/enabled">
 				<a href="${contextPath}/instance/${instance.id}/toggle/enabled.html"  title="${instance.enabled ? 'Disable' : 'Enable'}"><img src="${contextPath}/images/power_${instance.enabled ? 'off' : 'on'}.png"  width="12" height="12"/></a>
 			</sc:authorize>
