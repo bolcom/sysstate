@@ -1,6 +1,0 @@
-<selfdiagnose run="2012-11-16T15:48:41" context="/myapp" version="2.4-SNAPSHOT">
-	<results>
-		<result task="checkspringdatasourceconnectable" status="passed" message="Datasource [AQDataSource] is found but a connection cannot be created." comment="AQ datasource" requestor="selfdiagnose.xml"
-			duration="82" />
-	</results>
-</selfdiagnose>
