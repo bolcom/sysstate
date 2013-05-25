@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Properties;
 
 import mockit.Mocked;
-import nl.unionsoft.common.util.PropertiesUtil;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
 

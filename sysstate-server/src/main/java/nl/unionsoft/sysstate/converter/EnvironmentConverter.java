@@ -4,13 +4,12 @@ import nl.unionsoft.common.converter.Converter;
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.domain.Environment;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Service("environmentConverter")
 public class EnvironmentConverter implements Converter<EnvironmentDto, Environment> {
 
-    public EnvironmentDto convert(Environment environment) {
+    public EnvironmentDto convert(final Environment environment) {
         EnvironmentDto result = null;
         if (environment != null) {
             result = new EnvironmentDto();

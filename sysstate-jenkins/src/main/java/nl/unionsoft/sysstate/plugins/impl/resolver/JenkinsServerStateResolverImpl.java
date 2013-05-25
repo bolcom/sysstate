@@ -1,6 +1,6 @@
 package nl.unionsoft.sysstate.plugins.impl.resolver;
 
-import static nl.unionsoft.sysstate.util.XmlUtil.getCharacterDataFromObjectWithKey;
+import static nl.unionsoft.sysstate.common.util.XmlUtil.getCharacterDataFromObjectWithKey;
 
 import java.util.Properties;
 

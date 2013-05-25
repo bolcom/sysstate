@@ -15,7 +15,6 @@ import nl.unionsoft.sysstate.Constants;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.dao.PropertyDao;
 import nl.unionsoft.sysstate.dao.StateDao;
-import nl.unionsoft.sysstate.domain.Instance;
 import nl.unionsoft.sysstate.domain.State;
 
 import org.joda.time.DateTime;
@@ -52,30 +51,24 @@ public class StateDaoImpl implements StateDao {
     public State getLastStateForInstance(final Long instanceId) {
         State result = null;
         try {
-            //@formatter:off
-            result = entityManager.createNamedQuery("findLastStateForInstance", State.class)
-                .setParameter("instanceId", instanceId)
-                .setMaxResults(1)
-                .setHint("org.hibernate.cacheable", true)
-                .getSingleResult();
-            //@formatter:on
-        } catch(NoResultException nre) {
+            // @formatter:off
+            result = entityManager.createNamedQuery("findLastStateForInstance", State.class).setParameter("instanceId", instanceId).setMaxResults(1)
+                    .setHint("org.hibernate.cacheable", true).getSingleResult();
+            // @formatter:on
+        } catch (NoResultException nre) {
             // Nothing to see here, move along!
         }
         return result;
     }
 
-    public State getLastStateForInstance(Long instanceId, StateType stateType) {
+    public State getLastStateForInstance(final Long instanceId, final StateType stateType) {
         State result = null;
         try {
-            //@formatter:off
-            result = entityManager.createNamedQuery("findLastStateForInstanceWithStateType", State.class)
-                .setParameter("instanceId", instanceId)
-                .setParameter("stateType", stateType)
-                .setMaxResults(1)
-                .getSingleResult();
-            //@formatter:on
-        } catch(NoResultException nre) {
+            // @formatter:off
+            result = entityManager.createNamedQuery("findLastStateForInstanceWithStateType", State.class).setParameter("instanceId", instanceId)
+                    .setParameter("stateType", stateType).setMaxResults(1).getSingleResult();
+            // @formatter:on
+        } catch (NoResultException nre) {
             // Nothing to see here, move along!
         }
         return result;
@@ -91,13 +84,10 @@ public class StateDaoImpl implements StateDao {
         final int maxDaysToKeepStates = propertyDao.getProperty(Constants.MAX_DAYS_TO_KEEP_STATES, Constants.MAX_DAYS_TO_KEEP_STATES_VALUE);
         final Date boundary = new DateTime().minusDays(maxDaysToKeepStates).toDate();
         LOG.info("Cleaning states older then {} days (before date {}).", maxDaysToKeepStates, boundary);
-        //@formatter:off
-        final int removed = entityManager.createQuery(
-            "DELETE FROM State " +
-            "WHERE state.creationDate < :maxDateToKeepStates")
-            .setParameter("maxDateToKeepStates", boundary)
-            .executeUpdate();
-        //@formatter:on
+        // @formatter:off
+        final int removed = entityManager.createQuery("DELETE FROM State " + "WHERE state.creationDate < :maxDateToKeepStates")
+                .setParameter("maxDateToKeepStates", boundary).executeUpdate();
+        // @formatter:on
         LOG.info("Deleted {} States", removed);
     }
 

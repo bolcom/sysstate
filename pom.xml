@@ -6,13 +6,15 @@
 	<groupId>nl.unionsoft.sysstate</groupId>
 	<packaging>pom</packaging>
 	<artifactId>sysstate</artifactId>
-	<version>0.911</version>
+	<version>0.92</version>
 
 
 	<modules>
 		<!-- -->
 		<module>sysstate-server</module>
 		<module>sysstate-common</module>
+		<module>sysstate-selfdiagnose</module>
+		<module>sysstate-jenkins</module>
 	</modules>
 	<!-- START: META -->
 	<name>System Status - Parent</name> 

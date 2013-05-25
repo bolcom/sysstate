@@ -7,11 +7,9 @@ import javax.inject.Named;
 
 import nl.unionsoft.common.converter.Converter;
 import nl.unionsoft.common.converter.ConverterWithConfig;
-import nl.unionsoft.sysstate.common.dto.CountDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
-import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.dao.EnvironmentDao;
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.dao.ListRequestDao;
@@ -24,7 +22,6 @@ import nl.unionsoft.sysstate.domain.State;
 import nl.unionsoft.sysstate.logic.FilterLogic;
 import nl.unionsoft.sysstate.logic.ProjectEnvironmentLogic;
 
-import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
 @Service("projectEnvironmentLogic")
@@ -70,11 +67,11 @@ public class ProjectEnvironmentLogicImpl implements ProjectEnvironmentLogic {
     @Named("projectEnvironmentConverter")
     private ConverterWithConfig<ProjectEnvironmentDto, ProjectEnvironment, Boolean> projectEnvironmentConverter;
 
-    public void createOrUpdate(ProjectEnvironment projectEnvironment) {
+    public void createOrUpdate(final ProjectEnvironment projectEnvironment) {
         projectEnvironmentDao.createOrUpdate(projectEnvironment);
     }
 
-    public Long createIfNotExists(Long projectId, Long environmentId) {
+    public Long createIfNotExists(final Long projectId, final Long environmentId) {
         ProjectEnvironment projectEnvironment = projectEnvironmentDao.getProjectEnvironment(projectId, environmentId);
         if (projectEnvironment == null) {
             projectEnvironment = new ProjectEnvironment();
@@ -85,7 +82,7 @@ public class ProjectEnvironmentLogicImpl implements ProjectEnvironmentLogic {
         return projectEnvironment.getId();
     }
 
-    public ProjectEnvironment getProjectEnvironment(Long projectId, Long environmentId) {
+    public ProjectEnvironment getProjectEnvironment(final Long projectId, final Long environmentId) {
         ProjectEnvironment projectEnvironment = projectEnvironmentDao.getProjectEnvironment(projectId, environmentId);
         if (projectEnvironment == null) {
             projectEnvironment = new ProjectEnvironment();
@@ -168,31 +165,31 @@ public class ProjectEnvironmentLogicImpl implements ProjectEnvironmentLogic {
     // projectEnvironment.setState(stateTypeForCount(count));
     // }
 
-    private StateDto getStateForInstance(InstanceDto instance) {
-        StateDto state = stateConverter.convert(stateDao.getLastStateForInstance(instance.getId()));
-        if (state == null) {
-            state = new StateDto();
-            state.setState(StateType.PENDING);
-            state.setCreationDate(new DateTime());
-        }
-        return state;
-    }
+    //    private StateDto getStateForInstance(InstanceDto instance) {
+    //        StateDto state = stateConverter.convert(stateDao.getLastStateForInstance(instance.getId()));
+    //        if (state == null) {
+    //            state = new StateDto();
+    //            state.setState(StateType.PENDING);
+    //            state.setCreationDate(new DateTime());
+    //        }
+    //        return state;
+    //    }
 
-    private StateType stateTypeForCount(CountDto count) {
-        StateType result = StateType.DISABLED;
-        if (count.getError() > 0) {
-            result = StateType.ERROR;
-        } else if (count.getUnstable() > 0) {
-            result = StateType.UNSTABLE;
-        } else if (count.getDisabled() > 0) {
-            result = StateType.DISABLED;
-        } else if (count.getStable() > 0) {
-            result = StateType.STABLE;
-        } else if (count.getPending() > 0) {
-            result = StateType.PENDING;
-        }
-        return result;
-    }
+    //    private StateType stateTypeForCount(CountDto count) {
+    //        StateType result = StateType.DISABLED;
+    //        if (count.getError() > 0) {
+    //            result = StateType.ERROR;
+    //        } else if (count.getUnstable() > 0) {
+    //            result = StateType.UNSTABLE;
+    //        } else if (count.getDisabled() > 0) {
+    //            result = StateType.DISABLED;
+    //        } else if (count.getStable() > 0) {
+    //            result = StateType.STABLE;
+    //        } else if (count.getPending() > 0) {
+    //            result = StateType.PENDING;
+    //        }
+    //        return result;
+    //    }
 
     // @formatter:off
     // @Cacheable(cacheName="projectEnvironmentCache", keyGenerator = @KeyGenerator (

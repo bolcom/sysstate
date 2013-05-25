@@ -1,8 +1,8 @@
 package nl.unionsoft.sysstate.plugins.impl.resolver;
 
-import static nl.unionsoft.sysstate.util.XmlUtil.getAttributePropertyFromElement;
-import static nl.unionsoft.sysstate.util.XmlUtil.getElementWithKeyFromDocument;
-import static nl.unionsoft.sysstate.util.XmlUtil.getElementWithKeyFromElement;
+import static nl.unionsoft.sysstate.common.util.XmlUtil.getAttributePropertyFromElement;
+import static nl.unionsoft.sysstate.common.util.XmlUtil.getElementWithKeyFromDocument;
+import static nl.unionsoft.sysstate.common.util.XmlUtil.getElementWithKeyFromElement;
 
 import java.util.Properties;
 import java.util.regex.Pattern;

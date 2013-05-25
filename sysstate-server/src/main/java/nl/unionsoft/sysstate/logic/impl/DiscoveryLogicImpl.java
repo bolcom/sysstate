@@ -7,14 +7,12 @@ import java.util.Properties;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.logic.DiscoveryLogic;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service("discoveryLogic")
 public class DiscoveryLogicImpl implements DiscoveryLogic {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryLogicImpl.class);
+    //    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryLogicImpl.class);
 
     private List<InstanceDto> discoveredInstances;
 

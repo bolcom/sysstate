@@ -1,11 +1,8 @@
 package nl.unionsoft.sysstate.plugins.impl.synchronize;
 
-import java.util.Properties;
 
 // @PluginImplementation
 public class JobSynchronizer {
-
-    private Properties configuration;
 
     Thread synchronizer = null;
 
@@ -37,11 +34,6 @@ public class JobSynchronizer {
             }
         });
         synchronizer.start();
-
-    }
-
-    public void config(final Properties configuration) {
-        this.configuration = configuration;
 
     }
 

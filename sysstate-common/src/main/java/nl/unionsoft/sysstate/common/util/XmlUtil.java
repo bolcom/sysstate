@@ -1,4 +1,4 @@
-package nl.unionsoft.sysstate.util;
+package nl.unionsoft.sysstate.common.util;
 
 import java.util.Date;
 

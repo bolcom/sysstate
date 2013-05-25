@@ -16,7 +16,6 @@ import nl.unionsoft.sysstate.domain.Environment;
 import nl.unionsoft.sysstate.domain.Project;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,7 +68,7 @@ public class EnvironmentLogicImpl implements EnvironmentLogic {
 
     }
 
-    public EnvironmentDto findEnvironment(String name) {
+    public EnvironmentDto findEnvironment(final String name) {
         return environmentConverter.convert(environmentDao.findEnvironment(name));
     }
 
@@ -77,11 +76,11 @@ public class EnvironmentLogicImpl implements EnvironmentLogic {
         return ListConverter.convert(environmentConverter, environmentDao.getEnvironments());
     }
 
-    public EnvironmentDto getEnvironment(Long environmentId) {
+    public EnvironmentDto getEnvironment(final Long environmentId) {
         return environmentConverter.convert(environmentDao.getEnvironment(environmentId));
     }
 
-    public void createOrUpdate(EnvironmentDto environmentDto) {
+    public void createOrUpdate(final EnvironmentDto environmentDto) {
 
         Environment environment = null;
         Long givenId = environmentDto.getId();

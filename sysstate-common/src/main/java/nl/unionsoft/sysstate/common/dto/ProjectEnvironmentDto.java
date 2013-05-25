@@ -3,9 +3,6 @@ package nl.unionsoft.sysstate.common.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-
 import nl.unionsoft.sysstate.common.enums.StateType;
 
 public class ProjectEnvironmentDto {
@@ -21,7 +18,7 @@ public class ProjectEnvironmentDto {
     private StateType state;
     private int rating;
 
-    public ProjectEnvironmentDto () {
+    public ProjectEnvironmentDto() {
         instances = new ArrayList<InstanceDto>();
         count = new CountDto();
     }
@@ -30,7 +27,7 @@ public class ProjectEnvironmentDto {
         return project;
     }
 
-    public void setProject(ProjectDto project) {
+    public void setProject(final ProjectDto project) {
         this.project = project;
     }
 
@@ -38,7 +35,7 @@ public class ProjectEnvironmentDto {
         return environment;
     }
 
-    public void setEnvironment(EnvironmentDto environment) {
+    public void setEnvironment(final EnvironmentDto environment) {
         this.environment = environment;
     }
 
@@ -46,7 +43,7 @@ public class ProjectEnvironmentDto {
         return viewResultDto;
     }
 
-    public void setEcoSystemDto(ViewResultDto viewResultDto) {
+    public void setEcoSystemDto(final ViewResultDto viewResultDto) {
         this.viewResultDto = viewResultDto;
     }
 
@@ -62,7 +59,7 @@ public class ProjectEnvironmentDto {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -70,7 +67,7 @@ public class ProjectEnvironmentDto {
         return homepageUrl;
     }
 
-    public void setHomepageUrl(String homepageUrl) {
+    public void setHomepageUrl(final String homepageUrl) {
         this.homepageUrl = homepageUrl;
     }
 
@@ -78,7 +75,7 @@ public class ProjectEnvironmentDto {
         return state;
     }
 
-    public void setState(StateType state) {
+    public void setState(final StateType state) {
         this.state = state;
     }
 
@@ -86,7 +83,7 @@ public class ProjectEnvironmentDto {
         return rating;
     }
 
-    public void setRating(int rating) {
+    public void setRating(final int rating) {
         this.rating = rating;
     }
 
@@ -94,7 +91,7 @@ public class ProjectEnvironmentDto {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 

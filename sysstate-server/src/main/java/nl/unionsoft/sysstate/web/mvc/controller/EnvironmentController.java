@@ -6,7 +6,6 @@ import javax.validation.Valid;
 
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
-import nl.unionsoft.sysstate.domain.Environment;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;

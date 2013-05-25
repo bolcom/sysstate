@@ -1,9 +1,8 @@
-\package nl.unionsoft.sysstate.plugins.impl.discovery;
+package nl.unionsoft.sysstate.plugins.impl.discovery;
 
 import java.util.Collection;
 import java.util.Properties;
 
-import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.queue.ReferenceRunnable;
 
 import org.apache.http.impl.client.DefaultHttpClient;

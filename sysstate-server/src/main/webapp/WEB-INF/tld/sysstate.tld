@@ -39,7 +39,7 @@
 	<function>
 		<description>xmlToDateTime</description>
 		<name>xmlToDateTime</name>
-		<function-class>nl.unionsoft.sysstate.util.XmlUtil</function-class>
+		<function-class>nl.unionsoft.sysstate.common.util.XmlUtil</function-class>
 		<function-signature>org.joda.time.DateTime xmlToDateTime(javax.xml.datatype.XMLGregorianCalendar)</function-signature>
 	</function>
 
