@@ -12,19 +12,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.oxm.xmlbeans.XmlBeansMarshaller;
 
-public class JenkinsServerStateResolverPluginTest {
+public class JenkinsServerStateResolverTest {
 
     private static final String ONLINE = "/nl/unionsoft/sysstate/plugins/impl/resolver/jenkins-server-state-resolver-plugin-data-online.xml";
     private static final String OFFLINE = "/nl/unionsoft/sysstate/plugins/impl/resolver/jenkins-server-state-resolver-plugin-data-offline.xml";
     private static final String TEMP_OFFLINE = "/nl/unionsoft/sysstate/plugins/impl/resolver/jenkins-server-state-resolver-plugin-data-temp-offline.xml";
 
-    private JenkinsServerStateResolverPluginImpl plugin;
+    private JenkinsServerStateResolverImpl plugin;
     @Mocked
     private DefaultHttpClient defaultHttpClient;
 
     @Before
     public void before() {
-        plugin = new JenkinsServerStateResolverPluginImpl();
+        plugin = new JenkinsServerStateResolverImpl();
         plugin.setXmlBeansMarshaller(new XmlBeansMarshaller());
         plugin.setHttpClient(defaultHttpClient);
     }

@@ -14,9 +14,9 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
-public class PushRequestsStateResolverPluginTest {
+public class PushRequestsStateResolverTest {
 
-    private PushRequestsStateResolverPluginImpl pushRequestsStateResolverPlugin;
+    private PushRequestsStateResolverImpl pushRequestsStateResolverPlugin;
 
     @Mocked
     private PushStateLogic pushStateLogic;
@@ -26,7 +26,7 @@ public class PushRequestsStateResolverPluginTest {
 
     @Before
     public void before() {
-        pushRequestsStateResolverPlugin = new PushRequestsStateResolverPluginImpl();
+        pushRequestsStateResolverPlugin = new PushRequestsStateResolverImpl();
         pushRequestsStateResolverPlugin.setPushStateLogic(pushStateLogic);
         Assert.assertNotNull(pushRequestsStateResolverPlugin.getPushStateLogic());
         pushRequestsStateResolverPlugin.setStateLogic(stateLogic);

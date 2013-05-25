@@ -14,20 +14,20 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.oxm.xmlbeans.XmlBeansMarshaller;
 
-public class SelfDiagnoseStateResolverPluginTest {
+public class SelfDiagnoseStateResolverTest {
     private static final String STABLE_MULTI = "/nl/unionsoft/sysstate/plugins/impl/resolver/self-diagnose-state-resolver-plugin-stable-multi.xml";
     private static final String STABLE = "/nl/unionsoft/sysstate/plugins/impl/resolver/self-diagnose-state-resolver-plugin-stable.xml";
     private static final String UNSTABLE = "/nl/unionsoft/sysstate/plugins/impl/resolver/self-diagnose-state-resolver-plugin-unstable.xml";
     private static final String ERROR = "/nl/unionsoft/sysstate/plugins/impl/resolver/self-diagnose-state-resolver-plugin-error.xml";
     private static final String NO_VERSION = "/nl/unionsoft/sysstate/plugins/impl/resolver/self-diagnose-state-resolver-plugin-no-version.xml";
 
-    private SelfDiagnoseStateResolverPluginImpl plugin;
+    private SelfDiagnoseStateResolverImpl plugin;
     @Mocked
     private DefaultHttpClient defaultHttpClient;
 
     @Before
     public void before() {
-        plugin = new SelfDiagnoseStateResolverPluginImpl();
+        plugin = new SelfDiagnoseStateResolverImpl();
         plugin.setXmlBeansMarshaller(new XmlBeansMarshaller());
         plugin.setHttpClient(defaultHttpClient);
     }

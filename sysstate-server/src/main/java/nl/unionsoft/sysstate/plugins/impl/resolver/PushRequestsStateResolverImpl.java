@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 
 // pushRequestsStateResolverPlugin
 @Service("pushRequestsStateResolverPlugin")
-public class PushRequestsStateResolverPluginImpl implements StateResolver {
+public class PushRequestsStateResolverImpl implements StateResolver {
 
     @Inject
     @Named("pushStateLogic")

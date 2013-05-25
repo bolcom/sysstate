@@ -11,7 +11,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.Before;
 import org.junit.Test;
 
-public class JSoupStateResolverPluginImplTest {
+public class JSoupStateResolverImplTest {
 
     private JSoupStateResolverImpl jSoupStateResolverPlugin;
 

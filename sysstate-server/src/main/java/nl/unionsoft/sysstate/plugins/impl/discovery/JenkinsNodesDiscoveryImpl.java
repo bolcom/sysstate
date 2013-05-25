@@ -13,7 +13,7 @@ import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
-import nl.unionsoft.sysstate.plugins.impl.resolver.JenkinsServerStateResolverPluginImpl;
+import nl.unionsoft.sysstate.plugins.impl.resolver.JenkinsServerStateResolverImpl;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.xmlbeans.XmlObject;
@@ -81,7 +81,7 @@ public class JenkinsNodesDiscoveryImpl extends XmlBeansDiscoveryImpl {
             instance.setConfiguration(PropertiesUtil.propertiesToString(instanceConfig));
             instance.setHomepageUrl(urlBuilder.toString());
             instance.setRefreshTimeout(60000);
-            instance.setPluginClass(JenkinsServerStateResolverPluginImpl.class.getName());
+            instance.setPluginClass(JenkinsServerStateResolverImpl.class.getName());
             instances.add(instance);
         }
         return instances;

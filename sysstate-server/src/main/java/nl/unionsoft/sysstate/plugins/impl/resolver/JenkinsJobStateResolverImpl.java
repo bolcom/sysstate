@@ -15,7 +15,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 @Service("jenkinsJobStateResolverPlugin")
-public class JenkinsJobStateResolverPluginImpl extends XMLBeanStateResolverImpl {
+public class JenkinsJobStateResolverImpl extends XMLBeanStateResolverImpl {
 
     private static final String API_XML = "/api/xml";
 

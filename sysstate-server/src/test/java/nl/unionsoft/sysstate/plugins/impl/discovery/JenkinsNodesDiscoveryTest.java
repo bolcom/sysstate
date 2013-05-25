@@ -1,4 +1,4 @@
-package nl.unionsoft.sysstate.plugins.impl.discovery;
+\package nl.unionsoft.sysstate.plugins.impl.discovery;
 
 import java.util.Collection;
 import java.util.Properties;
@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.oxm.xmlbeans.XmlBeansMarshaller;
 
-public class JenkinsNodesDiscoveryPluginTest {
+public class JenkinsNodesDiscoveryTest {
 
     private JenkinsNodesDiscoveryImpl plugin;
 

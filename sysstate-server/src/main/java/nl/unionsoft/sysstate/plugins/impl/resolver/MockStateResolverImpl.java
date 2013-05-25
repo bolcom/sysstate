@@ -11,11 +11,11 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Service("mockStateResolverPlugin")
-public class MockStateResolverPluginImpl implements StateResolver {
+public class MockStateResolverImpl implements StateResolver {
 
     private final Random random;
 
-    public MockStateResolverPluginImpl() {
+    public MockStateResolverImpl() {
         random = new Random();
     }
 

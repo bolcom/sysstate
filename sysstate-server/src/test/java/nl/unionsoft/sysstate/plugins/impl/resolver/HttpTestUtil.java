@@ -29,7 +29,7 @@ public class HttpTestUtil {
         properties.setProperty("url", "SomeUrl");
         instance.setConfiguration(PropertiesUtil.propertiesToString(properties));
         System.out.println("::" + PropertiesUtil.stringToProperties(instance.getConfiguration()));
-        final InputStream inputStream = JenkinsServerStateResolverPluginTest.class.getResourceAsStream(stream);
+        final InputStream inputStream = JenkinsServerStateResolverTest.class.getResourceAsStream(stream);
         new Expectations() {
 
             @Mocked

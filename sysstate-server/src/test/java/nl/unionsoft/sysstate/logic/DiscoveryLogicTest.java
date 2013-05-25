@@ -19,9 +19,10 @@ import nl.unionsoft.sysstate.domain.Environment;
 import nl.unionsoft.sysstate.logic.impl.DiscoveryLogicImpl;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
-
+@Ignore
 public class DiscoveryLogicTest {
 
     private DiscoveryLogic discoveryLogic;

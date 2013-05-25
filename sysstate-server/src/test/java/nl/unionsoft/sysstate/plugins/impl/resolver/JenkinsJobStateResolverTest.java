@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.oxm.xmlbeans.XmlBeansMarshaller;
 
-public class JenkinsJobStateResolverPluginTest {
+public class JenkinsJobStateResolverTest {
 
     private static final String STABLE = "/nl/unionsoft/sysstate/plugins/impl/resolver/jenkins-job-state-resolver-plugin-data-stable.xml";
     private static final String UNSTABLE = "/nl/unionsoft/sysstate/plugins/impl/resolver/jenkins-job-state-resolver-plugin-data-unstable.xml";
@@ -20,14 +20,14 @@ public class JenkinsJobStateResolverPluginTest {
     private static final String PENDING = "/nl/unionsoft/sysstate/plugins/impl/resolver/jenkins-job-state-resolver-plugin-data-pending.xml";
     private static final String DISABLED = "/nl/unionsoft/sysstate/plugins/impl/resolver/jenkins-job-state-resolver-plugin-data-disabled.xml";
 
-    private JenkinsJobStateResolverPluginImpl plugin;
+    private JenkinsJobStateResolverImpl plugin;
     
     @Mocked
     private DefaultHttpClient defaultHttpClient;
 
     @Before
     public void before() {
-        plugin = new JenkinsJobStateResolverPluginImpl();
+        plugin = new JenkinsJobStateResolverImpl();
         plugin.setXmlBeansMarshaller(new XmlBeansMarshaller());
         plugin.setHttpClient(defaultHttpClient);
     }
