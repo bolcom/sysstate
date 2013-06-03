@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-@Service("jenkinsServerStateResolverPlugin")
+@Service("jenkinsServerStateResolver")
 public class JenkinsServerStateResolverImpl extends XMLBeanStateResolverImpl {
 
     private static final String API_XML = "/api/xml";

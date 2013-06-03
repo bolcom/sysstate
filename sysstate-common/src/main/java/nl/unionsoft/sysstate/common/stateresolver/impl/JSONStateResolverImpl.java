@@ -11,7 +11,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.stereotype.Service;
+@Service("jsonStateResolver")
 public class JSONStateResolverImpl extends HttpStateResolverImpl {
 
     private static final Logger LOG = LoggerFactory.getLogger(JSONStateResolverImpl.class);

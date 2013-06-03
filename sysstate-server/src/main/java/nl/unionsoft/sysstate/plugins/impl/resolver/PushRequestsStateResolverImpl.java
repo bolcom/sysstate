@@ -17,7 +17,7 @@ import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
 // pushRequestsStateResolverPlugin
-@Service("pushRequestsStateResolverPlugin")
+@Service("pushRequestsStateResolver")
 public class PushRequestsStateResolverImpl implements StateResolver {
 
     @Inject

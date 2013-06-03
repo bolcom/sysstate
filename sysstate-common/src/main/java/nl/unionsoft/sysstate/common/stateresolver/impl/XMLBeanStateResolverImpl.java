@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.xmlbeans.XmlBeansMarshaller;
 import org.springframework.stereotype.Service;
 
-@Service("xmlBeanStateResolverPlugin")
+@Service("xmlBeanStateResolver")
 public abstract class XMLBeanStateResolverImpl extends HttpStateResolverImpl {
     private static final Logger LOG = LoggerFactory.getLogger(XMLBeanStateResolverImpl.class);
 

@@ -17,13 +17,14 @@ import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.stereotype.Service;
+@Service("jsoupStateResolver")
 public class JSoupStateResolverImpl extends HttpStateResolverImpl {
 
     private static final Logger LOG = LoggerFactory.getLogger(JSoupStateResolverImpl.class);
 
     @Override
-    public void handleEntity(final HttpEntity httpEntity, Properties configuration, final StateDto state) throws IOException {
+    public void handleEntity(final HttpEntity httpEntity, final Properties configuration, final StateDto state) throws IOException {
         InputStream contentStream = null;
         try {
             if (httpEntity != null) {
@@ -45,13 +46,13 @@ public class JSoupStateResolverImpl extends HttpStateResolverImpl {
         }
     }
 
-    public void handleJsoup(Document document, Properties configuration, final StateDto state) {
+    public void handleJsoup(final Document document, final Properties configuration, final StateDto state) {
 
         final String select = configuration.getProperty("select");
         handleSelect(document, select, state);
     }
 
-    public void handleSelect(Document document, String select, final StateDto state) {
+    public void handleSelect(final Document document, final String select, final StateDto state) {
         LOG.info("Select is: {}", select);
         final Elements elements = document.select(select);
         if (elements == null || elements.size() == 0) {
