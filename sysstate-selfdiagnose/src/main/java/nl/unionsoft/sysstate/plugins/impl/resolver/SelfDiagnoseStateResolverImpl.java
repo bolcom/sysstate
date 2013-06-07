@@ -19,7 +19,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-@Service("selfDiagnoseStateResolverPlugin")
+@Service("selfDiagnoseStateResolver")
 public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
 
     private static final String FORMAT_XML = "?format=xml";

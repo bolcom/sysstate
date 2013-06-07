@@ -10,7 +10,7 @@ import nl.unionsoft.sysstate.common.extending.StateResolver;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
-@Service("mockStateResolverPlugin")
+@Service("mockStateResolver")
 public class MockStateResolverImpl implements StateResolver {
 
     private final Random random;

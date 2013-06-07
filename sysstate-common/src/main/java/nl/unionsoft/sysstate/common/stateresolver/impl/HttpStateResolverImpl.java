@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-@Service("httpStateResolverPlugin")
+@Service("httpStateResolver")
 public class HttpStateResolverImpl implements StateResolver {
 
     public static final String URL = "url";
