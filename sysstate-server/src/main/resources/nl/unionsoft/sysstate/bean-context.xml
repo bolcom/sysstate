@@ -34,10 +34,8 @@
 	<bean name="criteriaListRequestWorker" class="nl.unionsoft.common.list.worker.impl.CriteriaListRequestWorkerImpl">
 		<property name="entityManager" ref="entityManager" />
 	</bean>
-	
-	<bean name="pluginLogic" class="nl.unionsoft.sysstate.logic.impl.PluginLogicImpl">
-		<property name="home" value="${SYSSTATE_HOME}"/>
-	</bean>
+
+	<bean name="pluginLogic" class="nl.unionsoft.sysstate.logic.impl.PluginLogicImpl" />
 
 
 	<context:component-scan base-package="nl.unionsoft.sysstate" />

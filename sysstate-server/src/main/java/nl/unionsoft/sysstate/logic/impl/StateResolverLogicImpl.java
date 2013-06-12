@@ -18,18 +18,11 @@ public class StateResolverLogicImpl implements StateResolverLogic {
 
     @SuppressWarnings("unchecked")
     public StateResolver getStateResolver(final String name) {
-        StateResolver result = null;
-        try {
-            Class<?> beanClass = Class.forName(name);
-            result = (StateResolver) pluginLogic.getPluginApplicationContext().getBean(beanClass);
-        } catch (ClassNotFoundException e) {
-            result = pluginLogic.getPluginApplicationContext().getBean(name, StateResolver.class);
-        }
-        return result;
+        return pluginLogic.getComponent(name);
     }
 
     public String[] getStateResolverNames() {
-        return pluginLogic.getPluginApplicationContext().getBeanNamesForType(StateResolver.class);
+        return pluginLogic.getComponentNames(StateResolver.class);
     }
 
 }

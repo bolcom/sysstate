@@ -14,3 +14,4 @@ sysstate-server\target/
 *.project
 sysstate-jenkins/.settings/org.eclipse.jdt.core.prefs
 sysstate-selfdiagnose/.settings/org.eclipse.jdt.core.prefs
+sysstate-server/plugins/
