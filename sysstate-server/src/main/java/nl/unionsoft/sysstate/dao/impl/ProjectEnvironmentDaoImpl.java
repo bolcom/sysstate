@@ -22,7 +22,7 @@ public class ProjectEnvironmentDaoImpl implements ProjectEnvironmentDao {
     @Named("entityManager")
     private EntityManager entityManager;
 
-    public void createOrUpdate(ProjectEnvironment projectEnvironment) {
+    public void createOrUpdate(final ProjectEnvironment projectEnvironment) {
         if (projectEnvironment.getId() == null) {
 
             final Long projectId = projectEnvironment.getProject().getId();
@@ -37,18 +37,18 @@ public class ProjectEnvironmentDaoImpl implements ProjectEnvironmentDao {
 
     }
 
-    public ProjectEnvironment getProjectEnvironment(Long projectId, Long environmentId) {
+    public ProjectEnvironment getProjectEnvironment(final Long projectId, final Long environmentId) {
         ProjectEnvironment result = null;
         try {
             // @formatter:off
             result =  entityManager.createQuery(
-            "FROM ProjectEnvironment pet " +
-            "WHERE pet.project.id = :projectId " +
-            "AND pet.environment.id = :environmentId", ProjectEnvironment.class)
-            .setParameter("projectId", projectId)
-            .setParameter("environmentId", environmentId)
-            .setHint("org.hibernate.cacheable", true)
-            .getSingleResult();
+                    "FROM ProjectEnvironment pet " +
+                            "WHERE pet.project.id = :projectId " +
+                            "AND pet.environment.id = :environmentId", ProjectEnvironment.class)
+                            .setParameter("projectId", projectId)
+                            .setParameter("environmentId", environmentId)
+                            .setHint("org.hibernate.cacheable", true)
+                            .getSingleResult();
             // @formatter:on
         } catch(final NoResultException nre) {
             // Nothing to see here, move along!
@@ -60,7 +60,11 @@ public class ProjectEnvironmentDaoImpl implements ProjectEnvironmentDao {
     public List<ProjectEnvironment> getProjectEnvironments() {
 
         return entityManager.createQuery("FROM ProjectEnvironment prjEnv ORDER BY prjEnv.project.name ASC, prjEnv.environment.order ASC", ProjectEnvironment.class)
-            .setHint("org.hibernate.cacheable", true).getResultList();
+                .setHint("org.hibernate.cacheable", true).getResultList();
+    }
+
+    public ProjectEnvironment getProjectEnvironment(final Long projectEnvironmentId) {
+        return entityManager.find(ProjectEnvironment.class, projectEnvironmentId);
     }
 
 }

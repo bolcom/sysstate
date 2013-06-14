@@ -11,12 +11,11 @@ import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectDto;
+import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
+import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
-import nl.unionsoft.sysstate.domain.Instance;
-import nl.unionsoft.sysstate.domain.ProjectEnvironment;
-import nl.unionsoft.sysstate.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
 import org.springframework.stereotype.Controller;
@@ -53,7 +52,7 @@ public class InstanceController {
     @RequestMapping(value = "/instance/create", method = RequestMethod.GET)
     public ModelAndView getCreate(final HttpSession session) {
         final ModelAndView modelAndView = new ModelAndView("create-update-instance-manager");
-        final Instance instance = new Instance();
+        final InstanceDto instance = new InstanceDto();
         final FilterDto filter = FilterController.getFilter(session);
         final List<Long> environments = filter.getEnvironments();
 
@@ -80,7 +79,7 @@ public class InstanceController {
         }
 
         if (projectId != null && environmentId != null) {
-            final ProjectEnvironment projectEnvironment = projectEnvironmentLogic.getProjectEnvironment(projectId, environmentId);
+            final ProjectEnvironmentDto projectEnvironment = projectEnvironmentLogic.getProjectEnvironment(projectId, environmentId);
             if (projectEnvironment != null) {
                 instance.setProjectEnvironment(projectEnvironment);
             }
@@ -111,7 +110,7 @@ public class InstanceController {
     public ModelAndView copy(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("copy-update-instance-manager");
         final InstanceDto dto = instanceLogic.getInstance(instanceId);
-        final Instance instance = new Instance();
+        final InstanceDto instance = new InstanceDto();
         instance.setConfiguration(dto.getConfiguration());
         instance.setHomepageUrl(dto.getHomepageUrl());
         instance.setName(dto.getName());
@@ -119,7 +118,7 @@ public class InstanceController {
         instance.setRefreshTimeout(dto.getRefreshTimeout());
         instance.setTags(dto.getTags());
         instance.setEnabled(dto.isEnabled());
-        final ProjectEnvironment projectEnvironment = new ProjectEnvironment();
+        final ProjectEnvironmentDto projectEnvironment = new ProjectEnvironmentDto();
         projectEnvironment.setId(dto.getProjectEnvironment().getId());
         instance.setProjectEnvironment(projectEnvironment);
         modelAndView.addObject("instance", instance);

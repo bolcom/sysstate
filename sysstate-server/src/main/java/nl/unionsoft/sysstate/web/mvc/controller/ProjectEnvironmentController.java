@@ -5,9 +5,9 @@ import javax.inject.Named;
 import javax.validation.Valid;
 
 import nl.unionsoft.sysstate.common.dto.FilterDto;
+import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
-import nl.unionsoft.sysstate.domain.ProjectEnvironment;
-import nl.unionsoft.sysstate.logic.ProjectEnvironmentLogic;
+import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -36,7 +36,7 @@ public class ProjectEnvironmentController {
     }
 
     @RequestMapping(value = "/projectEnvironment/project/{projectId}/environment/{environmentId}/update", method = RequestMethod.POST)
-    public ModelAndView handleFormUpdate(@Valid @ModelAttribute("projectEnvironment") final ProjectEnvironment projectEnvironment, final BindingResult bindingResult) {
+    public ModelAndView handleFormUpdate(@Valid @ModelAttribute("projectEnvironment") final ProjectEnvironmentDto projectEnvironment, final BindingResult bindingResult) {
         ModelAndView modelAndView = null;
         if (bindingResult.hasErrors()) {
             modelAndView = new ModelAndView("update-project-environment-manager");

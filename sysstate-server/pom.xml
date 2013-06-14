@@ -22,14 +22,15 @@
 			<artifactId>sysstate-common</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!-- Basic Plugins -->
 		<dependency>
 			<groupId>nl.unionsoft.sysstate</groupId>
-			<artifactId>sysstate-jenkins</artifactId>
+			<artifactId>sysstate-selfdiagnose</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>nl.unionsoft.sysstate</groupId>
-			<artifactId>sysstate-selfdiagnose</artifactId>
+			<artifactId>sysstate-http</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<!-- END: SysState -->

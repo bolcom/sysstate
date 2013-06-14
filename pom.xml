@@ -16,6 +16,8 @@
 		<module>sysstate-selfdiagnose</module>
 		<module>sysstate-jenkins</module>
 		<module>sysstate-http</module>
+		<module>sysstate-matrix</module>		
+		<module>sysstate-example</module>		
 	</modules>
 	<!-- START: META -->
 	<name>System Status - Parent</name> 

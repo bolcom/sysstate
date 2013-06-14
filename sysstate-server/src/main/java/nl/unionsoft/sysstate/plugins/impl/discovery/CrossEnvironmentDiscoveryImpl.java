@@ -21,9 +21,9 @@ import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.extending.Discovery;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
+import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
 import nl.unionsoft.sysstate.common.queue.ReferenceRunnable;
-import nl.unionsoft.sysstate.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.queue.CrossEnvironmentWorker;
 
 import org.apache.commons.lang.StringUtils;

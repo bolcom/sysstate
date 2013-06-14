@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<parent>
+		<groupId>nl.unionsoft.sysstate</groupId>
+		<artifactId>sysstate</artifactId>
+		<version>0.92</version>
+	</parent>
+
+	<groupId>nl.unionsoft.sysstate</groupId>
+	<artifactId>sysstate-matrix</artifactId>
+	<modelVersion>4.0.0</modelVersion>
+	<packaging>jar</packaging>
+	<name>System Matrix Discovery Plugin</name>
+
+
+	<!-- Global dependencies -->
+	<dependencies>
+		<!-- START: SysState -->
+		<dependency>
+			<groupId>nl.unionsoft.sysstate</groupId>
+			<artifactId>sysstate-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- END: SysState -->
+
+		<!-- START: Testing -->
+		<dependency>
+			<groupId>mockit</groupId>
+			<artifactId>jmockit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${springframework.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- END: Testing -->
+	</dependencies>
+	<build>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<plugin-id>${project.artifactId}</plugin-id>
+							<plugin-version>${project.version}</plugin-version>
+							<plugin-context>${project.artifactId}-bean-context.xml</plugin-context>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

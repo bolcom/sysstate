@@ -15,3 +15,5 @@ sysstate-server\target/
 sysstate-jenkins/.settings/org.eclipse.jdt.core.prefs
 sysstate-selfdiagnose/.settings/org.eclipse.jdt.core.prefs
 sysstate-server/plugins/
+sysstate-matrix/.settings/org.eclipse.jdt.core.prefs
+sysstate-example/.settings/org.eclipse.jdt.core.prefs
