@@ -5,6 +5,7 @@ import java.io.IOException;
 import mockit.Mocked;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
+import nl.unionsoft.sysstate.plugins.jenkins.JenkinsJobStateResolverImpl;
 
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.Assert;

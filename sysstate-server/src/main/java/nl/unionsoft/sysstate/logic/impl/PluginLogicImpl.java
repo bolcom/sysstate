@@ -26,9 +26,15 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
 
     private ApplicationContext applicationContext;
 
+    private final List<Plugin> plugins;
+
     private ClassPathXmlApplicationContext pluginApplicationContext;
 
     private static final Logger LOG = LoggerFactory.getLogger(PluginLogicImpl.class);
+
+    public PluginLogicImpl() {
+        plugins = new ArrayList<PluginLogicImpl.Plugin>();
+    }
 
     public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
@@ -46,13 +52,19 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
                 try {
                     manifestStream = url.openStream();
                     Manifest manifest = new Manifest(manifestStream);
-                    manifest.getAttributes("plugin-context");
+
                     final Attributes mainAttributes = manifest.getMainAttributes();
                     String pluginContext = mainAttributes.getValue("plugin-context");
+                    String pluginId = mainAttributes.getValue("plugin-id");
+                    String pluginVersion = mainAttributes.getValue("plugin-version");
                     if (StringUtils.isNotEmpty(pluginContext)) {
                         LOG.info("PluginContext: {}", pluginContext);
                         contextFiles.add("classpath:" + pluginContext);
                     }
+                    Plugin plugin = new Plugin();
+                    plugin.setId(pluginId);
+                    plugin.setVersion(pluginVersion);
+                    plugins.add(plugin);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
@@ -91,6 +103,31 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
 
     public String[] getComponentNames(final Class<?> type) {
         return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(pluginApplicationContext, type);
+    }
+
+    public List<Plugin> getPlugins() {
+        return plugins;
+    }
+
+    public class Plugin {
+        private String id;
+        private String version;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(final String id) {
+            this.id = id;
+        }
+
+        public String getVersion() {
+            return version;
+        }
+
+        public void setVersion(final String version) {
+            this.version = version;
+        }
 
     }
 

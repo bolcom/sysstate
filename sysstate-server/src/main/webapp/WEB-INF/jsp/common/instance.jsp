@@ -85,7 +85,6 @@
 			since: <joda:format value="${state.creationDate}" pattern="yyyy-MM-dd HH:mm:ss" /> <br />
 			lastUpdate: <joda:format value="${state.lastUpdate}" pattern="yyyy-MM-dd HH:mm:ss" /> <br />
 		</c:if> 
-		next: <joda:format value="${instance.nextUpdate}" pattern="yyyy-MM-dd HH:mm:ss" /> <br />
 	</td>
 	<c:if test="${param.options}">
 		<td>

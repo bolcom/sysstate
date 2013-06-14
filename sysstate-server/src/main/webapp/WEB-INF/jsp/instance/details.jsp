@@ -28,6 +28,7 @@
 		<th class="table-header-repeat line-left"><a href="">Description</a></th>
 		<th class="table-header-repeat line-left"><a href="">responseTime</a></th>
 		<th class="table-header-repeat line-left"><a href="">creationDate</a></th>
+		<th class="table-header-repeat line-left"><a href="">lastUpdate</a></th>
 		<th class="table-header-repeat line-left"><a href="">rating</a></th>
 	</tr>
 	<c:set var="state" value="${instance.lastStable}" scope="request"/>

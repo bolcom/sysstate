@@ -6,8 +6,6 @@ import javax.validation.constraints.Size;
 
 import nl.unionsoft.common.util.PropertiesUtil;
 
-import org.joda.time.DateTime;
-
 public class InstanceDto {
 
     private Long id;
@@ -30,7 +28,6 @@ public class InstanceDto {
 
     @Min(10000L)
     private int refreshTimeout;
-    private DateTime nextUpdate;
 
     private StateDto lastStable;
     private StateDto lastUnstable;
@@ -111,14 +108,6 @@ public class InstanceDto {
 
     public void setRefreshTimeout(final int refreshTimeout) {
         this.refreshTimeout = refreshTimeout;
-    }
-
-    public DateTime getNextUpdate() {
-        return nextUpdate;
-    }
-
-    public void setNextUpdate(final DateTime nextUpdate) {
-        this.nextUpdate = nextUpdate;
     }
 
     public String getTags() {

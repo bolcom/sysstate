@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Properties;
 
 import nl.unionsoft.sysstate.common.queue.ReferenceRunnable;
+import nl.unionsoft.sysstate.plugins.jenkins.JenkinsNodesDiscoveryImpl;
 
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.Before;

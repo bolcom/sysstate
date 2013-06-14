@@ -5,7 +5,6 @@
 		<groupId>nl.unionsoft.sysstate</groupId>
 		<artifactId>sysstate</artifactId>
 		<version>0.92</version>
-
 	</parent>
 
 	<groupId>nl.unionsoft.sysstate</groupId>
@@ -40,12 +39,6 @@
 			<artifactId>ehcache-core</artifactId>
 		</dependency>
 		<!-- END: Cache -->
-		<!-- START: JSoup -->
-		<dependency>
-			<groupId>org.jsoup</groupId>
-			<artifactId>jsoup</artifactId>
-		</dependency>
-		<!-- END: JSoup -->
 		<!-- START: Tiles -->
 		<dependency>
 			<groupId>org.apache.tiles</groupId>
@@ -143,16 +136,11 @@
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
 		<!-- END: Validation -->
-		<!-- START:Notification -->
-		<!-- <dependency> <groupId>org.pircbotx</groupId> <artifactId>pircbotx</artifactId> </dependency> -->
-		<!-- END:Notification -->
 		<!-- START: Apache Commons -->
 		<dependency>
 			<groupId>commons-dbcp</groupId>
 			<artifactId>commons-dbcp</artifactId>
 		</dependency>
-
-
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
@@ -168,10 +156,6 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
 		</dependency>
 		<!-- END: Apache Commons -->
 		<!-- START: Logging -->

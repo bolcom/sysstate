@@ -8,10 +8,10 @@
 	</parent>
 
 	<groupId>nl.unionsoft.sysstate</groupId>
-	<artifactId>sysstate-common</artifactId>
+	<artifactId>sysstate-http</artifactId>
 	<modelVersion>4.0.0</modelVersion>
 	<packaging>jar</packaging>
-	<name>System Status - Common</name>
+	<name>System Status - Http Plugins</name>
 
 
 	<!-- Global dependencies -->
@@ -50,7 +50,13 @@
 			<artifactId>commons-converter</artifactId>
 		</dependency>
 		<!-- END: UnionSoft Commons -->
-
+		<!-- START: SysState -->
+		<dependency>
+			<groupId>nl.unionsoft.sysstate</groupId>
+			<artifactId>sysstate-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<!-- END: SysState -->
 
 
 
@@ -132,6 +138,20 @@
 	</dependencies>
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<plugin-id>${project.artifactId}</plugin-id>
+							<plugin-version>${project.version}</plugin-version>
+							<plugin-context>http-bean-context.xml</plugin-context>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

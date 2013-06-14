@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>nl.unionsoft.sysstate</groupId>
 		<artifactId>sysstate</artifactId>
-		<version>0.92</version>
+		<version>0.902</version>
 	</parent>
 
 	<groupId>nl.unionsoft.sysstate</groupId>
@@ -22,13 +22,6 @@
 			<artifactId>xmlbeans</artifactId>
 		</dependency>
 		<!-- END: XMLBeans -->
-		<!-- START: GSON -->
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-		</dependency>
-		<!-- END: GSON -->
-
 		<!-- START: JSoup -->
 		<dependency>
 			<groupId>org.jsoup</groupId>
@@ -40,20 +33,15 @@
 		<dependency>
 			<groupId>nl.unionsoft.commons</groupId>
 			<artifactId>commons-various</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>nl.unionsoft.commons</groupId>
-			<artifactId>commons-list</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>nl.unionsoft.commons</groupId>
-			<artifactId>commons-converter</artifactId>
+			<version>${unionsoft.commons.version}</version>
 		</dependency>
 		<!-- END: UnionSoft Commons -->
-
-
-
-
+		<!-- START: Plugins -->
+		<dependency>
+			<groupId>jspf</groupId>
+			<artifactId>jspf-core</artifactId>
+		</dependency>
+		<!-- END: Plugins -->
 		<!-- START: Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -132,7 +120,6 @@
 	</dependencies>
 	<build>
 		<plugins>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>

@@ -18,6 +18,9 @@
 		 	<joda:format value="${state.creationDate}" pattern="yyyy-MM-dd HH:mm:ss" /> <br />
 		</td>
 		<td>
+		 	<joda:format value="${state.lastUpdate}" pattern="yyyy-MM-dd HH:mm:ss" /> <br />
+		</td>
+		<td>
 			<jsp:include page="/WEB-INF/jsp/common/rating.jsp">
 				<jsp:param name="rating" value="${state.rating}"/>
 			</jsp:include> ${state.rating }
@@ -25,7 +28,7 @@
 	</tr>
 	<c:if test="${state.state == 'ERROR' or state.state == 'UNSTABLE'}">
 		<tr>
-			<td colspan="6">
+			<td colspan="7">
 				<pre><c:out value="${state.message}" escapeXml="true"/></pre>
 			</td>
 		</tr>

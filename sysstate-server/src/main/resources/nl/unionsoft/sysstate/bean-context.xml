@@ -37,7 +37,8 @@
 
 	<bean name="pluginLogic" class="nl.unionsoft.sysstate.logic.impl.PluginLogicImpl" />
 
-
-	<context:component-scan base-package="nl.unionsoft.sysstate" />
+	<context:component-scan base-package="nl.unionsoft.sysstate">
+		<context:exclude-filter type="regex" expression="nl.unionsoft.sysstate.plugins"/>
+	</context:component-scan>
 
 </beans>
