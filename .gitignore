@@ -17,3 +17,7 @@ sysstate-selfdiagnose/.settings/org.eclipse.jdt.core.prefs
 sysstate-server/plugins/
 sysstate-matrix/.settings/org.eclipse.jdt.core.prefs
 sysstate-example/.settings/org.eclipse.jdt.core.prefs
+sysstate-example/pom.xml.versionsBackup
+sysstate-jenkins/pom.xml.versionsBackup
+sysstate-matrix/pom.xml.versionsBackup
+sysstate-selfdiagnose/pom.xml.versionsBackup

@@ -172,7 +172,7 @@ public class InstanceController {
     }
 
     private void addCommons(final ModelAndView modelAndView) {
-        modelAndView.addObject("projectEnvironments", projectEnvironmentLogic.getProjectEnvironments());
+        modelAndView.addObject("projectEnvironments", projectEnvironmentLogic.getProjectEnvironments(true));
         modelAndView.addObject("stateResolverNames", stateResolverLogic.getStateResolverNames());
     }
 

@@ -6,7 +6,7 @@
 	<groupId>nl.unionsoft.sysstate</groupId>
 	<packaging>pom</packaging>
 	<artifactId>sysstate</artifactId>
-	<version>0.92</version>
+	<version>0.92.1</version>
 
 
 	<modules>

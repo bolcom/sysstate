@@ -117,8 +117,8 @@ public class ProjectEnvironmentLogicImpl implements ProjectEnvironmentLogic {
         return projectEnvironmentConverter.convert(projectEnvironment, false);
     }
 
-    public List<ProjectEnvironmentDto> getProjectEnvironments() {
-        return ListConverter.convert(projectEnvironmentConverter, projectEnvironmentDao.getProjectEnvironments(), false);
+    public List<ProjectEnvironmentDto> getProjectEnvironments(final boolean resolveNestedProps) {
+        return ListConverter.convert(projectEnvironmentConverter, projectEnvironmentDao.getProjectEnvironments(), resolveNestedProps);
     }
 
 }

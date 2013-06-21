@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>nl.unionsoft.sysstate</groupId>
 		<artifactId>sysstate</artifactId>
-		<version>0.92</version>
+		<version>0.92.1</version>
 	</parent>
 
 	<groupId>nl.unionsoft.sysstate</groupId>
@@ -28,6 +28,12 @@
 			<artifactId>sysstate-selfdiagnose</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>nl.unionsoft.sysstate</groupId>
+			<artifactId>sysstate-jenkins</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>nl.unionsoft.sysstate</groupId>
 			<artifactId>sysstate-http</artifactId>

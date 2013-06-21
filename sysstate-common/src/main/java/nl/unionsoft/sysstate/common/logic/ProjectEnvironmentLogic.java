@@ -11,6 +11,6 @@ public interface ProjectEnvironmentLogic {
 
     public ProjectEnvironmentDto getProjectEnvironment(Long projectId, Long environmentId);
 
-    public List<ProjectEnvironmentDto> getProjectEnvironments();
+    public List<ProjectEnvironmentDto> getProjectEnvironments(final boolean resolveNestedProps);
 
 }

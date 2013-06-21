@@ -23,8 +23,6 @@
 						<jsp:param name="label" value="Default Instance Plugin"/>
 						<jsp:param name="type" value="select"/>
 						<jsp:param name="items" value="stateResolverNames"/>
-						<jsp:param name="itemLabel" value="simpleName"/>
-						<jsp:param name="itemValue" value="name"/>
 					</jsp:include>					
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 						<jsp:param name="type" value="submit"/>
