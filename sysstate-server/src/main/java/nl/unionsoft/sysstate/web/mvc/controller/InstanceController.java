@@ -50,9 +50,18 @@ public class InstanceController {
     private ProjectLogic projectLogic;
 
     @RequestMapping(value = "/instance/create", method = RequestMethod.GET)
-    public ModelAndView getCreate(final HttpSession session) {
+    public ModelAndView getSelectCreate(final HttpSession session) {
+        final ModelAndView modelAndView = new ModelAndView("select-create-instance-manager");
+        modelAndView.addObject("stateResolverNames", stateResolverLogic.getStateResolverNames());
+        addCommons(modelAndView);
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/instance/{type}/create", method = RequestMethod.GET)
+    public ModelAndView selectType(@PathVariable("type") final String type, final HttpSession session) {
         final ModelAndView modelAndView = new ModelAndView("create-update-instance-manager");
         final InstanceDto instance = new InstanceDto();
+        instance.setPluginClass(type);
         final FilterDto filter = FilterController.getFilter(session);
         final List<Long> environments = filter.getEnvironments();
 
@@ -176,7 +185,7 @@ public class InstanceController {
         modelAndView.addObject("stateResolverNames", stateResolverLogic.getStateResolverNames());
     }
 
-    @RequestMapping(value = "/instance/create", method = RequestMethod.POST)
+    @RequestMapping(value = "/instance/{type}/create", method = RequestMethod.POST)
     public ModelAndView handleFormCreate(@Valid @ModelAttribute("instance") final InstanceDto instance, final BindingResult bindingResult) {
 
         ModelAndView modelAndView = null;

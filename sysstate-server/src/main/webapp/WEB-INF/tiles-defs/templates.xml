@@ -66,6 +66,25 @@
 	<definition name="details-instance-clear" extends="clear">
 		<put-attribute name="contents" value="/WEB-INF/jsp/instance/details.jsp" />
 	</definition>
+
+	<definition name="select-create-instance-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/instance/select_create.jsp" />
+		<put-attribute name="page-heading" value="Select Instance to Create" />
+	</definition>
+
+
+	<definition name="create-update-instance-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/instance/create_or_update.jsp" />
+		<put-attribute name="page-heading" value="Create/Update Instance" />
+		<put-attribute name="related-activities" value="/WEB-INF/jsp/instance/related_activities.jsp" />
+	</definition>
+	
+	<definition name="copy-update-instance-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/instance/create_or_update.jsp" />
+		<put-attribute name="page-heading" value="Copy Instance" />
+		<put-attribute name="related-activities" value="/WEB-INF/jsp/instance/related_activities.jsp" />
+	</definition>	
+
 	
 	<!-- Text -->
 	<definition name="list-text-manager" extends="manager">
@@ -89,17 +108,6 @@
 		<put-attribute name="page-heading" value="Settings" />
 	</definition>
 
-	<definition name="create-update-instance-manager" extends="manager">
-		<put-attribute name="contents" value="/WEB-INF/jsp/instance/create_or_update.jsp" />
-		<put-attribute name="page-heading" value="Create/Update Instance" />
-		<put-attribute name="related-activities" value="/WEB-INF/jsp/instance/related_activities.jsp" />
-	</definition>
-	
-	<definition name="copy-update-instance-manager" extends="manager">
-		<put-attribute name="contents" value="/WEB-INF/jsp/instance/create_or_update.jsp" />
-		<put-attribute name="page-heading" value="Copy Instance" />
-		<put-attribute name="related-activities" value="/WEB-INF/jsp/instance/related_activities.jsp" />
-	</definition>	
 	
 	<!-- Instance Multi-->
 	<definition name="multi-delete-instance-manager" extends="manager">

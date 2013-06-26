@@ -25,4 +25,9 @@ public class StateResolverLogicImpl implements StateResolverLogic {
         return pluginLogic.getComponentNames(StateResolver.class);
     }
 
+    public StateResolverMeta getStateResolverMeta(final String stateResolverName) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }
