@@ -2,6 +2,7 @@
 <%@taglib prefix="s" uri="http://www.springframework.org/tags" %>
 <%@taglib prefix="sf" uri="http://www.springframework.org/tags/form" %>
 <c:set var="type" value="${param.type}"/>
+<c:set var="disabled" value="${param.disabled == 'true'}"/>
 <c:choose>
 	<c:when test="${type == 'hidden' }">
 		<c:set var="path" value="${param.path}"/>
@@ -26,7 +27,7 @@
 					<td>
 						<c:choose>
 							<c:when test="${type == 'input' || type == 'null' || empty type}">
-								<sf:input path="${path}" cssClass="inp-form"/>
+								<sf:input path="${path}" cssClass="inp-form" disabled="${disabled}"/>
 							</c:when>
 							<c:when test="${type == 'password'}">
 								<sf:password  path="${path}" cssClass="inp-form"/>

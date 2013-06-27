@@ -100,6 +100,22 @@ public class InstanceController {
         return modelAndView;
     }
 
+    @RequestMapping(value = "/instance/{type}/create", method = RequestMethod.POST)
+    public ModelAndView handleFormCreate(@Valid @ModelAttribute("instance") final InstanceDto instance, final BindingResult bindingResult) {
+
+        ModelAndView modelAndView = null;
+        if (bindingResult.hasErrors()) {
+            modelAndView = new ModelAndView("create-update-instance-manager");
+            addCommons(modelAndView);
+        } else {
+            instance.setId(Long.valueOf(0).equals(instance.getId()) ? null : instance.getId());
+            instanceLogic.createOrUpdateInstance(instance);
+            modelAndView = new ModelAndView("redirect:/filter/index.html");
+        }
+        return modelAndView;
+    }
+
+
     @RequestMapping(value = "/instance/{instanceId}/configuration", method = RequestMethod.GET)
     public ModelAndView configuration(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("message-clear");
@@ -185,20 +201,6 @@ public class InstanceController {
         modelAndView.addObject("stateResolverNames", stateResolverLogic.getStateResolverNames());
     }
 
-    @RequestMapping(value = "/instance/{type}/create", method = RequestMethod.POST)
-    public ModelAndView handleFormCreate(@Valid @ModelAttribute("instance") final InstanceDto instance, final BindingResult bindingResult) {
-
-        ModelAndView modelAndView = null;
-        if (bindingResult.hasErrors()) {
-            modelAndView = new ModelAndView("create-update-instance-manager");
-            addCommons(modelAndView);
-        } else {
-            instance.setId(Long.valueOf(0).equals(instance.getId()) ? null : instance.getId());
-            instanceLogic.createOrUpdateInstance(instance);
-            modelAndView = new ModelAndView("redirect:/filter/index.html");
-        }
-        return modelAndView;
-    }
 
     @RequestMapping(value = "/instance/{instanceId}/update", method = RequestMethod.POST)
     public ModelAndView handleFormUpdate(@Valid @ModelAttribute("instance") final InstanceDto instance, final BindingResult bindingResult) {

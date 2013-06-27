@@ -1,9 +1,22 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="s" uri="http://www.springframework.org/tags" %>
 <%@taglib prefix="sf" uri="http://www.springframework.org/tags/form" %>
+
 <table>
 	<tr valign="top">
 		<td>
+				<!--  start step-holder -->
+				<div id="step-holder">
+					<div class="step-no">1</div>
+					<div class="step-light-left">Choose Type</div>
+					<div class="step-light-right">&nbsp;</div>
+					<div class="step-no-off">2</div>
+					<div class="step-dark-left">Edit Details</div>
+					<div class="step-dark-round">&nbsp;</div>
+					<div class="clear"></div>
+				</div>
+				<!--  end step-holder -->
+		
 			<sf:form commandName="instance" method="POST">
 				<table id="id-form">
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
@@ -44,8 +57,7 @@
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 						<jsp:param name="path" value="pluginClass"/>
 						<jsp:param name="label" value="Type"/>
-						<jsp:param name="type" value="select"/>
-						<jsp:param name="items" value="stateResolverNames"/>
+						<jsp:param name="disabled" value="true"/>
 					</jsp:include>
 					<tr>
 						<th valign="top"><c:out value="ProjectEnvironment"/>:</th>
