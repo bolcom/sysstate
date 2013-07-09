@@ -60,6 +60,7 @@
 									<jsp:param name="type" value="textarea"/>
 									<jsp:param name="cols" value="80"/>
 									<jsp:param name="rows" value="3"/>
+									<jsp:param name="value" value="${contextValues[contextItem.id]}"/>
 								</jsp:include>
 							</c:forEach>
 						</c:otherwise>

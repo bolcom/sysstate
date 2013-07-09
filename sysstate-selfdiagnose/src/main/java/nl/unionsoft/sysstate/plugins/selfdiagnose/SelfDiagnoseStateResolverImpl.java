@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
+import nl.unionsoft.sysstate.common.extending.ConfiguredBy;
 import nl.unionsoft.sysstate.plugins.http.XMLBeanStateResolverImpl;
 
 import org.apache.commons.lang.StringUtils;
@@ -20,6 +21,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 @Service("selfDiagnoseStateResolver")
+@ConfiguredBy(configurationClass = SelfDiagnoseStateResolverConfig.class)
 public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
 
     private static final String FORMAT_XML = "?format=xml";

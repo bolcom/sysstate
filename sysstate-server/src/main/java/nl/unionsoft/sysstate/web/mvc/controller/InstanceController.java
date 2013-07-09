@@ -17,13 +17,16 @@ import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
+import nl.unionsoft.sysstate.common.extending.StateResolver;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic.StateResolverMeta;
+import nl.unionsoft.sysstate.plugins.http.HttpStateResolverImpl;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -130,7 +133,9 @@ public class InstanceController {
         ModelAndView modelAndView = null;
         if (bindingResult.hasErrors()) {
             modelAndView = new ModelAndView("create-update-instance-manager");
-            modelAndView.addObject("context", getContextList(instance.getPluginClass()));
+            List<Context> contextList = getContextList(instance.getPluginClass());
+            modelAndView.addObject("context", contextList);
+            modelAndView.addObject("contextValues", resolvePropertiesForContext(contextList, httpRequest));
             addCommons(modelAndView);
         } else {
             instance.setId(Long.valueOf(0).equals(instance.getId()) ? null : instance.getId());
@@ -171,9 +176,13 @@ public class InstanceController {
         final InstanceDto dto = instanceLogic.getInstance(instanceId);
         final InstanceDto instance = new InstanceDto();
 
-        List<Context> contextList = getContextList(instance.getPluginClass());
+        List<Context> contextList = getContextList(dto.getPluginClass());
+
         if (contextList == null) {
             instance.setConfiguration(dto.getConfiguration());
+        } else {
+            addContextValuesForInstance(modelAndView, dto);
+            modelAndView.addObject("context", contextList);
         }
 
         instance.setHomepageUrl(dto.getHomepageUrl());
@@ -190,6 +199,21 @@ public class InstanceController {
         return modelAndView;
     }
 
+    private void addContextValuesForInstance(final ModelAndView modelAndView, final InstanceDto dto) {
+        Properties properties = null;
+
+        StateResolver stateResolver = stateResolverLogic.getStateResolver(dto.getPluginClass());
+        if (stateResolver instanceof HttpStateResolverImpl) {
+            // FIXME: Backwards compatibility code to handle old configurations...
+            HttpStateResolverImpl httpStateResolverImpl = (HttpStateResolverImpl) stateResolver;
+            properties = httpStateResolverImpl.getPropsFromConfiguration(dto.getConfiguration());
+        } else {
+            properties = PropertiesUtil.stringToProperties(dto.getConfiguration());
+        }
+
+        modelAndView.addObject("contextValues", properties);
+    }
+
     @RequestMapping(value = "/instance/{instanceId}/copy", method = RequestMethod.POST)
     public ModelAndView handleCopy(@Valid @ModelAttribute("instance") final InstanceDto instance, final BindingResult bindingResult,
             final HttpServletRequest httpRequest) {
@@ -201,7 +225,13 @@ public class InstanceController {
         final ModelAndView modelAndView = new ModelAndView("create-update-instance-manager");
         InstanceDto instance = instanceLogic.getInstance(instanceId);
         modelAndView.addObject("instance", instance);
-        modelAndView.addObject("context", getContextList(instance.getPluginClass()));
+
+        List<Context> contextList = getContextList(instance.getPluginClass());
+        modelAndView.addObject("context", contextList);
+        if (contextList != null) {
+            addContextValuesForInstance(modelAndView, instance);
+        }
+
         addCommons(modelAndView);
         return modelAndView;
     }
@@ -257,7 +287,8 @@ public class InstanceController {
             String id = context.getId();
             paramKeyBuilder.append(id);
             String value = httpRequest.getParameter(paramKeyBuilder.toString());
-            properties.setProperty(id, value);
+            properties.setProperty(id, StringUtils.defaultString(value, ""));
+
         }
         return properties;
     }

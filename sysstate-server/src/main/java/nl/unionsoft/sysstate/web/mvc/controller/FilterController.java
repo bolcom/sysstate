@@ -13,6 +13,7 @@ import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.dto.MessageDto;
 import nl.unionsoft.sysstate.logic.FilterLogic;
 import nl.unionsoft.sysstate.logic.MessageLogic;
+import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -32,9 +33,9 @@ public class FilterController {
     @Named("instanceLogic")
     private InstanceLogic instanceLogic;
 
-    // @Inject
-    // @Named("pluginLogic")
-    // private PluginLogic pluginLogic;
+    @Inject
+    @Named("stateResolverLogic")
+    private StateResolverLogic stateResolverLogic;
 
     @Inject
     @Named("filterLogic")
@@ -51,7 +52,7 @@ public class FilterController {
         modelAndView.addObject("listResponse", instanceLogic.getInstances(filter));
         modelAndView.addObject("filter", filter);
         modelAndView.addObject("states", StateType.values());
-        //        modelAndView.addObject("stateResolvers", pluginLogic.getPluginInstances(StateResolverPlugin.class));
+        modelAndView.addObject("stateResolvers", stateResolverLogic.getStateResolverNames());
         return modelAndView;
     }
 
@@ -70,7 +71,8 @@ public class FilterController {
     }
 
     @RequestMapping(value = "/filter/project/{projectId}/environment/{environmentId}/index", method = RequestMethod.GET)
-    public ModelAndView filterProjectEnvironment(final HttpSession session, @PathVariable("projectId") final Long projectId, @PathVariable("environmentId") final Long environmentId) {
+    public ModelAndView filterProjectEnvironment(final HttpSession session, @PathVariable("projectId") final Long projectId,
+            @PathVariable("environmentId") final Long environmentId) {
         final FilterDto filter = getFilter(session);
 
         filterProjectEnvironment(filter, projectId, environmentId);

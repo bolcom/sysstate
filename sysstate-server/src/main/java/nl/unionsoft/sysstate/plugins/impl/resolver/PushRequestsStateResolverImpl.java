@@ -9,6 +9,7 @@ import nl.unionsoft.common.util.PropertiesUtil;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
+import nl.unionsoft.sysstate.common.extending.ConfiguredBy;
 import nl.unionsoft.sysstate.common.extending.StateResolver;
 import nl.unionsoft.sysstate.logic.PushStateLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
@@ -16,8 +17,8 @@ import nl.unionsoft.sysstate.logic.StateLogic;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
-// pushRequestsStateResolverPlugin
 @Service("pushRequestsStateResolver")
+@ConfiguredBy(configurationClass = PushRequestStateResolverConfig.class)
 public class PushRequestsStateResolverImpl implements StateResolver {
 
     @Inject
@@ -30,7 +31,7 @@ public class PushRequestsStateResolverImpl implements StateResolver {
 
     public void setState(final InstanceDto instance, final StateDto state) {
         Properties properties = PropertiesUtil.stringToProperties(instance.getConfiguration());
-        Long timeout = Long.valueOf(PropertiesUtil.getProperty(properties, "timeout", Long.toString(1000 * 60 * 10)));
+        Long timeout = Long.valueOf(properties.getProperty("timeout", Long.toString(1000 * 60 * 10)));
 
         final Long instanceId = instance.getId();
         StateDto fetchedState = pushStateLogic.fetch(instanceId);

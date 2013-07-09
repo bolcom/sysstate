@@ -65,8 +65,6 @@ public class HttpStateResolverImpl implements StateResolver {
         } catch (final Exception e) {
             LOG.warn("Caught Exception while performing request: {}", e.getMessage(), e);
             handleStateForException(state, e, startTime);
-        } finally {
-
         }
     }
 
@@ -74,7 +72,7 @@ public class HttpStateResolverImpl implements StateResolver {
         return uri;
     }
 
-    private Properties getPropsFromConfiguration(final String configuration) {
+    public Properties getPropsFromConfiguration(final String configuration) {
         Properties properties = new Properties();
         if (StringUtils.isNotBlank(configuration)) {
             boolean isProperties = false;
@@ -86,7 +84,6 @@ public class HttpStateResolverImpl implements StateResolver {
                 }
             }
             if (isProperties) {
-
                 properties = PropertiesUtil.stringToProperties(configuration);
             } else {
                 properties = new Properties();

@@ -44,7 +44,7 @@
 										<sf:textarea path="${path}" cssClass="form-textarea" cols="${cols}" rows="${rows}"/>
 									</c:when>
 									<c:otherwise>
-										<textarea class="form-textarea" cols="${cols}" rows="${rows}" id="${path}"></textarea>
+										<textarea class="form-textarea" cols="${cols}" rows="${rows}" name="${path}"><c:out value="${param.value}"/></textarea>
 									</c:otherwise>
 								
 								</c:choose>

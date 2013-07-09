@@ -104,7 +104,7 @@ $(function(){
 				</tr>
 				<tr>
 					<th valign="top">Type:<br/>
-						<sf:select onchange="this.form.submit()" path="stateResolvers" cssClass="" multiple="true" items="${stateResolvers}" size="5" itemLabel="pluginClass.simpleName" itemValue="pluginClass.name" cssStyle="width:100px;"/>
+						<sf:select onchange="this.form.submit()" path="stateResolvers" cssClass="" multiple="true" items="${stateResolvers}" size="5" cssStyle="width:100px;"/>
 					</th>
 				</tr>
 				<tr>
