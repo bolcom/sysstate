@@ -10,6 +10,7 @@ import nl.unionsoft.common.util.PropertiesUtil;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
+import nl.unionsoft.sysstate.common.extending.ConfiguredBy;
 import nl.unionsoft.sysstate.common.extending.StateResolver;
 import nl.unionsoft.sysstate.common.util.StateUtil;
 
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service("httpStateResolver")
+@ConfiguredBy(configurationClass = HttpStateResolverConfig.class)
 public class HttpStateResolverImpl implements StateResolver {
 
     public static final String URL = "url";
@@ -146,4 +148,5 @@ public class HttpStateResolverImpl implements StateResolver {
         }
         return result;
     }
+
 }

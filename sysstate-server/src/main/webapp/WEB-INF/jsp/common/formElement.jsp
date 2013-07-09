@@ -3,6 +3,7 @@
 <%@taglib prefix="sf" uri="http://www.springframework.org/tags/form" %>
 <c:set var="type" value="${param.type}"/>
 <c:set var="disabled" value="${param.disabled == 'true'}"/>
+<c:set var="springForms" value="${param.springForms != 'false'}"/>
 <c:choose>
 	<c:when test="${type == 'hidden' }">
 		<c:set var="path" value="${param.path}"/>
@@ -38,7 +39,17 @@
 							<c:when test="${type == 'textarea'}">
 								<c:set var="cols" value="${param.cols}"/>
 								<c:set var="rows" value="${param.rows}"/>
-								<sf:textarea path="${path}" cssClass="form-textarea" cols="${cols}" rows="${rows}"/>
+								<c:choose>
+									<c:when test="${springForms}">
+										<sf:textarea path="${path}" cssClass="form-textarea" cols="${cols}" rows="${rows}"/>
+									</c:when>
+									<c:otherwise>
+										<textarea class="form-textarea" cols="${cols}" rows="${rows}" id="${path}"></textarea>
+									</c:otherwise>
+								
+								</c:choose>
+								
+								
 							</c:when>		
 							<c:when test="${type == 'select'}">
 								<c:set var="multi" value="${param.multi}"/>
@@ -76,7 +87,13 @@
 						</c:if>
 					</td>
 					<td>
-						<c:set var="error"><sf:errors path="${path}"/></c:set>
+						<c:choose>
+							<c:when test="${springForms}">
+								<c:set var="error"><sf:errors path="${path}"/></c:set>
+							</c:when>
+							<c:otherwise>
+							</c:otherwise>
+						</c:choose>
 						<c:if test="${not empty error }">
 							<div class="error-left"></div>
 							<div class="error-inner">${error}</div>

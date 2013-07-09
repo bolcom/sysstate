@@ -1,7 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="s" uri="http://www.springframework.org/tags" %>
 <%@taglib prefix="sf" uri="http://www.springframework.org/tags/form" %>
-
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <table>
 	<tr valign="top">
 		<td>
@@ -19,6 +19,9 @@
 		
 			<sf:form commandName="instance" method="POST">
 				<table id="id-form">
+					<tr>
+						<th colspan="3"><h3>General</h3></th>
+					</tr>
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 						<jsp:param name="path" value="id"/>
 						<jsp:param name="type" value="hidden"/>
@@ -34,13 +37,36 @@
 						<jsp:param name="cols" value="80"/>
 						<jsp:param name="rows" value="10"/>
 					</jsp:include>
-					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
-						<jsp:param name="path" value="configuration"/>
-						<jsp:param name="label" value="Configuration"/>
-						<jsp:param name="type" value="textarea"/>
-						<jsp:param name="cols" value="80"/>
-						<jsp:param name="rows" value="10"/>
-					</jsp:include>
+
+					<tr>
+						<th colspan="3"><h3>StateResolver</h3></th>
+					</tr>
+					<c:choose>
+						<c:when test="${fn:length(context) == 0}">
+							<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
+								<jsp:param name="path" value="configuration"/>
+								<jsp:param name="label" value="Configuration"/>
+								<jsp:param name="type" value="textarea"/>
+								<jsp:param name="cols" value="80"/>
+								<jsp:param name="rows" value="10"/>
+							</jsp:include>
+						</c:when>
+						<c:otherwise>
+							<c:forEach var="contextItem" items="${context}">
+								<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
+									<jsp:param name="path" value="param.${contextItem.id}"/>
+									<jsp:param name="label" value="${contextItem.title}"/>
+									<jsp:param name="springForms" value="false"/>
+									<jsp:param name="type" value="textarea"/>
+									<jsp:param name="cols" value="80"/>
+									<jsp:param name="rows" value="3"/>
+								</jsp:include>
+							</c:forEach>
+						</c:otherwise>
+					</c:choose>
+					<tr>
+						<th colspan="3"><h3>Options</h3></th>
+					</tr>
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 						<jsp:param name="path" value="enabled"/>
 						<jsp:param name="label" value="Enabled"/>
@@ -57,7 +83,7 @@
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 						<jsp:param name="path" value="pluginClass"/>
 						<jsp:param name="label" value="Type"/>
-						<jsp:param name="disabled" value="true"/>
+						<jsp:param name="type" value="hidden"/>
 					</jsp:include>
 					<tr>
 						<th valign="top"><c:out value="ProjectEnvironment"/>:</th>

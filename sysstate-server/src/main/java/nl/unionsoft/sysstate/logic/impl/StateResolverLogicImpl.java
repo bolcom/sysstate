@@ -3,6 +3,7 @@ package nl.unionsoft.sysstate.logic.impl;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import nl.unionsoft.sysstate.common.extending.ConfiguredBy;
 import nl.unionsoft.sysstate.common.extending.StateResolver;
 import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
@@ -26,8 +27,18 @@ public class StateResolverLogicImpl implements StateResolverLogic {
     }
 
     public StateResolverMeta getStateResolverMeta(final String stateResolverName) {
-        // TODO Auto-generated method stub
-        return null;
+        StateResolver stateResolver = getStateResolver(stateResolverName);
+        StateResolverMeta stateResolverMeta = null;
+        if (stateResolver != null) {
+            stateResolverMeta = new StateResolverMeta();
+            stateResolverMeta.setName(stateResolverName);
+            ConfiguredBy configuredBy = stateResolver.getClass().getAnnotation(ConfiguredBy.class);
+            if (configuredBy != null) {
+                stateResolverMeta.setConfigurationClass(configuredBy.configurationClass());
+            }
+        }
+
+        return stateResolverMeta;
     }
 
 }

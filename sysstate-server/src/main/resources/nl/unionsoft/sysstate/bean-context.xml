@@ -26,6 +26,8 @@
 		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
 	</bean>
 
+	<bean name="paramContextLogic" class="nl.unionsoft.common.param.ParamContextLogicImpl" />
+
 	<bean name="httpClient" class="nl.unionsoft.sysstate.factorybeans.HttpClientFactoryBean">
 		<constructor-arg index="0" value="${httpClient.connectionTimeoutMillis}" />
 		<constructor-arg index="1" value="${httpClient.socketTimeoutMillis}" />
@@ -38,7 +40,7 @@
 	<bean name="pluginLogic" class="nl.unionsoft.sysstate.logic.impl.PluginLogicImpl" />
 
 	<context:component-scan base-package="nl.unionsoft.sysstate">
-		<context:exclude-filter type="regex" expression="nl.unionsoft.sysstate.plugins"/>
+		<context:exclude-filter type="regex" expression="nl.unionsoft.sysstate.plugins" />
 	</context:component-scan>
 
 </beans>

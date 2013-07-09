@@ -13,12 +13,22 @@ public interface StateResolverLogic {
 
         private String name;
 
+        private Class<?> configurationClass;
+
         public String getName() {
             return name;
         }
 
         public void setName(final String name) {
             this.name = name;
+        }
+
+        public Class<?> getConfigurationClass() {
+            return configurationClass;
+        }
+
+        public void setConfigurationClass(final Class<?> configurationClass) {
+            this.configurationClass = configurationClass;
         }
 
     }

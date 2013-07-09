@@ -114,7 +114,7 @@ public class ProjectEnvironmentLogicImpl implements ProjectEnvironmentLogic {
             projectEnvironment.setProject(projectDao.getProject(projectId));
             projectEnvironment.setEnvironment(environmentDao.getEnvironment(environmentId));
         }
-        return projectEnvironmentConverter.convert(projectEnvironment, false);
+        return projectEnvironmentConverter.convert(projectEnvironment, true);
     }
 
     public List<ProjectEnvironmentDto> getProjectEnvironments(final boolean resolveNestedProps) {

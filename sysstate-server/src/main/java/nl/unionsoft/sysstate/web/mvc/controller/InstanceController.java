@@ -1,12 +1,17 @@
 package nl.unionsoft.sysstate.web.mvc.controller;
 
 import java.util.List;
+import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import nl.unionsoft.common.param.Context;
+import nl.unionsoft.common.param.ParamContextLogicImpl;
+import nl.unionsoft.common.util.PropertiesUtil;
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
@@ -17,6 +22,7 @@ import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
+import nl.unionsoft.sysstate.logic.StateResolverLogic.StateResolverMeta;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -49,6 +55,10 @@ public class InstanceController {
     @Named("projectLogic")
     private ProjectLogic projectLogic;
 
+    @Inject
+    @Named("paramContextLogic")
+    private ParamContextLogicImpl paramContextLogic;
+
     @RequestMapping(value = "/instance/create", method = RequestMethod.GET)
     public ModelAndView getSelectCreate(final HttpSession session) {
         final ModelAndView modelAndView = new ModelAndView("select-create-instance-manager");
@@ -61,6 +71,8 @@ public class InstanceController {
     public ModelAndView selectType(@PathVariable("type") final String type, final HttpSession session) {
         final ModelAndView modelAndView = new ModelAndView("create-update-instance-manager");
         final InstanceDto instance = new InstanceDto();
+        modelAndView.addObject("context", getContextList(type));
+
         instance.setPluginClass(type);
         final FilterDto filter = FilterController.getFilter(session);
         final List<Long> environments = filter.getEnvironments();
@@ -96,25 +108,47 @@ public class InstanceController {
 
         instance.setEnabled(true);
         modelAndView.addObject("instance", instance);
+
         addCommons(modelAndView);
         return modelAndView;
     }
 
+    private List<Context> getContextList(final String type) {
+        List<Context> context = null;
+        StateResolverMeta stateResolverMeta = stateResolverLogic.getStateResolverMeta(type);
+        Class<?> configurationClass = stateResolverMeta.getConfigurationClass();
+        if (configurationClass != null) {
+            context = paramContextLogic.getContext(configurationClass);
+        }
+        return context;
+    }
+
     @RequestMapping(value = "/instance/{type}/create", method = RequestMethod.POST)
-    public ModelAndView handleFormCreate(@Valid @ModelAttribute("instance") final InstanceDto instance, final BindingResult bindingResult) {
+    public ModelAndView handleFormCreate(@Valid @ModelAttribute("instance") final InstanceDto instance, final BindingResult bindingResult,
+            final HttpServletRequest httpRequest) {
 
         ModelAndView modelAndView = null;
         if (bindingResult.hasErrors()) {
             modelAndView = new ModelAndView("create-update-instance-manager");
+            modelAndView.addObject("context", getContextList(instance.getPluginClass()));
             addCommons(modelAndView);
         } else {
             instance.setId(Long.valueOf(0).equals(instance.getId()) ? null : instance.getId());
+            setOptionalContextParameters(instance, httpRequest);
             instanceLogic.createOrUpdateInstance(instance);
             modelAndView = new ModelAndView("redirect:/filter/index.html");
         }
         return modelAndView;
     }
 
+    private void setOptionalContextParameters(final InstanceDto instance, final HttpServletRequest httpRequest) {
+        StateResolverMeta stateResolverMeta = stateResolverLogic.getStateResolverMeta(instance.getPluginClass());
+        Class<?> configurationClass = stateResolverMeta.getConfigurationClass();
+        if (configurationClass != null) {
+            List<Context> context = paramContextLogic.getContext(configurationClass);
+            instance.setConfiguration(PropertiesUtil.propertiesToString(resolvePropertiesForContext(context, httpRequest)));
+        }
+    }
 
     @RequestMapping(value = "/instance/{instanceId}/configuration", method = RequestMethod.GET)
     public ModelAndView configuration(@PathVariable("instanceId") final Long instanceId) {
@@ -136,7 +170,12 @@ public class InstanceController {
         final ModelAndView modelAndView = new ModelAndView("copy-update-instance-manager");
         final InstanceDto dto = instanceLogic.getInstance(instanceId);
         final InstanceDto instance = new InstanceDto();
-        instance.setConfiguration(dto.getConfiguration());
+
+        List<Context> contextList = getContextList(instance.getPluginClass());
+        if (contextList == null) {
+            instance.setConfiguration(dto.getConfiguration());
+        }
+
         instance.setHomepageUrl(dto.getHomepageUrl());
         instance.setName(dto.getName());
         instance.setPluginClass(dto.getPluginClass());
@@ -152,14 +191,17 @@ public class InstanceController {
     }
 
     @RequestMapping(value = "/instance/{instanceId}/copy", method = RequestMethod.POST)
-    public ModelAndView handleCopy(@Valid @ModelAttribute("instance") final InstanceDto instance, final BindingResult bindingResult) {
-        return handleFormCreate(instance, bindingResult);
+    public ModelAndView handleCopy(@Valid @ModelAttribute("instance") final InstanceDto instance, final BindingResult bindingResult,
+            final HttpServletRequest httpRequest) {
+        return handleFormCreate(instance, bindingResult, httpRequest);
     }
 
     @RequestMapping(value = "/instance/{instanceId}/update", method = RequestMethod.GET)
     public ModelAndView getUpdate(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("create-update-instance-manager");
-        modelAndView.addObject("instance", instanceLogic.getInstance(instanceId));
+        InstanceDto instance = instanceLogic.getInstance(instanceId);
+        modelAndView.addObject("instance", instance);
+        modelAndView.addObject("context", getContextList(instance.getPluginClass()));
         addCommons(modelAndView);
         return modelAndView;
     }
@@ -201,9 +243,22 @@ public class InstanceController {
         modelAndView.addObject("stateResolverNames", stateResolverLogic.getStateResolverNames());
     }
 
-
     @RequestMapping(value = "/instance/{instanceId}/update", method = RequestMethod.POST)
-    public ModelAndView handleFormUpdate(@Valid @ModelAttribute("instance") final InstanceDto instance, final BindingResult bindingResult) {
-        return handleFormCreate(instance, bindingResult);
+    public ModelAndView handleFormUpdate(@Valid @ModelAttribute("instance") final InstanceDto instance, final BindingResult bindingResult,
+            final HttpServletRequest httpRequest) {
+        return handleFormCreate(instance, bindingResult, httpRequest);
+    }
+
+    private Properties resolvePropertiesForContext(final List<Context> contextList, final HttpServletRequest httpRequest) {
+        Properties properties = new Properties();
+        for (Context context : contextList) {
+            StringBuilder paramKeyBuilder = new StringBuilder(30);
+            paramKeyBuilder.append("param.");
+            String id = context.getId();
+            paramKeyBuilder.append(id);
+            String value = httpRequest.getParameter(paramKeyBuilder.toString());
+            properties.setProperty(id, value);
+        }
+        return properties;
     }
 }
