@@ -56,6 +56,15 @@
 		<tomcat.url>http://localhost:8082/manager</tomcat.url>
 	</properties>
 
+	<repositories>
+		<repository>
+			<id>unionsoft-release</id>
+			<url>http://repository-unionsoft.forge.cloudbees.com/release/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
 	<dependencyManagement>
 		<dependencies>
