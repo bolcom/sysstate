@@ -103,10 +103,12 @@
 		</dependency>
 		<!-- END: Quartz -->
 		<!-- START: SelfDiagnose -->
+		<!--
 		<dependency>
 			<groupId>com.philemonworks</groupId>
 			<artifactId>selfdiagnose</artifactId>
 		</dependency>
+		-->
 
 		<!-- END: SelfDiagnose -->
 		<!-- START: Hibernate -->

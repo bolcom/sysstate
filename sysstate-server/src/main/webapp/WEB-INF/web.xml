@@ -25,6 +25,7 @@
 
 
 	<!-- SelfDiagnose - Servlet -->
+	<!--
 	<servlet>
 		<servlet-name>SelfDiagnoseServlet</servlet-name>
 		<display-name>SelfDiagnose</display-name>
@@ -32,13 +33,15 @@
 	  			com.philemonworks.selfdiagnose.SelfDiagnoseServlet
 			</servlet-class>
 	</servlet> 	  
+	-->
 
 	<!-- SelfDiagnose - Mapping -->	  	  
+	<!--
 	<servlet-mapping>
 		<servlet-name>SelfDiagnoseServlet</servlet-name>
 		<url-pattern>/selfdiagnose/*</url-pattern>
 	</servlet-mapping> 
-
+	-->
 	<!-- Mvc -->
 	<servlet>
 		<servlet-name>mvc-dispatcher</servlet-name>
