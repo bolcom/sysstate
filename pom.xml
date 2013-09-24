@@ -56,15 +56,6 @@
 		<tomcat.url>http://localhost:8082/manager</tomcat.url>
 	</properties>
 
-	<repositories>
-		<repository>
-			<id>unionsoft-release</id>
-			<url>http://192.168.128.13/artifactory/libs-release-local</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 
 	<dependencyManagement>
 		<dependencies>
