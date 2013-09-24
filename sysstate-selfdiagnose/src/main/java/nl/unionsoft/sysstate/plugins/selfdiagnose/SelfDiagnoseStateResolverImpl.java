@@ -76,7 +76,7 @@ public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
         if (allFailed) {
             state.setState(StateType.ERROR);
         } else if (versionMatchCount > 1) {
-            state.setState(StateType.ERROR);
+            state.setState(StateType.UNSTABLE);
             state.appendMessage("There were " + versionMatchCount
                     + " matches for reportmavenpomproperties. Either no pattern is applied, or the applied pattern doesn't return a unique result!");
         }
