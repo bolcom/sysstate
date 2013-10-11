@@ -10,6 +10,7 @@ public interface ProjectEnvironmentLogic {
     public Long createIfNotExists(Long projectId, Long environmentId);
 
     public ProjectEnvironmentDto getProjectEnvironment(Long projectId, Long environmentId);
+    public ProjectEnvironmentDto getProjectEnvironment(String projectName, String environmentName);
 
     public List<ProjectEnvironmentDto> getProjectEnvironments(final boolean resolveNestedProps);
 

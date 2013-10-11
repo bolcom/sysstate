@@ -1,5 +1,6 @@
 package nl.unionsoft.sysstate.logic;
 
+import nl.unionsoft.sysstate.common.extending.InstanceConfiguration;
 import nl.unionsoft.sysstate.common.extending.StateResolver;
 
 public interface StateResolverLogic {
@@ -13,7 +14,7 @@ public interface StateResolverLogic {
 
         private String name;
 
-        private Class<?> configurationClass;
+        private Class<? extends InstanceConfiguration> configurationClass;
 
         public String getName() {
             return name;
@@ -23,11 +24,11 @@ public interface StateResolverLogic {
             this.name = name;
         }
 
-        public Class<?> getConfigurationClass() {
+        public Class<? extends InstanceConfiguration> getConfigurationClass() {
             return configurationClass;
         }
 
-        public void setConfigurationClass(final Class<?> configurationClass) {
+        public void setConfigurationClass(final Class<? extends InstanceConfiguration> configurationClass) {
             this.configurationClass = configurationClass;
         }
 

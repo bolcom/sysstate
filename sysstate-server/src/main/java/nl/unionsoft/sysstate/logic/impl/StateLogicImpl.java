@@ -11,11 +11,13 @@ import nl.unionsoft.common.list.model.ListResponse;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
+import nl.unionsoft.sysstate.common.extending.InstanceConfiguration;
 import nl.unionsoft.sysstate.common.extending.StateResolver;
 import nl.unionsoft.sysstate.common.util.StateUtil;
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.dao.StateDao;
 import nl.unionsoft.sysstate.domain.State;
+import nl.unionsoft.sysstate.logic.ConfigurationLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
@@ -24,8 +26,11 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service("stateLogic")
+@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class StateLogicImpl implements StateLogic {
 
     private static final Logger LOG = LoggerFactory.getLogger(StateLogicImpl.class);
@@ -40,6 +45,10 @@ public class StateLogicImpl implements StateLogic {
     // @Inject
     // @Named("pluginLogic")
     // private PluginLogic pluginLogic;
+
+    @Inject
+    @Named("configurationLogic")
+    private ConfigurationLogic configurationLogic;
 
     @Inject
     @Named("stateResolverLogic")
@@ -58,7 +67,7 @@ public class StateLogicImpl implements StateLogic {
     }
 
     public void createOrUpdate(final StateDto dto) {
-        final InstanceDto instance = dto.getInstance();
+        final InstanceDto<?> instance = dto.getInstance();
         if (instance != null) {
             final Long instanceId = instance.getId();
             State state = stateDao.getLastStateForInstance(instance.getId());
@@ -101,9 +110,9 @@ public class StateLogicImpl implements StateLogic {
                     throw new IllegalStateException("No stateResolver found for type '" + pluginClass + "'");
                 }
                 final InstanceDto instanceDto = new InstanceDto();
-                instanceDto.setConfiguration(instance.getConfiguration());
+                instanceDto.setInstanceConfiguration(configurationLogic.getInstanceConfiguration(instance.getId()));
                 instanceDto.setId(instance.getId());
-                stateResolver.setState(instanceDto, state);
+                stateResolver.setState(instanceDto, state, null);
                 if (state.getState() == null) {
                     throw new IllegalStateException("Result has no state!");
                 }
@@ -131,18 +140,18 @@ public class StateLogicImpl implements StateLogic {
         return state;
     }
 
-    public StateDto requestState(final String pluginClass, final String configuration) {
+    public StateDto requestState(final String pluginClass, final InstanceConfiguration instanceConfiguration) {
         final StateDto state = new StateDto();
 
         final Long now = System.currentTimeMillis();
         try {
-            final StateResolver stateResolver = stateResolverLogic.getStateResolver(pluginClass);
+            final StateResolver<InstanceConfiguration> stateResolver = stateResolverLogic.getStateResolver(pluginClass);
             if (stateResolver == null) {
                 throw new IllegalStateException("No stateResolver found for type '" + pluginClass + "'");
             }
-            final InstanceDto instanceDto = new InstanceDto();
-            instanceDto.setConfiguration(configuration);
-            stateResolver.setState(instanceDto, state);
+            final InstanceDto<InstanceConfiguration> instanceDto = new InstanceDto<InstanceConfiguration>();
+            instanceDto.setInstanceConfiguration(instanceConfiguration);
+            stateResolver.setState(instanceDto, state, null);
             if (state.getState() == null) {
                 throw new IllegalStateException("Result has no state!");
             }
@@ -190,5 +199,6 @@ public class StateLogicImpl implements StateLogic {
     public StateDto getLastStateForInstance(final Long instanceId) {
         return stateConverter.convert(stateDao.getLastStateForInstance(instanceId));
     }
+
 
 }

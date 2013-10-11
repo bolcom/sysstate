@@ -39,32 +39,16 @@
 					</jsp:include>
 
 					<tr>
-						<th colspan="3"><h3>StateResolver</h3></th>
-					</tr>
-					<c:choose>
-						<c:when test="${fn:length(context) == 0}">
+					<th colspan="3"><h3>StateResolver</h3></th>
+						<c:forEach var="contextItem" items="${context}">
 							<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
-								<jsp:param name="path" value="configuration"/>
-								<jsp:param name="label" value="Configuration"/>
+								<jsp:param name="path" value="instanceConfiguration.${contextItem.id}"/>
+								<jsp:param name="label" value="${contextItem.title}"/>
 								<jsp:param name="type" value="textarea"/>
 								<jsp:param name="cols" value="80"/>
-								<jsp:param name="rows" value="10"/>
+								<jsp:param name="rows" value="3"/>
 							</jsp:include>
-						</c:when>
-						<c:otherwise>
-							<c:forEach var="contextItem" items="${context}">
-								<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
-									<jsp:param name="path" value="param.${contextItem.id}"/>
-									<jsp:param name="label" value="${contextItem.title}"/>
-									<jsp:param name="springForms" value="false"/>
-									<jsp:param name="type" value="textarea"/>
-									<jsp:param name="cols" value="80"/>
-									<jsp:param name="rows" value="3"/>
-									<jsp:param name="value" value="${contextValues[contextItem.id]}"/>
-								</jsp:include>
-							</c:forEach>
-						</c:otherwise>
-					</c:choose>
+						</c:forEach>
 					<tr>
 						<th colspan="3"><h3>Options</h3></th>
 					</tr>

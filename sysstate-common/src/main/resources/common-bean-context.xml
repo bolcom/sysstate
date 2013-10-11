@@ -8,4 +8,8 @@ xmlns:context-bol="http://www.springframework.org/schema/context"
 
 	<context-bol:component-scan base-package="nl.unionsoft.sysstate.plugins.common" />
 
+
+    <bean name="httpClientConfigurationManager" class="nl.unionsoft.sysstate.common.logic.impl.BasicConfigurationManager">
+        <property name="configurationClass" value="nl.unionsoft.sysstate.plugins.http.HttpClientConfiguration"/>
+    </bean>
 </beans>

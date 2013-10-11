@@ -1,8 +1,9 @@
 package nl.unionsoft.sysstate.plugins.impl.resolver;
 
 import nl.unionsoft.common.param.Param;
+import nl.unionsoft.sysstate.common.extending.InstanceConfiguration;
 
-public class MockStateResolverConfig {
+public class MockStateResolverConfig implements InstanceConfiguration{
     private String state;
     private String sleep;
     private String mode;

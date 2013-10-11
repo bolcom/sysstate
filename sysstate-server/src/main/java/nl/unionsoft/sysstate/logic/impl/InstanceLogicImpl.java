@@ -18,9 +18,12 @@ import nl.unionsoft.common.list.model.Restriction.Rule;
 import nl.unionsoft.common.list.worker.impl.BeanListRequestWorkerImpl;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
+import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
+import nl.unionsoft.sysstate.common.extending.InstanceConfiguration;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
+import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.dao.ListRequestDao;
 import nl.unionsoft.sysstate.dao.StateDao;
@@ -28,7 +31,9 @@ import nl.unionsoft.sysstate.domain.Instance;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
 import nl.unionsoft.sysstate.domain.State;
 import nl.unionsoft.sysstate.job.UpdateInstanceJob;
+import nl.unionsoft.sysstate.logic.ConfigurationLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
+import nl.unionsoft.sysstate.plugins.http.HttpStateResolverConfig;
 
 import org.apache.commons.lang.StringUtils;
 import org.quartz.JobDataMap;
@@ -38,19 +43,26 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service("instanceLogic")
+@DependsOn("projectEnvironmentLogic")
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-public class InstanceLogicImpl implements InstanceLogic {
+public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(InstanceLogicImpl.class);
 
     @Inject
     @Named("instanceDao")
     private InstanceDao instanceDao;
+
+    @Inject
+    @Named("configurationLogic")
+    private ConfigurationLogic configurationLogic;
 
     @Inject
     @Named("listRequestDao")
@@ -75,6 +87,10 @@ public class InstanceLogicImpl implements InstanceLogic {
     @Inject
     @Named("stateConverter")
     private Converter<StateDto, State> stateConverter;
+
+    @Inject
+    @Named("projectEnvironmentLogic")
+    private ProjectEnvironmentLogic projectEnvironmentLogic;
 
     public void queueForUpdate(final Long instanceId) {
         updateTriggerJob(instanceDao.getInstance(instanceId));
@@ -133,6 +149,7 @@ public class InstanceLogicImpl implements InstanceLogic {
     public InstanceDto getInstance(final Long instanceId, final boolean states) {
 
         final InstanceDto result = instanceConverter.convert(instanceDao.getInstance(instanceId));
+        result.setInstanceConfiguration(configurationLogic.getInstanceConfiguration(instanceId));
         if (states) {
             setLastStatesForInstance(result);
         }
@@ -155,7 +172,7 @@ public class InstanceLogicImpl implements InstanceLogic {
     public void createOrUpdateInstance(final InstanceDto dto) {
         final Instance instance = new Instance();
         instance.setId(dto.getId());
-        instance.setConfiguration(dto.getConfiguration());
+        // instance.setConfiguration(dto.getConfiguration());
         instance.setEnabled(dto.isEnabled());
         instance.setHomepageUrl(dto.getHomepageUrl());
         instance.setName(dto.getName());
@@ -166,6 +183,7 @@ public class InstanceLogicImpl implements InstanceLogic {
         instance.setRefreshTimeout(dto.getRefreshTimeout());
         instance.setTags(dto.getTags());
         instanceDao.createOrUpdate(instance);
+        configurationLogic.setInstanceConfiguration(instance.getId(), dto.getInstanceConfiguration());
         updateTriggerJob(instance);
     }
 
@@ -292,4 +310,39 @@ public class InstanceLogicImpl implements InstanceLogic {
         return getInstances(listRequest);
     }
 
+    public void afterPropertiesSet() throws Exception {
+        List<Instance> instances = instanceDao.getInstances();
+        if (instances == null || instances.isEmpty()) {
+            LOG.info("No instances found, creating some default instances...");
+            addTestInstance("google", "GOOG", "PROD", new HttpStateResolverConfig("http://www.google.nl"), "http://www.google.nl", "httpStateResolver");
+            addTestInstance("yahoo", "YAHO", "PROD", new HttpStateResolverConfig("http://www.yahoo.com"), "http://www.yahoo.com", "httpStateResolver");
+        } else {
+            for (Instance instance : instances) {
+                addTriggerJob(instance.getId());
+            }
+        }
+
+
+
+    }
+
+    private void addTestInstance(final String name, final String projectName, final String environmentName, final InstanceConfiguration instanceConfiguration,
+            final String homepageUrl, final String plugin) {
+        ProjectEnvironmentDto projectEnvironment = projectEnvironmentLogic.getProjectEnvironment(projectName, environmentName);
+        if (projectEnvironment == null) {
+            LOG.info("Skipping creating of instance ${}, no projectEnvironment could be found for projectName '{}' and environmentName '{}'", new Object[] {
+                    name, projectName, environmentName });
+        } else {
+            InstanceDto<InstanceConfiguration> instance = new InstanceDto<InstanceConfiguration>();
+            instance.setName(name);
+            instance.setProjectEnvironment(projectEnvironment);
+            instance.setEnabled(true);
+            instance.setInstanceConfiguration(instanceConfiguration);
+            instance.setHomepageUrl(homepageUrl);
+            instance.setPluginClass(plugin);
+            instance.setRefreshTimeout(10000);
+            instance.setTags("application");
+            createOrUpdateInstance(instance);
+        }
+    }
 }

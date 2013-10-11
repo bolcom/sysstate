@@ -25,9 +25,11 @@ import nl.unionsoft.sysstate.domain.ProjectEnvironment;
 import nl.unionsoft.sysstate.domain.State;
 import nl.unionsoft.sysstate.logic.FilterLogic;
 
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 @Service("projectEnvironmentLogic")
+@DependsOn({"projectLogic", "environmentLogic"})
 public class ProjectEnvironmentLogicImpl implements ProjectEnvironmentLogic {
 
     @Inject
@@ -119,6 +121,11 @@ public class ProjectEnvironmentLogicImpl implements ProjectEnvironmentLogic {
 
     public List<ProjectEnvironmentDto> getProjectEnvironments(final boolean resolveNestedProps) {
         return ListConverter.convert(projectEnvironmentConverter, projectEnvironmentDao.getProjectEnvironments(), resolveNestedProps);
+    }
+
+    public ProjectEnvironmentDto getProjectEnvironment(final String projectName, final String environmentName) {
+        ProjectEnvironment projectEnvironment = projectEnvironmentDao.getProjectEnvironment(projectName, environmentName);
+        return projectEnvironmentConverter.convert(projectEnvironment, true);
     }
 
 }

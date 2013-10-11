@@ -22,22 +22,26 @@ public class SysStateServerServiceImpl {
         if (serverService.startServer()) {
             final Scanner scanner = new Scanner(System.in);
 
-            String line;
-            boolean keepAsking = true;
-            while (keepAsking) {
-                System.out.print("(start/stop/exit/restart):");
-                line = StringUtils.lowerCase(scanner.nextLine());
-                if ("exit".equals(line)) {
-                    serverService.stopServer();
-                    keepAsking = false;
-                } else if ("start".equals(line)) {
-                    serverService.startServer();
-                } else if ("stop".equals(line)) {
-                    serverService.stopServer();
-                } else if ("restart".equals(line)) {
-                    serverService.stopServer();
-                    serverService.startServer();
+            try {
+                String line;
+                boolean keepAsking = true;
+                while (keepAsking) {
+                    System.out.print("(start/stop/exit/restart):");
+                    line = StringUtils.lowerCase(scanner.nextLine());
+                    if ("exit".equals(line)) {
+                        serverService.stopServer();
+                        keepAsking = false;
+                    } else if ("start".equals(line)) {
+                        serverService.startServer();
+                    } else if ("stop".equals(line)) {
+                        serverService.stopServer();
+                    } else if ("restart".equals(line)) {
+                        serverService.stopServer();
+                        serverService.startServer();
+                    }
                 }
+            } finally {
+                scanner.close();
             }
         }
 

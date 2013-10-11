@@ -77,11 +77,11 @@ public class JenkinsNodesDiscoveryImpl extends XmlBeansDiscoveryImpl {
             urlBuilder.append('/');
 
             instanceConfig.setProperty(URL, urlBuilder.toString());
-            instance.setConfiguration(PropertiesUtil.propertiesToString(instanceConfig));
-            instance.setHomepageUrl(urlBuilder.toString());
-            instance.setRefreshTimeout(60000);
-            instance.setPluginClass(JenkinsServerStateResolverImpl.class.getName());
-            instances.add(instance);
+            //            instance.setConfiguration(PropertiesUtil.propertiesToString(instanceConfig));
+            //            instance.setHomepageUrl(urlBuilder.toString());
+            //            instance.setRefreshTimeout(60000);
+            //            instance.setPluginClass(JenkinsServerStateResolverImpl.class.getName());
+            //            instances.add(instance);
         }
         return instances;
 

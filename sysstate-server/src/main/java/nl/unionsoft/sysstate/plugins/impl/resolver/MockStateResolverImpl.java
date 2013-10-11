@@ -1,12 +1,11 @@
 package nl.unionsoft.sysstate.plugins.impl.resolver;
 
-import java.util.Properties;
 import java.util.Random;
 
-import nl.unionsoft.common.util.PropertiesUtil;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
+import nl.unionsoft.sysstate.common.extending.ConfigurationHolder;
 import nl.unionsoft.sysstate.common.extending.ConfiguredBy;
 import nl.unionsoft.sysstate.common.extending.StateResolver;
 
@@ -14,8 +13,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Service("mockStateResolver")
-@ConfiguredBy(configurationClass=MockStateResolverConfig.class)
-public class MockStateResolverImpl implements StateResolver {
+@ConfiguredBy(instanceConfig=MockStateResolverConfig.class)
+public class MockStateResolverImpl implements StateResolver<MockStateResolverConfig> {
 
     private final Random random;
 
@@ -23,11 +22,10 @@ public class MockStateResolverImpl implements StateResolver {
         random = new Random();
     }
 
-    public void setState(final InstanceDto instance, final StateDto state) {
-        Properties properties = PropertiesUtil.stringToProperties(instance.getConfiguration());
+    public void setState(final InstanceDto<MockStateResolverConfig> instance, final StateDto state,final ConfigurationHolder configurationHolder) {
+        MockStateResolverConfig mockStateResolverConfig = instance.getInstanceConfiguration();
 
-
-        String stateStr = properties.getProperty("state","stable");
+        String stateStr = StringUtils.defaultIfEmpty(mockStateResolverConfig.getState(),"stable");
         if (StringUtils.equalsIgnoreCase("RANDOM", stateStr)) {
             int pick = random.nextInt(StateType.values().length);
             state.setState(StateType.values()[pick]);
@@ -38,13 +36,13 @@ public class MockStateResolverImpl implements StateResolver {
         state.setDescription(stateStr);
         try {
 
-            Thread.sleep(Long.valueOf(properties.getProperty("sleep","0")));
+            Thread.sleep(Long.valueOf( StringUtils.defaultIfEmpty(mockStateResolverConfig.getSleep(),"0")));
         } catch (final NumberFormatException e) {
             e.printStackTrace();
         } catch (final InterruptedException e) {
             e.printStackTrace();
         }
-        if (StringUtils.equalsIgnoreCase("exception", properties.getProperty("mode",""))) {
+        if (StringUtils.equalsIgnoreCase("exception",  StringUtils.defaultIfEmpty(mockStateResolverConfig.getMode(),""))) {
             throw new IllegalStateException("Exception exception!");
         }
 

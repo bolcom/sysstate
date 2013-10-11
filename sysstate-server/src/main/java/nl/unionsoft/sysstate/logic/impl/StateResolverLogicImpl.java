@@ -34,7 +34,7 @@ public class StateResolverLogicImpl implements StateResolverLogic {
             stateResolverMeta.setName(stateResolverName);
             ConfiguredBy configuredBy = stateResolver.getClass().getAnnotation(ConfiguredBy.class);
             if (configuredBy != null) {
-                stateResolverMeta.setConfigurationClass(configuredBy.configurationClass());
+                stateResolverMeta.setConfigurationClass(configuredBy.instanceConfig());
             }
         }
 

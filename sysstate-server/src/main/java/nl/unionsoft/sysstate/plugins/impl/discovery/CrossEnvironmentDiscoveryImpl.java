@@ -17,14 +17,12 @@ import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectDto;
-import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.extending.Discovery;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
 import nl.unionsoft.sysstate.common.queue.ReferenceRunnable;
-import nl.unionsoft.sysstate.queue.CrossEnvironmentWorker;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -78,37 +76,37 @@ public class CrossEnvironmentDiscoveryImpl implements Discovery {
                     LOG.info("Generating possible instances for environment: {}", environment.getName());
                     for (InstanceDto foundInstance : foundInstances) {
                         EnvironmentDto foundEnvironment = foundInstance.getProjectEnvironment().getEnvironment();
-                        String placeHolderConfiguration = generatePlaceHolders(foundInstance.getConfiguration(), foundEnvironment);
-                        if (!StringUtils.equalsIgnoreCase(properties.getProperty("keepProtocol"), "true")) {
-                            placeHolderConfiguration = StringUtils.replace(placeHolderConfiguration, "https://", "http://");
-                        }
-
-                        LOG.info("Generated placeHolderConfiguration: \n{}", placeHolderConfiguration);
-
-                        String[] possibleNewConfigurations = generateConfigurations(placeHolderConfiguration, environment);
-                        LOG.info("Possible new configurations found: {}", possibleNewConfigurations.length);
-
-                        for (String possibleNewConfiguration : possibleNewConfigurations) {
-                            LOG.info("Creating instance for configuration: \n{}", possibleNewConfiguration);
-
-                            InstanceDto newInstance = new InstanceDto();
-                            ProjectEnvironmentDto projectEnvironment = new ProjectEnvironmentDto();
-                            projectEnvironment.setEnvironment(environment);
-                            projectEnvironment.setProject(project);
-                            newInstance.setProjectEnvironment(projectEnvironment);
-                            newInstance.setEnabled(true);
-                            newInstance.setName(foundInstance.getName());
-                            newInstance.setPluginClass(foundInstance.getPluginClass());
-                            newInstance.setTags(foundInstance.getTags());
-
-                            newInstance.setConfiguration(possibleNewConfiguration);
-                            newInstance.setRefreshTimeout(foundInstance.getRefreshTimeout());
-
-                            CrossEnvironmentWorker crossEnvironmentWorker = new CrossEnvironmentWorker();
-                            crossEnvironmentWorker.setInstance(newInstance);
-                            results.add(crossEnvironmentWorker);
-
-                        }
+                        //                        String placeHolderConfiguration = generatePlaceHolders(foundInstance.getConfiguration(), foundEnvironment);
+                        //                        if (!StringUtils.equalsIgnoreCase(properties.getProperty("keepProtocol"), "true")) {
+                        //                            placeHolderConfiguration = StringUtils.replace(placeHolderConfiguration, "https://", "http://");
+                        //                        }
+                        //
+                        //                        LOG.info("Generated placeHolderConfiguration: \n{}", placeHolderConfiguration);
+                        //
+                        //                        String[] possibleNewConfigurations = generateConfigurations(placeHolderConfiguration, environment);
+                        //                        LOG.info("Possible new configurations found: {}", possibleNewConfigurations.length);
+                        //
+                        //                        for (String possibleNewConfiguration : possibleNewConfigurations) {
+                        //                            LOG.info("Creating instance for configuration: \n{}", possibleNewConfiguration);
+                        //
+                        //                            InstanceDto newInstance = new InstanceDto();
+                        //                            ProjectEnvironmentDto projectEnvironment = new ProjectEnvironmentDto();
+                        //                            projectEnvironment.setEnvironment(environment);
+                        //                            projectEnvironment.setProject(project);
+                        //                            newInstance.setProjectEnvironment(projectEnvironment);
+                        //                            newInstance.setEnabled(true);
+                        //                            newInstance.setName(foundInstance.getName());
+                        //                            newInstance.setPluginClass(foundInstance.getPluginClass());
+                        //                            newInstance.setTags(foundInstance.getTags());
+                        //
+                        //                            newInstance.setConfiguration(possibleNewConfiguration);
+                        //                            newInstance.setRefreshTimeout(foundInstance.getRefreshTimeout());
+                        //
+                        //                            CrossEnvironmentWorker crossEnvironmentWorker = new CrossEnvironmentWorker();
+                        //                            crossEnvironmentWorker.setInstance(newInstance);
+                        //                            results.add(crossEnvironmentWorker);
+                        //
+                        //                        }
                     }
                 }
             }

@@ -4,9 +4,9 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import nl.unionsoft.common.util.PropertiesUtil;
+import nl.unionsoft.sysstate.common.extending.InstanceConfiguration;
 
-public class InstanceDto {
+public class InstanceDto<CT extends InstanceConfiguration> {
 
     private Long id;
 
@@ -14,11 +14,11 @@ public class InstanceDto {
     @Size(min = 1, max = 15)
     private String name;
 
-    private String configuration;
-
     private StateDto state;
 
     private String homepageUrl;
+
+    private  CT instanceConfiguration;
 
     @NotNull()
     @Size(min = 1)
@@ -37,14 +37,6 @@ public class InstanceDto {
 
     @NotNull()
     private ProjectEnvironmentDto projectEnvironment;
-
-    public String getConfiguration() {
-        return configuration;
-    }
-
-    public void setConfiguration(final String configuration) {
-        this.configuration = configuration;
-    }
 
     public ProjectEnvironmentDto getProjectEnvironment() {
         return projectEnvironment;
@@ -158,6 +150,14 @@ public class InstanceDto {
         this.lastDisabled = lastDisabled;
     }
 
+    public CT getInstanceConfiguration() {
+        return instanceConfiguration;
+    }
+
+    public void setInstanceConfiguration(final CT instanceConfiguration) {
+        this.instanceConfiguration = instanceConfiguration;
+    }
+
     @Override
     public String toString() {
         return "InstanceDto [id=" + id + ", name=" + name + "]";
@@ -167,7 +167,6 @@ public class InstanceDto {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((configuration == null) ? 0 : configuration.hashCode());
         result = prime * result + ((pluginClass == null) ? 0 : pluginClass.hashCode());
         return result;
     }
@@ -184,13 +183,6 @@ public class InstanceDto {
             return false;
         }
         final InstanceDto other = (InstanceDto) obj;
-        if (configuration == null) {
-            if (other.configuration != null) {
-                return false;
-            }
-        } else if (!PropertiesUtil.stringToProperties(configuration).equals(PropertiesUtil.stringToProperties(other.configuration))) {
-            return false;
-        }
         if (pluginClass == null) {
             if (other.pluginClass != null) {
                 return false;

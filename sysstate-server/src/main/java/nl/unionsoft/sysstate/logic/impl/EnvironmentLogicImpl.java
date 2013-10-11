@@ -16,14 +16,17 @@ import nl.unionsoft.sysstate.domain.Environment;
 import nl.unionsoft.sysstate.domain.Project;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service("environmentLogic")
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-public class EnvironmentLogicImpl implements EnvironmentLogic {
-
+public class EnvironmentLogicImpl implements EnvironmentLogic, InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(EnvironmentLogicImpl.class);
     @Inject
     @Named("environmentDao")
     private EnvironmentDao environmentDao;
@@ -103,6 +106,24 @@ public class EnvironmentLogicImpl implements EnvironmentLogic {
                 projectEnvironment.setEnvironment(environment);
                 projectEnvironmentDao.createOrUpdate(projectEnvironment);
             }
+        }
+
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        List<Environment> environments = environmentDao.getEnvironments();
+        if (environments == null || environments.size() == 0) {
+            // No environments defined..
+            LOG.info("No environments found, creating some default environments...");
+            EnvironmentDto prd = new EnvironmentDto();
+            prd.setName("PROD");
+            prd.setOrder(10);
+            createOrUpdate(prd);
+
+            EnvironmentDto mock = new EnvironmentDto();
+            mock.setName("MOCK");
+            mock.setOrder(0);
+            createOrUpdate(mock);
         }
 
     }

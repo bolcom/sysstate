@@ -11,20 +11,17 @@ import javax.validation.Valid;
 
 import nl.unionsoft.common.param.Context;
 import nl.unionsoft.common.param.ParamContextLogicImpl;
-import nl.unionsoft.common.util.PropertiesUtil;
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
-import nl.unionsoft.sysstate.common.extending.StateResolver;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic.StateResolverMeta;
-import nl.unionsoft.sysstate.plugins.http.HttpStateResolverImpl;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -139,27 +136,19 @@ public class InstanceController {
             addCommons(modelAndView);
         } else {
             instance.setId(Long.valueOf(0).equals(instance.getId()) ? null : instance.getId());
-            setOptionalContextParameters(instance, httpRequest);
             instanceLogic.createOrUpdateInstance(instance);
             modelAndView = new ModelAndView("redirect:/filter/index.html");
         }
         return modelAndView;
     }
 
-    private void setOptionalContextParameters(final InstanceDto instance, final HttpServletRequest httpRequest) {
-        StateResolverMeta stateResolverMeta = stateResolverLogic.getStateResolverMeta(instance.getPluginClass());
-        Class<?> configurationClass = stateResolverMeta.getConfigurationClass();
-        if (configurationClass != null) {
-            List<Context> context = paramContextLogic.getContext(configurationClass);
-            instance.setConfiguration(PropertiesUtil.propertiesToString(resolvePropertiesForContext(context, httpRequest)));
-        }
-    }
+
 
     @RequestMapping(value = "/instance/{instanceId}/configuration", method = RequestMethod.GET)
     public ModelAndView configuration(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("message-clear");
         final InstanceDto instance = instanceLogic.getInstance(instanceId);
-        modelAndView.addObject("message", instance.getConfiguration());
+        //modelAndView.addObject("message", instance.getConfiguration());
         return modelAndView;
     }
 
@@ -177,13 +166,7 @@ public class InstanceController {
         final InstanceDto instance = new InstanceDto();
 
         List<Context> contextList = getContextList(dto.getPluginClass());
-
-        if (contextList == null) {
-            instance.setConfiguration(dto.getConfiguration());
-        } else {
-            addContextValuesForInstance(modelAndView, dto);
-            modelAndView.addObject("context", contextList);
-        }
+        modelAndView.addObject("context", contextList);
 
         instance.setHomepageUrl(dto.getHomepageUrl());
         instance.setName(dto.getName());
@@ -199,20 +182,7 @@ public class InstanceController {
         return modelAndView;
     }
 
-    private void addContextValuesForInstance(final ModelAndView modelAndView, final InstanceDto dto) {
-        Properties properties = null;
 
-        StateResolver stateResolver = stateResolverLogic.getStateResolver(dto.getPluginClass());
-        if (stateResolver instanceof HttpStateResolverImpl) {
-            // FIXME: Backwards compatibility code to handle old configurations...
-            HttpStateResolverImpl httpStateResolverImpl = (HttpStateResolverImpl) stateResolver;
-            properties = httpStateResolverImpl.getPropsFromConfiguration(dto.getConfiguration());
-        } else {
-            properties = PropertiesUtil.stringToProperties(dto.getConfiguration());
-        }
-
-        modelAndView.addObject("contextValues", properties);
-    }
 
     @RequestMapping(value = "/instance/{instanceId}/copy", method = RequestMethod.POST)
     public ModelAndView handleCopy(@Valid @ModelAttribute("instance") final InstanceDto instance, final BindingResult bindingResult,
@@ -228,9 +198,6 @@ public class InstanceController {
 
         List<Context> contextList = getContextList(instance.getPluginClass());
         modelAndView.addObject("context", contextList);
-        if (contextList != null) {
-            addContextValuesForInstance(modelAndView, instance);
-        }
 
         addCommons(modelAndView);
         return modelAndView;

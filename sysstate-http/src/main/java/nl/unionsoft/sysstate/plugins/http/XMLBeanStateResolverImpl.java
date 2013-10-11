@@ -2,7 +2,6 @@ package nl.unionsoft.sysstate.plugins.http;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Properties;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -19,14 +18,14 @@ import org.springframework.oxm.xmlbeans.XmlBeansMarshaller;
 import org.springframework.stereotype.Service;
 
 @Service("xmlBeanStateResolver")
-public abstract class XMLBeanStateResolverImpl extends HttpStateResolverImpl {
+public abstract class XMLBeanStateResolverImpl<ICT extends HttpStateResolverConfig> extends HttpStateResolverImpl<HttpStateResolverConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(XMLBeanStateResolverImpl.class);
 
     @Autowired
     private XmlBeansMarshaller xmlBeansMarshaller;
 
     @Override
-    public void handleEntity(final HttpEntity httpEntity, final Properties configuration, final StateDto state) throws IOException {
+    public void handleEntity(final HttpEntity httpEntity, final HttpStateResolverConfig configuration, final StateDto state) throws IOException {
 
         InputStream contentStream = null;
         try {
@@ -34,7 +33,8 @@ public abstract class XMLBeanStateResolverImpl extends HttpStateResolverImpl {
                 contentStream = httpEntity.getContent();
                 // Unmarshal - Convert to Node
                 final XmlObject xmlObject = (XmlObject) xmlBeansMarshaller.unmarshal(new StreamSource(contentStream));
-                handleXmlObject(xmlObject, state, configuration);
+                //FIXME
+                handleXmlObject(xmlObject, state, (ICT) configuration);
             }
         } catch (final IllegalStateException e) {
             LOG.error("Caught IllegalStateException", e);
@@ -50,7 +50,7 @@ public abstract class XMLBeanStateResolverImpl extends HttpStateResolverImpl {
         }
     }
 
-    protected abstract void handleXmlObject(final XmlObject xmlObject, final StateDto state, Properties configuration);
+    protected abstract void handleXmlObject(final XmlObject xmlObject, final StateDto state, ICT configuration);
 
     public XmlBeansMarshaller getXmlBeansMarshaller() {
         return xmlBeansMarshaller;

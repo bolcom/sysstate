@@ -10,10 +10,10 @@ import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
+import nl.unionsoft.sysstate.common.logic.PropertyLogic;
 import nl.unionsoft.sysstate.domain.Template;
 import nl.unionsoft.sysstate.logic.EcoSystemLogic;
 import nl.unionsoft.sysstate.logic.FilterLogic;
-import nl.unionsoft.sysstate.logic.PropertyLogic;
 import nl.unionsoft.sysstate.logic.TemplateLogic;
 import nl.unionsoft.sysstate.logic.ViewLogic;
 

@@ -39,20 +39,6 @@
 	</bean>
 
 
-	<bean id="initializeInstanceJobsTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-		<property name="jobDetail">
-			<bean class="org.springframework.scheduling.quartz.JobDetailBean">
-				<property name="jobClass" value="nl.unionsoft.sysstate.job.InitializeInstanceJobsJob" />
-				<property name="name" value="initializeInstanceJobsJob" />
-			</bean>
-		</property>
-		<property name="startDelay" value="10000" />
-		<property name="repeatCount" value="0" />
-		<property name="repeatInterval" value="10000" /> <!-- every 10 seconds -->
-		<property name="volatility" value="false" />
-	</bean>
-
-
 	<!-- FactoryConfig -->
 	<bean name="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="applicationContextSchedulerContextKey">
@@ -62,7 +48,6 @@
 			<list>
 				<ref bean="handleStateCleanupTrigger" />
 				<ref bean="handleHttpClientCleanupTrigger" />
-				<ref bean="initializeInstanceJobsTrigger"/>
 			</list>
 		</property>
 		<!-- <property name="dataSource" ref="dataSource" /> -->

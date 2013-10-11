@@ -4,8 +4,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
-import nl.unionsoft.sysstate.common.dto.StateDto;
-import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.logic.DiscoveryLogic;
 import nl.unionsoft.sysstate.common.queue.ReferenceRunnable;
 import nl.unionsoft.sysstate.logic.StateLogic;
@@ -38,16 +36,16 @@ public class CrossEnvironmentWorker implements ReferenceRunnable {
     public void run() {
 
         String pluginClass = instance.getPluginClass();
-        StateDto state = stateLogic.requestState(pluginClass, instance.getConfiguration());
-        LOG.info("Validating configuration:\n{}", instance.getConfiguration());
-        if (StateType.STABLE.equals(state.getState()) || StateType.UNSTABLE.equals(state.getState())) {
-            LOG.info("Instance validated!");
-            // final StateResolver stateResolver = pluginLogic.getPlugin(pluginClass);
-            // instance.setHomepageUrl(stateResolver.generateHomePageUrl(instance));
-            // discoveryLogic.addDiscoveredInstance(instance);
-        } else {
-            LOG.info("Configuration invalid, got state: {}", state.getState());
-        }
+        //        StateDto state = stateLogic.requestState(pluginClass, instance.getConfiguration());
+        //        LOG.info("Validating configuration:\n{}", instance.getConfiguration());
+        //        if (StateType.STABLE.equals(state.getState()) || StateType.UNSTABLE.equals(state.getState())) {
+        //            LOG.info("Instance validated!");
+        //            // final StateResolver stateResolver = pluginLogic.getPlugin(pluginClass);
+        //            // instance.setHomepageUrl(stateResolver.generateHomePageUrl(instance));
+        //            // discoveryLogic.addDiscoveredInstance(instance);
+        //        } else {
+        //            LOG.info("Configuration invalid, got state: {}", state.getState());
+        //        }
     }
 
     public String getReference() {
@@ -70,7 +68,7 @@ public class CrossEnvironmentWorker implements ReferenceRunnable {
         descriptionBuilder.append("\nEnvironment:");
         descriptionBuilder.append(instance.getProjectEnvironment().getEnvironment().getName());
         descriptionBuilder.append("\nConfiguration:");
-        descriptionBuilder.append(instance.getConfiguration());
+        //        descriptionBuilder.append(instance.getConfiguration());
 
         return descriptionBuilder.toString();
     }

@@ -9,5 +9,7 @@ import java.lang.annotation.Target;
 @Target({ TYPE })
 @Retention(RUNTIME)
 public @interface ConfiguredBy {
-    Class<?> configurationClass();
+    Class<? extends InstanceConfiguration> instanceConfig() default InstanceConfiguration.class;
+    Class<? extends GlobalConfiguration> globalConfig() default GlobalConfiguration.class;
+
 }

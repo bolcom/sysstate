@@ -24,13 +24,14 @@ public class InstanceConverter implements Converter<InstanceDto, Instance> {
     @Named("stateConverter")
     private StateConverter stateConverter;
 
+
+
     public InstanceDto convert(final Instance instance) {
         InstanceDto result = null;
         if (instance != null) {
             result = new InstanceDto();
             result.setId(instance.getId());
             result.setName(instance.getName());
-            result.setConfiguration(instance.getConfiguration());
             result.setProjectEnvironment(projectEnvironmentConverter.convert(instance.getProjectEnvironment()));
             result.setHomepageUrl(instance.getHomepageUrl());
             result.setPluginClass(instance.getPluginClass());

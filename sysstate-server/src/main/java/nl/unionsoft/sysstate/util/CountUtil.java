@@ -9,7 +9,7 @@ public class CountUtil {
 
     }
 
-    public static final void add(CountDto count, final StateType stateType) {
+    public static final void add(final CountDto count, final StateType stateType) {
         if (stateType != null) {
             switch (stateType) {
                 case STABLE:
@@ -21,6 +21,7 @@ public class CountUtil {
                 case ERROR:
                     count.setError(count.getError() + 1);
                     break;
+                case PENDING:
                 case DISABLED:
                     count.setDisabled(count.getDisabled() + 1);
                     break;

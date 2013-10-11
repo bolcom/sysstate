@@ -16,13 +16,18 @@ import nl.unionsoft.sysstate.domain.Environment;
 import nl.unionsoft.sysstate.domain.Project;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service("projectLogic")
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-public class ProjectLogicImpl implements ProjectLogic {
+public class ProjectLogicImpl implements ProjectLogic, InitializingBean {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ProjectLogicImpl.class);
     @Inject
     @Named("projectDao")
     private ProjectDao projectDao;
@@ -72,12 +77,30 @@ public class ProjectLogicImpl implements ProjectLogic {
 
     }
 
-    public ProjectDto findProject(String name) {
+    public ProjectDto findProject(final String name) {
         return projectConverter.convert(projectDao.findProject(name));
     }
 
     public List<ProjectDto> getProjects() {
         return ListConverter.convert(projectConverter, projectDao.getProjects());
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        List<Project> projects = projectDao.getProjects();
+
+        if (projects == null || projects.size() == 0) {
+            LOG.info("No projects found, creating some default projects...");
+            //No projects defined..
+            ProjectDto google = new ProjectDto();
+            google.setName("GOOG");
+            createOrUpdateProject(google);
+
+            ProjectDto yahoo = new ProjectDto();
+            yahoo.setName("YAHO");
+            createOrUpdateProject(yahoo);
+
+        }
+
     }
 
 }

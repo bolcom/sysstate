@@ -1,13 +1,12 @@
-package nl.unionsoft.sysstate.logic;
+package nl.unionsoft.sysstate.common.logic;
 
 import java.util.List;
-
-import nl.unionsoft.sysstate.domain.Property;
+import java.util.Properties;
 
 public interface PropertyLogic {
     public void setProperty(String key, String value);
 
     public String getProperty(String key, String defaultValue);
 
-    public List<Property> getProperties();
+    public List<Properties> getProperties();
 }

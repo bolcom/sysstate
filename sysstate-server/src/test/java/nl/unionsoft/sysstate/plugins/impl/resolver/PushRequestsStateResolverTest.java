@@ -37,16 +37,18 @@ public class PushRequestsStateResolverTest {
     public void testSetState() {
         new Expectations() {
             {
-                //@formatter:off
-                pushStateLogic.fetch(1L); result = null;
-                stateLogic.getLastStateForInstance(1L); result = null;
-                //@formatter:on
+                // @formatter:off
+                pushStateLogic.fetch(1L);
+                result = null;
+                stateLogic.getLastStateForInstance(1L);
+                result = null;
+                // @formatter:on
             }
         };
         StateDto state = new StateDto();
         InstanceDto instance = new InstanceDto();
         instance.setId(1L);
-        pushRequestsStateResolverPlugin.setState(instance, state);
+        pushRequestsStateResolverPlugin.setState(instance, state, null);
         assertPending(state);
 
     }
@@ -60,15 +62,16 @@ public class PushRequestsStateResolverTest {
         fetched.setState(StateType.ERROR);
         new Expectations() {
             {
-                //@formatter:off
-                pushStateLogic.fetch(1L); result = fetched;
-                //@formatter:on
+                // @formatter:off
+                pushStateLogic.fetch(1L);
+                result = fetched;
+                // @formatter:on
             }
         };
         StateDto state = new StateDto();
         InstanceDto instance = new InstanceDto();
         instance.setId(1L);
-        pushRequestsStateResolverPlugin.setState(instance, state);
+        pushRequestsStateResolverPlugin.setState(instance, state, null);
         assertTwaalf(state);
 
     }
@@ -83,16 +86,18 @@ public class PushRequestsStateResolverTest {
         lastState.setState(StateType.ERROR);
         new Expectations() {
             {
-                //@formatter:off
-                pushStateLogic.fetch(1L); result = null;
-                stateLogic.getLastStateForInstance(1L); result = lastState;
-                //@formatter:on
+                // @formatter:off
+                pushStateLogic.fetch(1L);
+                result = null;
+                stateLogic.getLastStateForInstance(1L);
+                result = lastState;
+                // @formatter:on
             }
         };
         StateDto state = new StateDto();
         InstanceDto instance = new InstanceDto();
         instance.setId(1L);
-        pushRequestsStateResolverPlugin.setState(instance, state);
+        pushRequestsStateResolverPlugin.setState(instance, state, null);
         assertTwaalf(state);
 
     }
@@ -106,16 +111,18 @@ public class PushRequestsStateResolverTest {
         lastState.setState(StateType.ERROR);
         new Expectations() {
             {
-                //@formatter:off
-                pushStateLogic.fetch(1L); result = null;
-                stateLogic.getLastStateForInstance(1L); result = lastState;
-                //@formatter:on
+                // @formatter:off
+                pushStateLogic.fetch(1L);
+                result = null;
+                stateLogic.getLastStateForInstance(1L);
+                result = lastState;
+                // @formatter:on
             }
         };
         StateDto state = new StateDto();
         InstanceDto instance = new InstanceDto();
         instance.setId(1L);
-        pushRequestsStateResolverPlugin.setState(instance, state);
+        pushRequestsStateResolverPlugin.setState(instance, state, null);
         assertPending(state);
 
     }
@@ -130,27 +137,29 @@ public class PushRequestsStateResolverTest {
         lastState.setState(StateType.STABLE);
         new Expectations() {
             {
-                //@formatter:off
-                pushStateLogic.fetch(1L); result = null;
-                stateLogic.getLastStateForInstance(1L); result = lastState;
-                //@formatter:on
+                // @formatter:off
+                pushStateLogic.fetch(1L);
+                result = null;
+                stateLogic.getLastStateForInstance(1L);
+                result = lastState;
+                // @formatter:on
             }
         };
         StateDto state = new StateDto();
         InstanceDto instance = new InstanceDto();
         instance.setId(1L);
-        pushRequestsStateResolverPlugin.setState(instance, state);
+        pushRequestsStateResolverPlugin.setState(instance, state, null);
         assertMissing(state);
     }
 
-    private void assertPending(StateDto state) {
+    private void assertPending(final StateDto state) {
         Assert.assertEquals(StateType.PENDING, state.getState());
         Assert.assertNull(state.getDescription());
         Assert.assertEquals("", state.getMessage());
         Assert.assertEquals(0L, state.getResponseTime());
     }
 
-    private void assertMissing(StateDto state) {
+    private void assertMissing(final StateDto state) {
         Assert.assertEquals(StateType.PENDING, state.getState());
         Assert.assertEquals("Missing", state.getDescription());
         Assert.assertTrue(StringUtils.startsWith(state.getMessage(), "Instance hasn't reported in since "));
@@ -167,17 +176,20 @@ public class PushRequestsStateResolverTest {
         lastState.setState(StateType.STABLE);
         new Expectations() {
             {
-                //@formatter:off
-                pushStateLogic.fetch(1L); result = null;
-                stateLogic.getLastStateForInstance(1L); result = lastState;
-                //@formatter:on
+                // @formatter:off
+                pushStateLogic.fetch(1L);
+                result = null;
+                stateLogic.getLastStateForInstance(1L);
+                result = lastState;
+                // @formatter:on
             }
         };
         StateDto state = new StateDto();
         InstanceDto instance = new InstanceDto();
-        instance.setConfiguration("timeout=" + (1000 * 60 * 20));
+
+        instance.setInstanceConfiguration(new PushRequestStateResolverConfig(String.valueOf(1000 * 60 * 20)));
         instance.setId(1L);
-        pushRequestsStateResolverPlugin.setState(instance, state);
+        pushRequestsStateResolverPlugin.setState(instance, state, null);
         assertMissing(state);
     }
 
@@ -191,21 +203,23 @@ public class PushRequestsStateResolverTest {
         lastState.setState(StateType.ERROR);
         new Expectations() {
             {
-                //@formatter:off
-                pushStateLogic.fetch(1L); result = null;
-                stateLogic.getLastStateForInstance(1L); result = lastState;
-                //@formatter:on
+                // @formatter:off
+                pushStateLogic.fetch(1L);
+                result = null;
+                stateLogic.getLastStateForInstance(1L);
+                result = lastState;
+                // @formatter:on
             }
         };
         StateDto state = new StateDto();
         InstanceDto instance = new InstanceDto();
-        instance.setConfiguration("timeout=-1");
+        instance.setInstanceConfiguration(new PushRequestStateResolverConfig("-1"));
         instance.setId(1L);
-        pushRequestsStateResolverPlugin.setState(instance, state);
+        pushRequestsStateResolverPlugin.setState(instance, state, null);
         assertTwaalf(state);
     }
 
-    private void assertTwaalf(StateDto state) {
+    private void assertTwaalf(final StateDto state) {
         Assert.assertEquals(StateType.ERROR, state.getState());
         Assert.assertEquals("Twaalf!", state.getDescription());
         Assert.assertEquals("12!", state.getMessage());

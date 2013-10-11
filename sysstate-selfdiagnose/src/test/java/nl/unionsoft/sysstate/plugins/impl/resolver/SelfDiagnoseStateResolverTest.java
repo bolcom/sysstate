@@ -1,11 +1,11 @@
 package nl.unionsoft.sysstate.plugins.impl.resolver;
 
 import java.io.IOException;
-import java.util.Properties;
 
 import mockit.Mocked;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
+import nl.unionsoft.sysstate.plugins.selfdiagnose.SelfDiagnoseStateResolverConfig;
 import nl.unionsoft.sysstate.plugins.selfdiagnose.SelfDiagnoseStateResolverImpl;
 
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -43,9 +43,10 @@ public class SelfDiagnoseStateResolverTest {
 
     @Test
     public void testStableMulti2() throws IOException {
-        Properties properties = new Properties();
-        properties.put("pattern", ".*mehehehe.*");
-        final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, STABLE_MULTI, properties);
+        SelfDiagnoseStateResolverConfig  selfDiagnoseStateResolverConfig = new SelfDiagnoseStateResolverConfig();
+        selfDiagnoseStateResolverConfig.setPattern( ".*mehehehe.*");
+
+        final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, STABLE_MULTI, selfDiagnoseStateResolverConfig);
         System.out.println(state.getMessage());
         Assert.assertEquals(StateType.STABLE, state.getState());
         Assert.assertEquals("9.0.1.2", state.getDescription());
@@ -55,9 +56,11 @@ public class SelfDiagnoseStateResolverTest {
 
     @Test
     public void testStableMulti() throws IOException {
-        Properties properties = new Properties();
-        properties.put("pattern", ".*Maven POM properties.*");
-        final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, STABLE_MULTI, properties);
+
+        SelfDiagnoseStateResolverConfig selfDiagnoseStateResolverConfig = new SelfDiagnoseStateResolverConfig();
+        selfDiagnoseStateResolverConfig.setPattern(".*Maven POM properties.*");
+
+        final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, STABLE_MULTI, selfDiagnoseStateResolverConfig);
         Assert.assertEquals(StateType.STABLE, state.getState());
         Assert.assertEquals("5.6.7.8", state.getDescription());
         Assert.assertEquals("", state.getMessage());

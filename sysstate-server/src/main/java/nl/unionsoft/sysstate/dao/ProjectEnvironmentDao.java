@@ -12,6 +12,8 @@ public interface ProjectEnvironmentDao {
 
     ProjectEnvironment getProjectEnvironment(Long projectId, Long environmentId);
 
+    ProjectEnvironment getProjectEnvironment(String projectName, String environmentName);
+
     List<ProjectEnvironment> getProjectEnvironments();
 
 }

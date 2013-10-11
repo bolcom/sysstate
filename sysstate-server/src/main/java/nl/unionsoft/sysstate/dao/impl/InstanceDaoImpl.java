@@ -30,7 +30,6 @@ public class InstanceDaoImpl implements InstanceDao {
         } else {
             final Instance editInstance = getInstance(instance.getId());
             editInstance.setName(instance.getName());
-            editInstance.setConfiguration(instance.getConfiguration());
             editInstance.setHomepageUrl(instance.getHomepageUrl());
             editInstance.setRefreshTimeout(instance.getRefreshTimeout());
             editInstance.setPluginClass(instance.getPluginClass());
@@ -53,8 +52,7 @@ public class InstanceDaoImpl implements InstanceDao {
     }
 
     public List<Instance> getInstances() {
-        return entityManager.createQuery( //
-                "FROM Instance", Instance.class).setHint("org.hibernate.cacheable", true).getResultList();
+        return entityManager.createQuery("FROM Instance", Instance.class).setHint("org.hibernate.cacheable", true).getResultList();
     }
 
     public Instance getInstance(final Long instanceId) {
