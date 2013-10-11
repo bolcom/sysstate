@@ -19,7 +19,7 @@
 			<map>
 				<entry key="hibernate.dialect" value="${hibernate.dialect}" />
 				<entry key="hibernate.connection.charSet" value="${hibernate.connection.charSet}" />
-				<entry key="hibernate.hbm2ddl.auto" value="update" />
+				<entry key="hibernate.hbm2ddl.auto" value="${hibernate.strategy}" />
 				<entry key="hibernate.show.sql" value="true" />
 				<entry key="hibernate.cache.use_query_cache" value="true" />
 				<entry key="hibernate.cache.use_second_level_cache" value="true" />

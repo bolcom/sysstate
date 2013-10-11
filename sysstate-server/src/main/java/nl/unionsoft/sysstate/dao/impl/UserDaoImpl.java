@@ -32,16 +32,16 @@ public class UserDaoImpl implements UserDao {
     @Named("entityManager")
     private EntityManager entityManager;
 
-    public UserDto getUser(String login) {
+    public UserDto getUser(final String login) {
         User user = null;
         try {
             // @formatter:off
             user = entityManager.createQuery(
-                    "FROM User user " + 
-                    "WHERE user.login = :login", User.class)
-                    .setHint("org.hibernate.cacheable", true)
-                    .setMaxResults(1)
-                    .setParameter("login", login).getSingleResult();
+                    "FROM User user " +
+                            "WHERE user.login = :login", User.class)
+                            .setHint("org.hibernate.cacheable", true)
+                            .setMaxResults(1)
+                            .setParameter("login", login).getSingleResult();
             // @formatter:on
         } catch(final NoResultException nre) {
             // Nothing to see here!
@@ -53,7 +53,7 @@ public class UserDaoImpl implements UserDao {
         return ListConverter.convert(userConverter, entityManager.createQuery("FROM User", User.class).getResultList());
     }
 
-    public void createOrUpdate(UserDto dto) {
+    public void createOrUpdate(final UserDto dto) {
 
         final boolean persist = dto.getId() == null;
         User user = null;
@@ -88,16 +88,16 @@ public class UserDaoImpl implements UserDao {
 
     }
 
-    private String hash(String value) {
+    private String hash(final String value) {
         return DigestUtils.md5Hex(value);
 
     }
 
-    public UserDto getUser(Long userId) {
+    public UserDto getUser(final Long userId) {
         return userConverter.convert(entityManager.find(User.class, userId));
     }
 
-    public void delete(Long userId) {
+    public void delete(final Long userId) {
         entityManager.remove(entityManager.find(User.class, userId));
 
     }

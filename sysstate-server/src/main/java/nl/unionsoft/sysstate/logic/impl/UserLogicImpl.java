@@ -35,16 +35,16 @@ public class UserLogicImpl implements UserLogic, InitializingBean {
         return userDao.getUsers();
     }
 
-    public void createOrUpdate(UserDto user) {
+    public void createOrUpdate(final UserDto user) {
         userDao.createOrUpdate(user);
 
     }
 
-    public UserDto getUser(Long userId) {
+    public UserDto getUser(final Long userId) {
         return userDao.getUser(userId);
     }
 
-    public void delete(Long userId) {
+    public void delete(final Long userId) {
         final UserDto currentUser = getCurrentUser();
         if (currentUser != null) {
             if (userId.equals(currentUser.getId())) {
@@ -59,10 +59,14 @@ public class UserLogicImpl implements UserLogic, InitializingBean {
         List<UserDto> users = userDao.getUsers();
         if (users == null || users.size() == 0) {
             UserDto defaultUser = new UserDto();
+            defaultUser.setFirstName("System");
+            defaultUser.setLastName("Administrator");
             defaultUser.setLogin("admin");
             defaultUser.setPassword("password");
             defaultUser.getRoles().add("ROLE_ADMIN");
+            defaultUser.setEnabled(true);
             userDao.createOrUpdate(defaultUser);
+
         }
 
     }

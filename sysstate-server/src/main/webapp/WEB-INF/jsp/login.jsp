@@ -51,7 +51,7 @@
 				</tr>
 				<tr>
 					<th>Password</th>
-					<td><input type="password" name="j_password" value="************"  onfocus="this.value=''" class="login-inp" /></td>
+					<td><input type="password" name="j_password"  onfocus="this.value=''" class="login-inp" /></td>
 				</tr>
 				<tr>
 					<th></th>
