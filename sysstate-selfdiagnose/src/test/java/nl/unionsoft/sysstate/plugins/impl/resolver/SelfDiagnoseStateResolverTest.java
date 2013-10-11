@@ -34,7 +34,7 @@ public class SelfDiagnoseStateResolverTest {
 
     @Test
     public void testStable() throws IOException {
-        final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, STABLE);
+        final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, STABLE, new SelfDiagnoseStateResolverConfig());
         Assert.assertEquals(StateType.STABLE, state.getState());
         Assert.assertEquals("1.2.3.4", state.getDescription());
         Assert.assertEquals("", state.getMessage());
@@ -69,7 +69,7 @@ public class SelfDiagnoseStateResolverTest {
 
     @Test
     public void testUnStable() throws IOException {
-        final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, UNSTABLE);
+        final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, UNSTABLE, new SelfDiagnoseStateResolverConfig());
         Assert.assertEquals(StateType.UNSTABLE, state.getState());
         Assert.assertEquals("1.2.3.4", state.getDescription());
         Assert.assertEquals("checkspringdatasourceconnectable: failed, Datasource [AQDataSource] is found and a connection can be created.", state.getMessage());
@@ -78,7 +78,7 @@ public class SelfDiagnoseStateResolverTest {
 
     @Test
     public void testError() throws IOException {
-        final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, ERROR);
+        final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, ERROR, new SelfDiagnoseStateResolverConfig());
         Assert.assertEquals(StateType.ERROR, state.getState());
         Assert.assertEquals("1.2.3.4", state.getDescription());
         Assert.assertEquals("reportmavenpomproperties: failed, Version=1.2.3.4 build=Fri Nov 16 03:35:25 CET 2012 from [/META-INF/maven/com.bol.myapp/myapp/pom.properties]\n"
@@ -88,7 +88,7 @@ public class SelfDiagnoseStateResolverTest {
 
     @Test
     public void testNoVersion() throws IOException {
-        final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, NO_VERSION);
+        final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, NO_VERSION, new SelfDiagnoseStateResolverConfig());
         Assert.assertEquals(StateType.STABLE, state.getState());
         Assert.assertEquals("Status 200", state.getDescription());
         Assert.assertEquals("", state.getMessage());

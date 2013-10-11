@@ -47,6 +47,7 @@ public class PushRequestsStateResolverTest {
         };
         StateDto state = new StateDto();
         InstanceDto instance = new InstanceDto();
+        instance.setInstanceConfiguration(new PushRequestStateResolverConfig());
         instance.setId(1L);
         pushRequestsStateResolverPlugin.setState(instance, state, null);
         assertPending(state);
@@ -71,6 +72,7 @@ public class PushRequestsStateResolverTest {
         StateDto state = new StateDto();
         InstanceDto instance = new InstanceDto();
         instance.setId(1L);
+        instance.setInstanceConfiguration(new PushRequestStateResolverConfig());
         pushRequestsStateResolverPlugin.setState(instance, state, null);
         assertTwaalf(state);
 
@@ -97,6 +99,7 @@ public class PushRequestsStateResolverTest {
         StateDto state = new StateDto();
         InstanceDto instance = new InstanceDto();
         instance.setId(1L);
+        instance.setInstanceConfiguration(new PushRequestStateResolverConfig());
         pushRequestsStateResolverPlugin.setState(instance, state, null);
         assertTwaalf(state);
 
@@ -122,6 +125,7 @@ public class PushRequestsStateResolverTest {
         StateDto state = new StateDto();
         InstanceDto instance = new InstanceDto();
         instance.setId(1L);
+        instance.setInstanceConfiguration(new PushRequestStateResolverConfig());
         pushRequestsStateResolverPlugin.setState(instance, state, null);
         assertPending(state);
 
@@ -148,6 +152,7 @@ public class PushRequestsStateResolverTest {
         StateDto state = new StateDto();
         InstanceDto instance = new InstanceDto();
         instance.setId(1L);
+        instance.setInstanceConfiguration(new PushRequestStateResolverConfig());
         pushRequestsStateResolverPlugin.setState(instance, state, null);
         assertMissing(state);
     }
