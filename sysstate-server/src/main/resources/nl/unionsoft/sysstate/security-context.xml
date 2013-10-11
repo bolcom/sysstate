@@ -35,7 +35,7 @@ user    	//Average Joe
 		
 		<intercept-url pattern="/view/*/update*" access="ROLE_EDITOR,ROLE_ADMIN" />
 		<intercept-url pattern="/view/*/delete*" access="ROLE_EDITOR,ROLE_ADMIN" />
-		<intercept-url pattern="/view/*/create*" access="ROLE_EDITOR,ROLE_ADMIN" />
+		<intercept-url pattern="/view/create*" access="ROLE_EDITOR,ROLE_ADMIN" />
 		
 		<intercept-url pattern="/template/**" access="ROLE_ADMIN" />
 		<!-- 
@@ -44,14 +44,16 @@ user    	//Average Joe
 		<intercept-url pattern="/template/*/restore*" access="ROLE_ADMIN" />
 		 -->
 		
+		<!-- 
 		<intercept-url pattern="/discovery/**" access="ROLE_EDITOR,ROLE_ADMIN" />
+		 -->
 		<intercept-url pattern="/cache/**" access="ROLE_ADMIN" />
 		<intercept-url pattern="/property/**" access="ROLE_ADMIN" />
 		
-		<intercept-url pattern="/user/index" access="ROLE_EDITOR,ROLE_ADMIN" />
+		<intercept-url pattern="/user/*" access="ROLE_EDITOR,ROLE_ADMIN" />
 		<intercept-url pattern="/user/*/update*" access="ROLE_ADMIN" />
 		<intercept-url pattern="/user/*/delete*" access="ROLE_ADMIN" />
-		<intercept-url pattern="/user/*/create*" access="ROLE_ADMIN" />		
+		<intercept-url pattern="/user/create*" access="ROLE_ADMIN" />		
 		
 
 		<intercept-url pattern="/instancenotifier/**" access="ROLE_ADMIN" />
