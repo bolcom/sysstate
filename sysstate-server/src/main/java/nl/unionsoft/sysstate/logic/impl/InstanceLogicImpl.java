@@ -34,6 +34,7 @@ import nl.unionsoft.sysstate.job.UpdateInstanceJob;
 import nl.unionsoft.sysstate.logic.ConfigurationLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
 import nl.unionsoft.sysstate.plugins.http.HttpStateResolverConfig;
+import nl.unionsoft.sysstate.plugins.impl.resolver.MockStateResolverConfig;
 
 import org.apache.commons.lang.StringUtils;
 import org.quartz.JobDataMap;
@@ -315,7 +316,14 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         if (instances == null || instances.isEmpty()) {
             LOG.info("No instances found, creating some default instances...");
             addTestInstance("google", "GOOG", "PROD", new HttpStateResolverConfig("http://www.google.nl"), "http://www.google.nl", "httpStateResolver");
+            addTestInstance("google", "GOOG", "MOCK", new MockStateResolverConfig(), "http://www.yahoo.com", "mockStateResolver");
             addTestInstance("yahoo", "YAHO", "PROD", new HttpStateResolverConfig("http://www.yahoo.com"), "http://www.yahoo.com", "httpStateResolver");
+            addTestInstance("yahoo", "YAHO", "MOCK", new MockStateResolverConfig(), "http://www.yahoo.com", "mockStateResolver");
+            addTestInstance("bing", "BING", "PROD", new HttpStateResolverConfig("http://www.bing.com"), "http://www.bing.com", "httpStateResolver");
+            addTestInstance("bing", "BING", "MOCK", new MockStateResolverConfig(), "http://www.bing.com", "mockStateResolver");
+            addTestInstance("ilse", "ILSE", "PROD", new HttpStateResolverConfig("http://www.ilse.nl"), "http://www.ilse.nl", "httpStateResolver");
+            addTestInstance("ilse", "ILSE", "MOCK", new MockStateResolverConfig(), "http://www.ilse.nl", "mockStateResolver");
+
         } else {
             for (Instance instance : instances) {
                 addTriggerJob(instance.getId());

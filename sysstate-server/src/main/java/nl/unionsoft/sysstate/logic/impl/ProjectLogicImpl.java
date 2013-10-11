@@ -91,16 +91,21 @@ public class ProjectLogicImpl implements ProjectLogic, InitializingBean {
         if (projects == null || projects.size() == 0) {
             LOG.info("No projects found, creating some default projects...");
             //No projects defined..
-            ProjectDto google = new ProjectDto();
-            google.setName("GOOG");
-            createOrUpdateProject(google);
 
-            ProjectDto yahoo = new ProjectDto();
-            yahoo.setName("YAHO");
-            createOrUpdateProject(yahoo);
+            createProject("GOOG");
+            createProject("YAHO");
+            createProject("BING");
+            createProject("ILSE");
 
         }
 
+    }
+
+    private void createProject(final String name)
+    {
+        ProjectDto project = new ProjectDto();
+        project.setName(name);
+        createOrUpdateProject(project);
     }
 
 }

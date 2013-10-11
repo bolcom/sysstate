@@ -98,9 +98,6 @@
 	<!--<![endif]--> <!--[if lte IE 6]><table><tr><td><![endif]-->
 		<div class="select_sub show">
 			<ul class="sub">
-				<sc:authorize url="/property">
-					<li><a href="${contextPath}/property/index.html">Properties</a></li>
-				</sc:authorize>
 				<sc:authorize url="/cache">
 					<li><a href="${contextPath}/cache/index.html">Cache</a></li>
 				</sc:authorize>

@@ -25,7 +25,7 @@ public class MockStateResolverImpl implements StateResolver<MockStateResolverCon
     public void setState(final InstanceDto<MockStateResolverConfig> instance, final StateDto state,final ConfigurationHolder configurationHolder) {
         MockStateResolverConfig mockStateResolverConfig = instance.getInstanceConfiguration();
 
-        String stateStr = StringUtils.defaultIfEmpty(mockStateResolverConfig.getState(),"stable");
+        String stateStr = StringUtils.defaultIfEmpty(mockStateResolverConfig.getState(),"stable").toUpperCase();
         if (StringUtils.equalsIgnoreCase("RANDOM", stateStr)) {
             int pick = random.nextInt(StateType.values().length);
             state.setState(StateType.values()[pick]);
