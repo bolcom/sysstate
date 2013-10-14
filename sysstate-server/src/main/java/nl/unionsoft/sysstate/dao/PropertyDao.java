@@ -1,18 +1,16 @@
 package nl.unionsoft.sysstate.dao;
 
+import java.util.List;
+
+import nl.unionsoft.sysstate.domain.GroupProperty;
+
 public interface PropertyDao {
 
     public void setInstanceProperty(long instanceId, String key, String value);
 
-    //
-    // public void setProperty(String key, String value);
-    //
-    // public String getProperty(String key, String defaultValue);
-    //
-    // public long getProperty(String key, long defaultValue);
-    //
-    // public int getProperty(String key, int defaultValue);
-    //
-    // public List<Property> getProperties();
+    public void setGroupProperty(String group, String key, String value);
+
+    public List<GroupProperty> getGroupProperties(String group);
+   
 
 }

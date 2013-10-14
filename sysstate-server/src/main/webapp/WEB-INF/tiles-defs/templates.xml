@@ -181,18 +181,10 @@
 	</definition>
 
 	<!-- Properties -->
-	<definition name="delete-property-manager" extends="manager">
-		<put-attribute name="contents" value="/WEB-INF/jsp/property/delete.jsp" />
-	</definition>
 
-	<definition name="create-update-property-manager" extends="manager">
-		<put-attribute name="contents" value="/WEB-INF/jsp/property/create_or_update.jsp" />
-		<put-attribute name="page-heading" value="Property" />
-	</definition>
-
-	<definition name="list-property-manager" extends="manager">
-		<put-attribute name="contents" value="/WEB-INF/jsp/property/properties.jsp" />
-		<put-attribute name="page-heading" value="Properties" />
+	<definition name="list-configuration-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/configuration/configurations.jsp" />
+		<put-attribute name="page-heading" value="Configuration" />
 	</definition>
 
 	<!-- Templates -->

@@ -1,11 +1,14 @@
 package nl.unionsoft.sysstate.dao.impl;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
 import nl.unionsoft.sysstate.dao.PropertyDao;
+import nl.unionsoft.sysstate.domain.GroupProperty;
 import nl.unionsoft.sysstate.domain.Instance;
 import nl.unionsoft.sysstate.domain.InstanceProperty;
 
@@ -44,56 +47,39 @@ public class PropertyDaoImpl implements PropertyDao {
             entityManager.persist(result);
         }
     }
-    // public void setProperty(final String key, final String value) {
-    // Property property = entityManager.find(Property.class, key);
-    // if (property == null) {
-    // property = new Property();
-    // property.setKey(key);
-    // property.setValue(value);
-    // entityManager.persist(property);
-    // } else {
-    // if (value == null) {
-    // entityManager.remove(property);
-    // } else {
-    // property.setValue(value);
-    // entityManager.merge(property);
-    // }
-    // }
-    // }
-    //
-    // public String getProperty(final String key, final String defaultValue) {
-    // String result = null;
-    // final Property property = entityManager.find(Property.class, key);
-    // if (property != null) {
-    // result = property.getValue();
-    // }
-    // if (StringUtils.isEmpty(result)) {
-    // result = defaultValue;
-    // }
-    // LOG.debug("Property for key '{}' has value '{}'", key, result);
-    // return result;
-    // }
-    //
-    // public List<Property> getProperties() {
-    // return entityManager.createQuery("From Property", Property.class).setHint("org.hibernate.cacheable", true).getResultList();
-    // }
-    //
-    // public long getProperty(final String key, final long defaultValue) {
-    // final String value = getProperty(key, String.valueOf(defaultValue));
-    // long result = 0;
-    // if (NumberUtils.isNumber(value)) {
-    // result = NumberUtils.toLong(value);
-    // }
-    // return result;
-    // }
-    //
-    // public int getProperty(final String key, final int defaultValue) {
-    // final String value = getProperty(key, String.valueOf(defaultValue));
-    // int result = 0;
-    // if (NumberUtils.isNumber(value)) {
-    // result = NumberUtils.toInt(value);
-    // }
-    // return result;
-    // }
+
+
+    public void setGroupProperty(String group, String key, String value) {
+        try {
+            // @formatter:off
+            GroupProperty result=  entityManager.createQuery(
+                    "FROM GroupProperty " +
+                            "WHERE group = :group " +
+                            "AND key = :key", GroupProperty.class)
+                            .setParameter("group", group)
+                            .setParameter("key", key)
+                            .getSingleResult();
+            // @formatter: on
+            result.setValue(value);
+        } catch (final NoResultException nre) {
+            GroupProperty result = new GroupProperty();
+            result.setGroup(group);
+            result.setKey(key);
+            result.setValue(value);
+            entityManager.persist(result);
+        }
+
+        
+    }
+
+    public List<GroupProperty> getGroupProperties(String group) {
+        // @formatter:off
+        return  entityManager.createQuery(
+                    "FROM GroupProperty "+ 
+                    "WHERE group = :group ", GroupProperty.class)
+                    .setParameter("group", group)
+                    .getResultList();
+        // @formatter:on
+    }
 
 }

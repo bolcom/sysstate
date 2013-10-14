@@ -1,8 +1,8 @@
 package nl.unionsoft.sysstate.plugins.http;
 
-import nl.unionsoft.sysstate.common.extending.GlobalConfiguration;
+import nl.unionsoft.sysstate.common.extending.GroupConfiguration;
 
-public class HttpClientConfiguration implements GlobalConfiguration {
+public class HttpClientConfiguration implements GroupConfiguration {
 
     private String connectionTimeoutMillis;
     private String socketTimeoutMillis;

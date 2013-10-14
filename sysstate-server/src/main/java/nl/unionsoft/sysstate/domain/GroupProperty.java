@@ -5,8 +5,8 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity
-@DiscriminatorValue("GLOBAL")
-public class GlobalProperty extends Property {
+@DiscriminatorValue("GROUP")
+public class GroupProperty extends Property {
 
     @Column(name = "PROP_GROUP", nullable = true, length = 512)
     private String group;

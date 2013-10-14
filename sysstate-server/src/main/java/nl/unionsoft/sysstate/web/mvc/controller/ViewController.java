@@ -10,8 +10,9 @@ import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
-import nl.unionsoft.sysstate.common.logic.PropertyLogic;
+import nl.unionsoft.sysstate.configuration.ViewConfiguration;
 import nl.unionsoft.sysstate.domain.Template;
+import nl.unionsoft.sysstate.logic.ConfigurationLogic;
 import nl.unionsoft.sysstate.logic.EcoSystemLogic;
 import nl.unionsoft.sysstate.logic.FilterLogic;
 import nl.unionsoft.sysstate.logic.TemplateLogic;
@@ -56,19 +57,21 @@ public class ViewController {
     private EcoSystemLogic ecoSystemLogic;;
 
     @Inject
-    @Named("propertyLogic")
-    private PropertyLogic propertyLogic;
+    @Named("configurationLogic")
+    private ConfigurationLogic configurationLogic;
 
     @RequestMapping(value = "/index", method = RequestMethod.GET)
     public ModelAndView index(@RequestParam(value = "templateId", required = false) final String templateId) {
+
+        ViewConfiguration viewConfiguration = configurationLogic.getGroupConfiguration(ViewConfiguration.class);
         ModelAndView modelAndView = null;
-        final String defaultView = propertyLogic.getProperty("default-view", null);
+        final String defaultView = StringUtils.defaultIfEmpty(viewConfiguration.getDefaultView(), null);
         if (StringUtils.isNotEmpty(defaultView)) {
             modelAndView = index(Long.valueOf(defaultView));
         } else {
-            final Template template = templateLogic.getTemplate(StringUtils.defaultIfEmpty(templateId,
-                propertyLogic.getProperty(Constants.DEFAULT_TEMPLATE, Constants.DEFAULT_TEMPLATE_VALUE)));
-            if (BooleanUtils.toBoolean(propertyLogic.getProperty(Constants.MAINTENANCE_MODE, "false"))) {
+
+            Template template = getTemplate(templateId, viewConfiguration);
+            if (isMaintenanceMode(viewConfiguration)) {
                 modelAndView = new ModelAndView("maintenance-overview");
             } else {
                 modelAndView = new ModelAndView(template.getLayout());
@@ -80,13 +83,23 @@ public class ViewController {
         return modelAndView;
     }
 
+    private Template getTemplate(String templateId, ViewConfiguration viewConfiguration) {
+        String templateName = StringUtils.defaultIfEmpty(templateId, StringUtils.defaultIfEmpty(viewConfiguration.getDefaultTemplate(), Constants.DEFAULT_TEMPLATE_VALUE));
+        return templateLogic.getTemplate(templateName);
+    }
+
+    private boolean isMaintenanceMode(ViewConfiguration viewConfiguration) {
+        return BooleanUtils.toBoolean(StringUtils.defaultIfEmpty(viewConfiguration.getMaintenanceMode(), "false"));
+    }
+
     @RequestMapping(value = "/view/{viewId}/index.html", method = RequestMethod.GET)
     public ModelAndView index(@PathVariable("viewId") Long viewId) {
+        ViewConfiguration viewConfiguration = configurationLogic.getGroupConfiguration(ViewConfiguration.class);
         ModelAndView modelAndView = null;
         final ViewDto view = viewLogic.getView(viewId);
         if (view != null) {
-            final Template template = templateLogic.getTemplate(StringUtils.defaultIfEmpty(view.getTemplateId(), propertyLogic.getProperty(Constants.DEFAULT_TEMPLATE, "base")));
-            if (BooleanUtils.toBoolean(propertyLogic.getProperty(Constants.MAINTENANCE_MODE, "false"))) {
+            Template template = getTemplate(view.getTemplateId(), viewConfiguration);
+            if (isMaintenanceMode(viewConfiguration)) {
                 modelAndView = new ModelAndView("maintenance-overview");
             } else {
                 modelAndView = new ModelAndView(template.getLayout());

@@ -10,9 +10,11 @@ import javax.inject.Named;
 
 import nl.unionsoft.common.param.Context;
 import nl.unionsoft.common.param.ParamContextLogicImpl;
+import nl.unionsoft.sysstate.common.extending.GroupConfiguration;
 import nl.unionsoft.sysstate.common.extending.InstanceConfiguration;
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.dao.PropertyDao;
+import nl.unionsoft.sysstate.domain.GroupProperty;
 import nl.unionsoft.sysstate.domain.Instance;
 import nl.unionsoft.sysstate.domain.InstanceProperty;
 import nl.unionsoft.sysstate.logic.ConfigurationLogic;
@@ -99,6 +101,42 @@ public class ConfigurationLogicImpl implements ConfigurationLogic {
                 e.printStackTrace();
             }
         }
+    }
+
+    public <T extends GroupConfiguration> T getGroupConfiguration(final Class<T> groupConfigurationClass) {
+        T groupConfiguration = null;
+        try {
+            groupConfiguration = groupConfigurationClass.newInstance();
+            Map<String, Object> groupPropertyValues = new HashMap<String, Object>();
+            for (GroupProperty groupProperty : propertyDao.getGroupProperties(groupConfigurationClass.getCanonicalName())) {
+                groupPropertyValues.put(groupProperty.getKey(), groupProperty.getValue());
+            }
+            paramContextLogic.setBeanValues(groupConfiguration, groupPropertyValues);
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return groupConfiguration;
+    }
+
+    public void setGroupConfiguration(GroupConfiguration groupConfiguration) {
+        Class<? extends GroupConfiguration> groupConfigurationClass = groupConfiguration.getClass();
+        List<Context> contexts = paramContextLogic.getContext(groupConfigurationClass);
+        for (Context context : contexts) {
+            String key = context.getId();
+            try {
+                String value = BeanUtils.getProperty(groupConfiguration, key);
+                propertyDao.setGroupProperty(groupConfigurationClass.getCanonicalName(), key, value);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+        }
+        
     }
 
 }

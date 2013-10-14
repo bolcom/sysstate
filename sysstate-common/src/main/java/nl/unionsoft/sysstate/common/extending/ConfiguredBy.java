@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 public @interface ConfiguredBy {
     Class<? extends InstanceConfiguration> instanceConfig() default InstanceConfiguration.class;
-    Class<? extends GlobalConfiguration> globalConfig() default GlobalConfiguration.class;
+    Class<? extends GroupConfiguration> globalConfig() default GroupConfiguration.class;
 
 }

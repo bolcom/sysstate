@@ -1,5 +1,11 @@
 <%@taglib prefix="sc" uri="http://www.springframework.org/security/tags"%>
 
+<sc:authorize url="/configuration">
+	<a href="${contextPath}/configuration/index.html" class="icon-1 info-tooltip"></a>Configuration<br/>
+	<i>Manage Global Configuration</i>
+	<div class="clear"></div>
+</sc:authorize>
+
 <sc:authorize url="/cache">
 	<a href="${contextPath}/cache/index.html" class="icon-1 info-tooltip"></a>Cache<br/>
 	<i>Show Cache Statistics and purge caches</i>
