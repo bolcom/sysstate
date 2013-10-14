@@ -1,8 +1,6 @@
 package nl.unionsoft.sysstate.web.mvc.controller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -10,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import nl.unionsoft.common.converter.BidirectionalConverter;
 import nl.unionsoft.common.param.Context;
 import nl.unionsoft.common.param.ParamContextLogicImpl;
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
@@ -24,12 +23,10 @@ import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic.StateResolverMeta;
+import nl.unionsoft.sysstate.web.mvc.form.InstanceForm;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,12 +60,9 @@ public class InstanceController {
     @Named("paramContextLogic")
     private ParamContextLogicImpl paramContextLogic;
 
-    @InitBinder
-    public void initBinder(final WebDataBinder binder, final HttpServletRequest request) {
-        binder.setIgnoreInvalidFields(true);
-
-    }
-
+    @Inject
+    @Named("instanceFormConverter")
+    private BidirectionalConverter<InstanceDto<InstanceConfiguration>, InstanceForm> instanceFormConverter;
 
     @RequestMapping(value = "/instance/create", method = RequestMethod.GET)
     public ModelAndView getSelectCreate(final HttpSession session) {
@@ -81,10 +75,9 @@ public class InstanceController {
     @RequestMapping(value = "/instance/{type}/create", method = RequestMethod.GET)
     public ModelAndView selectType(@PathVariable("type") final String type, final HttpSession session) {
         final ModelAndView modelAndView = new ModelAndView("create-update-instance-manager");
-        final InstanceDto instance = new InstanceDto();
-        modelAndView.addObject("context", getContextList(type));
-        instance.setInstanceConfiguration(constructInstanceConfiguration(type));
-        instance.setPluginClass(type);
+
+        InstanceDto<InstanceConfiguration> instance = instanceLogic.generateInstanceDto(type);
+
         final FilterDto filter = FilterController.getFilter(session);
         final List<Long> environments = filter.getEnvironments();
 
@@ -118,29 +111,24 @@ public class InstanceController {
         }
 
         instance.setEnabled(true);
-        modelAndView.addObject("instance", instance);
-
+        modelAndView.addObject("instanceForm", instanceFormConverter.convertBack(instance));
+        modelAndView.addObject("context", getContextList(type));
         addCommons(modelAndView);
         return modelAndView;
     }
 
-
-
     @RequestMapping(value = "/instance/{type}/create", method = RequestMethod.POST)
-    public ModelAndView handleFormCreate(@Valid @ModelAttribute("instance") final InstanceDto instance, final BindingResult bindingResult,
+    public ModelAndView handleFormCreate(@Valid @ModelAttribute("instanceForm") final InstanceForm instanceForm, final BindingResult bindingResult,
             final HttpServletRequest httpRequest) {
 
         ModelAndView modelAndView = null;
         if (bindingResult.hasErrors()) {
             modelAndView = new ModelAndView("create-update-instance-manager");
-            List<Context> contextList = getContextList(instance.getPluginClass());
-            modelAndView.addObject("context", contextList);
-
+            modelAndView.addObject("context", getContextList(instanceForm.getPluginClass()));
             addCommons(modelAndView);
         } else {
-            instance.setId(Long.valueOf(0).equals(instance.getId()) ? null : instance.getId());
-            instance.setInstanceConfiguration(generateInstanceConfiguration(instance, httpRequest));
-            instanceLogic.createOrUpdateInstance(instance);
+            instanceForm.setId(Long.valueOf(0).equals(instanceForm.getId()) ? null : instanceForm.getId());
+            instanceLogic.createOrUpdateInstance(instanceFormConverter.convert(instanceForm));
             modelAndView = new ModelAndView("redirect:/filter/index.html");
         }
         return modelAndView;
@@ -149,7 +137,7 @@ public class InstanceController {
     @RequestMapping(value = "/instance/{instanceId}/configuration", method = RequestMethod.GET)
     public ModelAndView configuration(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("message-clear");
-        final InstanceDto instance = instanceLogic.getInstance(instanceId);
+//        final InstanceDto instance = instanceLogic.getInstance(instanceId);
         // modelAndView.addObject("message", instance.getConfiguration());
         return modelAndView;
     }
@@ -164,41 +152,27 @@ public class InstanceController {
     @RequestMapping(value = "/instance/{instanceId}/copy", method = RequestMethod.GET)
     public ModelAndView copy(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("copy-update-instance-manager");
-        final InstanceDto dto = instanceLogic.getInstance(instanceId);
-        final InstanceDto instance = new InstanceDto();
-
-        List<Context> contextList = getContextList(dto.getPluginClass());
-        modelAndView.addObject("context", contextList);
-
-        instance.setHomepageUrl(dto.getHomepageUrl());
-        instance.setName(dto.getName());
-        instance.setPluginClass(dto.getPluginClass());
-        instance.setRefreshTimeout(dto.getRefreshTimeout());
-        instance.setTags(dto.getTags());
-        instance.setEnabled(dto.isEnabled());
-        final ProjectEnvironmentDto projectEnvironment = new ProjectEnvironmentDto();
-        projectEnvironment.setId(dto.getProjectEnvironment().getId());
-        instance.setProjectEnvironment(projectEnvironment);
-        modelAndView.addObject("instance", instance);
+        @SuppressWarnings("unchecked")
+        final InstanceDto<InstanceConfiguration> source = instanceLogic.getInstance(instanceId);
+        source.setId(null);
+        modelAndView.addObject("context", getContextList(source.getPluginClass()));
+        modelAndView.addObject("instanceForm", instanceFormConverter.convertBack(source));
         addCommons(modelAndView);
         return modelAndView;
     }
 
     @RequestMapping(value = "/instance/{instanceId}/copy", method = RequestMethod.POST)
-    public ModelAndView handleCopy(@Valid @ModelAttribute("instance") final InstanceDto instance, final BindingResult bindingResult,
+    public ModelAndView handleCopy(@Valid @ModelAttribute("instanceForm") final InstanceForm instanceForm, final BindingResult bindingResult,
             final HttpServletRequest httpRequest) {
-        return handleFormCreate(instance, bindingResult, httpRequest);
+        return handleFormCreate(instanceForm, bindingResult, httpRequest);
     }
 
     @RequestMapping(value = "/instance/{instanceId}/update", method = RequestMethod.GET)
     public ModelAndView getUpdate(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("create-update-instance-manager");
         InstanceDto instance = instanceLogic.getInstance(instanceId);
-        modelAndView.addObject("instance", instance);
-
-        List<Context> contextList = getContextList(instance.getPluginClass());
-        modelAndView.addObject("context", contextList);
-
+        modelAndView.addObject("instanceForm", instanceFormConverter.convertBack(instance));
+        modelAndView.addObject("context", getContextList(instance.getPluginClass()));
         addCommons(modelAndView);
         return modelAndView;
     }
@@ -241,60 +215,11 @@ public class InstanceController {
     }
 
     @RequestMapping(value = "/instance/{instanceId}/update", method = RequestMethod.POST)
-    public ModelAndView handleFormUpdate(@Valid @ModelAttribute("instance") final InstanceDto instance, final BindingResult bindingResult,
+    public ModelAndView handleFormUpdate(@Valid @ModelAttribute("instanceForm") final InstanceForm instanceForm, final BindingResult bindingResult,
             final HttpServletRequest httpRequest) {
-        return handleFormCreate(instance, bindingResult, httpRequest);
+        return handleFormCreate(instanceForm, bindingResult, httpRequest);
     }
-
-    /**
-     * Hack method because I can't bind the InstanceConfiguration to the binder (interface cannot be instantiated).
-     * 
-     * @param contextList
-     * @param httpRequest
-     * @return
-     */
-    private Map<String, Object> resolvePropertiesForContext(final List<Context> contextList, final HttpServletRequest httpRequest) {
-        Map<String, Object> properties = new HashMap<String, Object>();
-        for (Context context : contextList) {
-            StringBuilder paramKeyBuilder = new StringBuilder(30);
-            paramKeyBuilder.append("instanceConfiguration.");
-            String id = context.getId();
-            paramKeyBuilder.append(id);
-            String value = httpRequest.getParameter(paramKeyBuilder.toString());
-            properties.put(id, StringUtils.defaultString(value, ""));
-
-        }
-        return properties;
-    }
-
-    private InstanceConfiguration generateInstanceConfiguration(final InstanceDto instance, final HttpServletRequest httpRequest) {
-        StateResolverMeta stateResolverMeta = stateResolverLogic.getStateResolverMeta(instance.getPluginClass());
-        Class<?> configurationClass = stateResolverMeta.getConfigurationClass();
-        InstanceConfiguration instanceConfiguration = null;
-        if (configurationClass != null) {
-            List<Context> context = paramContextLogic.getContext(configurationClass);
-            instanceConfiguration = constructInstanceConfiguration(instance.getPluginClass());
-            Map<String, Object> properties = resolvePropertiesForContext(context, httpRequest);
-            paramContextLogic.setBeanValues(instanceConfiguration, properties);
-
-        }
-        return instanceConfiguration;
-    }
-
-    private InstanceConfiguration constructInstanceConfiguration(final String type) {
-        StateResolverMeta stateResolverMeta = stateResolverLogic.getStateResolverMeta(type);
-        Class<?> configurationClass = stateResolverMeta.getConfigurationClass();
-        InstanceConfiguration result = null;
-        try {
-            result = (InstanceConfiguration) configurationClass.newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
+    
     private List<Context> getContextList(final String type) {
         List<Context> context = null;
         StateResolverMeta stateResolverMeta = stateResolverLogic.getStateResolverMeta(type);
@@ -304,4 +229,5 @@ public class InstanceController {
         }
         return context;
     }
+
 }

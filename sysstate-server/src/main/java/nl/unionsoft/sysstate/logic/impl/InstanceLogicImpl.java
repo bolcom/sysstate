@@ -353,4 +353,15 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
             createOrUpdateInstance(instance);
         }
     }
+
+    public InstanceDto generateInstanceDto(String type) {
+        
+        final InstanceDto<InstanceConfiguration> instance = new InstanceDto<InstanceConfiguration>();
+        instance.setPluginClass(type);
+        
+        instance.setInstanceConfiguration(configurationLogic.generateInstanceConfigurationForType(type));
+        instance.setEnabled(true);
+        instance.setRefreshTimeout(10000);
+        return instance;
+    }
 }

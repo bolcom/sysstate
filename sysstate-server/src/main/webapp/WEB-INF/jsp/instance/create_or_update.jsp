@@ -17,7 +17,7 @@
 				</div>
 				<!--  end step-holder -->
 		
-			<sf:form commandName="instance" method="POST">
+			<sf:form commandName="instanceForm" method="POST">
 				<table id="id-form">
 					<tr>
 						<th colspan="3"><h3>General</h3></th>
@@ -26,6 +26,9 @@
 						<jsp:param name="path" value="id"/>
 						<jsp:param name="type" value="hidden"/>
 					</jsp:include>
+					
+		
+					
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 						<jsp:param name="path" value="name"/>
 						<jsp:param name="label" value="Name"/>
@@ -37,12 +40,17 @@
 						<jsp:param name="cols" value="80"/>
 						<jsp:param name="rows" value="10"/>
 					</jsp:include>
+					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
+						<jsp:param name="path" value="pluginConfiguredByClass"/>
+						<jsp:param name="type" value="hidden"/>
+					</jsp:include>
 
 					<tr>
-					<th colspan="3"><h3>StateResolver</h3></th>
+						<th colspan="3"><h3>StateResolver</h3></th>
+						
 						<c:forEach var="contextItem" items="${context}">
 							<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
-								<jsp:param name="path" value="instanceConfiguration.${contextItem.id}"/>
+								<jsp:param name="path" value="instanceConfigurationParams['${contextItem.id}']"/>
 								<jsp:param name="label" value="${contextItem.title}"/>
 								<jsp:param name="type" value="textarea"/>
 								<jsp:param name="cols" value="80"/>
@@ -73,15 +81,14 @@
 					<tr>
 						<th valign="top"><c:out value="ProjectEnvironment"/>:</th>
 						<td>
-							
-							<sf:select path="projectEnvironment.id">
+							<sf:select path="projectEnvironmentId">
 								<c:forEach var="projectEnvironment" items="${projectEnvironments}">
 									<sf:option value="${projectEnvironment.id}">${projectEnvironment.project.name} - ${projectEnvironment.environment.name}</sf:option>
 								</c:forEach>
 							</sf:select>
 						</td>
 						<td>
-							<c:set var="error"><sf:errors path="projectEnvironment.id"/></c:set>
+							<c:set var="error"><sf:errors path="projectEnvironmentId"/></c:set>
 							<c:if test="${not empty error }">
 								<div class="error-left"></div>
 								<div class="error-inner"><c:out value="${error }"/></div>

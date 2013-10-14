@@ -9,15 +9,16 @@ import org.apache.commons.lang.StringUtils;
 public class SysStateServerServiceImpl {
 
     public static final String CONNECTOR_HOST = "localhost";
-    public static final int CONNECTOR_PORT = 4600;
+    public static final int CONNECTOR_PORT = 8680;
 
     public static void main(final String[] args) {
 
         ServerServiceImpl serverService = new ServerServiceImpl("/");
+        serverService.setPort(CONNECTOR_PORT);
         // serverService.setOverrideDescriptor("./src/main/resources/override-web.xml");
         serverService.setWar("./src/main/webapp");
         serverService.setHost(CONNECTOR_HOST);
-        serverService.setPort(CONNECTOR_PORT);
+        
 
         if (serverService.startServer()) {
             final Scanner scanner = new Scanner(System.in);

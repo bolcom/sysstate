@@ -523,7 +523,6 @@
 				<version>2.1</version>
 				<scope>provided</scope>
 			</dependency>
-
 			<!-- END: Jetty -->
 		</dependencies>
 	</dependencyManagement>

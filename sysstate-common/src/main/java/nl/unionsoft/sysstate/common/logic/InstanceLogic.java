@@ -9,6 +9,8 @@ import nl.unionsoft.sysstate.common.dto.InstanceDto;
 
 public interface InstanceLogic {
 
+    public InstanceDto generateInstanceDto(String type);
+    
     public List<InstanceDto> getInstances();
 
     public InstanceDto getInstance(Long instanceId);

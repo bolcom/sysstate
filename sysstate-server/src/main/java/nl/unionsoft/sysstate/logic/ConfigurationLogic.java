@@ -4,8 +4,9 @@ import nl.unionsoft.sysstate.common.extending.InstanceConfiguration;
 
 public interface ConfigurationLogic {
 
-
     public InstanceConfiguration getInstanceConfiguration(long instanceId);
+
+    public InstanceConfiguration generateInstanceConfigurationForType(String type);
 
     public void setInstanceConfiguration(long instanceId, InstanceConfiguration instanceConfiguration);
 }

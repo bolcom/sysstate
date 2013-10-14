@@ -67,6 +67,23 @@ public class ConfigurationLogicImpl implements ConfigurationLogic {
         return instanceConfiguration;
     }
 
+    public InstanceConfiguration generateInstanceConfigurationForType(String type) {
+        StateResolverMeta stateResolverMeta = stateResolverLogic.getStateResolverMeta(type);
+
+        Class<? extends InstanceConfiguration> instanceConfigurationClass = stateResolverMeta.getConfigurationClass();
+        InstanceConfiguration instanceConfiguration = null;
+        try {
+            instanceConfiguration = instanceConfigurationClass.newInstance();
+
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return instanceConfiguration;
+
+    }
+
     public void setInstanceConfiguration(final long instanceId, final InstanceConfiguration instanceConfiguration) {
         List<Context> contexts = paramContextLogic.getContext(instanceConfiguration.getClass());
         for (Context context : contexts) {

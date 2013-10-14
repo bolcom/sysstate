@@ -337,6 +337,8 @@
 			<groupId>org.mortbay.jetty</groupId>
 			<artifactId>jsp-2.1</artifactId>
 		</dependency>
+        
+        
 		<!-- 
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
