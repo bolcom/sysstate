@@ -341,8 +341,8 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         } else {
 
             for (Instance instance : instances) {
-
                 // 0.92.1 Legacy Cleanup
+                LOG.info("Cleaning up legacy configuration...");
                 Properties properties = getPropsFromConfiguration(instance.getConfiguration());
                 if (!properties.isEmpty() && (instance.getInstanceProperties() == null || instance.getInstanceProperties().isEmpty())) {
                     try {
@@ -352,10 +352,9 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
                         paramContextLogic.setBeanValues(instanceConfiguration, propertyMap);
                         configurationLogic.setInstanceConfiguration(instance.getId(), instanceConfiguration);
                     } catch (Exception e) {
-                        LOG.warn("Unable to clean up legacy properties for instance with id {}, caught Exception!", instance.getId(), e);
+                        LOG.warn("Unable to clean up legacy properties for instance with id {} and type {}, caught Exception!", new Object[] {instance.getId(),instance.getPluginClass()});
                     }
                 }
-
                 // Add trigger
                 addTriggerJob(instance.getId());
             }
