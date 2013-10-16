@@ -75,29 +75,7 @@ public class HttpStateResolverImpl<ICT extends HttpStateResolverConfig> implemen
         return uri;
     }
 
-    public Properties getPropsFromConfiguration(final String configuration) {
-        Properties properties = new Properties();
-        if (StringUtils.isNotBlank(configuration)) {
-            boolean isProperties = false;
-
-            for (final String row : StringUtils.split(configuration, '\n')) {
-                if (StringUtils.startsWith(row, "url=")) {
-                    isProperties = true;
-                    break;
-                }
-            }
-            if (isProperties) {
-                properties = PropertiesUtil.stringToProperties(configuration);
-            } else {
-                properties = new Properties();
-                properties.setProperty(URL, configuration);
-            }
-
-        }
-
-        return properties;
-    }
-
+   
     private void handleHttpResponse(final StateDto state, final ICT configuration, final HttpResponse httpResponse) throws IOException {
         HttpEntity httpEntity = null;
         try {

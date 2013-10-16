@@ -22,3 +22,7 @@ sysstate-jenkins/pom.xml.versionsBackup
 sysstate-matrix/pom.xml.versionsBackup
 sysstate-selfdiagnose/pom.xml.versionsBackup
 sysstate-http/.settings/org.eclipse.jdt.core.prefs
+pom.xml.versionsBackup
+sysstate-common/pom.xml.versionsBackup
+sysstate-http/pom.xml.versionsBackup
+sysstate-server/pom.xml.versionsBackup

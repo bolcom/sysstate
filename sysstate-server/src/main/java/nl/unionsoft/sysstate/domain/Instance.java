@@ -28,14 +28,15 @@ public class Instance {
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "NAME", nullable = true, length=200)
+    @Column(name = "NAME", nullable = true, length = 200)
     private String name;
 
     @Column(name = "HOMEPAGE_URL", nullable = true, length = 4096)
     private String homepageUrl;
 
-
-
+    @Column(name = "CONFIGURATION", nullable = true, length = 8192)
+    @Deprecated
+    private String configuration;
 
     @Column(name = "REFRESH_TIMEOUT", nullable = true)
     private int refreshTimeout;
@@ -59,14 +60,12 @@ public class Instance {
     // @JoinColumn(name="LAST_STE_ID")
     // private State lastState;
     //
-    //    @OneToMany(mappedBy = "instance", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    //    private List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs;
+    // @OneToMany(mappedBy = "instance", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    // private List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs;
 
     @ManyToOne
     @JoinColumn(name = "PET_ID", nullable = false)
     private ProjectEnvironment projectEnvironment;
-
-
 
     /**
      * @return the instanceProperties
@@ -76,7 +75,8 @@ public class Instance {
     }
 
     /**
-     * @param instanceProperties the instanceProperties to set
+     * @param instanceProperties
+     *            the instanceProperties to set
      */
     public void setInstanceProperties(final List<InstanceProperty> instanceProperties) {
         this.instanceProperties = instanceProperties;
@@ -97,7 +97,6 @@ public class Instance {
     public void setName(final String name) {
         this.name = name;
     }
-
 
     public String getPluginClass() {
         return pluginClass;
@@ -147,14 +146,6 @@ public class Instance {
         this.homepageUrl = homepageUrl;
     }
 
-    //    public List<InstanceWorkerPluginConfig> getInstanceNotifiers() {
-    //        return instanceWorkerPluginConfigs;
-    //    }
-    //
-    //    public void setInstanceNotifiers(final List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs) {
-    //        this.instanceWorkerPluginConfigs = instanceWorkerPluginConfigs;
-    //    }
-
     public ProjectEnvironment getProjectEnvironment() {
         return projectEnvironment;
     }
@@ -163,17 +154,18 @@ public class Instance {
         this.projectEnvironment = projectEnvironment;
     }
 
-    //    public List<InstanceWorkerPluginConfig> getInstanceWorkerPluginConfigs() {
-    //        return instanceWorkerPluginConfigs;
-    //    }
-    //
-    //    public void setInstanceWorkerPluginConfigs(final List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs) {
-    //        this.instanceWorkerPluginConfigs = instanceWorkerPluginConfigs;
-    //    }
-
     @Override
     public String toString() {
         return "Instance [id=" + id + ", name=" + name + "]";
+    }
+
+    @Deprecated
+    public String getConfiguration() {
+        return configuration;
+    }
+
+    public void setConfiguration(String configuration) {
+        this.configuration = configuration;
     }
 
 }

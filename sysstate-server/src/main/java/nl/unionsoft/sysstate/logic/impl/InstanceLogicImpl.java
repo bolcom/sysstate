@@ -2,7 +2,10 @@ package nl.unionsoft.sysstate.logic.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -16,6 +19,8 @@ import nl.unionsoft.common.list.model.ObjectRestriction;
 import nl.unionsoft.common.list.model.Restriction;
 import nl.unionsoft.common.list.model.Restriction.Rule;
 import nl.unionsoft.common.list.worker.impl.BeanListRequestWorkerImpl;
+import nl.unionsoft.common.param.ParamContextLogicImpl;
+import nl.unionsoft.common.util.PropertiesUtil;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
@@ -33,6 +38,7 @@ import nl.unionsoft.sysstate.domain.State;
 import nl.unionsoft.sysstate.job.UpdateInstanceJob;
 import nl.unionsoft.sysstate.logic.ConfigurationLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
+import nl.unionsoft.sysstate.logic.StateResolverLogic;
 import nl.unionsoft.sysstate.plugins.http.HttpStateResolverConfig;
 import nl.unionsoft.sysstate.plugins.impl.resolver.MockStateResolverConfig;
 
@@ -86,12 +92,20 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     private Converter<InstanceDto, Instance> instanceConverter;
 
     @Inject
+    @Named("stateResolverLogic")
+    private StateResolverLogic stateResolverLogic;
+
+    @Inject
     @Named("stateConverter")
     private Converter<StateDto, State> stateConverter;
 
     @Inject
     @Named("projectEnvironmentLogic")
     private ProjectEnvironmentLogic projectEnvironmentLogic;
+
+    @Inject
+    @Named("paramContextLogic")
+    private ParamContextLogicImpl paramContextLogic;
 
     public void queueForUpdate(final Long instanceId) {
         updateTriggerJob(instanceDao.getInstance(instanceId));
@@ -325,21 +339,60 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
             addTestInstance("ilse", "ILSE", "MOCK", new MockStateResolverConfig(), "http://www.ilse.nl", "mockStateResolver");
 
         } else {
+
             for (Instance instance : instances) {
+
+                // 0.92.1 Legacy Cleanup
+                Properties properties = getPropsFromConfiguration(instance.getConfiguration());
+                if (!properties.isEmpty() && (instance.getInstanceProperties() == null || instance.getInstanceProperties().isEmpty())) {
+                    try {
+                        Map<String, Object> propertyMap = new HashMap<String, Object>();
+                        properties.putAll(propertyMap);
+                        InstanceConfiguration instanceConfiguration = configurationLogic.getInstanceConfiguration(instance.getId());
+                        paramContextLogic.setBeanValues(instanceConfiguration, propertyMap);
+                        configurationLogic.setInstanceConfiguration(instance.getId(), instanceConfiguration);
+                    } catch (Exception e) {
+                        LOG.warn("Unable to clean up legacy properties for instance with id {}, caught Exception!", instance.getId(), e);
+                    }
+                }
+
+                // Add trigger
                 addTriggerJob(instance.getId());
             }
         }
 
+    }
 
+    @Deprecated
+    private Properties getPropsFromConfiguration(final String configuration) {
+        Properties properties = new Properties();
+        if (StringUtils.isNotBlank(configuration)) {
+            boolean isProperties = false;
 
+            for (final String row : StringUtils.split(configuration, '\n')) {
+                if (StringUtils.startsWith(row, "url=")) {
+                    isProperties = true;
+                    break;
+                }
+            }
+            if (isProperties) {
+                properties = PropertiesUtil.stringToProperties(configuration);
+            } else {
+                properties = new Properties();
+                properties.setProperty("url", configuration);
+            }
+
+        }
+
+        return properties;
     }
 
     private void addTestInstance(final String name, final String projectName, final String environmentName, final InstanceConfiguration instanceConfiguration,
             final String homepageUrl, final String plugin) {
         ProjectEnvironmentDto projectEnvironment = projectEnvironmentLogic.getProjectEnvironment(projectName, environmentName);
         if (projectEnvironment == null) {
-            LOG.info("Skipping creating of instance ${}, no projectEnvironment could be found for projectName '{}' and environmentName '{}'", new Object[] {
-                    name, projectName, environmentName });
+            LOG.info("Skipping creating of instance ${}, no projectEnvironment could be found for projectName '{}' and environmentName '{}'", new Object[] { name, projectName,
+                    environmentName });
         } else {
             InstanceDto<InstanceConfiguration> instance = new InstanceDto<InstanceConfiguration>();
             instance.setName(name);
@@ -355,10 +408,10 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     }
 
     public InstanceDto generateInstanceDto(String type) {
-        
+
         final InstanceDto<InstanceConfiguration> instance = new InstanceDto<InstanceConfiguration>();
         instance.setPluginClass(type);
-        
+
         instance.setInstanceConfiguration(configurationLogic.generateInstanceConfigurationForType(type));
         instance.setEnabled(true);
         instance.setRefreshTimeout(10000);

@@ -8,8 +8,6 @@ public interface InstanceDao {
 
     public void createOrUpdate(Instance instance);
 
-
-
     public List<Instance> getInstancesForProjectAndEnvironment(Long projectId, Long environmentId);
 
     public List<Instance> getInstancesForProjectEnvironment(Long projectEnvironmentId);
