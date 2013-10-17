@@ -1,5 +1,7 @@
 package nl.unionsoft.sysstate.web.mvc.controller;
 
+import java.util.Properties;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.validation.Valid;
@@ -10,9 +12,7 @@ import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
-import nl.unionsoft.sysstate.configuration.ViewConfiguration;
 import nl.unionsoft.sysstate.domain.Template;
-import nl.unionsoft.sysstate.logic.ConfigurationLogic;
 import nl.unionsoft.sysstate.logic.EcoSystemLogic;
 import nl.unionsoft.sysstate.logic.FilterLogic;
 import nl.unionsoft.sysstate.logic.TemplateLogic;
@@ -38,34 +38,32 @@ public class ViewController {
 
     @Inject
     @Named("projectLogic")
-    private ProjectLogic projectLogic;;
+    private ProjectLogic projectLogic;
 
     @Inject
     @Named("environmentLogic")
-    private EnvironmentLogic environmentLogic;;
+    private EnvironmentLogic environmentLogic;
 
     @Inject
     @Named("filterLogic")
-    private FilterLogic filterLogic;;
+    private FilterLogic filterLogic;
 
     @Inject
     @Named("templateLogic")
-    private TemplateLogic templateLogic;;
+    private TemplateLogic templateLogic;
 
     @Inject
     @Named("ecoSystemLogic")
-    private EcoSystemLogic ecoSystemLogic;;
-
-    @Inject
-    @Named("configurationLogic")
-    private ConfigurationLogic configurationLogic;
+    private EcoSystemLogic ecoSystemLogic;
 
     @RequestMapping(value = "/index", method = RequestMethod.GET)
     public ModelAndView index(@RequestParam(value = "templateId", required = false) final String templateId) {
 
-        ViewConfiguration viewConfiguration = configurationLogic.getGroupConfiguration(ViewConfiguration.class);
+        // FIXME
+        Properties viewConfiguration = new Properties();
+
         ModelAndView modelAndView = null;
-        final String defaultView = StringUtils.defaultIfEmpty(viewConfiguration.getDefaultView(), null);
+        final String defaultView = viewConfiguration.getProperty("defaultView", null);
         if (StringUtils.isNotEmpty(defaultView)) {
             modelAndView = index(Long.valueOf(defaultView));
         } else {
@@ -83,18 +81,20 @@ public class ViewController {
         return modelAndView;
     }
 
-    private Template getTemplate(String templateId, ViewConfiguration viewConfiguration) {
-        String templateName = StringUtils.defaultIfEmpty(templateId, StringUtils.defaultIfEmpty(viewConfiguration.getDefaultTemplate(), Constants.DEFAULT_TEMPLATE_VALUE));
+    private Template getTemplate(String templateId, Properties viewConfiguration) {
+        String templateName = StringUtils.defaultIfEmpty(templateId, viewConfiguration.getProperty("defaultTemplate", Constants.DEFAULT_TEMPLATE_VALUE));
         return templateLogic.getTemplate(templateName);
     }
 
-    private boolean isMaintenanceMode(ViewConfiguration viewConfiguration) {
-        return BooleanUtils.toBoolean(StringUtils.defaultIfEmpty(viewConfiguration.getMaintenanceMode(), "false"));
+    private boolean isMaintenanceMode(Properties viewConfiguration) {
+        return BooleanUtils.toBoolean(viewConfiguration.getProperty("maintenanceMode", "false"));
     }
 
     @RequestMapping(value = "/view/{viewId}/index.html", method = RequestMethod.GET)
     public ModelAndView index(@PathVariable("viewId") Long viewId) {
-        ViewConfiguration viewConfiguration = configurationLogic.getGroupConfiguration(ViewConfiguration.class);
+
+        // FIXME
+        Properties viewConfiguration = new Properties();
         ModelAndView modelAndView = null;
         final ViewDto view = viewLogic.getView(viewId);
         if (view != null) {

@@ -1,13 +1,13 @@
 package nl.unionsoft.sysstate.plugins.impl.resolver;
 
+import java.util.Properties;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.extending.ConfigurationHolder;
-import nl.unionsoft.sysstate.common.extending.ConfiguredBy;
 import nl.unionsoft.sysstate.common.extending.StateResolver;
 import nl.unionsoft.sysstate.logic.PushStateLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
@@ -17,8 +17,7 @@ import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
 @Service("pushRequestsStateResolver")
-@ConfiguredBy(instanceConfig = PushRequestStateResolverConfig.class)
-public class PushRequestsStateResolverImpl implements StateResolver<PushRequestStateResolverConfig> {
+public class PushRequestsStateResolverImpl implements StateResolver {
 
     @Inject
     @Named("pushStateLogic")
@@ -28,10 +27,10 @@ public class PushRequestsStateResolverImpl implements StateResolver<PushRequestS
     @Named("stateLogic")
     private StateLogic stateLogic;
 
-    public void setState(final InstanceDto<PushRequestStateResolverConfig> instance, final StateDto state,final ConfigurationHolder configurationHolder) {
-        PushRequestStateResolverConfig pushRequestStateResolverConfig = instance.getInstanceConfiguration();
+    public void setState(final InstanceDto instance, final StateDto state) {
+        Properties properties = instance.getConfiguration();
 
-        Long timeout = Long.valueOf(StringUtils.defaultIfEmpty(pushRequestStateResolverConfig.getTimeout(), Long.toString(1000 * 60 * 10)));
+        Long timeout = Long.valueOf(properties.getProperty("timeOut", Long.toString(1000 * 60 * 10)));
 
         final Long instanceId = instance.getId();
         StateDto fetchedState = pushStateLogic.fetch(instanceId);

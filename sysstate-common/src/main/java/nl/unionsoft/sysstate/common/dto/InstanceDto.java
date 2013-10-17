@@ -1,12 +1,12 @@
 package nl.unionsoft.sysstate.common.dto;
 
+import java.util.Properties;
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import nl.unionsoft.sysstate.common.extending.InstanceConfiguration;
-
-public class InstanceDto<CT extends InstanceConfiguration> {
+public class InstanceDto {
 
     private Long id;
 
@@ -18,7 +18,7 @@ public class InstanceDto<CT extends InstanceConfiguration> {
 
     private String homepageUrl;
 
-    private  CT instanceConfiguration;
+    private Properties configuration;
 
     @NotNull()
     @Size(min = 1)
@@ -150,12 +150,18 @@ public class InstanceDto<CT extends InstanceConfiguration> {
         this.lastDisabled = lastDisabled;
     }
 
-    public CT getInstanceConfiguration() {
-        return instanceConfiguration;
+    public Properties getConfiguration() {
+        Properties result = null;
+        if (configuration == null) {
+            result = new Properties();
+        } else {
+            result = configuration;
+        }
+        return result;
     }
 
-    public void setInstanceConfiguration(final CT instanceConfiguration) {
-        this.instanceConfiguration = instanceConfiguration;
+    public void setConfiguration(Properties configuration) {
+        this.configuration = configuration;
     }
 
     @Override

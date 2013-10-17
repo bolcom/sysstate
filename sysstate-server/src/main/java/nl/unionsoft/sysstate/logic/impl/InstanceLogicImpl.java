@@ -2,14 +2,14 @@ package nl.unionsoft.sysstate.logic.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import nl.unionsoft.common.converter.BidirectionalConverter;
 import nl.unionsoft.common.converter.Converter;
 import nl.unionsoft.common.converter.ListConverter;
 import nl.unionsoft.common.list.model.GroupRestriction;
@@ -24,24 +24,25 @@ import nl.unionsoft.common.util.PropertiesUtil;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
+import nl.unionsoft.sysstate.common.dto.PropertyMeta;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.extending.InstanceConfiguration;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.dao.ListRequestDao;
+import nl.unionsoft.sysstate.dao.PropertyDao;
 import nl.unionsoft.sysstate.dao.StateDao;
 import nl.unionsoft.sysstate.domain.Instance;
+import nl.unionsoft.sysstate.domain.InstanceProperty;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
 import nl.unionsoft.sysstate.domain.State;
 import nl.unionsoft.sysstate.job.UpdateInstanceJob;
-import nl.unionsoft.sysstate.logic.ConfigurationLogic;
+import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
-import nl.unionsoft.sysstate.plugins.http.HttpStateResolverConfig;
-import nl.unionsoft.sysstate.plugins.impl.resolver.MockStateResolverConfig;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -68,8 +69,8 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     private InstanceDao instanceDao;
 
     @Inject
-    @Named("configurationLogic")
-    private ConfigurationLogic configurationLogic;
+    @Named("pluginLogic")
+    private PluginLogic pluginLogic;
 
     @Inject
     @Named("listRequestDao")
@@ -78,6 +79,10 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     @Inject
     @Named("stateDao")
     private StateDao stateDao;
+
+    @Inject
+    @Named("propertyDao")
+    private PropertyDao propertyDao;
 
     @Inject
     @Named("stateLogic")
@@ -106,6 +111,10 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     @Inject
     @Named("paramContextLogic")
     private ParamContextLogicImpl paramContextLogic;
+
+    @Inject
+    @Named("instancePropertiesConverter")
+    private BidirectionalConverter<Properties, List<InstanceProperty>> instancePropertiesConverter;
 
     public void queueForUpdate(final Long instanceId) {
         updateTriggerJob(instanceDao.getInstance(instanceId));
@@ -164,7 +173,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     public InstanceDto getInstance(final Long instanceId, final boolean states) {
 
         final InstanceDto result = instanceConverter.convert(instanceDao.getInstance(instanceId));
-        result.setInstanceConfiguration(configurationLogic.getInstanceConfiguration(instanceId));
+
         if (states) {
             setLastStatesForInstance(result);
         }
@@ -197,8 +206,16 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         instance.setProjectEnvironment(projectEnvironment);
         instance.setRefreshTimeout(dto.getRefreshTimeout());
         instance.setTags(dto.getTags());
+
         instanceDao.createOrUpdate(instance);
-        configurationLogic.setInstanceConfiguration(instance.getId(), dto.getInstanceConfiguration());
+
+        Properties configuration = dto.getConfiguration();
+        if (configuration != null) {
+            for (Entry<Object, Object> entry : configuration.entrySet()) {
+                propertyDao.setInstanceProperty(instance.getId(), ObjectUtils.toString(entry.getKey()), ObjectUtils.toString(entry.getValue()));
+            }
+        }
+
         updateTriggerJob(instance);
     }
 
@@ -329,14 +346,14 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         List<Instance> instances = instanceDao.getInstances();
         if (instances == null || instances.isEmpty()) {
             LOG.info("No instances found, creating some default instances...");
-            addTestInstance("google", "GOOG", "PROD", new HttpStateResolverConfig("http://www.google.nl"), "http://www.google.nl", "httpStateResolver");
-            addTestInstance("google", "GOOG", "MOCK", new MockStateResolverConfig(), "http://www.yahoo.com", "mockStateResolver");
-            addTestInstance("yahoo", "YAHO", "PROD", new HttpStateResolverConfig("http://www.yahoo.com"), "http://www.yahoo.com", "httpStateResolver");
-            addTestInstance("yahoo", "YAHO", "MOCK", new MockStateResolverConfig(), "http://www.yahoo.com", "mockStateResolver");
-            addTestInstance("bing", "BING", "PROD", new HttpStateResolverConfig("http://www.bing.com"), "http://www.bing.com", "httpStateResolver");
-            addTestInstance("bing", "BING", "MOCK", new MockStateResolverConfig(), "http://www.bing.com", "mockStateResolver");
-            addTestInstance("ilse", "ILSE", "PROD", new HttpStateResolverConfig("http://www.ilse.nl"), "http://www.ilse.nl", "httpStateResolver");
-            addTestInstance("ilse", "ILSE", "MOCK", new MockStateResolverConfig(), "http://www.ilse.nl", "mockStateResolver");
+            addTestInstance("google", "GOOG", "PROD", createHttpProperties("http://www.google.nl"), "http://www.google.nl", "httpStateResolver");
+            addTestInstance("google", "GOOG", "MOCK", null, "http://www.yahoo.com", "mockStateResolver");
+            addTestInstance("yahoo", "YAHO", "PROD", createHttpProperties("http://www.yahoo.com"), "http://www.yahoo.com", "httpStateResolver");
+            addTestInstance("yahoo", "YAHO", "MOCK", null, "http://www.yahoo.com", "mockStateResolver");
+            addTestInstance("bing", "BING", "PROD", createHttpProperties("http://www.bing.com"), "http://www.bing.com", "httpStateResolver");
+            addTestInstance("bing", "BING", "MOCK", null, "http://www.bing.com", "mockStateResolver");
+            addTestInstance("ilse", "ILSE", "PROD", createHttpProperties("http://www.ilse.nl"), "http://www.ilse.nl", "httpStateResolver");
+            addTestInstance("ilse", "ILSE", "MOCK", null, "http://www.ilse.nl", "mockStateResolver");
 
         } else {
 
@@ -345,21 +362,22 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
                 LOG.info("Cleaning up legacy configuration...");
                 Properties properties = getPropsFromConfiguration(instance.getConfiguration());
                 if (!properties.isEmpty() && (instance.getInstanceProperties() == null || instance.getInstanceProperties().isEmpty())) {
-                    try {
-                        Map<String, Object> propertyMap = new HashMap<String, Object>();
-                        properties.putAll(propertyMap);
-                        InstanceConfiguration instanceConfiguration = configurationLogic.getInstanceConfiguration(instance.getId());
-                        paramContextLogic.setBeanValues(instanceConfiguration, propertyMap);
-                        configurationLogic.setInstanceConfiguration(instance.getId(), instanceConfiguration);
-                    } catch (Exception e) {
-                        LOG.warn("Unable to clean up legacy properties for instance with id {} and type {}, caught Exception!", new Object[] {instance.getId(),instance.getPluginClass()});
+                    for (Entry<Object, Object> entry : properties.entrySet()) {
+                        propertyDao.setInstanceProperty(instance.getId(), ObjectUtils.toString(entry.getKey()), ObjectUtils.toString(entry.getValue()));
                     }
                 }
+
                 // Add trigger
                 addTriggerJob(instance.getId());
             }
         }
 
+    }
+
+    private Properties createHttpProperties(String url) {
+        Properties properties = new Properties();
+        properties.setProperty("url", url);
+        return properties;
     }
 
     @Deprecated
@@ -386,18 +404,18 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return properties;
     }
 
-    private void addTestInstance(final String name, final String projectName, final String environmentName, final InstanceConfiguration instanceConfiguration,
-            final String homepageUrl, final String plugin) {
+    private void addTestInstance(final String name, final String projectName, final String environmentName, final Properties properties, final String homepageUrl,
+            final String plugin) {
         ProjectEnvironmentDto projectEnvironment = projectEnvironmentLogic.getProjectEnvironment(projectName, environmentName);
         if (projectEnvironment == null) {
             LOG.info("Skipping creating of instance ${}, no projectEnvironment could be found for projectName '{}' and environmentName '{}'", new Object[] { name, projectName,
                     environmentName });
         } else {
-            InstanceDto<InstanceConfiguration> instance = new InstanceDto<InstanceConfiguration>();
+            InstanceDto instance = new InstanceDto();
             instance.setName(name);
             instance.setProjectEnvironment(projectEnvironment);
             instance.setEnabled(true);
-            instance.setInstanceConfiguration(instanceConfiguration);
+            instance.setConfiguration(properties);
             instance.setHomepageUrl(homepageUrl);
             instance.setPluginClass(plugin);
             instance.setRefreshTimeout(10000);
@@ -408,12 +426,23 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
 
     public InstanceDto generateInstanceDto(String type) {
 
-        final InstanceDto<InstanceConfiguration> instance = new InstanceDto<InstanceConfiguration>();
+        final InstanceDto instance = new InstanceDto();
         instance.setPluginClass(type);
-
-        instance.setInstanceConfiguration(configurationLogic.generateInstanceConfigurationForType(type));
         instance.setEnabled(true);
         instance.setRefreshTimeout(10000);
         return instance;
+    }
+
+    public List<PropertyMeta> getPropertyMeta(String type) {
+        Properties properties = pluginLogic.getComponentProperties(type);
+        List<PropertyMeta> propertyMetas = new ArrayList<PropertyMeta>();
+        String[] propertyNames = StringUtils.split(properties.getProperty("instance.properties"), ",");
+        for (String propertyName : propertyNames) {
+            PropertyMeta propertyMeta = new PropertyMeta();
+            propertyMeta.setId(propertyName);
+            propertyMeta.setTitle(StringUtils.defaultIfEmpty(properties.getProperty("instance." + propertyName + ".title"), propertyName));
+            propertyMetas.add(propertyMeta);
+        }
+        return propertyMetas;
     }
 }

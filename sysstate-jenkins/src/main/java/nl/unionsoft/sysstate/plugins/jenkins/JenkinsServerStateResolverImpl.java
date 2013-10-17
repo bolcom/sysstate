@@ -1,9 +1,11 @@
 package nl.unionsoft.sysstate.plugins.jenkins;
 
 import static nl.unionsoft.sysstate.common.util.XmlUtil.getCharacterDataFromObjectWithKey;
+
+import java.util.Properties;
+
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.plugins.http.HttpStateResolverConfig;
 import nl.unionsoft.sysstate.plugins.http.XMLBeanStateResolverImpl;
 
 import org.apache.commons.lang.StringUtils;
@@ -18,7 +20,7 @@ public class JenkinsServerStateResolverImpl extends XMLBeanStateResolverImpl {
     private static final String API_XML = "/api/xml";
 
     @Override
-    protected void handleXmlObject(final XmlObject xmlObject, final StateDto state, final HttpStateResolverConfig properties) {
+    protected void handleXmlObject(final XmlObject xmlObject, final StateDto state, final Properties properties) {
         final Node node = xmlObject.getDomNode();
         final Document document = (Document) node;
 

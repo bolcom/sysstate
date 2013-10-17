@@ -4,11 +4,11 @@ import static nl.unionsoft.sysstate.common.util.XmlUtil.getAttributePropertyFrom
 import static nl.unionsoft.sysstate.common.util.XmlUtil.getElementWithKeyFromDocument;
 import static nl.unionsoft.sysstate.common.util.XmlUtil.getElementWithKeyFromElement;
 
+import java.util.Properties;
 import java.util.regex.Pattern;
 
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.extending.ConfiguredBy;
 import nl.unionsoft.sysstate.plugins.http.XMLBeanStateResolverImpl;
 
 import org.apache.commons.lang.StringUtils;
@@ -20,13 +20,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 @Service("selfDiagnoseStateResolver")
-@ConfiguredBy(instanceConfig = SelfDiagnoseStateResolverConfig.class)
-public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl<SelfDiagnoseStateResolverConfig> {
+public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
 
     private static final String FORMAT_XML = "?format=xml";
 
     @Override
-    protected void handleXmlObject(final XmlObject xmlObject, final StateDto state, final SelfDiagnoseStateResolverConfig configuration) {
+    protected void handleXmlObject(final XmlObject xmlObject, final StateDto state, Properties configuration) {
 
         final Node node = xmlObject.getDomNode();
         final Document document = (Document) node;
@@ -38,7 +37,7 @@ public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl<Self
         final StringBuilder messageBuilder = new StringBuilder(4012);
         boolean allFailed = true;
 
-        String patternStr = configuration.getPattern();
+        String patternStr = configuration.getProperty("pattern");
         Pattern pattern = null;
         if (StringUtils.isNotEmpty(patternStr)) {
             pattern = Pattern.compile(patternStr);

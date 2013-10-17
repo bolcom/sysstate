@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -129,6 +130,28 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
             this.version = version;
         }
 
+    }
+
+    public Properties getComponentProperties(String name) {
+        Object component = getComponent(name);
+        Class<?> componentClass = component.getClass();
+        Properties properties = new Properties();
+        properties.putAll(getPropertiesForClass(componentClass));
+        return properties;
+    }
+
+    private Properties getPropertiesForClass(Class<?> theClass) {
+        Properties properties = new Properties();
+        InputStream inputStream = null;
+        try {
+            inputStream = theClass.getResourceAsStream(theClass.getCanonicalName() + ".properties");
+            properties.load(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            IOUtils.closeQuietly(inputStream);
+        }
+        return properties;
     }
 
 }

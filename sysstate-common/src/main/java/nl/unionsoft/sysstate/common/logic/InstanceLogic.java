@@ -6,11 +6,12 @@ import nl.unionsoft.common.list.model.ListRequest;
 import nl.unionsoft.common.list.model.ListResponse;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
+import nl.unionsoft.sysstate.common.dto.PropertyMeta;
 
 public interface InstanceLogic {
 
     public InstanceDto generateInstanceDto(String type);
-    
+
     public List<InstanceDto> getInstances();
 
     public InstanceDto getInstance(Long instanceId);
@@ -30,5 +31,7 @@ public interface InstanceLogic {
     public ListResponse<InstanceDto> getInstances(FilterDto filter);
 
     public void addTriggerJob(final long instanceId);
+
+    public List<PropertyMeta> getPropertyMeta(String type);
 
 }

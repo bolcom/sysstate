@@ -6,12 +6,9 @@ import java.util.Properties;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import nl.unionsoft.common.util.PropertiesUtil;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.extending.ConfigurationHolder;
-import nl.unionsoft.sysstate.common.extending.ConfiguredBy;
 import nl.unionsoft.sysstate.common.extending.StateResolver;
 import nl.unionsoft.sysstate.common.util.StateUtil;
 
@@ -27,8 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service("httpStateResolver")
-@ConfiguredBy(instanceConfig = HttpStateResolverConfig.class)
-public class HttpStateResolverImpl<ICT extends HttpStateResolverConfig> implements StateResolver<HttpStateResolverConfig> {
+public class HttpStateResolverImpl implements StateResolver {
 
     public static final String URL = "url";
 
@@ -38,19 +34,19 @@ public class HttpStateResolverImpl<ICT extends HttpStateResolverConfig> implemen
     @Named("httpClient")
     private HttpClient httpClient;
 
-    public void setState(final InstanceDto<HttpStateResolverConfig> instance, final StateDto state, final ConfigurationHolder configurationHolder) {
+    public void setState(final InstanceDto instance, final StateDto state) {
         state.setState(StateType.STABLE);
         LOG.info("Preparing httpRequest...");
-        HttpStateResolverConfig httpStateResolverConfig = instance.getInstanceConfiguration();
+        Properties properties = instance.getConfiguration();
 
-        final String uri = processUri(httpStateResolverConfig.getUrl());
+        final String uri = processUri(properties.getProperty("URL"));
         if (StringUtils.isEmpty(uri)) {
             throw new IllegalStateException("URL is empty!");
         }
         final HttpGet httpGet = new HttpGet(uri);
         httpGet.addHeader("Connection", "close");
 
-        String userAgent = httpStateResolverConfig.getUserAgent();
+        String userAgent = properties.getProperty("userAgent");
         if (StringUtils.isNotEmpty(userAgent)) {
             httpGet.addHeader("User-Agent", userAgent);
         }
@@ -62,8 +58,8 @@ public class HttpStateResolverImpl<ICT extends HttpStateResolverConfig> implemen
             final long responseTime = System.currentTimeMillis() - startTime;
             LOG.info("HttpRequest complete, execution took {} ms", responseTime);
             state.setResponseTime(responseTime);
-            //FIXME
-            handleHttpResponse(state, (ICT) httpStateResolverConfig, httpResponse);
+            // FIXME
+            handleHttpResponse(state, properties, httpResponse);
 
         } catch (final Exception e) {
             LOG.warn("Caught Exception while performing request: {}", e.getMessage(), e);
@@ -75,8 +71,7 @@ public class HttpStateResolverImpl<ICT extends HttpStateResolverConfig> implemen
         return uri;
     }
 
-   
-    private void handleHttpResponse(final StateDto state, final ICT configuration, final HttpResponse httpResponse) throws IOException {
+    private void handleHttpResponse(final StateDto state, final Properties configuration, final HttpResponse httpResponse) throws IOException {
         HttpEntity httpEntity = null;
         try {
             final StatusLine statusLine = httpResponse.getStatusLine();
@@ -105,7 +100,7 @@ public class HttpStateResolverImpl<ICT extends HttpStateResolverConfig> implemen
         state.setMessage(StateUtil.exceptionAsMessage(exception));
     }
 
-    public void handleEntity(final HttpEntity httpEntity, final ICT configuration, final StateDto state) throws IOException {
+    public void handleEntity(final HttpEntity httpEntity, final Properties configuration, final StateDto state) throws IOException {
 
     }
 
@@ -117,9 +112,9 @@ public class HttpStateResolverImpl<ICT extends HttpStateResolverConfig> implemen
         this.httpClient = httpClient;
     }
 
-    public String generateHomePageUrl(final InstanceDto<HttpStateResolverConfig> instance) {
-        HttpStateResolverConfig httpStateResolverConfig = instance.getInstanceConfiguration();
-        String homePageUrl = processUri(httpStateResolverConfig.getUrl());
+    public String generateHomePageUrl(final InstanceDto instance) {
+        Properties properties = instance.getConfiguration();
+        String homePageUrl = processUri(properties.getProperty(URL));
         return StringUtils.substringBefore(homePageUrl, "//") + "//" + StringUtils.substringBetween(homePageUrl, "//", "/");
     }
 

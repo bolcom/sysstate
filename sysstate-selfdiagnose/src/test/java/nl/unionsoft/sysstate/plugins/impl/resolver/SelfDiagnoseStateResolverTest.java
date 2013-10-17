@@ -1,11 +1,11 @@
 package nl.unionsoft.sysstate.plugins.impl.resolver;
 
 import java.io.IOException;
+import java.util.Properties;
 
 import mockit.Mocked;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.plugins.selfdiagnose.SelfDiagnoseStateResolverConfig;
 import nl.unionsoft.sysstate.plugins.selfdiagnose.SelfDiagnoseStateResolverImpl;
 
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -34,7 +34,7 @@ public class SelfDiagnoseStateResolverTest {
 
     @Test
     public void testStable() throws IOException {
-        final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, STABLE, new SelfDiagnoseStateResolverConfig());
+        final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, STABLE);
         Assert.assertEquals(StateType.STABLE, state.getState());
         Assert.assertEquals("1.2.3.4", state.getDescription());
         Assert.assertEquals("", state.getMessage());
@@ -43,8 +43,8 @@ public class SelfDiagnoseStateResolverTest {
 
     @Test
     public void testStableMulti2() throws IOException {
-        SelfDiagnoseStateResolverConfig  selfDiagnoseStateResolverConfig = new SelfDiagnoseStateResolverConfig();
-        selfDiagnoseStateResolverConfig.setPattern( ".*mehehehe.*");
+        Properties selfDiagnoseStateResolverConfig = new Properties();
+        selfDiagnoseStateResolverConfig.setProperty("pattern", ".*mehehehe.*");
 
         final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, STABLE_MULTI, selfDiagnoseStateResolverConfig);
         System.out.println(state.getMessage());
@@ -57,8 +57,8 @@ public class SelfDiagnoseStateResolverTest {
     @Test
     public void testStableMulti() throws IOException {
 
-        SelfDiagnoseStateResolverConfig selfDiagnoseStateResolverConfig = new SelfDiagnoseStateResolverConfig();
-        selfDiagnoseStateResolverConfig.setPattern(".*Maven POM properties.*");
+        Properties selfDiagnoseStateResolverConfig = new Properties();
+        selfDiagnoseStateResolverConfig.setProperty("pattern", ".*Maven POM properties.*");
 
         final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, STABLE_MULTI, selfDiagnoseStateResolverConfig);
         Assert.assertEquals(StateType.STABLE, state.getState());
@@ -69,7 +69,7 @@ public class SelfDiagnoseStateResolverTest {
 
     @Test
     public void testUnStable() throws IOException {
-        final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, UNSTABLE, new SelfDiagnoseStateResolverConfig());
+        final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, UNSTABLE);
         Assert.assertEquals(StateType.UNSTABLE, state.getState());
         Assert.assertEquals("1.2.3.4", state.getDescription());
         Assert.assertEquals("checkspringdatasourceconnectable: failed, Datasource [AQDataSource] is found and a connection can be created.", state.getMessage());
@@ -78,7 +78,7 @@ public class SelfDiagnoseStateResolverTest {
 
     @Test
     public void testError() throws IOException {
-        final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, ERROR, new SelfDiagnoseStateResolverConfig());
+        final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, ERROR);
         Assert.assertEquals(StateType.ERROR, state.getState());
         Assert.assertEquals("1.2.3.4", state.getDescription());
         Assert.assertEquals("reportmavenpomproperties: failed, Version=1.2.3.4 build=Fri Nov 16 03:35:25 CET 2012 from [/META-INF/maven/com.bol.myapp/myapp/pom.properties]\n"
@@ -88,7 +88,7 @@ public class SelfDiagnoseStateResolverTest {
 
     @Test
     public void testNoVersion() throws IOException {
-        final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, NO_VERSION, new SelfDiagnoseStateResolverConfig());
+        final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, NO_VERSION);
         Assert.assertEquals(StateType.STABLE, state.getState());
         Assert.assertEquals("Status 200", state.getDescription());
         Assert.assertEquals("", state.getMessage());

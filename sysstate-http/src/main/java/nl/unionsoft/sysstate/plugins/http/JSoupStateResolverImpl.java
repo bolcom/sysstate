@@ -2,6 +2,7 @@ package nl.unionsoft.sysstate.plugins.http;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Properties;
 
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
@@ -18,17 +19,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 @Service("jsoupStateResolver")
-public class JSoupStateResolverImpl extends HttpStateResolverImpl<JSoupStateResolverConfig> {
+public class JSoupStateResolverImpl extends HttpStateResolverImpl {
 
     private static final Logger LOG = LoggerFactory.getLogger(JSoupStateResolverImpl.class);
 
     @Override
-    public void handleEntity(final HttpEntity httpEntity, final JSoupStateResolverConfig configuration, final StateDto state) throws IOException {
+    public void handleEntity(final HttpEntity httpEntity, final Properties configuration, final StateDto state) throws IOException {
         InputStream contentStream = null;
         try {
             if (httpEntity != null) {
                 contentStream = httpEntity.getContent();
-                final Document document = Jsoup.parse(contentStream, "UTF-8", configuration.getUrl(), Parser.xmlParser());
+                final Document document = Jsoup.parse(contentStream, "UTF-8", configuration.getProperty(URL), Parser.xmlParser());
                 handleJsoup(document, configuration, state);
             }
         } catch(final IllegalStateException e) {
@@ -45,9 +46,9 @@ public class JSoupStateResolverImpl extends HttpStateResolverImpl<JSoupStateReso
         }
     }
 
-    public void handleJsoup(final Document document, final JSoupStateResolverConfig configuration, final StateDto state) {
+    public void handleJsoup(final Document document, final Properties configuration, final StateDto state) {
 
-        final String select = configuration.getSelect();
+        final String select = configuration.getProperty("select");
         handleSelect(document, select, state);
     }
 

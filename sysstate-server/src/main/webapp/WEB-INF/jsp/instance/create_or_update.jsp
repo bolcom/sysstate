@@ -48,10 +48,10 @@
 					<tr>
 						<th colspan="3"><h3>StateResolver</h3></th>
 						
-						<c:forEach var="contextItem" items="${context}">
+						<c:forEach var="propertyMeta" items="${propertyMetas}">
 							<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
-								<jsp:param name="path" value="instanceConfigurationParams['${contextItem.id}']"/>
-								<jsp:param name="label" value="${contextItem.title}"/>
+								<jsp:param name="path" value="instanceConfigurationParams['${propertyMeta.id}']"/>
+								<jsp:param name="label" value="${propertyMeta.title}"/>
 								<jsp:param name="type" value="textarea"/>
 								<jsp:param name="cols" value="80"/>
 								<jsp:param name="rows" value="3"/>
