@@ -5,13 +5,19 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
-import java.util.Stack;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import nl.unionsoft.sysstate.common.dto.PropertyMeta;
+import nl.unionsoft.sysstate.common.dto.PropertyMetaList;
+import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
+import nl.unionsoft.sysstate.dao.PropertyDao;
+import nl.unionsoft.sysstate.domain.GroupProperty;
 import nl.unionsoft.sysstate.logic.PluginLogic;
 
 import org.apache.commons.io.IOUtils;
@@ -27,6 +33,10 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, InitializingBean {
+
+    @Inject
+    @Named("propertyDao")
+    private PropertyDao propertyDao;
 
     private ApplicationContext applicationContext;
 
@@ -61,6 +71,7 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
                     String pluginContext = mainAttributes.getValue("plugin-context");
                     String pluginId = mainAttributes.getValue("plugin-id");
                     String pluginVersion = mainAttributes.getValue("plugin-version");
+                    String pluginPropertiesResource = mainAttributes.getValue("plugin-properties");
                     if (StringUtils.isNotEmpty(pluginContext)) {
                         LOG.info("PluginContext: {}", pluginContext);
                         contextFiles.add("classpath:" + pluginContext);
@@ -68,6 +79,9 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
                     Plugin plugin = new Plugin();
                     plugin.setId(pluginId);
                     plugin.setVersion(pluginVersion);
+                    if (StringUtils.isNotEmpty(pluginPropertiesResource)) {
+                        plugin.setProperties(getPropertiesFromResource(pluginPropertiesResource));
+                    }
                     plugins.add(plugin);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -113,9 +127,22 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
         return plugins;
     }
 
+    public Plugin getPlugin(String id) {
+        Plugin result = null;
+        for (Plugin plugin : plugins) {
+            if (plugin.getId().equals(id)) {
+                result = plugin;
+                break;
+            }
+        }
+        return result;
+
+    }
+
     public class Plugin {
         private String id;
         private String version;
+        private Properties properties;
 
         public String getId() {
             return id;
@@ -133,17 +160,21 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
             this.version = version;
         }
 
+        public Properties getProperties() {
+            return properties;
+        }
+
+        public void setProperties(Properties properties) {
+            this.properties = properties;
+        }
+
     }
 
-
-
-    @Cacheable("propertiesForClassCache")
-    public Properties getPropertiesForClass(Class<?> theClass) {
-
+    private Properties getPropertiesFromResource(String propertyResource) {
         Properties properties = new Properties();
         InputStream inputStream = null;
         try {
-            String propertyResource = "/" + StringUtils.replace(theClass.getCanonicalName(), ".", "/") + ".properties";
+
             LOG.info("Loading props from class resource at '{}'", propertyResource);
             inputStream = PluginLogicImpl.class.getResourceAsStream(propertyResource);
             if (inputStream != null) {
@@ -155,8 +186,41 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
         } finally {
             IOUtils.closeQuietly(inputStream);
         }
+        return properties;
 
+    }
+
+    @Cacheable("propertiesForClassCache")
+    public Properties getPropertiesForClass(Class<?> theClass) {
+        String propertyResource = "/" + StringUtils.replace(theClass.getCanonicalName(), ".", "/") + ".properties";
+        return getPropertiesFromResource(propertyResource);
+    }
+
+    public Properties getPluginProperties(String name) {
+
+        Properties properties = new Properties();
+        for (GroupProperty groupProperty : propertyDao.getGroupProperties(name)) {
+            properties.put(groupProperty.getKey(), groupProperty.getValue());
+        }
         return properties;
     }
 
+    public PropertyMetaList getPluginPropertyMetaList(String name) {
+        Plugin plugin = getPlugin(name);
+        PropertyMetaList propertyMetaList = new PropertyMetaList();
+        if (plugin != null) {
+            Properties properties = plugin.getProperties();
+            String propertyNamesStr = properties.getProperty("global.properties");
+            if (StringUtils.isNotEmpty(propertyNamesStr)) {
+                String[] propertyNames = StringUtils.split(propertyNamesStr, ",");
+                for (String propertyName : propertyNames) {
+                    PropertyMetaValue propertyMetaValue = new PropertyMetaValue();
+                    propertyMetaValue.setId(propertyName);
+                    propertyMetaValue.setTitle(StringUtils.defaultIfEmpty(properties.getProperty("global." + propertyName + ".title"), propertyName));
+                    propertyMetaList.add(propertyMetaValue);
+                }
+            }
+        }
+        return propertyMetaList;
+    }
 }

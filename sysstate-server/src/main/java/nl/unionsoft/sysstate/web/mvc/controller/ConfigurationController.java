@@ -1,6 +1,5 @@
 package nl.unionsoft.sysstate.web.mvc.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -8,10 +7,10 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import nl.unionsoft.common.param.ContextValue;
-import nl.unionsoft.common.param.ParamContextLogicImpl;
-import nl.unionsoft.sysstate.web.mvc.form.GroupConfigurationForm;
-import nl.unionsoft.sysstate.web.mvc.form.GroupConfigurationsForm;
+import nl.unionsoft.sysstate.Constants;
+import nl.unionsoft.sysstate.common.dto.PropertyMetaList;
+import nl.unionsoft.sysstate.logic.PluginLogic;
+import nl.unionsoft.sysstate.web.mvc.form.PropertyMetaListsForm;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -24,23 +23,22 @@ import org.springframework.web.servlet.ModelAndView;
 public class ConfigurationController {
 
     @Inject
-    @Named("paramContextLogic")
-    private ParamContextLogicImpl paramContextLogic;
+    @Named("pluginLogic")
+    private PluginLogic pluginLogic;
 
     @RequestMapping(value = "/configuration/index", method = RequestMethod.GET)
     public ModelAndView index() {
         final ModelAndView modelAndView = new ModelAndView("list-configuration-manager");
-        List<GroupConfigurationForm> groupConfigurationForm = new ArrayList<GroupConfigurationForm>();
-        // groupConfigurationForm.add(generateGroupConfigurationContextValue(ViewConfiguration.class));
-        // GroupConfigurationsForm groupConfigurationsForm = new GroupConfigurationsForm();
-        // groupConfigurationsForm.setGroupConfigurationForms(groupConfigurationForm);
-        // modelAndView.addObject("groupConfigurationsForm", groupConfigurationsForm);
+
+        PropertyMetaListsForm propertyMetaListsForm = new PropertyMetaListsForm();
+        List<PropertyMetaList> propertyMetaLists = propertyMetaListsForm.getPropertyMetaLists();
+        propertyMetaLists.add(pluginLogic.getPluginPropertyMetaList(Constants.SYSSTATE_PLUGIN_NAME));
+        modelAndView.addObject("propertyMetaListsForm", propertyMetaListsForm);
         return modelAndView;
     }
 
-    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/configuration/index", method = RequestMethod.POST)
-    public ModelAndView update(@Valid @ModelAttribute("groupConfigurationsForm") final GroupConfigurationsForm groupConfigurationsForm, final BindingResult bindingResult,
+    public ModelAndView update(@Valid @ModelAttribute("propertyMetaListsForm") final PropertyMetaListsForm groupConfigurationsForm, final BindingResult bindingResult,
             final HttpServletRequest httpRequest) {
 
         ModelAndView modelAndView = null;

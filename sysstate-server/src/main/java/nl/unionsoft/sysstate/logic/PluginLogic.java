@@ -3,6 +3,7 @@ package nl.unionsoft.sysstate.logic;
 import java.util.List;
 import java.util.Properties;
 
+import nl.unionsoft.sysstate.common.dto.PropertyMetaList;
 import nl.unionsoft.sysstate.logic.impl.PluginLogicImpl.Plugin;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -17,5 +18,9 @@ public interface PluginLogic {
     public List<Plugin> getPlugins();
 
     public Properties getPropertiesForClass(Class<?> theClass);
+
+    public PropertyMetaList getPluginPropertyMetaList(String name);
+
+    public Properties getPluginProperties(String name);
 
 }

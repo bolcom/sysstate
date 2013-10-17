@@ -15,6 +15,7 @@ import nl.unionsoft.sysstate.common.logic.ProjectLogic;
 import nl.unionsoft.sysstate.domain.Template;
 import nl.unionsoft.sysstate.logic.EcoSystemLogic;
 import nl.unionsoft.sysstate.logic.FilterLogic;
+import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.TemplateLogic;
 import nl.unionsoft.sysstate.logic.ViewLogic;
 
@@ -56,11 +57,14 @@ public class ViewController {
     @Named("ecoSystemLogic")
     private EcoSystemLogic ecoSystemLogic;
 
+    @Inject
+    @Named("pluginLogic")
+    private PluginLogic pluginLogic;
+
     @RequestMapping(value = "/index", method = RequestMethod.GET)
     public ModelAndView index(@RequestParam(value = "templateId", required = false) final String templateId) {
 
-        // FIXME
-        Properties viewConfiguration = new Properties();
+        Properties viewConfiguration = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);
 
         ModelAndView modelAndView = null;
         final String defaultView = viewConfiguration.getProperty("defaultView", null);
@@ -93,8 +97,7 @@ public class ViewController {
     @RequestMapping(value = "/view/{viewId}/index.html", method = RequestMethod.GET)
     public ModelAndView index(@PathVariable("viewId") Long viewId) {
 
-        // FIXME
-        Properties viewConfiguration = new Properties();
+        Properties viewConfiguration = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);
         ModelAndView modelAndView = null;
         final ViewDto view = viewLogic.getView(viewId);
         if (view != null) {
