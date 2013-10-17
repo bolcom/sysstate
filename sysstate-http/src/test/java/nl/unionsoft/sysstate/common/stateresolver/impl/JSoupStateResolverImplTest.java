@@ -11,8 +11,10 @@ import nl.unionsoft.sysstate.plugins.http.JSoupStateResolverImpl;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class JSoupStateResolverImplTest {
 
     private JSoupStateResolverImpl jSoupStateResolverPlugin;
@@ -30,8 +32,8 @@ public class JSoupStateResolverImplTest {
         final InstanceDto instance = new InstanceDto();
 
         Map<String,String> properties = new HashMap<String, String>();
-        properties.put("url", "http://bolnl-docs/reporting/dashboard/db_rel_version.html");
-        properties.put("select", "table td:contains(APM) ~ td:eq(3)");
+        properties.put("url", "http://someurl");
+        properties.put("select", "table td:contains(TROL) ~ td:eq(3)");
         instance.setConfiguration(properties);
         jSoupStateResolverPlugin.setState(instance, state);
     }

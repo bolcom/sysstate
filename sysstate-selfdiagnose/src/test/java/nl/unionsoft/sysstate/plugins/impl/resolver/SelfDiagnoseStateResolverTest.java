@@ -83,7 +83,7 @@ public class SelfDiagnoseStateResolverTest {
         final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, ERROR);
         Assert.assertEquals(StateType.ERROR, state.getState());
         Assert.assertEquals("1.2.3.4", state.getDescription());
-        Assert.assertEquals("reportmavenpomproperties: failed, Version=1.2.3.4 build=Fri Nov 16 03:35:25 CET 2012 from [/META-INF/maven/com.bol.myapp/myapp/pom.properties]\n"
+        Assert.assertEquals("reportmavenpomproperties: failed, Version=1.2.3.4 build=Fri Nov 16 03:35:25 CET 2012 from [/META-INF/maven/com.test.myapp/myapp/pom.properties]\n"
                 + "checkspringdatasourceconnectable: failed, Datasource [AQDataSource] is found but a connection cannot be created.", state.getMessage());
 
     }
