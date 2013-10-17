@@ -26,7 +26,7 @@ public class Property {
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "PROP_KEY", nullable = false)
+    @Column(name = "PROP_KEY", nullable = false, length = 256)
     private String key;
 
     @Column(name = "PROP_VALUE", nullable = true, length = 512)
