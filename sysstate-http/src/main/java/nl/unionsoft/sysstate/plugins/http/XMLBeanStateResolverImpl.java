@@ -2,6 +2,7 @@ package nl.unionsoft.sysstate.plugins.http;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.xml.transform.stream.StreamSource;
@@ -26,7 +27,7 @@ public abstract class XMLBeanStateResolverImpl extends HttpStateResolverImpl {
     private XmlBeansMarshaller xmlBeansMarshaller;
 
     @Override
-    public void handleEntity(final HttpEntity httpEntity, final Properties configuration, final StateDto state) throws IOException {
+    public void handleEntity(final HttpEntity httpEntity, final  Map<String, String> configuration, final StateDto state) throws IOException {
 
         InputStream contentStream = null;
         try {
@@ -51,7 +52,7 @@ public abstract class XMLBeanStateResolverImpl extends HttpStateResolverImpl {
         }
     }
 
-    protected abstract void handleXmlObject(final XmlObject xmlObject, final StateDto state, Properties configuration);
+    protected abstract void handleXmlObject(final XmlObject xmlObject, final StateDto state,  Map<String, String> configuration);
 
     public XmlBeansMarshaller getXmlBeansMarshaller() {
         return xmlBeansMarshaller;

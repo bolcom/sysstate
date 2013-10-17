@@ -2,6 +2,7 @@ package nl.unionsoft.sysstate.plugins.http;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Properties;
 
 import nl.unionsoft.sysstate.common.dto.StateDto;
@@ -18,26 +19,27 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 @Service("jsoupStateResolver")
 public class JSoupStateResolverImpl extends HttpStateResolverImpl {
 
     private static final Logger LOG = LoggerFactory.getLogger(JSoupStateResolverImpl.class);
 
     @Override
-    public void handleEntity(final HttpEntity httpEntity, final Properties configuration, final StateDto state) throws IOException {
+    public void handleEntity(final HttpEntity httpEntity, final Map<String, String> configuration, final StateDto state) throws IOException {
         InputStream contentStream = null;
         try {
             if (httpEntity != null) {
                 contentStream = httpEntity.getContent();
-                final Document document = Jsoup.parse(contentStream, "UTF-8", configuration.getProperty(URL), Parser.xmlParser());
+                final Document document = Jsoup.parse(contentStream, "UTF-8", configuration.get(URL), Parser.xmlParser());
                 handleJsoup(document, configuration, state);
             }
-        } catch(final IllegalStateException e) {
+        } catch (final IllegalStateException e) {
             LOG.error("Caught IllegalStateException", e);
             state.setState(StateType.ERROR);
             state.setDescription(e.getMessage());
 
-        } catch(final IOException e) {
+        } catch (final IOException e) {
             LOG.error("Caught IOException", e);
             state.setState(StateType.ERROR);
             state.setDescription(e.getMessage());
@@ -46,9 +48,9 @@ public class JSoupStateResolverImpl extends HttpStateResolverImpl {
         }
     }
 
-    public void handleJsoup(final Document document, final Properties configuration, final StateDto state) {
+    public void handleJsoup(final Document document, final Map<String, String> configuration, final StateDto state) {
 
-        final String select = configuration.getProperty("select");
+        final String select = configuration.get("select");
         handleSelect(document, select, state);
     }
 

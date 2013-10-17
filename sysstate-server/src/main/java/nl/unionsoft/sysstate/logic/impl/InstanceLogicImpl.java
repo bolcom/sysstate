@@ -2,9 +2,12 @@ package nl.unionsoft.sysstate.logic.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Stack;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -52,6 +55,7 @@ import org.quartz.SimpleTrigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -209,10 +213,11 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
 
         instanceDao.createOrUpdate(instance);
 
-        Properties configuration = dto.getConfiguration();
+        Map<String, String> configuration = dto.getConfiguration();
         if (configuration != null) {
-            for (Entry<Object, Object> entry : configuration.entrySet()) {
-                propertyDao.setInstanceProperty(instance.getId(), ObjectUtils.toString(entry.getKey()), ObjectUtils.toString(entry.getValue()));
+            for (Entry<String, String> entry : configuration.entrySet()) {
+                propertyDao.setInstanceProperty(instance, entry.getKey(), entry.getValue());
+
             }
         }
 
@@ -346,13 +351,13 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         List<Instance> instances = instanceDao.getInstances();
         if (instances == null || instances.isEmpty()) {
             LOG.info("No instances found, creating some default instances...");
-            addTestInstance("google", "GOOG", "PROD", createHttpProperties("http://www.google.nl"), "http://www.google.nl", "httpStateResolver");
+            addTestInstance("google", "GOOG", "PROD", createHttpConfiguration("http://www.google.nl"), "http://www.google.nl", "httpStateResolver");
             addTestInstance("google", "GOOG", "MOCK", null, "http://www.yahoo.com", "mockStateResolver");
-            addTestInstance("yahoo", "YAHO", "PROD", createHttpProperties("http://www.yahoo.com"), "http://www.yahoo.com", "httpStateResolver");
+            addTestInstance("yahoo", "YAHO", "PROD", createHttpConfiguration("http://www.yahoo.com"), "http://www.yahoo.com", "httpStateResolver");
             addTestInstance("yahoo", "YAHO", "MOCK", null, "http://www.yahoo.com", "mockStateResolver");
-            addTestInstance("bing", "BING", "PROD", createHttpProperties("http://www.bing.com"), "http://www.bing.com", "httpStateResolver");
+            addTestInstance("bing", "BING", "PROD", createHttpConfiguration("http://www.bing.com"), "http://www.bing.com", "httpStateResolver");
             addTestInstance("bing", "BING", "MOCK", null, "http://www.bing.com", "mockStateResolver");
-            addTestInstance("ilse", "ILSE", "PROD", createHttpProperties("http://www.ilse.nl"), "http://www.ilse.nl", "httpStateResolver");
+            addTestInstance("ilse", "ILSE", "PROD", createHttpConfiguration("http://www.ilse.nl"), "http://www.ilse.nl", "httpStateResolver");
             addTestInstance("ilse", "ILSE", "MOCK", null, "http://www.ilse.nl", "mockStateResolver");
 
         } else {
@@ -363,7 +368,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
                 Properties properties = getPropsFromConfiguration(instance.getConfiguration());
                 if (!properties.isEmpty() && (instance.getInstanceProperties() == null || instance.getInstanceProperties().isEmpty())) {
                     for (Entry<Object, Object> entry : properties.entrySet()) {
-                        propertyDao.setInstanceProperty(instance.getId(), ObjectUtils.toString(entry.getKey()), ObjectUtils.toString(entry.getValue()));
+                        propertyDao.setInstanceProperty(instance, ObjectUtils.toString(entry.getKey()), ObjectUtils.toString(entry.getValue()));
                     }
                 }
 
@@ -374,10 +379,10 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
 
     }
 
-    private Properties createHttpProperties(String url) {
-        Properties properties = new Properties();
-        properties.setProperty("url", url);
-        return properties;
+    private Map<String, String> createHttpConfiguration(String url) {
+        Map<String, String> configuration = new HashMap<String, String>();
+        configuration.put("url", url);
+        return configuration;
     }
 
     @Deprecated
@@ -404,7 +409,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return properties;
     }
 
-    private void addTestInstance(final String name, final String projectName, final String environmentName, final Properties properties, final String homepageUrl,
+    private void addTestInstance(final String name, final String projectName, final String environmentName, final Map<String, String> configuration, final String homepageUrl,
             final String plugin) {
         ProjectEnvironmentDto projectEnvironment = projectEnvironmentLogic.getProjectEnvironment(projectName, environmentName);
         if (projectEnvironment == null) {
@@ -415,7 +420,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
             instance.setName(name);
             instance.setProjectEnvironment(projectEnvironment);
             instance.setEnabled(true);
-            instance.setConfiguration(properties);
+            instance.setConfiguration(configuration);
             instance.setHomepageUrl(homepageUrl);
             instance.setPluginClass(plugin);
             instance.setRefreshTimeout(10000);
@@ -433,16 +438,37 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return instance;
     }
 
+    @Cacheable("propertyMetaTypeCache")
     public List<PropertyMeta> getPropertyMeta(String type) {
-        Properties properties = pluginLogic.getComponentProperties(type);
-        List<PropertyMeta> propertyMetas = new ArrayList<PropertyMeta>();
-        String[] propertyNames = StringUtils.split(properties.getProperty("instance.properties"), ",");
-        for (String propertyName : propertyNames) {
-            PropertyMeta propertyMeta = new PropertyMeta();
-            propertyMeta.setId(propertyName);
-            propertyMeta.setTitle(StringUtils.defaultIfEmpty(properties.getProperty("instance." + propertyName + ".title"), propertyName));
-            propertyMetas.add(propertyMeta);
+
+        Object component = pluginLogic.getComponent(type);
+
+        Class<?> componentClass = component.getClass();
+
+        Stack<Class<?>> classStack = new Stack<Class<?>>();
+        Class<?> superClass = componentClass;
+        while (!Object.class.equals(superClass)) {
+            classStack.push(superClass);
+            superClass = superClass.getSuperclass();
         }
+
+        List<PropertyMeta> propertyMetas = new ArrayList<PropertyMeta>();
+        while (!classStack.empty()) {
+            Class<?> stackClass = classStack.pop();
+            Properties properties = pluginLogic.getPropertiesForClass(stackClass);
+            String propertyNamesStr = properties.getProperty("instance.properties");
+            if (StringUtils.isNotEmpty(propertyNamesStr)) {
+                String[] propertyNames = StringUtils.split(propertyNamesStr, ",");
+                for (String propertyName : propertyNames) {
+                    PropertyMeta propertyMeta = new PropertyMeta();
+                    propertyMeta.setId(propertyName);
+                    propertyMeta.setTitle(StringUtils.defaultIfEmpty(properties.getProperty("instance." + propertyName + ".title"), propertyName));
+                    propertyMetas.add(propertyMeta);
+                }
+
+            }
+        }
+
         return propertyMetas;
     }
 }

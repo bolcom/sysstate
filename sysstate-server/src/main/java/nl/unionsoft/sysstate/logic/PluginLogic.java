@@ -16,6 +16,6 @@ public interface PluginLogic {
 
     public List<Plugin> getPlugins();
 
-    public Properties getComponentProperties(String name);
+    public Properties getPropertiesForClass(Class<?> theClass);
 
 }

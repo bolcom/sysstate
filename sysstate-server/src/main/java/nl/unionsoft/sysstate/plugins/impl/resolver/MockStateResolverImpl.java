@@ -1,6 +1,6 @@
 package nl.unionsoft.sysstate.plugins.impl.resolver;
 
-import java.util.Properties;
+import java.util.Map;
 import java.util.Random;
 
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
@@ -21,9 +21,9 @@ public class MockStateResolverImpl implements StateResolver {
     }
 
     public void setState(final InstanceDto instance, final StateDto state) {
-        Properties properties = instance.getConfiguration();
+        Map<String, String> configuration = instance.getConfiguration();
 
-        String stateStr = properties.getProperty("state", "stable").toUpperCase();
+        String stateStr = StringUtils.defaultIfEmpty(configuration.get("state"), "stable").toUpperCase();
         if (StringUtils.equalsIgnoreCase("RANDOM", stateStr)) {
             int pick = random.nextInt(StateType.values().length);
             state.setState(StateType.values()[pick]);
@@ -34,13 +34,13 @@ public class MockStateResolverImpl implements StateResolver {
         state.setDescription(stateStr);
         try {
 
-            Thread.sleep(Long.valueOf(properties.getProperty("sleep", "stable")));
+            Thread.sleep(Long.valueOf(StringUtils.defaultIfEmpty(configuration.get("sleep"), "0")));
         } catch (final NumberFormatException e) {
             e.printStackTrace();
         } catch (final InterruptedException e) {
             e.printStackTrace();
         }
-        if (StringUtils.equalsIgnoreCase("exception", properties.getProperty("mode", ""))) {
+        if (StringUtils.equalsIgnoreCase("exception", StringUtils.defaultIfEmpty(configuration.get("mode"), ""))) {
             throw new IllegalStateException("Exception exception!");
         }
 

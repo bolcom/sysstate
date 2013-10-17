@@ -10,7 +10,7 @@ import javax.persistence.ManyToOne;
 public class InstanceProperty extends Property {
 
     @ManyToOne
-    @JoinColumn(name = "ICE_ID", nullable = true)
+    @JoinColumn(name = "ICE_ID")
     private Instance instance;
 
     /**

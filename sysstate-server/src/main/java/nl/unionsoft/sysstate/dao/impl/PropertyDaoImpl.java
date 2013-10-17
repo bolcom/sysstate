@@ -26,24 +26,25 @@ public class PropertyDaoImpl implements PropertyDao {
     @Named("entityManager")
     private EntityManager entityManager;
 
-    public void setInstanceProperty(final long instanceId, final String key, final String value) {
+    public void setInstanceProperty(final Instance instance, final String key, final String value) {
 
         try {
             // @formatter:off
             InstanceProperty result=  entityManager.createQuery(
                     "FROM InstanceProperty" +
-                            " WHERE instance.id = :instanceId " +
+                            " WHERE instance = :instance " +
                             "AND key = :key", InstanceProperty.class)
-                            .setParameter("instanceId", instanceId)
+                            .setParameter("instance", instance)
                             .setParameter("key", key)
                             .getSingleResult();
             // @formatter: on
             result.setValue(value);
         } catch (final NoResultException nre) {
             InstanceProperty result = new InstanceProperty();
-            result.setInstance(entityManager.find(Instance.class, instanceId));
             result.setKey(key);
             result.setValue(value);
+            result.setInstance(instance);
+            instance.getInstanceProperties().add(result);
             entityManager.persist(result);
         }
     }

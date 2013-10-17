@@ -7,6 +7,8 @@ name="ehcache-application">
 	<defaultCache maxElementsInMemory="10000" eternal="false" timeToIdleSeconds="300" timeToLiveSeconds="600" overflowToDisk="true" diskSpoolBufferSizeMB="30" maxElementsOnDisk="10000000"
 		diskPersistent="false" diskExpiryThreadIntervalSeconds="120" memoryStoreEvictionPolicy="LRU" statistics="true" />
 
-	<cache name="viewResultCache" maxElementsInMemory="100" eternal="false" timeToLiveSeconds="30" overflowToDisk="false" statistics="true" diskPersistent="false"/>
+	<cache name="propertiesForClassCache" maxElementsInMemory="100" eternal="false" timeToLiveSeconds="1800" overflowToDisk="false" statistics="true" diskPersistent="false"/>
+    <cache name="propertyMetaTypeCache" maxElementsInMemory="50" eternal="false" timeToLiveSeconds="1800" overflowToDisk="false" statistics="true" diskPersistent="false"/>
+    <cache name="viewResultCache" maxElementsInMemory="100" eternal="false" timeToLiveSeconds="30" overflowToDisk="false" statistics="true" diskPersistent="false"/>
 	<cache name="statisticsCache" maxElementsInMemory="10" eternal="false" timeToLiveSeconds="30" overflowToDisk="false" statistics="true" diskPersistent="false"/>
 </ehcache>

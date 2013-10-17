@@ -5,8 +5,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Stack;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -19,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -132,25 +135,27 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
 
     }
 
-    public Properties getComponentProperties(String name) {
-        Object component = getComponent(name);
-        Class<?> componentClass = component.getClass();
-        Properties properties = new Properties();
-        properties.putAll(getPropertiesForClass(componentClass));
-        return properties;
-    }
 
-    private Properties getPropertiesForClass(Class<?> theClass) {
+
+    @Cacheable("propertiesForClassCache")
+    public Properties getPropertiesForClass(Class<?> theClass) {
+
         Properties properties = new Properties();
         InputStream inputStream = null;
         try {
-            inputStream = theClass.getResourceAsStream(theClass.getCanonicalName() + ".properties");
-            properties.load(inputStream);
+            String propertyResource = "/" + StringUtils.replace(theClass.getCanonicalName(), ".", "/") + ".properties";
+            LOG.info("Loading props from class resource at '{}'", propertyResource);
+            inputStream = PluginLogicImpl.class.getResourceAsStream(propertyResource);
+            if (inputStream != null) {
+                properties.load(inputStream);
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             IOUtils.closeQuietly(inputStream);
         }
+
         return properties;
     }
 

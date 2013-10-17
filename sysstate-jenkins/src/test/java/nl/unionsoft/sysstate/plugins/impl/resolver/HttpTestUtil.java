@@ -2,6 +2,8 @@ package nl.unionsoft.sysstate.plugins.impl.resolver;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import mockit.Expectations;
@@ -18,14 +20,14 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 public class HttpTestUtil {
     public static StateDto doCall(final StateResolver plugin, final DefaultHttpClient defaultHttpClient, final String stream) throws IOException {
-        return doCall(plugin, defaultHttpClient, stream, new Properties());
+        return doCall(plugin, defaultHttpClient, stream, new LinkedHashMap<String, String>());
     }
 
-    public static StateDto doCall(final StateResolver plugin, final DefaultHttpClient defaultHttpClient, final String stream, final Properties properties) throws IOException {
+    public static StateDto doCall(final StateResolver plugin, final DefaultHttpClient defaultHttpClient, final String stream, final  Map<String, String> properties) throws IOException {
 
         final StateDto state = new StateDto();
         final InstanceDto instance = new InstanceDto();
-        properties.setProperty("url", "SomeUrl");
+        properties.put("url", "SomeUrl");
         instance.setConfiguration(properties);
         final InputStream inputStream = JenkinsServerStateResolverTest.class.getResourceAsStream(stream);
         new Expectations() {

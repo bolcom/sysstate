@@ -1,6 +1,6 @@
 package nl.unionsoft.sysstate.plugins.impl.resolver;
 
-import java.util.Properties;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -28,9 +28,9 @@ public class PushRequestsStateResolverImpl implements StateResolver {
     private StateLogic stateLogic;
 
     public void setState(final InstanceDto instance, final StateDto state) {
-        Properties properties = instance.getConfiguration();
+        Map<String, String> configuration = instance.getConfiguration();
 
-        Long timeout = Long.valueOf(properties.getProperty("timeOut", Long.toString(1000 * 60 * 10)));
+        Long timeout = Long.valueOf(StringUtils.defaultIfEmpty(configuration.get("timeOut"), Long.toString(1000 * 60 * 10)));
 
         final Long instanceId = instance.getId();
         StateDto fetchedState = pushStateLogic.fetch(instanceId);

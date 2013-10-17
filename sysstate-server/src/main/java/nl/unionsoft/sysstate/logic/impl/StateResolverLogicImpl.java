@@ -32,7 +32,6 @@ public class StateResolverLogicImpl implements StateResolverLogic {
             stateResolverMeta = new StateResolverMeta();
             stateResolverMeta.setName(stateResolverName);
         }
-
         return stateResolverMeta;
     }
 

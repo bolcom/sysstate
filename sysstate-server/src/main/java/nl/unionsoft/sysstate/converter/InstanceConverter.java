@@ -1,7 +1,7 @@
 package nl.unionsoft.sysstate.converter;
 
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -23,7 +23,7 @@ public class InstanceConverter implements Converter<InstanceDto, Instance> {
 
     @Inject
     @Named("instancePropertiesConverter")
-    private BidirectionalConverter<Properties, List<InstanceProperty>> instancePropertiesConverter;
+    private BidirectionalConverter<Map<String, String>, List<InstanceProperty>> instancePropertiesConverter;
     //
     // @Inject
     // @Named("pluginLogic")

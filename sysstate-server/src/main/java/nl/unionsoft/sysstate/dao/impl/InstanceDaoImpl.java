@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.domain.Instance;
+import nl.unionsoft.sysstate.domain.InstanceProperty;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
 
 import org.apache.commons.lang.StringUtils;
@@ -46,8 +47,12 @@ public class InstanceDaoImpl implements InstanceDao {
         // @formatter:off
         return entityManager
                 .createQuery( //
-                        "FROM Instance ice " + "WHERE ice.projectEnvironment.environment.id = :environmentId " + "AND ice.projectEnvironment.project.id = :projectId", Instance.class)
-                        .setParameter("projectId", projectId).setParameter("environmentId", environmentId).setHint("org.hibernate.cacheable", true).getResultList();
+                        "FROM Instance ice " + 
+                        "WHERE ice.projectEnvironment.environment.id = :environmentId " + 
+                        "AND ice.projectEnvironment.project.id = :projectId", Instance.class)
+                        .setParameter("projectId", projectId)
+                        .setParameter("environmentId", environmentId)
+                        .setHint("org.hibernate.cacheable", true).getResultList();
         // @formatter:on
     }
 
@@ -56,7 +61,18 @@ public class InstanceDaoImpl implements InstanceDao {
     }
 
     public Instance getInstance(final Long instanceId) {
-        return entityManager.find(Instance.class, instanceId);
+
+        Instance result = entityManager.find(Instance.class, instanceId);
+        
+//        List<InstanceProperty> instanceProperties = entityManager.createQuery("FROM InstanceProperty WHERE instance = :instance", InstanceProperty.class).setParameter("instance", result).getResultList();
+//        System.out.println("Found:" + instanceProperties.size());
+//        for (InstanceProperty instanceProperty : instanceProperties) {
+//            System.out.println(instanceProperty.getInstance().getId());
+//            System.out.println(instanceProperty.getKey() + ": " + instanceProperty.getValue());
+//
+//        }
+//        System.out.println("Relational Lookup:" + result.getInstanceProperties().size());
+        return result;
     }
 
     public void delete(final Long instanceId) {

@@ -1,5 +1,7 @@
 package nl.unionsoft.sysstate.plugins.impl.resolver;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import junit.framework.Assert;
@@ -189,8 +191,8 @@ public class PushRequestsStateResolverTest {
         StateDto state = new StateDto();
         InstanceDto instance = new InstanceDto();
 
-        Properties properties = new Properties();
-        properties.setProperty("timeOut", String.valueOf(1000 * 60 * 20));
+        Map<String,String> properties = new HashMap<String, String>();
+        properties.put("timeOut", String.valueOf(1000 * 60 * 20));
         instance.setConfiguration(properties);
         instance.setId(1L);
         pushRequestsStateResolverPlugin.setState(instance, state);
@@ -217,8 +219,8 @@ public class PushRequestsStateResolverTest {
         };
         StateDto state = new StateDto();
         InstanceDto instance = new InstanceDto();
-        Properties properties = new Properties();
-        properties.setProperty("timeOut", "-1");
+        Map<String,String> properties = new HashMap<String, String>();
+        properties.put("timeOut", "-1");
         instance.setConfiguration(properties);
         instance.setId(1L);
         pushRequestsStateResolverPlugin.setState(instance, state);

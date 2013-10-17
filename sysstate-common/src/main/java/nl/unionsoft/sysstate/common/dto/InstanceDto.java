@@ -1,5 +1,7 @@
 package nl.unionsoft.sysstate.common.dto;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.validation.constraints.Min;
@@ -18,7 +20,7 @@ public class InstanceDto {
 
     private String homepageUrl;
 
-    private Properties configuration;
+    private Map<String, String> configuration;
 
     @NotNull()
     @Size(min = 1)
@@ -37,6 +39,10 @@ public class InstanceDto {
 
     @NotNull()
     private ProjectEnvironmentDto projectEnvironment;
+
+    public InstanceDto() {
+        configuration = new LinkedHashMap<String, String>();
+    }
 
     public ProjectEnvironmentDto getProjectEnvironment() {
         return projectEnvironment;
@@ -150,20 +156,6 @@ public class InstanceDto {
         this.lastDisabled = lastDisabled;
     }
 
-    public Properties getConfiguration() {
-        Properties result = null;
-        if (configuration == null) {
-            result = new Properties();
-        } else {
-            result = configuration;
-        }
-        return result;
-    }
-
-    public void setConfiguration(Properties configuration) {
-        this.configuration = configuration;
-    }
-
     @Override
     public String toString() {
         return "InstanceDto [id=" + id + ", name=" + name + "]";
@@ -199,4 +191,14 @@ public class InstanceDto {
         return true;
     }
 
+    public Map<String, String> getConfiguration() {
+        return configuration;
+    }
+
+    public void setConfiguration(Map<String, String> configuration) {
+        this.configuration = configuration;
+    }
+
+    
+    
 }

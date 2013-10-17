@@ -1,5 +1,6 @@
 package nl.unionsoft.sysstate.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -47,7 +48,7 @@ public class Instance {
     @Column(name = "PLUGIN", nullable = true, length = 512)
     private String pluginClass;
 
-    @Column(name = "ENABLED", nullable = false)
+    @Column(name = "ENABLED", nullable = false, columnDefinition="BIT")
     private boolean enabled;
 
     @OneToMany(mappedBy = "instance", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -66,6 +67,10 @@ public class Instance {
     @ManyToOne
     @JoinColumn(name = "PET_ID", nullable = false)
     private ProjectEnvironment projectEnvironment;
+
+    public Instance() {
+        instanceProperties = new ArrayList<InstanceProperty>();
+    }
 
     /**
      * @return the instanceProperties

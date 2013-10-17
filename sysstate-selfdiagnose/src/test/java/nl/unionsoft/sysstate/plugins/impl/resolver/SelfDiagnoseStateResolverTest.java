@@ -1,6 +1,8 @@
 package nl.unionsoft.sysstate.plugins.impl.resolver;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import mockit.Mocked;
@@ -43,8 +45,8 @@ public class SelfDiagnoseStateResolverTest {
 
     @Test
     public void testStableMulti2() throws IOException {
-        Properties selfDiagnoseStateResolverConfig = new Properties();
-        selfDiagnoseStateResolverConfig.setProperty("pattern", ".*mehehehe.*");
+        Map<String, String> selfDiagnoseStateResolverConfig = new HashMap<String, String>();
+        selfDiagnoseStateResolverConfig.put("pattern", ".*mehehehe.*");
 
         final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, STABLE_MULTI, selfDiagnoseStateResolverConfig);
         System.out.println(state.getMessage());
@@ -57,8 +59,8 @@ public class SelfDiagnoseStateResolverTest {
     @Test
     public void testStableMulti() throws IOException {
 
-        Properties selfDiagnoseStateResolverConfig = new Properties();
-        selfDiagnoseStateResolverConfig.setProperty("pattern", ".*Maven POM properties.*");
+        Map<String, String> selfDiagnoseStateResolverConfig = new HashMap<String, String>();
+        selfDiagnoseStateResolverConfig.put("pattern",  ".*Maven POM properties.*");
 
         final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, STABLE_MULTI, selfDiagnoseStateResolverConfig);
         Assert.assertEquals(StateType.STABLE, state.getState());

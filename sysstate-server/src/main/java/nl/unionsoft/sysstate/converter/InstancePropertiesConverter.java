@@ -1,7 +1,9 @@
 package nl.unionsoft.sysstate.converter;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
@@ -12,24 +14,24 @@ import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Service;
 
 @Service("instancePropertiesConverter")
-public class InstancePropertiesConverter implements BidirectionalConverter<Properties, List<InstanceProperty>> {
+public class InstancePropertiesConverter implements BidirectionalConverter<Map<String, String>, List<InstanceProperty>> {
 
-    public Properties convert(List<InstanceProperty> instanceProperties) {
+    public Map<String, String> convert(List<InstanceProperty> instanceProperties) {
 
-        Properties properties = new Properties();
+        Map<String, String> configuration = new LinkedHashMap<String, String>();
         if (instanceProperties != null) {
             for (InstanceProperty instanceProperty : instanceProperties) {
-                properties.setProperty(instanceProperty.getKey(), instanceProperty.getValue());
+                configuration.put(instanceProperty.getKey(), instanceProperty.getValue());
             }
         }
 
-        return properties;
+        return configuration;
     }
 
-    public List<InstanceProperty> convertBack(Properties properties) {
+    public List<InstanceProperty> convertBack(Map<String, String> configuration) {
         List<InstanceProperty> instanceProperties = new ArrayList<InstanceProperty>();
-        if (properties != null) {
-            for (Entry<Object, Object> entry : properties.entrySet()) {
+        if (configuration != null) {
+            for (Entry<String, String> entry : configuration.entrySet()) {
                 InstanceProperty instanceProperty = new InstanceProperty();
                 instanceProperty.setKey(ObjectUtils.toString(entry.getKey()));
                 instanceProperty.setValue(ObjectUtils.toString(entry.getValue()));

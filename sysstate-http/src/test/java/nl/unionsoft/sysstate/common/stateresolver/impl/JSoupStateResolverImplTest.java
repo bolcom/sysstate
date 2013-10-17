@@ -1,5 +1,7 @@
 package nl.unionsoft.sysstate.common.stateresolver.impl;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
@@ -27,9 +29,9 @@ public class JSoupStateResolverImplTest {
         final StateDto state = new StateDto();
         final InstanceDto instance = new InstanceDto();
 
-        Properties properties = new Properties();
-        properties.setProperty("url", "http://bolnl-docs/reporting/dashboard/db_rel_version.html");
-        properties.setProperty("select", "table td:contains(APM) ~ td:eq(3)");
+        Map<String,String> properties = new HashMap<String, String>();
+        properties.put("url", "http://bolnl-docs/reporting/dashboard/db_rel_version.html");
+        properties.put("select", "table td:contains(APM) ~ td:eq(3)");
         instance.setConfiguration(properties);
         jSoupStateResolverPlugin.setState(instance, state);
     }

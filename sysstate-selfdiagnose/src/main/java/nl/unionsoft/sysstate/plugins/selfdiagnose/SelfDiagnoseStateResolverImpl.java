@@ -4,6 +4,7 @@ import static nl.unionsoft.sysstate.common.util.XmlUtil.getAttributePropertyFrom
 import static nl.unionsoft.sysstate.common.util.XmlUtil.getElementWithKeyFromDocument;
 import static nl.unionsoft.sysstate.common.util.XmlUtil.getElementWithKeyFromElement;
 
+import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
@@ -25,7 +26,7 @@ public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
     private static final String FORMAT_XML = "?format=xml";
 
     @Override
-    protected void handleXmlObject(final XmlObject xmlObject, final StateDto state, Properties configuration) {
+    protected void handleXmlObject(final XmlObject xmlObject, final StateDto state,  Map<String, String> configuration) {
 
         final Node node = xmlObject.getDomNode();
         final Document document = (Document) node;
@@ -37,7 +38,7 @@ public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
         final StringBuilder messageBuilder = new StringBuilder(4012);
         boolean allFailed = true;
 
-        String patternStr = configuration.getProperty("pattern");
+        String patternStr = configuration.get("pattern");
         Pattern pattern = null;
         if (StringUtils.isNotEmpty(patternStr)) {
             pattern = Pattern.compile(patternStr);

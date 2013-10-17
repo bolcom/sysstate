@@ -1,7 +1,7 @@
 package nl.unionsoft.sysstate.logic.impl;
 
 import java.util.Date;
-import java.util.Properties;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -133,7 +133,7 @@ public class StateLogicImpl implements StateLogic {
         return state;
     }
 
-    public StateDto requestState(final String pluginClass, final Properties configuration) {
+    public StateDto requestState(final String pluginClass, final Map<String, String> configuration) {
         final StateDto state = new StateDto();
 
         final Long now = System.currentTimeMillis();

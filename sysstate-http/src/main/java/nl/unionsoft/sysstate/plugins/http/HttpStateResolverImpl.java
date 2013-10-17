@@ -1,6 +1,7 @@
 package nl.unionsoft.sysstate.plugins.http;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.inject.Inject;
@@ -37,16 +38,16 @@ public class HttpStateResolverImpl implements StateResolver {
     public void setState(final InstanceDto instance, final StateDto state) {
         state.setState(StateType.STABLE);
         LOG.info("Preparing httpRequest...");
-        Properties properties = instance.getConfiguration();
+        Map<String, String> properties = instance.getConfiguration();
 
-        final String uri = processUri(properties.getProperty("URL"));
+        final String uri = processUri(properties.get(URL));
         if (StringUtils.isEmpty(uri)) {
             throw new IllegalStateException("URL is empty!");
         }
         final HttpGet httpGet = new HttpGet(uri);
         httpGet.addHeader("Connection", "close");
 
-        String userAgent = properties.getProperty("userAgent");
+        String userAgent = properties.get("userAgent");
         if (StringUtils.isNotEmpty(userAgent)) {
             httpGet.addHeader("User-Agent", userAgent);
         }
@@ -71,7 +72,7 @@ public class HttpStateResolverImpl implements StateResolver {
         return uri;
     }
 
-    private void handleHttpResponse(final StateDto state, final Properties configuration, final HttpResponse httpResponse) throws IOException {
+    private void handleHttpResponse(final StateDto state, final Map<String, String> configuration, final HttpResponse httpResponse) throws IOException {
         HttpEntity httpEntity = null;
         try {
             final StatusLine statusLine = httpResponse.getStatusLine();
@@ -100,7 +101,7 @@ public class HttpStateResolverImpl implements StateResolver {
         state.setMessage(StateUtil.exceptionAsMessage(exception));
     }
 
-    public void handleEntity(final HttpEntity httpEntity, final Properties configuration, final StateDto state) throws IOException {
+    public void handleEntity(final HttpEntity httpEntity, final Map<String, String> configuration, final StateDto state) throws IOException {
 
     }
 
@@ -113,8 +114,8 @@ public class HttpStateResolverImpl implements StateResolver {
     }
 
     public String generateHomePageUrl(final InstanceDto instance) {
-        Properties properties = instance.getConfiguration();
-        String homePageUrl = processUri(properties.getProperty(URL));
+        Map<String, String> properties = instance.getConfiguration();
+        String homePageUrl = processUri(properties.get(URL));
         return StringUtils.substringBefore(homePageUrl, "//") + "//" + StringUtils.substringBetween(homePageUrl, "//", "/");
     }
 

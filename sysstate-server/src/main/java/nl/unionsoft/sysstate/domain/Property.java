@@ -29,7 +29,7 @@ public class Property {
     @Column(name = "PROP_KEY", nullable = false)
     private String key;
 
-    @Column(name = "PROP_VALUE", nullable = true, length = 20)
+    @Column(name = "PROP_VALUE", nullable = true, length = 512)
     private String value;
 
     public String getKey() {
