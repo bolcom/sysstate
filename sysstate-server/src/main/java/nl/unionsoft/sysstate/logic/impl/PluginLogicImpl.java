@@ -71,18 +71,22 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
                     String pluginContext = mainAttributes.getValue("plugin-context");
                     String pluginId = mainAttributes.getValue("plugin-id");
                     String pluginVersion = mainAttributes.getValue("plugin-version");
-                    String pluginPropertiesResource = mainAttributes.getValue("plugin-properties");
-                    if (StringUtils.isNotEmpty(pluginContext)) {
-                        LOG.info("PluginContext: {}", pluginContext);
-                        contextFiles.add("classpath:" + pluginContext);
+                    if (StringUtils.isNotEmpty(pluginId) && StringUtils.isNotEmpty(pluginVersion)) {
+                        String pluginPropertiesResource = mainAttributes.getValue("plugin-properties");
+
+                        if (StringUtils.isNotEmpty(pluginContext)) {
+                            LOG.info("PluginContext: {}", pluginContext);
+                            contextFiles.add("classpath:" + pluginContext);
+                        }
+                        Plugin plugin = new Plugin();
+                        plugin.setId(pluginId);
+                        plugin.setVersion(pluginVersion);
+                        if (StringUtils.isNotEmpty(pluginPropertiesResource)) {
+                            plugin.setProperties(getPropertiesFromResource(pluginPropertiesResource));
+                        }
+                        plugins.add(plugin);
                     }
-                    Plugin plugin = new Plugin();
-                    plugin.setId(pluginId);
-                    plugin.setVersion(pluginVersion);
-                    if (StringUtils.isNotEmpty(pluginPropertiesResource)) {
-                        plugin.setProperties(getPropertiesFromResource(pluginPropertiesResource));
-                    }
-                    plugins.add(plugin);
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
@@ -210,14 +214,23 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
         PropertyMetaList propertyMetaList = new PropertyMetaList();
         if (plugin != null) {
             Properties properties = plugin.getProperties();
-            String propertyNamesStr = properties.getProperty("global.properties");
-            if (StringUtils.isNotEmpty(propertyNamesStr)) {
-                String[] propertyNames = StringUtils.split(propertyNamesStr, ",");
-                for (String propertyName : propertyNames) {
-                    PropertyMetaValue propertyMetaValue = new PropertyMetaValue();
-                    propertyMetaValue.setId(propertyName);
-                    propertyMetaValue.setTitle(StringUtils.defaultIfEmpty(properties.getProperty("global." + propertyName + ".title"), propertyName));
-                    propertyMetaList.add(propertyMetaValue);
+            if (properties != null) {
+                propertyMetaList.setName(properties.getProperty("plugin.title", name));
+                for (String propertyName : properties.stringPropertyNames()) {
+                    if (StringUtils.startsWith(propertyName, "global.") && !StringUtils.equals("global.properties", propertyName)) {
+                        String[] propertyTokens = StringUtils.split(propertyName, '.');
+                        if (propertyTokens.length >= 2) {
+                            String id = propertyTokens[1];
+                            PropertyMetaValue propertyMetaValue = new PropertyMetaValue();
+                            propertyMetaValue.setId(id);
+                            propertyMetaValue.setTitle(StringUtils.defaultIfEmpty(properties.getProperty(propertyName), id));
+                            GroupProperty groupProperty = propertyDao.getGroupProperty(name, id);
+                            if (groupProperty != null) {
+                                propertyMetaValue.setValue(groupProperty.getValue());
+                            }
+                            propertyMetaList.add(propertyMetaValue);
+                        }
+                    }
                 }
             }
         }

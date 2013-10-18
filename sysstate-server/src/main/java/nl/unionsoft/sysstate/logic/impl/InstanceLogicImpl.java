@@ -28,6 +28,7 @@ import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.PropertyMeta;
+import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
@@ -456,16 +457,20 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         while (!classStack.empty()) {
             Class<?> stackClass = classStack.pop();
             Properties properties = pluginLogic.getPropertiesForClass(stackClass);
-            String propertyNamesStr = properties.getProperty("instance.properties");
-            if (StringUtils.isNotEmpty(propertyNamesStr)) {
-                String[] propertyNames = StringUtils.split(propertyNamesStr, ",");
-                for (String propertyName : propertyNames) {
-                    PropertyMeta propertyMeta = new PropertyMeta();
-                    propertyMeta.setId(propertyName);
-                    propertyMeta.setTitle(StringUtils.defaultIfEmpty(properties.getProperty("instance." + propertyName + ".title"), propertyName));
-                    propertyMetas.add(propertyMeta);
-                }
 
+            if (properties != null) {
+                for (String propertyName : properties.stringPropertyNames()) {
+                    if (StringUtils.startsWith(propertyName, "instance.") && !StringUtils.equals("instance.properties", propertyName)) {
+                        String[] propertyTokens = StringUtils.split(propertyName, '.');
+                        if (propertyTokens.length >= 2) {
+                            String id = propertyTokens[1];
+                            PropertyMetaValue propertyMetaValue = new PropertyMetaValue();
+                            propertyMetaValue.setId(id);
+                            propertyMetaValue.setTitle(properties.getProperty(propertyName, properties.getProperty(propertyName + ".title", id)));
+                            propertyMetas.add(propertyMetaValue);
+                        }
+                    }
+                }
             }
         }
 

@@ -12,6 +12,7 @@ public interface PropertyDao {
     public void setGroupProperty(String group, String key, String value);
 
     public List<GroupProperty> getGroupProperties(String group);
+    public GroupProperty getGroupProperty(String group, String key);
    
 
 }

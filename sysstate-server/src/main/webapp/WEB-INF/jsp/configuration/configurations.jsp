@@ -4,22 +4,18 @@
 <table>
 	<tr valign="top">
 		<td>
-			<sf:form commandName="groupConfigurationsForm" method="POST">
+			<sf:form commandName="propertyMetaListsForm" method="POST">
 				<table id="id-form">
-					<c:forEach var="groupConfigurationForm" items="${groupConfigurationsForm.groupConfigurationForms}" varStatus="gccvStatus">
-						<tr><th>${groupConfigurationForm.groupName}</th></tr>
-						<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
-								<jsp:param name="path" value="groupConfigurationForms[${gccvStatus.index}].groupClass"/>
-								<jsp:param name="type" value="hidden"/>
-						</jsp:include>						
-						<c:forEach var="contextValue" items="${groupConfigurationForm.contextValues}" varStatus="cvStatus">
+					<c:forEach var="propertyMetaList" items="${propertyMetaListsForm.propertyMetaLists}" varStatus="gccvStatus">
+						<tr><th>${propertyMetaList.name}</th></tr>
+						<c:forEach var="propertyMeta" items="${propertyMetaList.propertyMetas}" varStatus="cvStatus">
 							<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
-								<jsp:param name="path" value="groupConfigurationForms[${gccvStatus.index}].contextValues[${cvStatus.index}].id"/>
+								<jsp:param name="path" value="propertyMetaLists[${gccvStatus.index}].propertyMetas[${cvStatus.index}].id"/>
 								<jsp:param name="type" value="hidden"/>
 							</jsp:include>						
 							<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
-								<jsp:param name="path" value="groupConfigurationForms[${gccvStatus.index}].contextValues[${cvStatus.index}].value"/>
-								<jsp:param name="label" value="${contextValue.title}"/>
+								<jsp:param name="path" value="propertyMetaLists[${gccvStatus.index}].propertyMetas[${cvStatus.index}].value"/>
+								<jsp:param name="label" value="${propertyMeta.title}"/>
 							</jsp:include>						
 						</c:forEach>
 					</c:forEach>

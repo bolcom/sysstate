@@ -83,4 +83,23 @@ public class PropertyDaoImpl implements PropertyDao {
         // @formatter:on
     }
 
+    public GroupProperty getGroupProperty(String group, String key) {
+
+        GroupProperty result = null;
+        try {
+            // @formatter:off
+            result = entityManager.createQuery(
+                "FROM GroupProperty "+ 
+                "WHERE group = :group AND key = :key ", GroupProperty.class)
+                .setParameter("group", group)
+                .setParameter("key", key)
+                .getSingleResult();
+            // @formatter:on
+        } catch (final NoResultException nre) {
+            // Nothing to see here, move along!
+        }
+        return result;
+
+    }
+
 }
