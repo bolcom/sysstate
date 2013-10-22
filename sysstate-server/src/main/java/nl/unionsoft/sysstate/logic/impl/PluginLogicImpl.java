@@ -13,9 +13,9 @@ import java.util.jar.Manifest;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import nl.unionsoft.sysstate.common.dto.PropertyMeta;
 import nl.unionsoft.sysstate.common.dto.PropertyMetaList;
 import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
+import nl.unionsoft.sysstate.common.extending.ListOfValueResolver;
 import nl.unionsoft.sysstate.dao.PropertyDao;
 import nl.unionsoft.sysstate.domain.GroupProperty;
 import nl.unionsoft.sysstate.logic.PluginLogic;
@@ -209,24 +209,30 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
         return properties;
     }
 
-    public PropertyMetaList getPluginPropertyMetaList(String name) {
-        Plugin plugin = getPlugin(name);
+    public PropertyMetaList getPluginPropertyMetaList(String id) {
+        Plugin plugin = getPlugin(id);
         PropertyMetaList propertyMetaList = new PropertyMetaList();
         if (plugin != null) {
             Properties properties = plugin.getProperties();
             if (properties != null) {
-                propertyMetaList.setName(properties.getProperty("plugin.title", name));
+                propertyMetaList.setName(properties.getProperty("plugin.title", id));
+                propertyMetaList.setId(id);
                 for (String propertyName : properties.stringPropertyNames()) {
                     if (StringUtils.startsWith(propertyName, "global.") && !StringUtils.equals("global.properties", propertyName)) {
                         String[] propertyTokens = StringUtils.split(propertyName, '.');
-                        if (propertyTokens.length >= 2) {
-                            String id = propertyTokens[1];
+                        if (propertyTokens.length == 2) {
+                            String propertyId = propertyTokens[1];
                             PropertyMetaValue propertyMetaValue = new PropertyMetaValue();
-                            propertyMetaValue.setId(id);
-                            propertyMetaValue.setTitle(StringUtils.defaultIfEmpty(properties.getProperty(propertyName), id));
-                            GroupProperty groupProperty = propertyDao.getGroupProperty(name, id);
+                            propertyMetaValue.setId(propertyId);
+                            propertyMetaValue.setTitle(StringUtils.defaultIfEmpty(properties.getProperty(propertyName), propertyId));
+                            GroupProperty groupProperty = propertyDao.getGroupProperty(id, propertyId);
                             if (groupProperty != null) {
                                 propertyMetaValue.setValue(groupProperty.getValue());
+                            }
+                            String lovResolver = properties.getProperty(propertyName + ".resolver");
+                            if (StringUtils.isNotEmpty(lovResolver)) {
+                                ListOfValueResolver listOfValueResolver = pluginApplicationContext.getBean(lovResolver, ListOfValueResolver.class);
+                                propertyMetaValue.setLov(listOfValueResolver.getListOfValues());
                             }
                             propertyMetaList.add(propertyMetaValue);
                         }
@@ -235,5 +241,15 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
             }
         }
         return propertyMetaList;
+    }
+
+    public void setPluginPropertyMeta(PropertyMetaList propertyMetaList) {
+        String group = propertyMetaList.getId();
+        List<PropertyMetaValue> propertyMetaValues = propertyMetaList.getPropertyMetaValues();
+        if (propertyMetaValues != null && StringUtils.isNotEmpty(group)) {
+            for (PropertyMetaValue propertyMetaValue : propertyMetaValues) {
+                propertyDao.setGroupProperty(group, propertyMetaValue.getId(), propertyMetaValue.getValue());
+            }
+        }
     }
 }

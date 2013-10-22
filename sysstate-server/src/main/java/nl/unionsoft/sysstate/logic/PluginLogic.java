@@ -21,6 +21,8 @@ public interface PluginLogic {
 
     public PropertyMetaList getPluginPropertyMetaList(String name);
 
+    public void setPluginPropertyMeta(PropertyMetaList propertyMetaList);
+
     public Properties getPluginProperties(String name);
 
 }

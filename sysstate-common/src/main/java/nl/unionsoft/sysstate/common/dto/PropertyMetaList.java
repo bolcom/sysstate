@@ -5,29 +5,30 @@ import java.util.List;
 
 public class PropertyMetaList {
     private String name;
-    private List<PropertyMeta> propertyMetas;
+    private String id;
+    private List<PropertyMetaValue> propertyMetaValues;
 
     public PropertyMetaList() {
-        propertyMetas = new ArrayList<PropertyMeta>();
+        propertyMetaValues = new ArrayList<PropertyMetaValue>();
     }
 
-    public List<PropertyMeta> getPropertyMetas() {
-        return propertyMetas;
+    public List<PropertyMetaValue> getPropertyMetaValues() {
+        return propertyMetaValues;
     }
 
-    public void setPropertyMetas(List<PropertyMeta> propertyMetas) {
-        this.propertyMetas = propertyMetas;
+    public void setPropertyMetaValues(List<PropertyMetaValue> propertyMetaValues) {
+        this.propertyMetaValues = propertyMetaValues;
     }
 
-    public void add(PropertyMeta propertyMeta) {
-        propertyMetas.add(propertyMeta);
+    public void add(PropertyMetaValue propertyMetaValue) {
+        propertyMetaValues.add(propertyMetaValue);
     }
 
-    public PropertyMeta get(String id) {
-        PropertyMeta result = null;
-        for (PropertyMeta propertyMeta : propertyMetas) {
-            if (propertyMeta.getId().equals(id)) {
-                result = propertyMeta;
+    public PropertyMetaValue get(String id) {
+        PropertyMetaValue result = null;
+        for (PropertyMetaValue propertyMetaValue : propertyMetaValues) {
+            if (propertyMetaValue.getId().equals(id)) {
+                result = propertyMetaValue;
                 break;
             }
         }
@@ -36,7 +37,7 @@ public class PropertyMetaList {
 
     public String getValue(String id) {
         String result = null;
-        PropertyMeta propertyMeta = get(id);
+        PropertyMetaValue propertyMeta = get(id);
         if (propertyMeta instanceof PropertyMetaValue) {
             PropertyMetaValue propertyMetaValue = (PropertyMetaValue) propertyMeta;
             result = propertyMetaValue.getValue();
@@ -50,6 +51,14 @@ public class PropertyMetaList {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
 }

@@ -9,6 +9,7 @@ import javax.validation.Valid;
 
 import nl.unionsoft.sysstate.Constants;
 import nl.unionsoft.sysstate.common.dto.PropertyMetaList;
+import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
 import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.web.mvc.form.PropertyMetaListsForm;
 
@@ -38,7 +39,7 @@ public class ConfigurationController {
     }
 
     @RequestMapping(value = "/configuration/index", method = RequestMethod.POST)
-    public ModelAndView update(@Valid @ModelAttribute("propertyMetaListsForm") final PropertyMetaListsForm groupConfigurationsForm, final BindingResult bindingResult,
+    public ModelAndView update(@Valid @ModelAttribute("propertyMetaListsForm") final PropertyMetaListsForm propertyMetaListsForm, final BindingResult bindingResult,
             final HttpServletRequest httpRequest) {
 
         ModelAndView modelAndView = null;
@@ -46,23 +47,12 @@ public class ConfigurationController {
             modelAndView = new ModelAndView("list-configuration-manager");
             // modelAndView.addObject("groupConfigurationForm", groupConfigurationForm);
         } else {
-
-            // List<GroupConfigurationForm> groupConfigurationForms = groupConfigurationsForm.getGroupConfigurationForms();
-            // for (GroupConfigurationForm groupConfigurationContextValue : groupConfigurationForms) {
-            // try {
-            // Class<? extends GroupConfiguration> groupConfigurationClass = (Class<? extends GroupConfiguration>) Class.forName(groupConfigurationContextValue
-            // .getGroupClass());
-            // GroupConfiguration groupConfiguration = groupConfigurationClass.newInstance();
-            // paramContextLogic.setContextValues(groupConfiguration, groupConfigurationContextValue.getContextValues());
-            // configurationLogic.setGroupConfiguration(groupConfiguration);
-            // } catch (ClassNotFoundException e) {
-            // e.printStackTrace();
-            // } catch (InstantiationException e) {
-            // e.printStackTrace();
-            // } catch (IllegalAccessException e) {
-            // e.printStackTrace();
-            // }
-            // }
+            List<PropertyMetaList> propertyMetaLists = propertyMetaListsForm.getPropertyMetaLists();
+            if (propertyMetaLists != null) {
+                for (PropertyMetaList propertyMetaList : propertyMetaLists) {
+                    pluginLogic.setPluginPropertyMeta(propertyMetaList);
+                }
+            }
             modelAndView = new ModelAndView("redirect:/filter/index.html");
         }
         return modelAndView;

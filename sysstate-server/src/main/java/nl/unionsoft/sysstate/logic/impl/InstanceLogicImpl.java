@@ -27,7 +27,6 @@ import nl.unionsoft.common.util.PropertiesUtil;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
-import nl.unionsoft.sysstate.common.dto.PropertyMeta;
 import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
@@ -157,9 +156,9 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         }
     }
 
-    private void removeTriggerJob(final long id) {
+    public void removeTriggerJob(final long instanceId) {
         try {
-            final String jobName = "instance-" + id + "-job";
+            final String jobName = "instance-" + instanceId + "-job";
             final String groupName = "instances";
             scheduler.deleteJob(jobName, groupName);
         } catch (final SchedulerException e1) {
@@ -350,40 +349,19 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
 
     public void afterPropertiesSet() throws Exception {
         List<Instance> instances = instanceDao.getInstances();
-        if (instances == null || instances.isEmpty()) {
-            LOG.info("No instances found, creating some default instances...");
-            addTestInstance("google", "GOOG", "PROD", createHttpConfiguration("http://www.google.nl"), "http://www.google.nl", "httpStateResolver");
-            addTestInstance("google", "GOOG", "MOCK", null, "http://www.yahoo.com", "mockStateResolver");
-            addTestInstance("yahoo", "YAHO", "PROD", createHttpConfiguration("http://www.yahoo.com"), "http://www.yahoo.com", "httpStateResolver");
-            addTestInstance("yahoo", "YAHO", "MOCK", null, "http://www.yahoo.com", "mockStateResolver");
-            addTestInstance("bing", "BING", "PROD", createHttpConfiguration("http://www.bing.com"), "http://www.bing.com", "httpStateResolver");
-            addTestInstance("bing", "BING", "MOCK", null, "http://www.bing.com", "mockStateResolver");
-            addTestInstance("ilse", "ILSE", "PROD", createHttpConfiguration("http://www.ilse.nl"), "http://www.ilse.nl", "httpStateResolver");
-            addTestInstance("ilse", "ILSE", "MOCK", null, "http://www.ilse.nl", "mockStateResolver");
-
-        } else {
-
-            for (Instance instance : instances) {
-                // 0.92.1 Legacy Cleanup
-                LOG.info("Cleaning up legacy configuration...");
-                Properties properties = getPropsFromConfiguration(instance.getConfiguration());
-                if (!properties.isEmpty() && (instance.getInstanceProperties() == null || instance.getInstanceProperties().isEmpty())) {
-                    for (Entry<Object, Object> entry : properties.entrySet()) {
-                        propertyDao.setInstanceProperty(instance, ObjectUtils.toString(entry.getKey()), ObjectUtils.toString(entry.getValue()));
-                    }
+        for (Instance instance : instances) {
+            // 0.92.1 Legacy Cleanup
+            LOG.info("Cleaning up legacy configuration...");
+            Properties properties = getPropsFromConfiguration(instance.getConfiguration());
+            if (!properties.isEmpty() && (instance.getInstanceProperties() == null || instance.getInstanceProperties().isEmpty())) {
+                for (Entry<Object, Object> entry : properties.entrySet()) {
+                    propertyDao.setInstanceProperty(instance, ObjectUtils.toString(entry.getKey()), ObjectUtils.toString(entry.getValue()));
                 }
-
-                // Add trigger
-                addTriggerJob(instance.getId());
             }
+            // Add trigger
+            addTriggerJob(instance.getId());
         }
 
-    }
-
-    private Map<String, String> createHttpConfiguration(String url) {
-        Map<String, String> configuration = new HashMap<String, String>();
-        configuration.put("url", url);
-        return configuration;
     }
 
     @Deprecated
@@ -410,26 +388,6 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return properties;
     }
 
-    private void addTestInstance(final String name, final String projectName, final String environmentName, final Map<String, String> configuration, final String homepageUrl,
-            final String plugin) {
-        ProjectEnvironmentDto projectEnvironment = projectEnvironmentLogic.getProjectEnvironment(projectName, environmentName);
-        if (projectEnvironment == null) {
-            LOG.info("Skipping creating of instance ${}, no projectEnvironment could be found for projectName '{}' and environmentName '{}'", new Object[] { name, projectName,
-                    environmentName });
-        } else {
-            InstanceDto instance = new InstanceDto();
-            instance.setName(name);
-            instance.setProjectEnvironment(projectEnvironment);
-            instance.setEnabled(true);
-            instance.setConfiguration(configuration);
-            instance.setHomepageUrl(homepageUrl);
-            instance.setPluginClass(plugin);
-            instance.setRefreshTimeout(10000);
-            instance.setTags("application");
-            createOrUpdateInstance(instance);
-        }
-    }
-
     public InstanceDto generateInstanceDto(String type) {
 
         final InstanceDto instance = new InstanceDto();
@@ -440,7 +398,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     }
 
     @Cacheable("propertyMetaTypeCache")
-    public List<PropertyMeta> getPropertyMeta(String type) {
+    public List<PropertyMetaValue> getPropertyMeta(String type) {
 
         Object component = pluginLogic.getComponent(type);
 
@@ -453,7 +411,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
             superClass = superClass.getSuperclass();
         }
 
-        List<PropertyMeta> propertyMetas = new ArrayList<PropertyMeta>();
+        List<PropertyMetaValue> propertyMetas = new ArrayList<PropertyMetaValue>();
         while (!classStack.empty()) {
             Class<?> stackClass = classStack.pop();
             Properties properties = pluginLogic.getPropertiesForClass(stackClass);

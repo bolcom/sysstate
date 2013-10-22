@@ -1,5 +1,6 @@
 package nl.unionsoft.sysstate.logic.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -8,11 +9,13 @@ import javax.inject.Named;
 import nl.unionsoft.common.converter.Converter;
 import nl.unionsoft.common.converter.ListConverter;
 import nl.unionsoft.sysstate.common.dto.ProjectDto;
+import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
 import nl.unionsoft.sysstate.dao.EnvironmentDao;
 import nl.unionsoft.sysstate.dao.ProjectDao;
 import nl.unionsoft.sysstate.dao.ProjectEnvironmentDao;
 import nl.unionsoft.sysstate.domain.Environment;
+import nl.unionsoft.sysstate.domain.Instance;
 import nl.unionsoft.sysstate.domain.Project;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
 
@@ -25,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service("projectLogic")
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-public class ProjectLogicImpl implements ProjectLogic, InitializingBean {
+public class ProjectLogicImpl implements ProjectLogic {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProjectLogicImpl.class);
     @Inject
@@ -35,6 +38,10 @@ public class ProjectLogicImpl implements ProjectLogic, InitializingBean {
     @Inject
     @Named("environmentDao")
     private EnvironmentDao environmentDao;
+
+    @Inject
+    @Named("instanceLogic")
+    private InstanceLogic instanceLogic;
 
     @Inject
     @Named("projectEnvironmentDao")
@@ -73,8 +80,21 @@ public class ProjectLogicImpl implements ProjectLogic, InitializingBean {
     }
 
     public void delete(final Long projectId) {
+        Project project = projectDao.getProject(projectId);
+        List<ProjectEnvironment> projectEnvironments = project.getProjectEnvironments();
+        List<Long> instanceIds = new ArrayList<Long>();
+        if (projectEnvironments != null) {
+            for (ProjectEnvironment projectEnvironment : projectEnvironments) {
+                List<Instance> instances = projectEnvironment.getInstances();
+                for (Instance instance : instances) {
+                    instanceIds.add(instance.getId());
+                }
+            }
+        }
         projectDao.delete(projectId);
-
+        for (Long instanceId : instanceIds) {
+            instanceLogic.removeTriggerJob(instanceId);
+        }
     }
 
     public ProjectDto findProject(final String name) {
@@ -85,27 +105,7 @@ public class ProjectLogicImpl implements ProjectLogic, InitializingBean {
         return ListConverter.convert(projectConverter, projectDao.getProjects());
     }
 
-    public void afterPropertiesSet() throws Exception {
-        List<Project> projects = projectDao.getProjects();
 
-        if (projects == null || projects.size() == 0) {
-            LOG.info("No projects found, creating some default projects...");
-            //No projects defined..
 
-            createProject("GOOG");
-            createProject("YAHO");
-            createProject("BING");
-            createProject("ILSE");
-
-        }
-
-    }
-
-    private void createProject(final String name)
-    {
-        ProjectDto project = new ProjectDto();
-        project.setName(name);
-        createOrUpdateProject(project);
-    }
 
 }

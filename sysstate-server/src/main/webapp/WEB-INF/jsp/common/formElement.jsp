@@ -52,9 +52,9 @@
 								
 							</c:when>		
 							<c:when test="${type == 'select'}">
+							
 								<c:set var="multi" value="${param.multi}"/>
 								<c:set var="size" value="${param.size}"/>
-								
 								<c:set var="itemLabel" value="${param.itemLabel}"/>
 								<c:set var="itemValue" value="${param.itemValue}"/>																
 								<c:set var="allowEmpty" value="${param.allowEmpty == 'true'}"/>

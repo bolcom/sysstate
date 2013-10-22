@@ -1,5 +1,6 @@
 package nl.unionsoft.sysstate.logic.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -9,10 +10,12 @@ import nl.unionsoft.common.converter.Converter;
 import nl.unionsoft.common.converter.ListConverter;
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
+import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.dao.EnvironmentDao;
 import nl.unionsoft.sysstate.dao.ProjectDao;
 import nl.unionsoft.sysstate.dao.ProjectEnvironmentDao;
 import nl.unionsoft.sysstate.domain.Environment;
+import nl.unionsoft.sysstate.domain.Instance;
 import nl.unionsoft.sysstate.domain.Project;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
 
@@ -25,8 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service("environmentLogic")
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-public class EnvironmentLogicImpl implements EnvironmentLogic, InitializingBean {
+public class EnvironmentLogicImpl implements EnvironmentLogic {
     private static final Logger LOG = LoggerFactory.getLogger(EnvironmentLogicImpl.class);
+
     @Inject
     @Named("environmentDao")
     private EnvironmentDao environmentDao;
@@ -42,6 +46,10 @@ public class EnvironmentLogicImpl implements EnvironmentLogic, InitializingBean 
     @Inject
     @Named("environmentConverter")
     private Converter<EnvironmentDto, Environment> environmentConverter;
+
+    @Inject
+    @Named("instanceLogic")
+    private InstanceLogic instanceLogic;
 
     public List<Environment> getEnvironmentEntities() {
         return environmentDao.getEnvironments();
@@ -67,8 +75,22 @@ public class EnvironmentLogicImpl implements EnvironmentLogic, InitializingBean 
     }
 
     public void delete(final Long environmentId) {
-        environmentDao.delete(environmentId);
 
+        Environment environment = environmentDao.getEnvironment(environmentId);
+        List<ProjectEnvironment> projectEnvironments = environment.getProjectEnvironments();
+        List<Long> instanceIds = new ArrayList<Long>();
+        if (projectEnvironments != null) {
+            for (ProjectEnvironment projectEnvironment : projectEnvironments) {
+                List<Instance> instances = projectEnvironment.getInstances();
+                for (Instance instance : instances) {
+                    instanceIds.add(instance.getId());
+                }
+            }
+        }
+        environmentDao.delete(environmentId);
+        for (Long instanceId : instanceIds) {
+            instanceLogic.removeTriggerJob(instanceId);
+        }
     }
 
     public EnvironmentDto findEnvironment(final String name) {
@@ -106,24 +128,6 @@ public class EnvironmentLogicImpl implements EnvironmentLogic, InitializingBean 
                 projectEnvironment.setEnvironment(environment);
                 projectEnvironmentDao.createOrUpdate(projectEnvironment);
             }
-        }
-
-    }
-
-    public void afterPropertiesSet() throws Exception {
-        List<Environment> environments = environmentDao.getEnvironments();
-        if (environments == null || environments.size() == 0) {
-            // No environments defined..
-            LOG.info("No environments found, creating some default environments...");
-            EnvironmentDto prd = new EnvironmentDto();
-            prd.setName("PROD");
-            prd.setOrder(10);
-            createOrUpdate(prd);
-
-            EnvironmentDto mock = new EnvironmentDto();
-            mock.setName("MOCK");
-            mock.setOrder(0);
-            createOrUpdate(mock);
         }
 
     }

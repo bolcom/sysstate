@@ -7,16 +7,33 @@
 			<sf:form commandName="propertyMetaListsForm" method="POST">
 				<table id="id-form">
 					<c:forEach var="propertyMetaList" items="${propertyMetaListsForm.propertyMetaLists}" varStatus="gccvStatus">
-						<tr><th>${propertyMetaList.name}</th></tr>
-						<c:forEach var="propertyMeta" items="${propertyMetaList.propertyMetas}" varStatus="cvStatus">
+						<tr><th>${propertyMetaList.name}
 							<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
-								<jsp:param name="path" value="propertyMetaLists[${gccvStatus.index}].propertyMetas[${cvStatus.index}].id"/>
+								<jsp:param name="path" value="propertyMetaLists[${gccvStatus.index}].id"/>
 								<jsp:param name="type" value="hidden"/>
 							</jsp:include>						
+						</th></tr>
+						
+						<c:forEach var="propertyMetaValue" items="${propertyMetaList.propertyMetaValues}" varStatus="cvStatus">
 							<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
-								<jsp:param name="path" value="propertyMetaLists[${gccvStatus.index}].propertyMetas[${cvStatus.index}].value"/>
-								<jsp:param name="label" value="${propertyMeta.title}"/>
+								<jsp:param name="path" value="propertyMetaLists[${gccvStatus.index}].propertyMetaValues[${cvStatus.index}].id"/>
+								<jsp:param name="type" value="hidden"/>
 							</jsp:include>						
+							<c:set var="type" value=""/>
+							<c:set var="items" value=""/>
+							<c:if test="${propertyMetaValue.lov != null}">
+								<c:set var="type" value="select"/>
+								<c:set var="items" value="lovValues"/>
+								<c:set var="lovValues" value="${propertyMetaValue.lov}" scope="request"/>
+							</c:if>
+								
+							<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
+								<jsp:param name="path" value="propertyMetaLists[${gccvStatus.index}].propertyMetaValues[${cvStatus.index}].value"/>
+								<jsp:param name="type" value="${type}"/>
+								<jsp:param name="items" value="${items}"/>
+								<jsp:param name="label" value="${propertyMetaValue.title}"/>
+							</jsp:include>						
+							--${propertyMetaValue.lov}--
 						</c:forEach>
 					</c:forEach>
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
