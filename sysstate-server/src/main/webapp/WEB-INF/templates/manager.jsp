@@ -415,8 +415,13 @@ $(document).ready(function(){
 	<div id="footer">
 		<div id="footer-pad">&nbsp;</div>
 		<!--  start footer-left -->
-		<div id="footer-left">
-		Admin Skin &copy; Copyright Internet Dreams Ltd. <a href="www.netdreams.co.uk">www.netdreams.co.uk</a>. All rights reserved.</div>
+		<div id="footer-text">
+			<div id="footer-left">
+			Admin Skin &copy; Copyright Internet Dreams Ltd. <a href="www.netdreams.co.uk">www.netdreams.co.uk</a>. All rights reserved.</div>
+	        <div id="footer-right">
+	        SysState vBETA</div>
+        </div>
+
 		<!--  end footer-left -->
 		<div class="clear">&nbsp;</div>
 	</div>
