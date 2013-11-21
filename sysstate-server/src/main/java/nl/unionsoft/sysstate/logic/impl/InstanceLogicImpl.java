@@ -351,9 +351,10 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         List<Instance> instances = instanceDao.getInstances();
         for (Instance instance : instances) {
             // 0.92.1 Legacy Cleanup
-            LOG.info("Cleaning up legacy configuration...");
+            
             Properties properties = getPropsFromConfiguration(instance.getConfiguration());
             if (!properties.isEmpty() && (instance.getInstanceProperties() == null || instance.getInstanceProperties().isEmpty())) {
+                LOG.info("Cleaning up legacy configuration for instance {}...", instance);
                 for (Entry<Object, Object> entry : properties.entrySet()) {
                     propertyDao.setInstanceProperty(instance, ObjectUtils.toString(entry.getKey()), ObjectUtils.toString(entry.getValue()));
                 }

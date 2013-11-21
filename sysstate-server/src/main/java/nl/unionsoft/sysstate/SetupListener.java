@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
+import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
@@ -15,7 +16,11 @@ import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
+import nl.unionsoft.sysstate.logic.FilterLogic;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -39,14 +44,22 @@ public class SetupListener implements InitializingBean {
     private EnvironmentLogic environmentLogic;
 
     @Inject
+    @Named("filterLogic")
+    private FilterLogic filterLogic;
+
+    @Inject
     @Named("projectEnvironmentLogic")
     private ProjectEnvironmentLogic projectEnvironmentLogic;
 
     public void afterPropertiesSet() throws Exception {
 
-        List<ProjectDto> projects = projectLogic.getProjects();
+        boolean hasNoProjects = projectLogic.getProjects().isEmpty();
+        boolean hasNoEnvironments = environmentLogic.getEnvironments().isEmpty();
+        boolean hasNoInstances = instanceLogic.getInstances().isEmpty();
 
-        if (projects == null || projects.size() == 0) {
+        boolean initialSetup = hasNoProjects && hasNoEnvironments && hasNoInstances;
+
+        if (initialSetup) {
             LOG.info("No projects found, creating some default projects...");
             // No projects defined..
 
@@ -55,10 +68,6 @@ public class SetupListener implements InitializingBean {
             createProject("BING");
             createProject("ILSE");
 
-        }
-
-        List<EnvironmentDto> environments = environmentLogic.getEnvironments();
-        if (environments == null || environments.size() == 0) {
             // No environments defined..
             LOG.info("No environments found, creating some default environments...");
             EnvironmentDto prd = new EnvironmentDto();
@@ -70,10 +79,7 @@ public class SetupListener implements InitializingBean {
             mock.setName("MOCK");
             mock.setOrder(0);
             environmentLogic.createOrUpdate(mock);
-        }
 
-        List<InstanceDto> instances = instanceLogic.getInstances();
-        if (instances == null || instances.isEmpty()) {
             LOG.info("No instances found, creating some default instances...");
             addTestInstance("google", "GOOG", "PROD", createHttpConfiguration("http://www.google.nl"), "http://www.google.nl", "httpStateResolver");
             addTestInstance("google", "GOOG", "MOCK", null, "http://www.yahoo.com", "mockStateResolver");
@@ -83,6 +89,14 @@ public class SetupListener implements InitializingBean {
             addTestInstance("bing", "BING", "MOCK", null, "http://www.bing.com", "mockStateResolver");
             addTestInstance("ilse", "ILSE", "PROD", createHttpConfiguration("http://www.ilse.nl"), "http://www.ilse.nl", "httpStateResolver");
             addTestInstance("ilse", "ILSE", "MOCK", null, "http://www.ilse.nl", "mockStateResolver");
+
+            if (filterLogic.getFilters().isEmpty()) {
+                LOG.info("No filters found, creating a default filter...");
+                FilterDto filterDto = new FilterDto();
+                filterDto.getEnvironments().add(prd.getId());
+                filterDto.setName("Production");
+                filterLogic.createOrUpdate(filterDto);
+            }
 
         }
 

@@ -172,5 +172,7 @@ public class Instance {
     public void setConfiguration(String configuration) {
         this.configuration = configuration;
     }
+    
+    
 
 }
