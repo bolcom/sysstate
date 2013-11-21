@@ -3,11 +3,17 @@ package nl.unionsoft.sysstate.common.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import nl.unionsoft.sysstate.common.enums.StateType;
 
 public class FilterDto {
 
     private Long id;
+
+    @NotNull()
+    @Size(min = 1, max = 128)
     private String name;
     private List<Long> projects;
     private List<Long> environments;
@@ -28,7 +34,7 @@ public class FilterDto {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -36,7 +42,7 @@ public class FilterDto {
         return projects;
     }
 
-    public void setProjects(List<Long> projects) {
+    public void setProjects(final List<Long> projects) {
         this.projects = projects;
     }
 
@@ -44,7 +50,7 @@ public class FilterDto {
         return environments;
     }
 
-    public void setEnvironments(List<Long> environments) {
+    public void setEnvironments(final List<Long> environments) {
         this.environments = environments;
     }
 
@@ -52,7 +58,7 @@ public class FilterDto {
         return states;
     }
 
-    public void setStates(List<StateType> states) {
+    public void setStates(final List<StateType> states) {
         this.states = states;
     }
 
@@ -60,7 +66,7 @@ public class FilterDto {
         return stateResolvers;
     }
 
-    public void setStateResolvers(List<String> stateResolvers) {
+    public void setStateResolvers(final List<String> stateResolvers) {
         this.stateResolvers = stateResolvers;
     }
 
@@ -68,7 +74,7 @@ public class FilterDto {
         return tags;
     }
 
-    public void setTags(String tags) {
+    public void setTags(final String tags) {
         this.tags = tags;
     }
 
@@ -76,7 +82,7 @@ public class FilterDto {
         return search;
     }
 
-    public void setSearch(String search) {
+    public void setSearch(final String search) {
         this.search = search;
     }
 
@@ -84,7 +90,7 @@ public class FilterDto {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 

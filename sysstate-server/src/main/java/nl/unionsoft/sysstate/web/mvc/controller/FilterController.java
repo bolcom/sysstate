@@ -17,6 +17,7 @@ import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -99,13 +100,20 @@ public class FilterController {
     }
 
     @RequestMapping(value = "/filter/save", method = RequestMethod.POST)
-    public ModelAndView saveFilter(@ModelAttribute("filter") final FilterDto saveFilter, final HttpSession session) {
-        final FilterDto filter = getFilter(session);
-        final String filterName = saveFilter.getName();
-        filter.setName(filterName);
-        filterLogic.createOrUpdate(filter);
-        messageLogic.addUserMessage(new MessageDto("FilterDto saved as '" + filterName + "'.", MessageDto.GREEN));
-        return new ModelAndView(REDIRECT_FILTER_INDEX_HTML);
+    public ModelAndView saveFilter(@Valid @ModelAttribute("filter") final FilterDto saveFilter, final HttpSession session, final BindingResult bindingResult) {
+        ModelAndView modelAndView = null;
+        if (bindingResult.hasErrors()) {
+            //TODO
+            modelAndView = new ModelAndView(REDIRECT_FILTER_INDEX_HTML);
+        } else {
+            final FilterDto filter = getFilter(session);
+            final String filterName = saveFilter.getName();
+            filter.setName(filterName);
+            filterLogic.createOrUpdate(filter);
+            messageLogic.addUserMessage(new MessageDto("FilterDto saved as '" + filterName + "'.", MessageDto.GREEN));
+            modelAndView = new ModelAndView(REDIRECT_FILTER_INDEX_HTML);
+        }
+        return modelAndView;
     }
 
     @RequestMapping(value = "/filter/preset/{preset}.html", method = RequestMethod.GET)
