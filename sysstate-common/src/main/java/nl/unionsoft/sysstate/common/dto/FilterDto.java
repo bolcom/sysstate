@@ -1,5 +1,6 @@
 package nl.unionsoft.sysstate.common.dto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,10 @@ import javax.validation.constraints.Size;
 
 import nl.unionsoft.sysstate.common.enums.StateType;
 
-public class FilterDto {
+public class FilterDto implements Serializable{
+
+
+    private static final long serialVersionUID = 2063143092239342545L;
 
     private Long id;
 
