@@ -50,7 +50,7 @@ public class Environment {
     }
 
     public String getName() {
-        return StringUtils.upperCase(StringUtils.substring(name, 0, 4));
+        return StringUtils.upperCase(name);
     }
 
     public void setName(final String name) {
@@ -69,7 +69,7 @@ public class Environment {
         return defaultInstanceTimeout;
     }
 
-    public void setDefaultInstanceTimeout(int defaultInstanceTimeout) {
+    public void setDefaultInstanceTimeout(final int defaultInstanceTimeout) {
         this.defaultInstanceTimeout = defaultInstanceTimeout;
     }
 
@@ -77,7 +77,7 @@ public class Environment {
         return projectEnvironments;
     }
 
-    public void setProjectEnvironments(List<ProjectEnvironment> projectEnvironments) {
+    public void setProjectEnvironments(final List<ProjectEnvironment> projectEnvironments) {
         this.projectEnvironments = projectEnvironments;
     }
 
@@ -85,7 +85,7 @@ public class Environment {
         return tags;
     }
 
-    public void setTags(String tags) {
+    public void setTags(final String tags) {
         this.tags = tags;
     }
 

@@ -55,7 +55,7 @@ public class EnvironmentController {
     @RequestMapping(value = "/environment/{environmentId}/delete", method = RequestMethod.POST)
     public ModelAndView handleDelete(@Valid @ModelAttribute("environment") final EnvironmentDto environment, final BindingResult bindingResult) {
         environmentLogic.delete(environment.getId());
-        return new ModelAndView("redirect:/filter/index.html");
+        return new ModelAndView("redirect:/environment/index.html");
     }
 
     @RequestMapping(value = "/environment/create", method = RequestMethod.POST)
@@ -67,7 +67,7 @@ public class EnvironmentController {
         } else {
             environment.setId(Long.valueOf(0).equals(environment.getId()) ? null : environment.getId());
             environmentLogic.createOrUpdate(environment);
-            modelAndView = new ModelAndView("redirect:/filter/index.html");
+            modelAndView = new ModelAndView("redirect:/environment/index.html");
         }
         return modelAndView;
     }

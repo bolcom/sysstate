@@ -69,6 +69,7 @@ public class ProjectController {
         ModelAndView modelAndView = null;
         if (bindingResult.hasErrors()) {
             modelAndView = new ModelAndView("create-update-project-manager");
+            modelAndView.addObject("stateResolverNames", stateResolverLogic.getStateResolverNames());
         } else {
             project.setId(Long.valueOf(0).equals(project.getId()) ? null : project.getId());
             projectLogic.createOrUpdateProject(project);

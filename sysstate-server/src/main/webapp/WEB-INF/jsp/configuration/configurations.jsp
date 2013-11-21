@@ -32,8 +32,8 @@
 								<jsp:param name="type" value="${type}"/>
 								<jsp:param name="items" value="${items}"/>
 								<jsp:param name="label" value="${propertyMetaValue.title}"/>
+								<jsp:param name="allowEmpty" value="${propertyMetaValue.nullable}"/>
 							</jsp:include>						
-							--${propertyMetaValue.lov}--
 						</c:forEach>
 					</c:forEach>
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">

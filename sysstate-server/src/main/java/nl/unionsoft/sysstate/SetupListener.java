@@ -1,7 +1,6 @@
 package nl.unionsoft.sysstate;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -12,15 +11,14 @@ import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
+import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
 import nl.unionsoft.sysstate.logic.FilterLogic;
+import nl.unionsoft.sysstate.logic.ViewLogic;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -46,6 +44,10 @@ public class SetupListener implements InitializingBean {
     @Inject
     @Named("filterLogic")
     private FilterLogic filterLogic;
+
+    @Inject
+    @Named("viewLogic")
+    private ViewLogic viewLogic;
 
     @Inject
     @Named("projectEnvironmentLogic")
@@ -96,24 +98,31 @@ public class SetupListener implements InitializingBean {
                 filterDto.getEnvironments().add(prd.getId());
                 filterDto.setName("Production");
                 filterLogic.createOrUpdate(filterDto);
+
+                if (viewLogic.getViews().isEmpty()) {
+                    LOG.info("No views found, creating a default view...");
+                    ViewDto viewDto = new ViewDto();
+                    viewDto.setFilter(filterDto);
+                    viewDto.setName("Production CI View");
+                    viewDto.setTemplateId("ci");
+                    viewLogic.createOrUpdateView(viewDto);
+                }
             }
-
         }
-
     }
 
-    private Map<String, String> createHttpConfiguration(String url) {
+    private Map<String, String> createHttpConfiguration(final String url) {
         Map<String, String> configuration = new HashMap<String, String>();
         configuration.put("url", url);
         return configuration;
     }
 
-    private void addTestInstance(final String name, final String projectName, final String environmentName, final Map<String, String> configuration, final String homepageUrl,
-            final String plugin) {
+    private void addTestInstance(final String name, final String projectName, final String environmentName, final Map<String, String> configuration,
+            final String homepageUrl, final String plugin) {
         ProjectEnvironmentDto projectEnvironment = projectEnvironmentLogic.getProjectEnvironment(projectName, environmentName);
         if (projectEnvironment == null) {
-            LOG.info("Skipping creating of instance ${}, no projectEnvironment could be found for projectName '{}' and environmentName '{}'", new Object[] { name, projectName,
-                    environmentName });
+            LOG.info("Skipping creating of instance ${}, no projectEnvironment could be found for projectName '{}' and environmentName '{}'", new Object[] {
+                    name, projectName, environmentName });
         } else {
             InstanceDto instance = new InstanceDto();
             instance.setName(name);

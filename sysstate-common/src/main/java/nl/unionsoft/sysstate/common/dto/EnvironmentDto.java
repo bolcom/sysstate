@@ -1,8 +1,15 @@
 package nl.unionsoft.sysstate.common.dto;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 public class EnvironmentDto {
     private Long id;
+
+    @NotNull()
+    @Size(min = 1, max = 15)
     private String name;
+
     private int order;
     private String tags;
     private int defaultInstanceTimeout;
@@ -11,7 +18,7 @@ public class EnvironmentDto {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -19,7 +26,7 @@ public class EnvironmentDto {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -27,7 +34,7 @@ public class EnvironmentDto {
         return order;
     }
 
-    public void setOrder(int order) {
+    public void setOrder(final int order) {
         this.order = order;
     }
 
@@ -35,7 +42,7 @@ public class EnvironmentDto {
         return tags;
     }
 
-    public void setTags(String tags) {
+    public void setTags(final String tags) {
         this.tags = tags;
     }
 
@@ -43,7 +50,7 @@ public class EnvironmentDto {
         return defaultInstanceTimeout;
     }
 
-    public void setDefaultInstanceTimeout(int defaultInstanceTimeout) {
+    public void setDefaultInstanceTimeout(final int defaultInstanceTimeout) {
         this.defaultInstanceTimeout = defaultInstanceTimeout;
     }
 

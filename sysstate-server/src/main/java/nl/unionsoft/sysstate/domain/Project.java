@@ -52,7 +52,7 @@ public class Project {
     }
 
     public String getName() {
-        return StringUtils.upperCase(StringUtils.substring(name, 0, 4));
+        return StringUtils.upperCase(name);
     }
 
     public void setName(final String name) {

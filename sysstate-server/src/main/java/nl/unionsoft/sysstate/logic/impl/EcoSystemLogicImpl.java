@@ -3,11 +3,13 @@ package nl.unionsoft.sysstate.logic.impl;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import nl.unionsoft.common.list.model.ListResponse;
+import nl.unionsoft.sysstate.Constants;
 import nl.unionsoft.sysstate.common.dto.CountDto;
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
@@ -18,11 +20,13 @@ import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.common.dto.ViewResultDto;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.logic.EcoSystemLogic;
+import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.util.CountUtil;
 
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.collections.comparators.ComparableComparator;
 import org.apache.commons.collections.comparators.NullComparator;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -36,9 +40,13 @@ public class EcoSystemLogicImpl implements EcoSystemLogic {
     @Named("instanceLogic")
     private InstanceLogic instanceLogic;
 
+    @Inject
+    @Named("pluginLogic")
+    private PluginLogic pluginLogic;
+
     @SuppressWarnings("unchecked")
     @Cacheable("viewResultCache")
-    public ViewResultDto getEcoSystem(ViewDto view) {
+    public ViewResultDto getEcoSystem(final ViewDto view) {
 
         FilterDto filter = view.getFilter();
         if (filter == null) {
@@ -48,6 +56,7 @@ public class EcoSystemLogicImpl implements EcoSystemLogic {
         final ViewResultDto viewResult = new ViewResultDto(view);
         final CountDto instanceCount = viewResult.getInstanceCount();
         final List<EnvironmentDto> environments = viewResult.getEnvironments();
+
         final List<ProjectDto> projects = viewResult.getProjects();
 
         final List<InstanceDto> instances = result.getResults();
@@ -60,6 +69,18 @@ public class EcoSystemLogicImpl implements EcoSystemLogic {
             addEnvironmentsIfNotExists(environments, environment);
             CountUtil.add(instanceCount, instance.getState().getState());
         }
+        Properties sysstateProperties = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);
+
+
+        // Whack environment names...
+        for (EnvironmentDto environment : environments) {
+            environment.setName(StringUtils.substring(environment.getName(), 0, Integer.valueOf(sysstateProperties.getProperty("environmentNameLength"))));
+        }
+        // Whack project names...
+        for (ProjectDto project : projects) {
+            project.setName(StringUtils.substring(project.getName(), 0, Integer.valueOf(sysstateProperties.getProperty("projectNameLength"))));
+        }
+
         // Comparator<Object> orderComparator = new BeanComparator("order", new
         // NullComparator(new ReverseComparator()));
         final Comparator<Object> orderComparator = new BeanComparator("order", new NullComparator(ComparableComparator.getInstance()));
@@ -68,7 +89,7 @@ public class EcoSystemLogicImpl implements EcoSystemLogic {
         return viewResult;
     }
 
-    private void addProjectIfNotExists(final List<ProjectDto> projects, ProjectDto project) {
+    private void addProjectIfNotExists(final List<ProjectDto> projects, final ProjectDto project) {
         boolean projectAlreadyInList = false;
         for (final ProjectDto searchProject : projects) {
             if (searchProject.getId().equals(project.getId())) {
@@ -81,7 +102,7 @@ public class EcoSystemLogicImpl implements EcoSystemLogic {
         }
     }
 
-    private void addEnvironmentsIfNotExists(final List<EnvironmentDto> environments, EnvironmentDto environment) {
+    private void addEnvironmentsIfNotExists(final List<EnvironmentDto> environments, final EnvironmentDto environment) {
         boolean environmentAlreadyInList = false;
         for (final EnvironmentDto searcEnvironment : environments) {
             if (searcEnvironment.getId().equals(environment.getId())) {

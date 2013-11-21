@@ -21,7 +21,6 @@ import nl.unionsoft.sysstate.domain.ProjectEnvironment;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -119,7 +118,7 @@ public class EnvironmentLogicImpl implements EnvironmentLogic {
         environment.setOrder(environmentDto.getOrder());
         environment.setTags(environmentDto.getTags());
         environmentDao.createOrUpdate(environment);
-
+        environmentDto.setId(environment.getId());
         for (final Project project : projectDao.getProjects()) {
             ProjectEnvironment projectEnvironment = projectEnvironmentDao.getProjectEnvironment(project.getId(), environment.getId());
             if (projectEnvironment == null) {

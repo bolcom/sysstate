@@ -1,8 +1,10 @@
 package nl.unionsoft.sysstate.common.extending;
 
-import java.util.Properties;
+import java.util.Map;
+
+import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
 
 public interface ListOfValueResolver {
 
-    public Properties getListOfValues();
+    public Map<String, String> getListOfValues(PropertyMetaValue propertyMetaValue);
 }

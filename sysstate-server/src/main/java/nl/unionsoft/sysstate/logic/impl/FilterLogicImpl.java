@@ -29,11 +29,11 @@ public class FilterLogicImpl implements FilterLogic {
         return ListConverter.convert(filterConverter, filterDao.getFilters());
     }
 
-    public FilterDto getFilter(Long filterId) {
+    public FilterDto getFilter(final Long filterId) {
         return filterConverter.convert(filterDao.getFilter(filterId));
     }
 
-    public void createOrUpdate(FilterDto dto) {
+    public void createOrUpdate(final FilterDto dto) {
         final Filter filter = new Filter();
         filter.setId(dto.getId());
         filter.setEnvironments(dto.getEnvironments());
@@ -44,6 +44,7 @@ public class FilterLogicImpl implements FilterLogic {
         filter.setStates(dto.getStates());
         filter.setTags(dto.getTags());
         filterDao.createOrUpdate(filter);
+        dto.setId(filter.getId());
     }
 
 }
