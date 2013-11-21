@@ -29,10 +29,9 @@ public class StatisticsDaoImpl implements StatisticsDao {
     @Named("entityManager")
     private EntityManager entityManager;
 
-    public void updateStatistics(StatisticsDto statistics) {
-
+    public StatisticsDto getStatistics() {
+        StatisticsDto statistics = new StatisticsDto();
         final CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-
         statistics.setProjects(count(criteriaBuilder, Project.class));
         statistics.setEnvironments(count(criteriaBuilder, Environment.class));
         statistics.setInstances(count(criteriaBuilder, Instance.class));
@@ -40,10 +39,11 @@ public class StatisticsDaoImpl implements StatisticsDao {
         statistics.setStates(count(criteriaBuilder, State.class));
         statistics.setViews(count(criteriaBuilder, View.class));
         statistics.setFilters(count(criteriaBuilder, Filter.class));
+        return statistics;
 
     }
 
-    private Long count(CriteriaBuilder criteriaBuilder, Class<?> theType) {
+    private Long count(final CriteriaBuilder criteriaBuilder, final Class<?> theType) {
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         final Root<?> root = criteriaQuery.from(theType);
         criteriaQuery = criteriaQuery.select(criteriaBuilder.count(root));
