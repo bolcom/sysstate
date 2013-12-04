@@ -81,7 +81,7 @@ public class FilterController {
     }
 
     @RequestMapping(value = "/filter/index", method = RequestMethod.POST)
-    public ModelAndView filter(@Valid @ModelAttribute("filter") final FilterDto filter, final HttpSession session) {
+    public ModelAndView filter(@ModelAttribute("filter") final FilterDto filter, final HttpSession session) {
         final FilterDto sessionFilterDto = getFilter(session);
         mergeEnvironments(filter, sessionFilterDto);
         mergeProjects(filter, sessionFilterDto);
