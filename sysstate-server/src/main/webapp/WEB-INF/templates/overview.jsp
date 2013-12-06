@@ -33,11 +33,7 @@
 					}
 				});
 			});
-			
-			
 		</script>  
-		
-
 	</head>
 	<body>
 		<tiles:insertAttribute name="body" />

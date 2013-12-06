@@ -32,49 +32,54 @@
 						<c:set var="instances" value="${projectEnvironment.instances }"/>
 
 						<td id="row_prj_${project.id}_env_${environment.id}" class="row_prj_env state_${projectEnvironment.state}">
-							<div class="row_prj_env">
-								<c:set var="target" value="${not empty projectEnvironment.homepageUrl ? '_BLANK' : '_SELF'}"/>
+					
+							<div class="row_prj_env" style="position: relative;" >
+								<!-- <div style="z-index: 10; position: absolute;top: 0;left: 0;">blaat</div> -->
+								<!-- <div style="position: absolute;top: 0;left: 0;"> -->
+								<div">
+									<c:set var="target" value="${not empty projectEnvironment.homepageUrl ? '_BLANK' : '_SELF'}"/>
 									<a class="inline" href="${contextPath}/projectEnvironment/project/${project.id}/environment/${environment.id}/details.html" title="Configuration">
-									<span class="row_prj_env_int_state state_${projectEnvironment.state}"><img src="${contextPath}/images/transparant.gif"/></span>
-									<c:set var="styleRating" value=""/>
-									<c:if test="${properties['no_weather'] != 'true'}">
+										<span class="row_prj_env_int_state state_${projectEnvironment.state}"><img src="${contextPath}/images/transparant.gif"/></span>
+										<c:set var="styleRating" value=""/>
+										<c:if test="${properties['no_weather'] != 'true'}">
+											<c:choose>
+												<c:when test="${fn:length(instances) == 0 || projectEnvironment.rating  < 0 }">
+													<c:set var="styleRating" value=""/>
+												</c:when>
+												<c:when test="${projectEnvironment.rating < 25 }">
+													<c:set var="styleRating" value="rating_0"/>	
+												</c:when>
+												<c:when test="${projectEnvironment.rating < 50 }">
+													<c:set var="styleRating" value="rating_25"/>	
+												</c:when>
+												<c:when test="${projectEnvironment.rating < 75 }">
+													<c:set var="styleRating" value="rating_50"/>	
+												</c:when>
+												<c:when test="${projectEnvironment.rating < 100 }">
+													<c:set var="styleRating" value="rating_75"/>	
+												</c:when>
+												<c:when test="${projectEnvironment.rating == 100 }">
+													<c:set var="styleRating" value="rating_100"/>	
+												</c:when>
+											</c:choose>
+											<span class="row_prj_env_int_rating ${styleRating}"><img src="${contextPath}/images/transparant.gif"/></span>
+										</c:if>
+										
+										<span class="env_prj_name">${project.name}</span>
+										
 										<c:choose>
-											<c:when test="${fn:length(instances) == 0 || projectEnvironment.rating  < 0 }">
-												<c:set var="styleRating" value=""/>
+											<c:when test="${fn:length(instances) == 0 }">
+												None
 											</c:when>
-											<c:when test="${projectEnvironment.rating < 25 }">
-												<c:set var="styleRating" value="rating_0"/>	
+											<c:when test="${not empty projectEnvironment.description}">
+												${projectEnvironment.description}
 											</c:when>
-											<c:when test="${projectEnvironment.rating < 50 }">
-												<c:set var="styleRating" value="rating_25"/>	
-											</c:when>
-											<c:when test="${projectEnvironment.rating < 75 }">
-												<c:set var="styleRating" value="rating_50"/>	
-											</c:when>
-											<c:when test="${projectEnvironment.rating < 100 }">
-												<c:set var="styleRating" value="rating_75"/>	
-											</c:when>
-											<c:when test="${projectEnvironment.rating == 100 }">
-												<c:set var="styleRating" value="rating_100"/>	
-											</c:when>
+											<c:otherwise>
+												(<font class="state_STABLE">${projectEnvironment.count.stable}</font>/<font class="state_UNSTABLE">${projectEnvironment.count.unstable}</font>/<font class="state_ERROR">${projectEnvironment.count.error}</font>/<font class="state_DISABLED">${projectEnvironment.count.disabled}</font>/<font class="state_PENDING">${projectEnvironment.count.pending}</font>)
+											</c:otherwise>
 										</c:choose>
-										<span class="row_prj_env_int_rating ${styleRating}"><img src="${contextPath}/images/transparant.gif"/></span>
-									</c:if>
-									
-									<span class="env_prj_name">${project.name}</span>
-									
-									<c:choose>
-										<c:when test="${fn:length(instances) == 0 }">
-											None
-										</c:when>
-										<c:when test="${not empty projectEnvironment.description}">
-											${projectEnvironment.description}
-										</c:when>
-										<c:otherwise>
-											(<font class="state_STABLE">${projectEnvironment.count.stable}</font>/<font class="state_UNSTABLE">${projectEnvironment.count.unstable}</font>/<font class="state_ERROR">${projectEnvironment.count.error}</font>/<font class="state_DISABLED">${projectEnvironment.count.disabled}</font>/<font class="state_PENDING">${projectEnvironment.count.pending}</font>)
-										</c:otherwise>
-									</c:choose>
-								</a>
+									</a>
+								</div>
 							</div>
 						</td>
 					</c:forEach>

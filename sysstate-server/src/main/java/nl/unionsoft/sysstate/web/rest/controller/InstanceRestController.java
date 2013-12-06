@@ -67,33 +67,7 @@ public class InstanceRestController {
         return state;
     }
 
-    // http://localhost:4600/sysstate/services/instance/tst/apm/JustPushIt/state/push
 
-    //@formatter:off
-//    @RequestMapping(value = "/instance/{environment}/{project}/{instance}/state/push", method = RequestMethod.POST, headers= {"content-type=application/json,application/xml"})
-//    public void pushState(
-//            @PathVariable("environment") final String environment, 
-//            @PathVariable("project") final String project,
-//            @PathVariable("instance") final String instanceName, 
-//            @RequestBody State state) {
-//        //@formatter:on
-    // List<InstanceDto> instances = instanceLogic.getInstancesForPrefixes(project,
-    // environment);
-    // InstanceDto selected = getInstanceWithName(instanceName, instances);
-    // LOG.info("Selected instance for env '{}', prj '{}' and instanceName is: {}", new
-    // Object[] {environment, project, instanceName, selected});
-    // if (selected != null) {
-    // StateDto dto = new StateDto();
-    //
-    // dto.setState(StateType.valueOf(state.getState()));
-    // dto.setMessage(state.getMessage());
-    // dto.setResponseTime(state.getResponseTime() == null ? 0 : state.getResponseTime());
-    // dto.setDescription(state.getDescription());
-    // pushStateLogic.push(selected.getId(), dto);
-    // }
-    // }
-
-    // http://localhost:4600/sysstate/services/instance/tst/apm/JustPushIt/state/push
     @RequestMapping(value = "/instance/{environment}/{project}/{instance}/state/push", method = RequestMethod.POST)
     //@formatter:off
     public void pushState(

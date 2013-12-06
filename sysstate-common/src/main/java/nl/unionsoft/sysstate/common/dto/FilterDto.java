@@ -16,8 +16,6 @@ public class FilterDto implements Serializable{
 
     private Long id;
 
-    @NotNull()
-    @Size(min = 1, max = 128)
     private String name;
     private List<Long> projects;
     private List<Long> environments;

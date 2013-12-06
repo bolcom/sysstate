@@ -19,7 +19,8 @@
 	<xs:element name="state">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
+				<xs:element name="id" type="xs:long" minOccurs="0" maxOccurs="1" />
+                <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
 				<xs:element name="state" type="xs:string" minOccurs="0" maxOccurs="1" />
 				<xs:element name="message" type="xs:string" minOccurs="0" maxOccurs="1" />
 				<xs:element name="responseTime" type="xs:long" minOccurs="0" maxOccurs="1" />
