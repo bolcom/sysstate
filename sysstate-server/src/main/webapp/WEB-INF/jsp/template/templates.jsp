@@ -35,8 +35,7 @@
 					</c:otherwise>
 				</c:choose>
 				<sc:authorize url="/index">
-					<a class="inline" href="${view.id}/details.html" title="Preview">Preview</a>
-					| <a href="../index.html?templateId=${template.id}" target="_BLANK">Show</a>
+					<a href="../index.html?templateId=${template.id}" target="_BLANK">Show</a>
 				</sc:authorize>
 			</td>
 		</tr>

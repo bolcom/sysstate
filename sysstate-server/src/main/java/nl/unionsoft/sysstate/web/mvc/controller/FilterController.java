@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller()
@@ -116,6 +117,19 @@ public class FilterController {
         return modelAndView;
     }
 
+    @RequestMapping(value = "/filter/{filterId}/delete", method = RequestMethod.GET)
+    public ModelAndView getDelete(@PathVariable("filterId") final Long filterId) {
+        final ModelAndView modelAndView = new ModelAndView("delete-filter-manager");
+        modelAndView.addObject("filter", filterLogic.getFilter(filterId));
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/filter/{filterId}/delete/confirmed", method = RequestMethod.POST)
+    public ModelAndView handleDelete(@PathVariable("filterId") final Long filterId, @RequestParam(value = "redirUrl", required = false) final String redirUrl) {
+        filterLogic.delete(filterId);
+        return new ModelAndView("redirect:/filter/index.html");
+    }
+    
     @RequestMapping(value = "/filter/preset/{preset}.html", method = RequestMethod.GET)
     public ModelAndView filterPresset(@PathVariable("preset") final String preset, final HttpSession session) {
 

@@ -219,6 +219,12 @@
 		<put-attribute name="page-heading" value="Filters" />
 	</definition>
 
+    <definition name="delete-filter-manager" extends="manager">
+        <put-attribute name="contents" value="/WEB-INF/jsp/filter/delete.jsp" />
+        <put-attribute name="page-heading" value="Delete Filter" />
+    </definition>
+
+
 	<!-- Users -->
 	<definition name="list-user-manager" extends="manager">
 		<put-attribute name="contents" value="/WEB-INF/jsp/user/users.jsp" />

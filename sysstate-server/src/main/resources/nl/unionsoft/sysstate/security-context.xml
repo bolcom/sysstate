@@ -40,7 +40,8 @@ user    	//Average Joe
 		<intercept-url pattern="/view/create*" access="ROLE_EDITOR,ROLE_ADMIN" />
 		
 		<intercept-url pattern="/template/**" access="ROLE_ADMIN" />
-		
+        
+		<intercept-url pattern="/filter/*/delete*" access="ROLE_EDITOR,ROLE_ADMIN" />
 		<!-- 
 		<intercept-url pattern="/discovery/**" access="ROLE_EDITOR,ROLE_ADMIN" />
 		 -->

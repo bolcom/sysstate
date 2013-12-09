@@ -11,4 +11,6 @@ public interface FilterDao {
 
     public Filter getFilter(Long filterId);
 
+    public void delete(Long filterId);
+
 }

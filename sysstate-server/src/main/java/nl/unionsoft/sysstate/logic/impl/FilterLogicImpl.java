@@ -13,8 +13,11 @@ import nl.unionsoft.sysstate.domain.Filter;
 import nl.unionsoft.sysstate.logic.FilterLogic;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service("filterLogic")
+@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class FilterLogicImpl implements FilterLogic {
 
     @Inject
@@ -45,6 +48,11 @@ public class FilterLogicImpl implements FilterLogic {
         filter.setTags(dto.getTags());
         filterDao.createOrUpdate(filter);
         dto.setId(filter.getId());
+    }
+
+    public void delete(Long filterId) {
+        filterDao.delete(filterId);
+        
     }
 
 }

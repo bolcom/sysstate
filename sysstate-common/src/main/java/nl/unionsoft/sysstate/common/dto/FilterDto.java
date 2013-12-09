@@ -21,14 +21,18 @@ public class FilterDto implements Serializable{
     private List<Long> environments;
     private List<StateType> states;
     private List<String> stateResolvers;
+    private List<ViewDto> views;
     private String tags;
     private String search;
+    
+    
 
     public FilterDto () {
         projects = new ArrayList<Long>();
         environments = new ArrayList<Long>();
         states = new ArrayList<StateType>();
         stateResolvers = new ArrayList<String>();
+        views = new ArrayList<ViewDto>();
 
     }
 
@@ -94,6 +98,14 @@ public class FilterDto implements Serializable{
 
     public void setId(final Long id) {
         this.id = id;
+    }
+
+    public List<ViewDto> getViews() {
+        return views;
+    }
+
+    public void setViews(List<ViewDto> views) {
+        this.views = views;
     }
 
 }

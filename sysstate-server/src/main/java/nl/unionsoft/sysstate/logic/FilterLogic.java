@@ -7,6 +7,8 @@ import nl.unionsoft.sysstate.common.dto.FilterDto;
 public interface FilterLogic {
 
     public void createOrUpdate(FilterDto filter);
+    
+    public void delete(Long filterId);
 
     public List<FilterDto> getFilters();
 

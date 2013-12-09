@@ -25,14 +25,8 @@
 	<!--<![endif]--> <!--[if lte IE 6]><table><tr><td><![endif]-->
 		<div class="select_sub show">
 			<ul class="sub">
-				<c:forEach var="view" items="${views}" varStatus="varStatus">
-					<li><a href="${contextPath}/view/${view.id}/details.html">
-							<c:out value="${view.name}" escapeXml="true" />
-					</a></li>
-				</c:forEach>
 				<sc:authorize url="/view/create">
-					<li><a href="${contextPath}/view/create.html"><img
-							src="${contextPath}/images/create.png" /></a></li>
+					<li><a href="${contextPath}/view/create.html"><img src="${contextPath}/images/create.png" /> Add</a></li>
 				</sc:authorize>
 			</ul>
 		</div> <!--[if lte IE 6]></td></tr></table></a><![endif]--></li>

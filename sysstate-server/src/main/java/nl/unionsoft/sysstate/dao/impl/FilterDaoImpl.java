@@ -38,4 +38,8 @@ public class FilterDaoImpl implements FilterDao {
         return entityManager.find(Filter.class, filterId);
     }
 
+    public void delete(Long filterId) {
+        entityManager.remove(entityManager.find(Filter.class, filterId));
+    }
+
 }
