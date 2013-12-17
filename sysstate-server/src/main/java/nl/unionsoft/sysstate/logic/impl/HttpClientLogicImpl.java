@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -13,6 +14,7 @@ import nl.unionsoft.sysstate.common.logic.HttpClientLogic;
 import nl.unionsoft.sysstate.factorybeans.HttpClientFactoryBean;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ClientConnectionManager;
 import org.slf4j.Logger;
@@ -52,18 +54,22 @@ public class HttpClientLogicImpl implements HttpClientLogic, InitializingBean {
                 String id = StringUtils.split(propertyName, '.')[1];
                 int connectionTimeoutMillis = Integer.valueOf(properties.getProperty("httpClient." + id + ".connectionTimeoutMillis", "45000"));
                 int socketTimeoutMillis = Integer.valueOf(properties.getProperty("httpClient." + id + ".socketTimeoutMillis", "45000"));
+                int proxyPort = Integer.valueOf(properties.getProperty("httpClient." + id + ".proxyPort", "0"));
+                String proxyHost = properties.getProperty("httpClient." + id + ".proxyHost", "0");
                 HttpClientFactoryBean httpClientFactoryBean = new HttpClientFactoryBean(connectionTimeoutMillis, socketTimeoutMillis);
-                
-                HttpHost proxy = new HttpHost("127.0.0.1", 8080, "http");
+                httpClientFactoryBean.setProxyHost(proxyHost);
+                httpClientFactoryBean.setProxyPort(proxyPort);
                 httpClients.put(id, httpClientFactoryBean.getObject());
-                
-                
             }
         }
     }
 
     public HttpClient getHttpClient(String id) {
         return httpClients.get(id);
+    }
+
+    public Set<String> getHttpClientIds() {
+        return httpClients.keySet();
     }
 
 }
