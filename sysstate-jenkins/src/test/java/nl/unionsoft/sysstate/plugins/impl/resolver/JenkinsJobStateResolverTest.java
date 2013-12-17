@@ -3,8 +3,10 @@ package nl.unionsoft.sysstate.plugins.impl.resolver;
 import java.io.IOException;
 
 import mockit.Mocked;
+import mockit.NonStrictExpectations;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
+import nl.unionsoft.sysstate.common.logic.HttpClientLogic;
 import nl.unionsoft.sysstate.plugins.jenkins.JenkinsJobStateResolverImpl;
 
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -22,19 +24,33 @@ public class JenkinsJobStateResolverTest {
     private static final String DISABLED = "/nl/unionsoft/sysstate/plugins/impl/resolver/jenkins-job-state-resolver-plugin-data-disabled.xml";
 
     private JenkinsJobStateResolverImpl plugin;
-    
+
     @Mocked
     private DefaultHttpClient defaultHttpClient;
+
+    @Mocked
+    private HttpClientLogic httpClientLogic;
 
     @Before
     public void before() {
         plugin = new JenkinsJobStateResolverImpl();
         plugin.setXmlBeansMarshaller(new XmlBeansMarshaller());
-        plugin.setHttpClient(defaultHttpClient);
+        plugin.setHttpClientLogic(httpClientLogic);
+        //@formatter:off
+        new NonStrictExpectations() {{
+                httpClientLogic.getHttpClient("default");result = defaultHttpClient;
+        }};
+        //@formatter:on
     }
 
     @Test
     public void testStable() throws IOException {
+        new NonStrictExpectations() {
+            {
+                httpClientLogic.getHttpClient("default");
+                result = defaultHttpClient;
+            }
+        };
         final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, STABLE);
         Assert.assertEquals(StateType.STABLE, state.getState());
         Assert.assertEquals("STABLE", state.getDescription());
@@ -43,6 +59,7 @@ public class JenkinsJobStateResolverTest {
 
     @Test
     public void testUnstable() throws IOException {
+
         final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, UNSTABLE);
         Assert.assertEquals(StateType.UNSTABLE, state.getState());
         Assert.assertEquals("UNSTABLE", state.getDescription());

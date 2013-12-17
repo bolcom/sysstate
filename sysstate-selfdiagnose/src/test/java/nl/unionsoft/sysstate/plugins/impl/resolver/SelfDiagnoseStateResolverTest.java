@@ -6,8 +6,10 @@ import java.util.Map;
 import java.util.Properties;
 
 import mockit.Mocked;
+import mockit.NonStrictExpectations;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
+import nl.unionsoft.sysstate.common.logic.HttpClientLogic;
 import nl.unionsoft.sysstate.plugins.selfdiagnose.SelfDiagnoseStateResolverImpl;
 
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -24,14 +26,23 @@ public class SelfDiagnoseStateResolverTest {
     private static final String NO_VERSION = "/nl/unionsoft/sysstate/plugins/impl/resolver/self-diagnose-state-resolver-plugin-no-version.xml";
 
     private SelfDiagnoseStateResolverImpl plugin;
+
     @Mocked
     private DefaultHttpClient defaultHttpClient;
+
+    @Mocked
+    private HttpClientLogic httpClientLogic;
 
     @Before
     public void before() {
         plugin = new SelfDiagnoseStateResolverImpl();
         plugin.setXmlBeansMarshaller(new XmlBeansMarshaller());
-        plugin.setHttpClient(defaultHttpClient);
+        plugin.setHttpClientLogic(httpClientLogic);
+        //@formatter:off
+        new NonStrictExpectations() {{
+                httpClientLogic.getHttpClient("default");result = defaultHttpClient;
+        }};
+        //@formatter:on
     }
 
     @Test
@@ -60,7 +71,7 @@ public class SelfDiagnoseStateResolverTest {
     public void testStableMulti() throws IOException {
 
         Map<String, String> selfDiagnoseStateResolverConfig = new HashMap<String, String>();
-        selfDiagnoseStateResolverConfig.put("pattern",  ".*Maven POM properties.*");
+        selfDiagnoseStateResolverConfig.put("pattern", ".*Maven POM properties.*");
 
         final StateDto state = HttpTestUtil.doCall(plugin, defaultHttpClient, STABLE_MULTI, selfDiagnoseStateResolverConfig);
         Assert.assertEquals(StateType.STABLE, state.getState());

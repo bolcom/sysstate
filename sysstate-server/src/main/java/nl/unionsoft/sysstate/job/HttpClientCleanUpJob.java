@@ -3,7 +3,7 @@ package nl.unionsoft.sysstate.job;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import nl.unionsoft.sysstate.logic.HttpClientLogic;
+import nl.unionsoft.sysstate.common.logic.HttpClientLogic;
 
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;

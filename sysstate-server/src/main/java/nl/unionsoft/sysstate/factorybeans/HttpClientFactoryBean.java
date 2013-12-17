@@ -9,7 +9,10 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpHost;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
@@ -26,19 +29,15 @@ public class HttpClientFactoryBean implements FactoryBean<DefaultHttpClient> {
 
     private static final Logger LOG = LoggerFactory.getLogger(HttpClientFactoryBean.class);
 
-    private final DefaultHttpClient defaultHttpClient;
+    private int connectionTimeoutMillis;
+    private int socketTimeoutMillis;
+    private String proxyHost;
+    private int proxyPort;
 
-    public HttpClientFactoryBean (final int connectionTimeoutMillis, final int socketTimeoutMillis) throws NoSuchAlgorithmException, KeyManagementException {
-        final PoolingClientConnectionManager connectionManager = new PoolingClientConnectionManager();
-        final BasicHttpParams basicHttpParams = new BasicHttpParams();
-        setConnectionTimeout(connectionTimeoutMillis, basicHttpParams);
-        setSocketTimeout(socketTimeoutMillis, basicHttpParams);
-        setTrustManager(connectionManager);
-        defaultHttpClient = new DefaultHttpClient(connectionManager, basicHttpParams);
-        defaultHttpClient.setRedirectStrategy(new DefaultRedirectStrategy());
-        // defaultHttpClient.getCredentialsProvider().setCredentials(
-        // new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
-        // new UsernamePasswordCredentials("harry", "Potter"));
+    public HttpClientFactoryBean(final int connectionTimeoutMillis, final int socketTimeoutMillis) throws NoSuchAlgorithmException, KeyManagementException {
+        this.connectionTimeoutMillis = connectionTimeoutMillis;
+        this.socketTimeoutMillis = socketTimeoutMillis;
+
     }
 
     private void setConnectionTimeout(final int connectionTimeoutMillis, final BasicHttpParams basicHttpParams) {
@@ -76,11 +75,44 @@ public class HttpClientFactoryBean implements FactoryBean<DefaultHttpClient> {
         schemaRegistry.register(new Scheme("https", 443, sslSocketFactory));
     }
 
-    public HttpClientFactoryBean () throws KeyManagementException, NoSuchAlgorithmException {
+    public String getProxyHost() {
+        return proxyHost;
+    }
+
+    public void setProxyHost(String proxyHost) {
+        this.proxyHost = proxyHost;
+    }
+
+    public int getProxyPort() {
+        return proxyPort;
+    }
+
+    public void setProxyPort(int proxyPort) {
+        this.proxyPort = proxyPort;
+    }
+
+    public HttpClientFactoryBean() throws KeyManagementException, NoSuchAlgorithmException {
         this(0, 0);
     }
 
     public DefaultHttpClient getObject() throws Exception {
+
+        final PoolingClientConnectionManager connectionManager = new PoolingClientConnectionManager();
+        final BasicHttpParams basicHttpParams = new BasicHttpParams();
+        if (StringUtils.isNotEmpty(proxyHost) && proxyPort > 0) {
+            HttpHost proxy = new HttpHost("127.0.0.1", 8080);
+            basicHttpParams.setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+        }
+
+        setConnectionTimeout(connectionTimeoutMillis, basicHttpParams);
+        setSocketTimeout(socketTimeoutMillis, basicHttpParams);
+        setTrustManager(connectionManager);
+        DefaultHttpClient defaultHttpClient = new DefaultHttpClient(connectionManager, basicHttpParams);
+
+        defaultHttpClient.setRedirectStrategy(new DefaultRedirectStrategy());
+        // defaultHttpClient.getCredentialsProvider().setCredentials(
+        // new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
+        // new UsernamePasswordCredentials("harry", "Potter"));
         return defaultHttpClient;
     }
 
@@ -91,7 +123,5 @@ public class HttpClientFactoryBean implements FactoryBean<DefaultHttpClient> {
     public boolean isSingleton() {
         return true;
     }
-
-
 
 }

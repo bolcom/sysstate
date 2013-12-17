@@ -4,8 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import mockit.Mocked;
+import mockit.NonStrictExpectations;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
+import nl.unionsoft.sysstate.common.logic.HttpClientLogic;
 import nl.unionsoft.sysstate.plugins.http.JSoupStateResolverImpl;
 
 import org.apache.http.client.HttpClient;
@@ -19,11 +22,22 @@ public class JSoupStateResolverImplTest {
 
     private JSoupStateResolverImpl jSoupStateResolverPlugin;
 
+
+    @Mocked
+    private HttpClientLogic httpClientLogic;
+    
+    @Mocked
+    private DefaultHttpClient defaultHttpClient;
+    
     @Before
     public void before() {
-        final HttpClient httpClient = new DefaultHttpClient();
         jSoupStateResolverPlugin = new JSoupStateResolverImpl();
-        jSoupStateResolverPlugin.setHttpClient(httpClient);
+        jSoupStateResolverPlugin.setHttpClientLogic(httpClientLogic);
+        //@formatter:off
+        new NonStrictExpectations() {{
+                httpClientLogic.getHttpClient("default");result = defaultHttpClient;
+        }};
+        //@formatter:on
     }
 
     @Test

@@ -3,8 +3,10 @@ package nl.unionsoft.sysstate.plugins.impl.resolver;
 import java.io.IOException;
 
 import mockit.Mocked;
+import mockit.NonStrictExpectations;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
+import nl.unionsoft.sysstate.common.logic.HttpClientLogic;
 import nl.unionsoft.sysstate.plugins.jenkins.JenkinsServerStateResolverImpl;
 
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -23,11 +25,20 @@ public class JenkinsServerStateResolverTest {
     @Mocked
     private DefaultHttpClient defaultHttpClient;
 
+    @Mocked
+    private HttpClientLogic httpClientLogic;
+
+    
     @Before
     public void before() {
         plugin = new JenkinsServerStateResolverImpl();
         plugin.setXmlBeansMarshaller(new XmlBeansMarshaller());
-        plugin.setHttpClient(defaultHttpClient);
+        plugin.setHttpClientLogic(httpClientLogic);
+        //@formatter:off
+        new NonStrictExpectations() {{
+                httpClientLogic.getHttpClient("default");result = defaultHttpClient;
+        }};
+        //@formatter:on
     }
 
     @Test

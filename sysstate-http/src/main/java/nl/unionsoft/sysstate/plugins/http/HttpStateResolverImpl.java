@@ -2,7 +2,6 @@ package nl.unionsoft.sysstate.plugins.http;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -11,6 +10,7 @@ import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.extending.StateResolver;
+import nl.unionsoft.sysstate.common.logic.HttpClientLogic;
 import nl.unionsoft.sysstate.common.util.StateUtil;
 
 import org.apache.commons.lang.StringUtils;
@@ -32,13 +32,15 @@ public class HttpStateResolverImpl implements StateResolver {
     private static final Logger LOG = LoggerFactory.getLogger(HttpStateResolverImpl.class);
 
     @Inject
-    @Named("httpClient")
-    private HttpClient httpClient;
+    @Named("httpClientLogic")
+    private HttpClientLogic httpClientLogic;
 
     public void setState(final InstanceDto instance, final StateDto state) {
+        Map<String, String> properties = instance.getConfiguration();
+
+        HttpClient httpClient = httpClientLogic.getHttpClient(StringUtils.defaultIfEmpty(properties.get("httpClientId"), "default"));
         state.setState(StateType.STABLE);
         LOG.info("Preparing httpRequest...");
-        Map<String, String> properties = instance.getConfiguration();
 
         final String uri = processUri(properties.get(URL));
         if (StringUtils.isEmpty(uri)) {
@@ -105,18 +107,21 @@ public class HttpStateResolverImpl implements StateResolver {
 
     }
 
-    public HttpClient getHttpClient() {
-        return httpClient;
-    }
-
-    public void setHttpClient(final HttpClient httpClient) {
-        this.httpClient = httpClient;
-    }
-
     public String generateHomePageUrl(final InstanceDto instance) {
         Map<String, String> properties = instance.getConfiguration();
         String homePageUrl = processUri(properties.get(URL));
         return StringUtils.substringBefore(homePageUrl, "//") + "//" + StringUtils.substringBetween(homePageUrl, "//", "/");
     }
+
+    public HttpClientLogic getHttpClientLogic() {
+        return httpClientLogic;
+    }
+
+    public void setHttpClientLogic(HttpClientLogic httpClientLogic) {
+        this.httpClientLogic = httpClientLogic;
+    }
+    
+    
+    
 
 }
