@@ -11,10 +11,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import nl.unionsoft.sysstate.common.logic.HttpClientLogic;
+import nl.unionsoft.sysstate.common.util.PropertyGroupUtil;
 import nl.unionsoft.sysstate.factorybeans.HttpClientFactoryBean;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ClientConnectionManager;
 import org.slf4j.Logger;
@@ -49,19 +49,25 @@ public class HttpClientLogicImpl implements HttpClientLogic, InitializingBean {
     }
 
     public void afterPropertiesSet() throws Exception {
-        for (String propertyName : properties.stringPropertyNames()) {
-            if (StringUtils.startsWith(propertyName, "httpClient") && StringUtils.countMatches(propertyName, ".") == 1) {
-                String id = StringUtils.split(propertyName, '.')[1];
-                int connectionTimeoutMillis = Integer.valueOf(properties.getProperty("httpClient." + id + ".connectionTimeoutMillis", "45000"));
-                int socketTimeoutMillis = Integer.valueOf(properties.getProperty("httpClient." + id + ".socketTimeoutMillis", "45000"));
-                int proxyPort = Integer.valueOf(properties.getProperty("httpClient." + id + ".proxyPort", "0"));
-                String proxyHost = properties.getProperty("httpClient." + id + ".proxyHost", "0");
-                HttpClientFactoryBean httpClientFactoryBean = new HttpClientFactoryBean(connectionTimeoutMillis, socketTimeoutMillis);
-                httpClientFactoryBean.setProxyHost(proxyHost);
-                httpClientFactoryBean.setProxyPort(proxyPort);
-                httpClients.put(id, httpClientFactoryBean.getObject());
-            }
+        
+        Map<String, Properties> httpClientGroupProps = PropertyGroupUtil.getGroupProperties(properties, "httpClient");
+        for (Entry<String, Properties> entry : httpClientGroupProps.entrySet() ){
+            
+            String id = entry.getKey();
+            LOG.info("Configuring HttpClient for id '{}'", id);
+            Properties groupProps = entry.getValue();
+            int connectionTimeoutMillis = Integer.valueOf(groupProps.getProperty("connectionTimeoutMillis", "45000"));
+            int socketTimeoutMillis = Integer.valueOf(groupProps.getProperty("socketTimeoutMillis", "45000"));
+            int proxyPort = Integer.valueOf(groupProps.getProperty("proxyPort", "0"));
+            String proxyHost = groupProps.getProperty("proxyHost");
+            LOG.info("HttpClient settings are: connectionTimeoutMillis={},socketTimeoutMillis={}, proxyPort={}, proxyHost={}", new Object[] {connectionTimeoutMillis,socketTimeoutMillis, proxyPort, proxyHost });
+            HttpClientFactoryBean httpClientFactoryBean = new HttpClientFactoryBean(connectionTimeoutMillis, socketTimeoutMillis);
+            httpClientFactoryBean.setProxyHost(proxyHost);
+            httpClientFactoryBean.setProxyPort(proxyPort);
+            httpClients.put(id, httpClientFactoryBean.getObject());
+            
         }
+        
     }
 
     public HttpClient getHttpClient(String id) {
