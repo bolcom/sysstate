@@ -30,8 +30,10 @@ import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
+import nl.unionsoft.sysstate.common.extending.ListOfValueResolver;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
+import nl.unionsoft.sysstate.common.util.PropertyGroupUtil;
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.dao.ListRequestDao;
 import nl.unionsoft.sysstate.dao.PropertyDao;
@@ -415,24 +417,21 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         List<PropertyMetaValue> propertyMetas = new ArrayList<PropertyMetaValue>();
         while (!classStack.empty()) {
             Class<?> stackClass = classStack.pop();
-            Properties properties = pluginLogic.getPropertiesForClass(stackClass);
-
-            if (properties != null) {
-                for (String propertyName : properties.stringPropertyNames()) {
-                    if (StringUtils.startsWith(propertyName, "instance.") && !StringUtils.equals("instance.properties", propertyName)) {
-                        String[] propertyTokens = StringUtils.split(propertyName, '.');
-                        if (propertyTokens.length >= 2) {
-                            String id = propertyTokens[1];
-                            PropertyMetaValue propertyMetaValue = new PropertyMetaValue();
-                            propertyMetaValue.setId(id);
-                            propertyMetaValue.setTitle(properties.getProperty(propertyName, properties.getProperty(propertyName + ".title", id)));
-                            propertyMetas.add(propertyMetaValue);
-                        }
-                    }
+            Map<String, Properties> instanceGroupProperties = PropertyGroupUtil.getGroupProperties(pluginLogic.getPropertiesForClass(stackClass), "instance");
+            for (Entry<String, Properties> entry : instanceGroupProperties.entrySet()) {
+                String id = entry.getKey();
+                Properties properties = entry.getValue();
+                PropertyMetaValue propertyMetaValue = new PropertyMetaValue();
+                propertyMetaValue.setId(id);
+                propertyMetaValue.setTitle(properties.getProperty("title", id));
+                String lovResolver = properties.getProperty("resolver");
+                if (StringUtils.isNotEmpty(lovResolver)) {
+                    ListOfValueResolver listOfValueResolver = pluginLogic.getListOfValueResolver(lovResolver);
+                    propertyMetaValue.setLov(listOfValueResolver.getListOfValues(propertyMetaValue));
                 }
+                propertyMetas.add(propertyMetaValue);
             }
         }
-
         return propertyMetas;
     }
 }

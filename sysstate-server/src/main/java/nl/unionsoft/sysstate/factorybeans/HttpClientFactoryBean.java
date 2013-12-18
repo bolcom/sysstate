@@ -100,10 +100,9 @@ public class HttpClientFactoryBean implements FactoryBean<DefaultHttpClient> {
         final PoolingClientConnectionManager connectionManager = new PoolingClientConnectionManager();
         final BasicHttpParams basicHttpParams = new BasicHttpParams();
         if (StringUtils.isNotEmpty(proxyHost) && proxyPort > 0) {
-            HttpHost proxy = new HttpHost("127.0.0.1", 8080);
+            HttpHost proxy = new HttpHost(proxyHost, proxyPort);
             basicHttpParams.setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         }
-
         setConnectionTimeout(connectionTimeoutMillis, basicHttpParams);
         setSocketTimeout(socketTimeoutMillis, basicHttpParams);
         setTrustManager(connectionManager);

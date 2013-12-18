@@ -6,6 +6,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -16,6 +18,7 @@ import javax.inject.Named;
 import nl.unionsoft.sysstate.common.dto.PropertyMetaList;
 import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
 import nl.unionsoft.sysstate.common.extending.ListOfValueResolver;
+import nl.unionsoft.sysstate.common.util.PropertyGroupUtil;
 import nl.unionsoft.sysstate.dao.PropertyDao;
 import nl.unionsoft.sysstate.domain.GroupProperty;
 import nl.unionsoft.sysstate.logic.PluginLogic;
@@ -179,10 +182,11 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
         Properties properties = new Properties();
         InputStream inputStream = null;
         try {
-
-            LOG.info("Loading props from class resource at '{}'", propertyResource);
             inputStream = PluginLogicImpl.class.getResourceAsStream(propertyResource);
-            if (inputStream != null) {
+            if (inputStream == null) {
+                LOG.warn("No properties found for resource '{}'!", propertyResource);
+            } else {
+                LOG.info("Loading props from class resource at '{}'", propertyResource);
                 properties.load(inputStream);
             }
 
@@ -191,12 +195,14 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
         } finally {
             IOUtils.closeQuietly(inputStream);
         }
+        LOG.info("Result for getPropertiesFromResource: {}", properties);
         return properties;
 
     }
 
     @Cacheable("propertiesForClassCache")
     public Properties getPropertiesForClass(final Class<?> theClass) {
+        LOG.debug("Getting properties for class '{}'.", theClass);
         String propertyResource = "/" + StringUtils.replace(theClass.getCanonicalName(), ".", "/") + ".properties";
         return getPropertiesFromResource(propertyResource);
     }
@@ -216,52 +222,52 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
         Plugin plugin = getPlugin(id);
         PropertyMetaList propertyMetaList = new PropertyMetaList();
         if (plugin != null) {
-            Properties properties = plugin.getProperties();
-            if (properties != null) {
+            Properties pluginProperties = plugin.getProperties();
+            if (pluginProperties != null) {
 
-                propertyMetaList.setName(properties.getProperty("plugin.title", id));
+                propertyMetaList.setName(pluginProperties.getProperty("plugin.title", id));
                 propertyMetaList.setId(id);
-                for (String propertyName : properties.stringPropertyNames()) {
-                    if (StringUtils.startsWith(propertyName, "global.") && !StringUtils.equals("global.properties", propertyName)) {
-                        String[] propertyTokens = StringUtils.split(propertyName, '.');
-                        if (propertyTokens.length == 2) {
-                            String propertyId = propertyTokens[1];
-                            PropertyMetaValue propertyMetaValue = new PropertyMetaValue();
-                            propertyMetaValue.setId(propertyId);
-                            propertyMetaValue.setTitle(StringUtils.defaultIfEmpty(properties.getProperty(propertyName), propertyId));
-                            propertyMetaValue.setNullable(BooleanUtils.toBoolean(properties.getProperty(propertyName + ".nullable")));
 
-                            GroupProperty groupProperty = propertyDao.getGroupProperty(id, propertyId);
-                            propertyMetaValue.setValue(getValueForPropMeta(properties, propertyName, groupProperty));
+                Map<String, Properties> globalGroupProperties = PropertyGroupUtil.getGroupProperties(pluginProperties, "global");
 
-                            Properties innerProps = propertyMetaValue.getProperties();
-                            for (String propKey : properties.stringPropertyNames()) {
-                                if (StringUtils.startsWith(propKey, propertyName + ".property.")) {
-                                    innerProps.setProperty(StringUtils.substringAfter(propKey, propertyName + ".property."), properties.getProperty(propKey));
-                                }
-                            }
+                for (Entry<String, Properties> entry : globalGroupProperties.entrySet()) {
 
-                            String lovResolver = properties.getProperty(propertyName + ".resolver");
-                            if (StringUtils.isNotEmpty(lovResolver)) {
-                                ListOfValueResolver listOfValueResolver = pluginApplicationContext.getBean(lovResolver, ListOfValueResolver.class);
-                                propertyMetaValue.setLov(listOfValueResolver.getListOfValues(propertyMetaValue));
-                            }
-                            propertyMetaList.add(propertyMetaValue);
+                    String propertyId = entry.getKey();
+                    Properties properties = entry.getValue();
+                    PropertyMetaValue propertyMetaValue = new PropertyMetaValue();
+                    propertyMetaValue.setId(propertyId);
+                    propertyMetaValue.setTitle(StringUtils.defaultIfEmpty(properties.getProperty("title"), propertyId));
+                    propertyMetaValue.setNullable(BooleanUtils.toBoolean(properties.getProperty("nullable")));
+
+                    GroupProperty groupProperty = propertyDao.getGroupProperty(id, propertyId);
+                    propertyMetaValue.setValue(getValueForPropMeta(properties, groupProperty));
+
+                    Properties innerProps = propertyMetaValue.getProperties();
+                    for (String propKey : properties.stringPropertyNames()) {
+                        if (StringUtils.startsWith(propKey, "property.")) {
+                            innerProps.setProperty(StringUtils.substringAfter(propKey, "property."), properties.getProperty(propKey));
                         }
                     }
+
+                    String lovResolver = properties.getProperty("resolver");
+                    if (StringUtils.isNotEmpty(lovResolver)) {
+                        ListOfValueResolver listOfValueResolver = getListOfValueResolver(lovResolver);
+                        propertyMetaValue.setLov(listOfValueResolver.getListOfValues(propertyMetaValue));
+                    }
+                    propertyMetaList.add(propertyMetaValue);
                 }
             }
         }
         return propertyMetaList;
     }
 
-    private String getValueForPropMeta(final Properties properties, final String propertyName, final GroupProperty groupProperty) {
+    private String getValueForPropMeta(final Properties properties, final GroupProperty groupProperty) {
         String value = null;
         if (groupProperty != null) {
             value = groupProperty.getValue();
         }
         if (StringUtils.isEmpty(value)) {
-            value = properties.getProperty(propertyName + ".default");
+            value = properties.getProperty("default");
         }
         return value;
     }
@@ -274,5 +280,9 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
                 propertyDao.setGroupProperty(group, propertyMetaValue.getId(), propertyMetaValue.getValue());
             }
         }
+    }
+
+    public ListOfValueResolver getListOfValueResolver(String name) {
+        return pluginApplicationContext.getBean(name, ListOfValueResolver.class);
     }
 }

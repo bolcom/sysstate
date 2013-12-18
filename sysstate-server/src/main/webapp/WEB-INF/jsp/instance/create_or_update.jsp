@@ -45,12 +45,21 @@
 						<th colspan="3"><h3>StateResolver</h3></th>
 						
 						<c:forEach var="propertyMeta" items="${propertyMetas}">
+							<c:set var="type" value="textarea"/>
+							<c:set var="items" value=""/>
+							<c:if test="${propertyMeta.lov != null}">
+								<c:set var="type" value="select"/>
+								<c:set var="items" value="lovValues"/>
+								<c:set var="lovValues" value="${propertyMeta.lov}" scope="request"/>
+							</c:if>
+						
 							<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 								<jsp:param name="path" value="configuration['${propertyMeta.id}']"/>
 								<jsp:param name="label" value="${propertyMeta.title}"/>
-								<jsp:param name="type" value="textarea"/>
 								<jsp:param name="cols" value="80"/>
 								<jsp:param name="rows" value="3"/>
+								<jsp:param name="items" value="${items}"/>
+								<jsp:param name="type" value="${type}"/>
 							</jsp:include>
 						</c:forEach>
 					<tr>

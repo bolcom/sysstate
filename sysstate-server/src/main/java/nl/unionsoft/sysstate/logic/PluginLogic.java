@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Properties;
 
 import nl.unionsoft.sysstate.common.dto.PropertyMetaList;
+import nl.unionsoft.sysstate.common.extending.ListOfValueResolver;
 import nl.unionsoft.sysstate.logic.impl.PluginLogicImpl.Plugin;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -24,5 +25,7 @@ public interface PluginLogic {
     public void setPluginPropertyMeta(PropertyMetaList propertyMetaList);
 
     public Properties getPluginProperties(String name);
+    
+    public ListOfValueResolver getListOfValueResolver(String name);
 
 }
