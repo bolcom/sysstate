@@ -2,6 +2,7 @@ package nl.unionsoft.sysstate.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -29,6 +30,9 @@ public class Instance {
     @Column(name = "ID")
     private Long id;
 
+    @Column(name = "REFERENCE", nullable = true, length = 200)
+    private String reference;
+
     @Column(name = "NAME", nullable = true, length = 200)
     private String name;
 
@@ -48,7 +52,7 @@ public class Instance {
     @Column(name = "PLUGIN", nullable = true, length = 512)
     private String pluginClass;
 
-    @Column(name = "ENABLED", nullable = false, columnDefinition="BIT")
+    @Column(name = "ENABLED", nullable = false, columnDefinition = "BIT")
     private boolean enabled;
 
     @OneToMany(mappedBy = "instance", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -172,7 +176,13 @@ public class Instance {
     public void setConfiguration(String configuration) {
         this.configuration = configuration;
     }
-    
-    
+
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
 
 }

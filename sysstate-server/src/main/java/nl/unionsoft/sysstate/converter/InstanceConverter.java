@@ -45,6 +45,7 @@ public class InstanceConverter implements Converter<InstanceDto, Instance> {
             result.setConfiguration(instancePropertiesConverter.convert(instance.getInstanceProperties()));
             result.setEnabled(instance.isEnabled());
             result.setTags(instance.getTags());
+            result.setReference(instance.getReference());
             result.setRefreshTimeout(instance.getRefreshTimeout());
         }
         return result;

@@ -16,7 +16,11 @@ public class InstanceDto {
     @Size(min = 1, max = 15)
     private String name;
 
+    
+    private String reference;
+    
     private StateDto state;
+    
 
     private String homepageUrl;
 
@@ -197,6 +201,14 @@ public class InstanceDto {
 
     public void setConfiguration(Map<String, String> configuration) {
         this.configuration = configuration;
+    }
+
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
     }
 
     
