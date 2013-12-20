@@ -15,6 +15,7 @@ import nl.unionsoft.sysstate.common.dto.ProjectDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.extending.Discovery;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
+import nl.unionsoft.sysstate.common.logic.HttpClientLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
 import nl.unionsoft.sysstate.common.queue.AddDiscoveredInstancesWorker;
@@ -49,10 +50,13 @@ public abstract class HttpDiscoveryImpl implements Discovery {
     private InstanceLogic instanceLogic;
 
     @Inject
-    @Named("httpClient")
-    private HttpClient httpClient;
+    @Named("httpClientLogic")
+    private HttpClientLogic httpClientLogic;
 
     public Collection<? extends ReferenceRunnable> discover(Properties properties) {
+
+        HttpClient httpClient = httpClientLogic.getHttpClient(properties.getProperty("httpClientId", "default"));
+
         LOG.info("Preparing httpRequest...");
         final String uri = processUri(properties.getProperty(URL));
         if (StringUtils.isEmpty(uri)) {
@@ -73,7 +77,7 @@ public abstract class HttpDiscoveryImpl implements Discovery {
                 addDiscoveredInstancesWorker.setResults(instances);
                 results.add(addDiscoveredInstancesWorker);
             }
-        } catch(final Exception e) {
+        } catch (final Exception e) {
             LOG.warn("Caught Exception while performing request: {}", e.getMessage(), e);
         } finally {
 
@@ -141,14 +145,6 @@ public abstract class HttpDiscoveryImpl implements Discovery {
 
     public String processUri(String uri) {
         return uri;
-    }
-
-    public HttpClient getHttpClient() {
-        return httpClient;
-    }
-
-    public void setHttpClient(HttpClient httpClient) {
-        this.httpClient = httpClient;
     }
 
     public void updatePropertiesTemplate(Properties properties) {
