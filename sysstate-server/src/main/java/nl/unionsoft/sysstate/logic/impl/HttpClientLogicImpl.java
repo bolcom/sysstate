@@ -49,10 +49,8 @@ public class HttpClientLogicImpl implements HttpClientLogic, InitializingBean {
     }
 
     public void afterPropertiesSet() throws Exception {
-        
         Map<String, Properties> httpClientGroupProps = PropertyGroupUtil.getGroupProperties(properties, "httpClient");
         for (Entry<String, Properties> entry : httpClientGroupProps.entrySet() ){
-            
             String id = entry.getKey();
             LOG.info("Configuring HttpClient for id '{}'", id);
             Properties groupProps = entry.getValue();
@@ -65,9 +63,7 @@ public class HttpClientLogicImpl implements HttpClientLogic, InitializingBean {
             httpClientFactoryBean.setProxyHost(proxyHost);
             httpClientFactoryBean.setProxyPort(proxyPort);
             httpClients.put(id, httpClientFactoryBean.getObject());
-            
         }
-        
     }
 
     public HttpClient getHttpClient(String id) {
