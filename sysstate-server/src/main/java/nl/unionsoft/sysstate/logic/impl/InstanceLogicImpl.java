@@ -362,43 +362,11 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     public void afterPropertiesSet() throws Exception {
         List<Instance> instances = instanceDao.getInstances();
         for (Instance instance : instances) {
-            // 0.92.1 Legacy Cleanup
 
-            Properties properties = getPropsFromConfiguration(instance.getConfiguration());
-            if (!properties.isEmpty() && (instance.getInstanceProperties() == null || instance.getInstanceProperties().isEmpty())) {
-                LOG.info("Cleaning up legacy configuration for instance {}...", instance);
-                for (Entry<Object, Object> entry : properties.entrySet()) {
-                    propertyDao.setInstanceProperty(instance, ObjectUtils.toString(entry.getKey()), ObjectUtils.toString(entry.getValue()));
-                }
-            }
             // Add trigger
             addTriggerJob(instance.getId());
         }
 
-    }
-
-    @Deprecated
-    private Properties getPropsFromConfiguration(final String configuration) {
-        Properties properties = new Properties();
-        if (StringUtils.isNotBlank(configuration)) {
-            boolean isProperties = false;
-
-            for (final String row : StringUtils.split(configuration, '\n')) {
-                if (StringUtils.startsWith(row, "url=")) {
-                    isProperties = true;
-                    break;
-                }
-            }
-            if (isProperties) {
-                properties = PropertiesUtil.stringToProperties(configuration);
-            } else {
-                properties = new Properties();
-                properties.setProperty("url", configuration);
-            }
-
-        }
-
-        return properties;
     }
 
     public InstanceDto generateInstanceDto(String type) {
