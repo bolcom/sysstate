@@ -69,41 +69,9 @@ public class InstanceController {
     public ModelAndView selectType(@PathVariable("type") final String type, final HttpSession session) {
         final ModelAndView modelAndView = new ModelAndView("create-update-instance-manager");
 
-        InstanceDto instance = instanceLogic.generateInstanceDto(type);
-
+        
         final FilterDto filter = FilterController.getFilter(session);
-        final List<Long> environments = filter.getEnvironments();
-
-        Long environmentId = null;
-        if (!environments.isEmpty()) {
-            environmentId = environments.get(0);
-
-            final EnvironmentDto environment = environmentLogic.getEnvironment(environmentId);
-            if (environment != null) {
-                instance.setRefreshTimeout(environment.getDefaultInstanceTimeout());
-            }
-
-        }
-
-        final List<Long> projects = filter.getProjects();
-        Long projectId = null;
-        if (!projects.isEmpty()) {
-            projectId = projects.get(0);
-            final ProjectDto project = projectLogic.getProject(projectId);
-            if (project != null) {
-                instance.setPluginClass(project.getDefaultInstancePlugin());
-
-            }
-        }
-
-        if (projectId != null && environmentId != null) {
-            final ProjectEnvironmentDto projectEnvironment = projectEnvironmentLogic.getProjectEnvironment(projectId, environmentId);
-            if (projectEnvironment != null) {
-                instance.setProjectEnvironment(projectEnvironment);
-            }
-        }
-
-        instance.setEnabled(true);
+        InstanceDto instance = instanceLogic.generateInstanceDto(type, filter.getFirstProject(), filter.getFirstEnvironment());
         modelAndView.addObject("instance", instance);
         modelAndView.addObject("propertyMetas", instanceLogic.getPropertyMeta(type));
         addCommons(modelAndView);
@@ -144,7 +112,6 @@ public class InstanceController {
     @RequestMapping(value = "/instance/{instanceId}/copy", method = RequestMethod.GET)
     public ModelAndView copy(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("copy-update-instance-manager");
-        @SuppressWarnings("unchecked")
         final InstanceDto source = instanceLogic.getInstance(instanceId);
         source.setId(null);
         modelAndView.addObject("propertyMetas", instanceLogic.getPropertyMeta(source.getPluginClass()));

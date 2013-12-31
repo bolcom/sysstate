@@ -64,7 +64,6 @@ public class ProjectLogicImpl implements ProjectLogic {
         } else {
             theProject = projectDao.getProject(projectId);
         }
-        theProject.setDefaultInstancePlugin(project.getDefaultInstancePlugin());
         theProject.setName(project.getName());
         theProject.setOrder(project.getOrder());
         projectDao.createOrUpdateProject(theProject);

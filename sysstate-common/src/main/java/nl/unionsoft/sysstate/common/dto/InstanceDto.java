@@ -46,6 +46,7 @@ public class InstanceDto {
 
     public InstanceDto() {
         configuration = new LinkedHashMap<String, String>();
+        refreshTimeout = 10000;
     }
 
     public ProjectEnvironmentDto getProjectEnvironment() {

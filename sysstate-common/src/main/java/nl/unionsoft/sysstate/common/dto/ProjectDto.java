@@ -14,9 +14,8 @@ public class ProjectDto {
     private String name;
     private int order;
     private final List<ProjectEnvironmentDto> projectEnvironments;
-    private String defaultInstancePlugin;
 
-    public ProjectDto () {
+    public ProjectDto() {
         projectEnvironments = new ArrayList<ProjectEnvironmentDto>();
     }
 
@@ -46,14 +45,6 @@ public class ProjectDto {
 
     public void setOrder(final int order) {
         this.order = order;
-    }
-
-    public String getDefaultInstancePlugin() {
-        return defaultInstancePlugin;
-    }
-
-    public void setDefaultInstancePlugin(final String defaultInstancePlugin) {
-        this.defaultInstancePlugin = defaultInstancePlugin;
     }
 
 }

@@ -9,8 +9,7 @@ import javax.validation.constraints.Size;
 
 import nl.unionsoft.sysstate.common.enums.StateType;
 
-public class FilterDto implements Serializable{
-
+public class FilterDto implements Serializable {
 
     private static final long serialVersionUID = 2063143092239342545L;
 
@@ -24,10 +23,8 @@ public class FilterDto implements Serializable{
     private List<ViewDto> views;
     private String tags;
     private String search;
-    
-    
 
-    public FilterDto () {
+    public FilterDto() {
         projects = new ArrayList<Long>();
         environments = new ArrayList<Long>();
         states = new ArrayList<StateType>();
@@ -44,6 +41,10 @@ public class FilterDto implements Serializable{
         this.name = name;
     }
 
+    public Long getFirstProject() {
+        return projects.size() > 0 ? projects.get(0) : null;
+    }
+
     public List<Long> getProjects() {
         return projects;
     }
@@ -52,6 +53,10 @@ public class FilterDto implements Serializable{
         this.projects = projects;
     }
 
+    public Long getFirstEnvironment() {
+        return environments.size() > 0 ? environments.get(0) : null;
+    }
+    
     public List<Long> getEnvironments() {
         return environments;
     }

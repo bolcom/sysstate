@@ -33,9 +33,6 @@ public class Project {
     @Column(name = "DEFAULT_ORDER", nullable = true)
     private int order;
 
-    @Column(name = "DEFAULT_INSTANCE_PLUGIN", nullable = true, length = 512)
-    private String defaultInstancePlugin;
-
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ProjectEnvironment> projectEnvironments;
 
@@ -67,13 +64,6 @@ public class Project {
         this.order = order;
     }
 
-    public String getDefaultInstancePlugin() {
-        return defaultInstancePlugin;
-    }
-
-    public void setDefaultInstancePlugin(final String defaultInstancePlugin) {
-        this.defaultInstancePlugin = defaultInstancePlugin;
-    }
 
     public List<ProjectEnvironment> getProjectEnvironments() {
         return projectEnvironments;

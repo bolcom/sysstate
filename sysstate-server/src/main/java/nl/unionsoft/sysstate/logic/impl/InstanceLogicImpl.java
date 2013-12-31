@@ -2,12 +2,12 @@ package nl.unionsoft.sysstate.logic.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Stack;
+import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -24,6 +24,7 @@ import nl.unionsoft.common.list.model.Restriction.Rule;
 import nl.unionsoft.common.list.worker.impl.BeanListRequestWorkerImpl;
 import nl.unionsoft.common.param.ParamContextLogicImpl;
 import nl.unionsoft.common.util.PropertiesUtil;
+import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
@@ -31,6 +32,7 @@ import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.extending.ListOfValueResolver;
+import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.common.util.PropertyGroupUtil;
@@ -109,6 +111,10 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     @Inject
     @Named("stateConverter")
     private Converter<StateDto, State> stateConverter;
+
+    @Inject
+    @Named("environmentLogic")
+    private EnvironmentLogic environmentLogic;
 
     @Inject
     @Named("projectEnvironmentLogic")
@@ -212,7 +218,11 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         instance.setProjectEnvironment(projectEnvironment);
         instance.setRefreshTimeout(dto.getRefreshTimeout());
         instance.setTags(dto.getTags());
-
+        String reference = dto.getReference();
+        if (StringUtils.isEmpty(reference)) {
+            UUID uuid = UUID.randomUUID();
+            reference = uuid.toString();
+        }
         instanceDao.createOrUpdate(instance);
 
         Map<String, String> configuration = dto.getConfiguration();
@@ -353,7 +363,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         List<Instance> instances = instanceDao.getInstances();
         for (Instance instance : instances) {
             // 0.92.1 Legacy Cleanup
-            
+
             Properties properties = getPropsFromConfiguration(instance.getConfiguration());
             if (!properties.isEmpty() && (instance.getInstanceProperties() == null || instance.getInstanceProperties().isEmpty())) {
                 LOG.info("Cleaning up legacy configuration for instance {}...", instance);
@@ -392,11 +402,27 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     }
 
     public InstanceDto generateInstanceDto(String type) {
+        return generateInstanceDto(type, null, null);
+    }
+
+    public InstanceDto generateInstanceDto(String type, Long projectId, Long environmentId) {
 
         final InstanceDto instance = new InstanceDto();
         instance.setPluginClass(type);
         instance.setEnabled(true);
         instance.setRefreshTimeout(10000);
+        if (environmentId != null) {
+            final EnvironmentDto environment = environmentLogic.getEnvironment(environmentId);
+            if (environment != null) {
+                instance.setRefreshTimeout(environment.getDefaultInstanceTimeout());
+            }
+            if (projectId != null) {
+                final ProjectEnvironmentDto projectEnvironment = projectEnvironmentLogic.getProjectEnvironment(projectId, environmentId);
+                if (projectEnvironment != null) {
+                    instance.setProjectEnvironment(projectEnvironment);
+                }
+            }
+        }
         return instance;
     }
 
@@ -434,4 +460,5 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         }
         return propertyMetas;
     }
+
 }

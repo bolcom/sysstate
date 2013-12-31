@@ -11,6 +11,8 @@ import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
 public interface InstanceLogic {
 
     public InstanceDto generateInstanceDto(String type);
+    
+    public InstanceDto generateInstanceDto(String type, Long projectId, Long environmentId);
 
     public List<InstanceDto> getInstances();
 
