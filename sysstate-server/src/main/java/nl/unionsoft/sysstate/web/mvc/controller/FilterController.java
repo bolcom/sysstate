@@ -9,7 +9,9 @@ import javax.validation.Valid;
 
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
+import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
+import nl.unionsoft.sysstate.common.logic.ProjectLogic;
 import nl.unionsoft.sysstate.dto.MessageDto;
 import nl.unionsoft.sysstate.logic.FilterLogic;
 import nl.unionsoft.sysstate.logic.MessageLogic;
@@ -46,7 +48,16 @@ public class FilterController {
     @Inject
     @Named("messageLogic")
     private MessageLogic messageLogic;
+    
+    @Inject
+    @Named("projectLogic")
+    private ProjectLogic projectLogic;
 
+    @Inject
+    @Named("environmentLogic")
+    private EnvironmentLogic environmentLogic;
+
+    
     @RequestMapping(value = "/filter/index", method = RequestMethod.GET)
     public ModelAndView index(final HttpSession session) {
         final ModelAndView modelAndView = new ModelAndView("search-filter-manager");
@@ -55,6 +66,9 @@ public class FilterController {
         modelAndView.addObject("filter", filter);
         modelAndView.addObject("states", StateType.values());
         modelAndView.addObject("stateResolvers", stateResolverLogic.getStateResolverNames());
+        modelAndView.addObject("environments", environmentLogic.getEnvironments());
+        modelAndView.addObject("projects", projectLogic.getProjects());
+        
         return modelAndView;
     }
 

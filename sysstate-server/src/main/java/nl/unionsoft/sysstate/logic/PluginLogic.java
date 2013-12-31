@@ -18,6 +18,8 @@ public interface PluginLogic {
 
     public List<Plugin> getPlugins();
 
+    public Plugin getPlugin(String id);
+
     public Properties getPropertiesForClass(Class<?> theClass);
 
     public PropertyMetaList getPluginPropertyMetaList(String name);
@@ -25,7 +27,7 @@ public interface PluginLogic {
     public void setPluginPropertyMeta(PropertyMetaList propertyMetaList);
 
     public Properties getPluginProperties(String name);
-    
+
     public ListOfValueResolver getListOfValueResolver(String name);
 
 }

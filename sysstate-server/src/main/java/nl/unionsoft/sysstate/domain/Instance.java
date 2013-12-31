@@ -39,10 +39,6 @@ public class Instance {
     @Column(name = "HOMEPAGE_URL", nullable = true, length = 4096)
     private String homepageUrl;
 
-    @Column(name = "CONFIGURATION", nullable = true, length = 8192)
-    @Deprecated
-    private String configuration;
-
     @Column(name = "REFRESH_TIMEOUT", nullable = true)
     private int refreshTimeout;
 
@@ -166,15 +162,6 @@ public class Instance {
     @Override
     public String toString() {
         return "Instance [id=" + id + ", name=" + name + "]";
-    }
-
-    @Deprecated
-    public String getConfiguration() {
-        return configuration;
-    }
-
-    public void setConfiguration(String configuration) {
-        this.configuration = configuration;
     }
 
     public String getReference() {

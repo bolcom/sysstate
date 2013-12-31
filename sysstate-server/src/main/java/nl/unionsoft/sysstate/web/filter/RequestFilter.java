@@ -12,32 +12,22 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
-import nl.unionsoft.sysstate.common.logic.ProjectLogic;
+import nl.unionsoft.sysstate.common.logic.StatisticsLogic;
 import nl.unionsoft.sysstate.logic.MessageLogic;
-import nl.unionsoft.sysstate.logic.ViewLogic;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.ServletContextAware;
 
-@Component("projectEnvironmentFilter")
-public class ProjectEnvironmentFilter implements Filter, ServletContextAware {
-
-    @Inject
-    @Named("projectLogic")
-    private ProjectLogic projectLogic;
+@Component("requestFilter")
+public class RequestFilter implements Filter, ServletContextAware {
 
     @Inject
     @Named("messageLogic")
     private MessageLogic messageLogic;
 
     @Inject
-    @Named("environmentLogic")
-    private EnvironmentLogic environmentLogic;
-
-    @Inject
-    @Named("viewLogic")
-    private ViewLogic viewLogic;
+    @Named("statisticsLogic")
+    private StatisticsLogic statisticsLogic;
 
     public void setServletContext(ServletContext servletContext) {
 
@@ -48,10 +38,9 @@ public class ProjectEnvironmentFilter implements Filter, ServletContextAware {
     }
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        request.setAttribute("environments", environmentLogic.getEnvironments());
-        request.setAttribute("projects", projectLogic.getProjects());
-        request.setAttribute("views", viewLogic.getViews());
+
         request.setAttribute("messages", messageLogic.getMessages());
+        request.setAttribute("sysstateVersion", statisticsLogic.getApplicationVersion());
         chain.doFilter(request, response);
     }
 

@@ -6,4 +6,6 @@ public interface StatisticsLogic {
 
     public StatisticsDto getStatistics();
 
+    
+    public String getApplicationVersion();
 }

@@ -1,26 +1,19 @@
 package nl.unionsoft.sysstate.web.mvc.controller;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-import nl.unionsoft.common.param.Context;
 import nl.unionsoft.common.param.ParamContextLogicImpl;
-import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
-import nl.unionsoft.sysstate.common.dto.ProjectDto;
-import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
-import nl.unionsoft.sysstate.logic.StateResolverLogic.StateResolverMeta;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -68,8 +61,6 @@ public class InstanceController {
     @RequestMapping(value = "/instance/{type}/create", method = RequestMethod.GET)
     public ModelAndView selectType(@PathVariable("type") final String type, final HttpSession session) {
         final ModelAndView modelAndView = new ModelAndView("create-update-instance-manager");
-
-        
         final FilterDto filter = FilterController.getFilter(session);
         InstanceDto instance = instanceLogic.generateInstanceDto(type, filter.getFirstProject(), filter.getFirstEnvironment());
         modelAndView.addObject("instance", instance);
@@ -173,6 +164,5 @@ public class InstanceController {
     public ModelAndView handleFormUpdate(@Valid @ModelAttribute("instance") final InstanceDto instance, final BindingResult bindingResult, final HttpServletRequest httpRequest) {
         return handleFormCreate(instance, bindingResult, httpRequest);
     }
-
 
 }

@@ -144,7 +144,6 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
             }
         }
         return result;
-
     }
 
     public class Plugin {

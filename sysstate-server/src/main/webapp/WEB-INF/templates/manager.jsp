@@ -419,7 +419,7 @@ $(document).ready(function(){
 			<div id="footer-left">
 			Admin Skin &copy; Copyright Internet Dreams Ltd. <a href="http://www.netdreams.co.uk" target="_BLANK">www.netdreams.co.uk</a>. All rights reserved.</div>
 	        <div id="footer-right">
-	        SysState <a href="https://github.com/UnionSoft/sysstate">vBETA</a> &copy; <a href="http://www.unionsoft.nl/" target="_blank">UnionSoft</a> - &copy; <a href="http://www.chriskramer.nl/" target="_blank"> Chris Kramer</a>. All rights reserved.</div>
+	        <a href="https://github.com/UnionSoft/sysstate">SysState</a> v${sysstateVersion} &copy; <a href="http://www.unionsoft.nl/" target="_blank">UnionSoft</a> - &copy; <a href="http://www.chriskramer.nl/" target="_blank"> Chris Kramer</a>. All rights reserved.</div>
         </div>
 
 		<!--  end footer-left -->
