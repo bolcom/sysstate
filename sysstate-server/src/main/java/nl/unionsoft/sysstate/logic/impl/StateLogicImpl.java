@@ -3,6 +3,8 @@ package nl.unionsoft.sysstate.logic.impl;
 import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -16,6 +18,7 @@ import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.extending.StateResolver;
 import nl.unionsoft.sysstate.common.util.StateUtil;
+import nl.unionsoft.sysstate.common.util.SysStateStringUtils;
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.dao.StateDao;
 import nl.unionsoft.sysstate.domain.State;
@@ -30,12 +33,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.HtmlUtils;
 
 @Service("stateLogic")
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class StateLogicImpl implements StateLogic {
 
     private static final Logger LOG = LoggerFactory.getLogger(StateLogicImpl.class);
+    
     @Inject
     @Named("stateDao")
     private StateDao stateDao;
@@ -43,10 +48,6 @@ public class StateLogicImpl implements StateLogic {
     @Inject
     @Named("instanceDao")
     private InstanceDao instanceDao;
-
-    // @Inject
-    // @Named("pluginLogic")
-    // private PluginLogic pluginLogic;
 
     @Inject
     @Named("stateResolverLogic")
@@ -101,7 +102,7 @@ public class StateLogicImpl implements StateLogic {
             } else {
                 LOG.info("State '{}' for instance '{}' hasn't changed, updating timestamps, rating & messages only...", state, instance);
             }
-            state.setMessage(dto.getMessage());
+            state.setMessage(SysStateStringUtils.stripHtml(dto.getMessage()));
             state.setResponseTime(dto.getResponseTime());
             state.setLastUpdate(stateDate);
             state.setRating(dto.getRating());
@@ -148,11 +149,11 @@ public class StateLogicImpl implements StateLogic {
             state.setDescription("DISABLED");
             state.setResponseTime(0L);
         }
-
-        final DateTime pollDate = new DateTime();
-        state.setCreationDate(pollDate);
+        state.setCreationDate(new DateTime());
         return state;
     }
+    
+    
 
     public StateDto requestState(final String pluginClass, final Map<String, String> configuration) {
         final StateDto state = new StateDto();

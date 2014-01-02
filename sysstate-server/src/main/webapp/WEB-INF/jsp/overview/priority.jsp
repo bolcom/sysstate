@@ -42,12 +42,12 @@
 			
 				<div class="print print_${stateType}">
 				
-					<div class="state ">
+					<div class="state">
 						<font class="prjEnvName">
 							${instance.projectEnvironment.project.name} - ${instance.projectEnvironment.environment.name}
 						</font><br />
-						${state.description}<br/>
-						<pre>${state.message}</pre>
+						<c:out value="${state.description}" escapeXml="true"/><br/>
+						<pre><c:out value="${state.message}" escapeXml="true"/></pre>
 					</div>
 				</div>
 			</div>

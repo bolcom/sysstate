@@ -18,9 +18,9 @@ import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.common.dto.ViewResultDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
+import nl.unionsoft.sysstate.common.util.SysStateStringUtils;
 import nl.unionsoft.sysstate.domain.State;
 import nl.unionsoft.sysstate.util.CountUtil;
-import nl.unionsoft.sysstate.util.SysStateStringUtils;
 
 import org.apache.commons.lang.StringUtils;
 

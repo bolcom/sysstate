@@ -1,6 +1,7 @@
 package nl.unionsoft.sysstate.common.dto;
 
 import nl.unionsoft.sysstate.common.enums.StateType;
+import nl.unionsoft.sysstate.common.util.SysStateStringUtils;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
@@ -27,7 +28,7 @@ public class StateDto {
     }
 
     public void setDescription(String description) {
-        this.description = StringUtils.substring(description, 0, DESCRIPTION_MAX_LENGTH);
+        this.description = StringUtils.substring(SysStateStringUtils.stripHtml(description), 0, DESCRIPTION_MAX_LENGTH);
     }
 
     public StateType getState() {

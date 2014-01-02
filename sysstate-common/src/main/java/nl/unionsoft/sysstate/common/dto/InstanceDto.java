@@ -12,15 +12,14 @@ public class InstanceDto {
 
     private Long id;
 
+    private static final int minRefreshTimeOut = 10000;
     @NotNull()
     @Size(min = 1, max = 15)
     private String name;
 
-    
     private String reference;
-    
+
     private StateDto state;
-    
 
     private String homepageUrl;
 
@@ -32,7 +31,7 @@ public class InstanceDto {
     private boolean enabled;
     private String tags;
 
-    @Min(10000L)
+    @Min(minRefreshTimeOut)
     private int refreshTimeout;
 
     private StateDto lastStable;
@@ -110,7 +109,12 @@ public class InstanceDto {
     }
 
     public void setRefreshTimeout(final int refreshTimeout) {
-        this.refreshTimeout = refreshTimeout;
+        if (refreshTimeout <= minRefreshTimeOut) {
+            this.refreshTimeout = minRefreshTimeOut;
+        } else {
+            this.refreshTimeout = refreshTimeout;
+        }
+
     }
 
     public String getTags() {
@@ -212,6 +216,4 @@ public class InstanceDto {
         this.reference = reference;
     }
 
-    
-    
 }
