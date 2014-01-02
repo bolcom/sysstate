@@ -1,5 +1,6 @@
 package nl.unionsoft.sysstate.dao.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -27,6 +28,7 @@ public class InstanceDaoImpl implements InstanceDao {
 
         if (instance.getId() == null) {
             instance.setProjectEnvironment(entityManager.find(ProjectEnvironment.class, instance.getProjectEnvironment().getId()));
+            instance.setCreationDate(new Date());
             entityManager.persist(instance);
         } else {
             final Instance editInstance = getInstance(instance.getId());
@@ -37,7 +39,7 @@ public class InstanceDaoImpl implements InstanceDao {
             editInstance.setProjectEnvironment(entityManager.find(ProjectEnvironment.class, instance.getProjectEnvironment().getId()));
             editInstance.setEnabled(instance.isEnabled());
             editInstance.setTags(instance.getTags());
-
+            editInstance.setCreationDate(instance.getCreationDate());
             entityManager.merge(editInstance);
         }
     }

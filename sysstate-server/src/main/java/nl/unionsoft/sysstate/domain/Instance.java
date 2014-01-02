@@ -1,6 +1,7 @@
 package nl.unionsoft.sysstate.domain;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,6 +16,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cache;
@@ -50,6 +53,10 @@ public class Instance {
 
     @Column(name = "ENABLED", nullable = false, columnDefinition = "BIT")
     private boolean enabled;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "creationDate", nullable = true)
+    private Date creationDate;
 
     @OneToMany(mappedBy = "instance", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<State> states;
@@ -171,5 +178,15 @@ public class Instance {
     public void setReference(String reference) {
         this.reference = reference;
     }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+    
+    
 
 }
