@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.jar.Attributes;
+import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import javax.inject.Inject;
@@ -62,7 +63,7 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
     public void afterPropertiesSet() throws Exception {
         try {
             List<String> contextFiles = new ArrayList<String>();
-            Enumeration<URL> resources = PluginLogicImpl.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
+            Enumeration<URL> resources = PluginLogicImpl.class.getClassLoader().getResources(JarFile.MANIFEST_NAME);
             while (resources.hasMoreElements()) {
                 URL url = resources.nextElement();
                 LOG.debug("Found: {}", url);
@@ -88,6 +89,7 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
                         if (StringUtils.isNotEmpty(pluginPropertiesResource)) {
                             plugin.setProperties(getPropertiesFromResource(pluginPropertiesResource));
                         }
+                        LOG.info("Adding plugin: '{} ({}')", pluginId, pluginVersion);
                         plugins.add(plugin);
                     }
 

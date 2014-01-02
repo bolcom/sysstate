@@ -14,7 +14,7 @@
 <c:set var="queryString"
 	value="projectId=${projectId}&environmentId=${environmentId}&instanceId=${instanceId}&detailType=history" />
 <ul class="select">
-	<li><a href="${contextPath}/manager/index.html"><b>Home</b>
+	<li><a href="${contextPath}/dashboard/index.html"><b>Home</b>
 		<!--[if IE 7]><!--></a>
 	<!--<![endif]--></li>
 </ul>
@@ -104,6 +104,10 @@
 				<sc:authorize url="/user">
 					<li><a href="${contextPath}/user/index.html">Users</a></li>
 				</sc:authorize>
+				<sc:authorize url="/plugins">
+					<li><a href="${contextPath}/plugins/index.html">Plugins</a></li>
+				</sc:authorize>
+
 				<sc:authorize url="/discovery">
 				<!-- 
 					<li><a href="${contextPath}/discovery/index.html">Discovery</a></li>

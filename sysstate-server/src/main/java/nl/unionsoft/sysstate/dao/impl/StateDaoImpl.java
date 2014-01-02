@@ -11,7 +11,6 @@ import javax.persistence.NoResultException;
 import nl.unionsoft.common.list.model.ListRequest;
 import nl.unionsoft.common.list.model.ListResponse;
 import nl.unionsoft.common.list.worker.ListRequestWorker;
-import nl.unionsoft.sysstate.Constants;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.dao.PropertyDao;
 import nl.unionsoft.sysstate.dao.StateDao;
@@ -84,9 +83,7 @@ public class StateDaoImpl implements StateDao {
         return entityManager.createQuery("FROM State", State.class).setHint("org.hibernate.cacheable", true).getResultList();
     }
 
-    public void clean() {
-
-        final int maxDaysToKeepStates = Constants.MAX_DAYS_TO_KEEP_STATES_VALUE;
+    public void cleanStatesOlderThanDays(int maxDaysToKeepStates) {
         final Date boundary = new DateTime().minusDays(maxDaysToKeepStates).toDate();
         LOG.info("Cleaning states older then {} days (before date {}).", maxDaysToKeepStates, boundary);
         // @formatter:off

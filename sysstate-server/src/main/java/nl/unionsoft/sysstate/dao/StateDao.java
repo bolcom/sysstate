@@ -15,7 +15,7 @@ public interface StateDao {
 
     public State getLastStateForInstance(Long instanceId, StateType stateType);
 
-    public void clean();
+    public void cleanStatesOlderThanDays(int nrOfDays);
 
     public List<State> getStates();
 

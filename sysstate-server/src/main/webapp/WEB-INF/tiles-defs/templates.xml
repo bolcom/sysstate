@@ -24,8 +24,8 @@
 	
 
 	<!-- Manager -->
-	<definition name="home-manager" extends="manager">
-		<put-attribute name="contents" value="/WEB-INF/jsp/manager/home.jsp" />
+	<definition name="home-dashboard" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/dashboard/home.jsp" />
 		<put-attribute name="page-heading" value="Dashboard" />
 	</definition>
 
@@ -132,11 +132,6 @@
 	</definition>
 
 	<!-- Plugin -->
-	<definition name="update-plugin-manager" extends="manager">
-		<put-attribute name="contents" value="/WEB-INF/jsp/plugin/update.jsp" />
-		<put-attribute name="page-heading" value="Plugin" />
-	</definition>
-
 	<definition name="list-plugin-manager" extends="manager">
 		<put-attribute name="contents" value="/WEB-INF/jsp/plugin/plugins.jsp" />
 		<put-attribute name="page-heading" value="Plugins" />

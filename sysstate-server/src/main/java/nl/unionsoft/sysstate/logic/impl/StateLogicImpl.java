@@ -2,6 +2,7 @@ package nl.unionsoft.sysstate.logic.impl;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -9,6 +10,7 @@ import javax.inject.Named;
 import nl.unionsoft.common.converter.Converter;
 import nl.unionsoft.common.list.model.ListRequest;
 import nl.unionsoft.common.list.model.ListResponse;
+import nl.unionsoft.sysstate.Constants;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
@@ -17,6 +19,7 @@ import nl.unionsoft.sysstate.common.util.StateUtil;
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.dao.StateDao;
 import nl.unionsoft.sysstate.domain.State;
+import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
@@ -53,8 +56,26 @@ public class StateLogicImpl implements StateLogic {
     @Named("stateConverter")
     private Converter<StateDto, State> stateConverter;
 
+    @Inject
+    @Named("pluginLogic")
+    private PluginLogic pluginLogic;
+
     public void clean() {
-        stateDao.clean();
+        LOG.info("Cleaning States...");
+        Properties sysstateProperties = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);
+        String maxDaysToKeepStatesString = sysstateProperties.getProperty("maxDaysToKeepStates");
+        int maxDaysToKeepStates = Constants.MAX_DAYS_TO_KEEP_STATES_VALUE;
+        if (StringUtils.isNumeric(maxDaysToKeepStatesString)) {
+            maxDaysToKeepStates = Integer.valueOf(maxDaysToKeepStatesString);
+        }
+        
+        if (maxDaysToKeepStates > 0) {
+            LOG.info("Max days to keep states is set to: {}", maxDaysToKeepStates);
+            stateDao.cleanStatesOlderThanDays(maxDaysToKeepStates);
+        } else {
+            LOG.info("Max days to keep states <= 0, skipping cleaning...");
+        }
+
     }
 
     public ListResponse<State> getStates(final ListRequest listRequest) {

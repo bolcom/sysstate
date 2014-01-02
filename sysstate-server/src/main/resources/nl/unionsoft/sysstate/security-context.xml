@@ -55,16 +55,15 @@ user    	//Average Joe
 		
 
 		<intercept-url pattern="/instancenotifier/**" access="ROLE_ADMIN" />
-		<intercept-url pattern="/plugin/**" access="ROLE_ADMIN" />
 		<intercept-url pattern="/projectenvironment/**/update" access="ROLE_ADMIN" />
 		<!--
 			<intercept-url pattern="/scheduler/**" access="ROLE_ADMIN" />
 			<intercept-url pattern="/cache/**" access="ROLE_ADMIN" />
 		 -->
 		<!-- <http-basic /> -->
-		<form-login login-page="/login.html" default-target-url="/manager/index.html" authentication-failure-url="/login.html" always-use-default-target="false"/>
-		<logout logout-success-url="/manager/index.html" logout-url="/logout.html" />
-		<!-- <remember-me key="plzRememberMeSysStateCanDoTheTrick" token-validity-seconds="864000" /> -->
+		<form-login login-page="/login.html" default-target-url="/dashboard/index.html" authentication-failure-url="/login.html" always-use-default-target="false"/>
+		<logout logout-success-url="/dashboard/index.html" logout-url="/logout.html" />
+		<remember-me key="sseSecurityToken" token-validity-seconds="864000" />
 	</http>
 
 	<authentication-manager>

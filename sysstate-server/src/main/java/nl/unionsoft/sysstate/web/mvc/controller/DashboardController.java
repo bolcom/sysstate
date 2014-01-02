@@ -15,22 +15,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller()
-public class ManagerController {
+public class DashboardController {
 
     @Inject
     @Named("statisticsLogic")
     private StatisticsLogic statisticsLogic;
 
-    @RequestMapping(value = "/manager/index.html", method = RequestMethod.GET)
+    @RequestMapping(value = "/dashboard/index.html", method = RequestMethod.GET)
     public ModelAndView index() {
-        final ModelAndView modelAndView = new ModelAndView("home-manager");
+        final ModelAndView modelAndView = new ModelAndView("home-dashboard");
         modelAndView.addObject("statistics", statisticsLogic.getStatistics());
         return modelAndView;
     }
 
-    @RequestMapping(value = "/manager/search.html", method = RequestMethod.POST)
+    @RequestMapping(value = "/dashboard/search.html", method = RequestMethod.POST)
     public ModelAndView search(@RequestParam("search") final String search, @RequestParam("where") final String where, final HttpSession session) {
-        ModelAndView modelAndView = new ModelAndView("redirect:/manager/index.html");
+        ModelAndView modelAndView = new ModelAndView("redirect:/dashboard/index.html");
 
         if (StringUtils.equalsIgnoreCase(where, "instances")) {
             final FilterDto filter = new FilterDto();

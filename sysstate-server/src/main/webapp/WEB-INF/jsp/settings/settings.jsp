@@ -24,6 +24,12 @@
 	<div class="clear"></div>
 </sc:authorize>
 
+<sc:authorize url="/plugins">
+	<a href="${contextPath}/plugins/index.html" class="icon-1 info-tooltip"></a> Plugins<br/>
+	<i>List available plugins</i>					
+	<div class="clear"></div>
+</sc:authorize>
+
 
 <sc:authorize url="/text">
 	<a href="${contextPath}/text/index.html"  class="icon-1 info-tooltip"></a> Texts<br/>
