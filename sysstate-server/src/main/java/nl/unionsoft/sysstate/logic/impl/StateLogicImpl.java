@@ -13,7 +13,10 @@ import nl.unionsoft.common.converter.Converter;
 import nl.unionsoft.common.list.model.ListRequest;
 import nl.unionsoft.common.list.model.ListResponse;
 import nl.unionsoft.sysstate.Constants;
+import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
+import nl.unionsoft.sysstate.common.dto.ProjectDto;
+import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.extending.StateResolver;
@@ -40,7 +43,7 @@ import org.springframework.web.util.HtmlUtils;
 public class StateLogicImpl implements StateLogic {
 
     private static final Logger LOG = LoggerFactory.getLogger(StateLogicImpl.class);
-    
+
     @Inject
     @Named("stateDao")
     private StateDao stateDao;
@@ -69,7 +72,7 @@ public class StateLogicImpl implements StateLogic {
         if (StringUtils.isNumeric(maxDaysToKeepStatesString)) {
             maxDaysToKeepStates = Integer.valueOf(maxDaysToKeepStatesString);
         }
-        
+
         if (maxDaysToKeepStates > 0) {
             LOG.info("Max days to keep states is set to: {}", maxDaysToKeepStates);
             stateDao.cleanStatesOlderThanDays(maxDaysToKeepStates);
@@ -114,11 +117,18 @@ public class StateLogicImpl implements StateLogic {
     public StateDto requestStateForInstance(final InstanceDto instance) {
         final StateDto state = new StateDto();
         state.setInstance(instance);
-
-        if (instance.isEnabled()) {
+        ProjectEnvironmentDto projectEnvironment = instance.getProjectEnvironment();
+        ProjectDto project = projectEnvironment.getProject();
+        EnvironmentDto environment = projectEnvironment.getEnvironment();
+        final Long now = System.currentTimeMillis();
+        if (!instance.isEnabled()) {
+            setDisabled(state, "Disabled by instance");
+        } else if (!project.isEnabled()) {
+            setDisabled(state, "Disabled by project");
+        } else if (!environment.isEnabled()) {
+            setDisabled(state, "Disabled by environment");
+        } else {
             final String pluginClass = instance.getPluginClass();
-
-            final Long now = System.currentTimeMillis();
             try {
                 final StateResolver stateResolver = stateResolverLogic.getStateResolver(pluginClass);
                 if (stateResolver == null) {
@@ -139,21 +149,26 @@ public class StateLogicImpl implements StateLogic {
                 state.appendMessage(StateUtil.exceptionAsMessage(e));
 
             } finally {
-                final Long responseTime = System.currentTimeMillis() - now;
-                if (state.getResponseTime() < responseTime) {
-                    state.setResponseTime(responseTime);
-                }
+
             }
-        } else {
-            state.setState(StateType.DISABLED);
-            state.setDescription("DISABLED");
-            state.setResponseTime(0L);
+        }
+
+        //Timing...
+        final Long responseTime = System.currentTimeMillis() - now;
+        if (state.getResponseTime() < responseTime) {
+            state.setResponseTime(responseTime);
         }
         state.setCreationDate(new DateTime());
         return state;
     }
-    
-    
+
+    private void setDisabled(StateDto state, String message) {
+        state.setState(StateType.DISABLED);
+        state.setDescription("DISABLED");
+        state.setMessage(message);
+        // state.setResponseTime(0L);
+
+    }
 
     public StateDto requestState(final String pluginClass, final Map<String, String> configuration) {
         final StateDto state = new StateDto();

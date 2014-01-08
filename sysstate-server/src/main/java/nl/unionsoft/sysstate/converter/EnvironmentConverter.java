@@ -17,6 +17,7 @@ public class EnvironmentConverter implements Converter<EnvironmentDto, Environme
             result.setName(environment.getName());
             result.setOrder(environment.getOrder());
             result.setTags(environment.getTags());
+            result.setEnabled(environment.isEnabled());
             result.setDefaultInstanceTimeout(environment.getDefaultInstanceTimeout());
         }
         return result;

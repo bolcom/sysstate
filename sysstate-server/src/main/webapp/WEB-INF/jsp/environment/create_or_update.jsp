@@ -26,6 +26,11 @@
 						<jsp:param name="path" value="tags"/>
 						<jsp:param name="label" value="Tags"/>
 					</jsp:include>		
+					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
+						<jsp:param name="path" value="enabled"/>
+						<jsp:param name="label" value="Enabled"/>
+						<jsp:param name="type" value="checkbox"/>
+					</jsp:include>
 
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 						<jsp:param name="type" value="submit"/>

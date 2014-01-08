@@ -7,6 +7,7 @@
 		<th class="table-header-repeat line-left"><a href="">Name</a></th>
 		<th class="table-header-repeat line-left"><a href="">Order</a></th>
 		<th class="table-header-repeat line-left"><a href="">Tags</a></th>
+		<th class="table-header-repeat line-left"><a href="">Enabled</a></th>
 		<th class="table-header-repeat line-left"><a href="">Options</a></th>
 	</tr>
 	<c:forEach items="${environments}" var="environment">
@@ -14,6 +15,7 @@
 			<td>${environment.name}</td>
 			<td>${environment.order}</td>
 			<td>${environment.tags}</td>
+			<td>${environment.enabled}</td>
 			<td>
 				<a href="${environment.id}/update.html">Update</a> | 
 				<a href="${environment.id}/delete.html">Delete</a> |

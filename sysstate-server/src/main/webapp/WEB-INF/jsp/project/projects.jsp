@@ -5,12 +5,14 @@
 	<tr>
 		<th class="table-header-repeat line-left"><a href="">Name</a></th>
 		<th class="table-header-repeat line-left"><a href="">Order</a></th>
+		<th class="table-header-repeat line-left"><a href="">Enabled</a></th>
 		<th class="table-header-repeat line-left"><a href="">Options</a></th>
 	</tr>
 	<c:forEach items="${projects}" var="project">
 		<tr>
 			<td>${project.name}</td>
 			<td>${project.order}</td>
+			<td>${project.enabled}</td>
 			<td>
 				<a href="${project.id}/update.html?rUrl=${contextPath}/project/index.html">Update</a> |
 				<a href="${project.id}/delete.html?rUrl=${contextPath}/project/index.html">Delete</a> |

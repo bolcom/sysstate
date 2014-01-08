@@ -13,9 +13,12 @@ public class ProjectDto {
     @Size(min = 1, max = 15)
     private String name;
     private int order;
+    private boolean enabled;
+    
     private final List<ProjectEnvironmentDto> projectEnvironments;
 
     public ProjectDto() {
+        enabled = true;
         projectEnvironments = new ArrayList<ProjectEnvironmentDto>();
     }
 
@@ -45,6 +48,14 @@ public class ProjectDto {
 
     public void setOrder(final int order) {
         this.order = order;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
 }

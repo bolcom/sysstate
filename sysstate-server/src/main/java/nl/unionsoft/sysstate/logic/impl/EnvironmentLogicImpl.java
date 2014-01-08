@@ -58,21 +58,6 @@ public class EnvironmentLogicImpl implements EnvironmentLogic {
         return environmentDao.getEnvironment(environmentId);
     }
 
-    public void createOrUpdateEntity(final Environment environment) {
-
-        environmentDao.createOrUpdate(environment);
-        for (final Project project : projectDao.getProjects()) {
-            ProjectEnvironment projectEnvironment = projectEnvironmentDao.getProjectEnvironment(project.getId(), environment.getId());
-            if (projectEnvironment == null) {
-                projectEnvironment = new ProjectEnvironment();
-                projectEnvironment.setProject(project);
-                projectEnvironment.setEnvironment(environment);
-                projectEnvironmentDao.createOrUpdate(projectEnvironment);
-            }
-        }
-
-    }
-
     public void delete(final Long environmentId) {
 
         Environment environment = environmentDao.getEnvironment(environmentId);
@@ -117,6 +102,7 @@ public class EnvironmentLogicImpl implements EnvironmentLogic {
         environment.setName(environmentDto.getName());
         environment.setOrder(environmentDto.getOrder());
         environment.setTags(environmentDto.getTags());
+        environment.setEnabled(environmentDto.isEnabled());
         environmentDao.createOrUpdate(environment);
         environmentDto.setId(environment.getId());
         for (final Project project : projectDao.getProjects()) {

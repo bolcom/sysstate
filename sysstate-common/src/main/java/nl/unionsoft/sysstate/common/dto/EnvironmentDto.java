@@ -9,10 +9,14 @@ public class EnvironmentDto {
     @NotNull()
     @Size(min = 1, max = 15)
     private String name;
-
+    private boolean enabled;
     private int order;
     private String tags;
     private int defaultInstanceTimeout;
+
+    public EnvironmentDto() {
+        enabled = true;
+    }
 
     public String getName() {
         return name;
@@ -52,6 +56,14 @@ public class EnvironmentDto {
 
     public void setDefaultInstanceTimeout(final int defaultInstanceTimeout) {
         this.defaultInstanceTimeout = defaultInstanceTimeout;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
 }

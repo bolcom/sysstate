@@ -66,6 +66,7 @@ public class ProjectLogicImpl implements ProjectLogic {
         }
         theProject.setName(project.getName());
         theProject.setOrder(project.getOrder());
+        theProject.setEnabled(project.isEnabled());
         projectDao.createOrUpdateProject(theProject);
         for (final Environment environment : environmentDao.getEnvironments()) {
             ProjectEnvironment projectEnvironment = projectEnvironmentDao.getProjectEnvironment(project.getId(), environment.getId());

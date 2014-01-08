@@ -27,7 +27,7 @@ public class Project {
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "NAME", nullable = true, length=200)
+    @Column(name = "NAME", nullable = true, length = 200)
     private String name;
 
     @Column(name = "DEFAULT_ORDER", nullable = true)
@@ -36,8 +36,12 @@ public class Project {
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ProjectEnvironment> projectEnvironments;
 
-    public Project () {
+    @Column(name = "ENABLED", nullable = false, columnDefinition = "BIT")
+    private boolean enabled;
+
+    public Project() {
         projectEnvironments = new ArrayList<ProjectEnvironment>();
+        enabled = true;
     }
 
     public Long getId() {
@@ -64,13 +68,20 @@ public class Project {
         this.order = order;
     }
 
-
     public List<ProjectEnvironment> getProjectEnvironments() {
         return projectEnvironments;
     }
 
     public void setProjectEnvironments(final List<ProjectEnvironment> projectEnvironments) {
         this.projectEnvironments = projectEnvironments;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
 }

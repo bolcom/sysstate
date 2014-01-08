@@ -38,8 +38,15 @@ public class Environment {
     @Column(name = "TAGS", nullable = true, length = 512)
     private String tags;
 
+    @Column(name = "ENABLED", nullable = false, columnDefinition = "BIT")
+    private boolean enabled;
+
     @OneToMany(mappedBy = "environment", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ProjectEnvironment> projectEnvironments;
+
+    public Environment() {
+        this.enabled = true;
+    }
 
     public Long getId() {
         return id;
@@ -87,6 +94,14 @@ public class Environment {
 
     public void setTags(final String tags) {
         this.tags = tags;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
 }
