@@ -328,17 +328,22 @@
 
         <!-- START: Jetty -->
         <dependency>
-            <groupId>org.mortbay.jetty</groupId>
-            <artifactId>jetty</artifactId>
-        </dependency>
+				<groupId>org.mortbay.jetty</groupId>
+				<artifactId>jetty</artifactId>
+				<scope>provided</scope>
+			</dependency>
+            <dependency>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jsp-2.1-jetty</artifactId>
+                <scope>provided</scope>
+            </dependency>
+            
+        <!--
         <dependency>
-            <groupId>org.mortbay.jetty</groupId>
-            <artifactId>jsp-2.1</artifactId>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
         </dependency>
-
-
-        <!-- <dependency> <groupId>javax.servlet.jsp</groupId> <artifactId>jsp-api</artifactId> </dependency> -->
-
+        -->
         <!-- END: Jetty -->
 
     </dependencies>
@@ -361,7 +366,7 @@
         </resources>
 
         <plugins>
-            
+
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -18,42 +18,23 @@ import org.w3c.dom.Node;
 @Service("jenkinsJobStateResolver")
 public class JenkinsJobStateResolverImpl extends XMLBeanStateResolverImpl {
 
-    private static final String API_XML = "/api/xml";
-
     @Override
-    protected void handleXmlObject(final XmlObject xmlObject, final StateDto state, final  Map<String, String> properties) {
+    protected void handleXmlObject(final XmlObject xmlObject, final StateDto state, final Map<String, String> properties) {
         final Node node = xmlObject.getDomNode();
         final Document document = (Document) node;
 
         final String color = getCharacterDataFromObjectWithKey(document, "color");
-        if (StringUtils.startsWithIgnoreCase(color, "green") || StringUtils.startsWithIgnoreCase(color, "blue")) {
-            state.setDescription("STABLE");
-            state.setState(StateType.STABLE);
-        } else if (StringUtils.startsWithIgnoreCase(color, "yellow")) {
-            state.setDescription("UNSTABLE");
-            state.setState(StateType.UNSTABLE);
-        } else if (StringUtils.startsWithIgnoreCase(color, "red") || StringUtils.startsWithIgnoreCase(color, "aborted")) {
-            state.setDescription("FAILED");
-            state.setState(StateType.ERROR);
-        } else if (StringUtils.startsWithIgnoreCase(color, "disabled")) {
-            state.setState(StateType.DISABLED);
-            state.setDescription("DISABLED");
-            state.setMessage("Project is disabled, visit project homepage for more information!");
-        } else if (StringUtils.startsWithIgnoreCase(color, "grey")) {
-            state.setState(StateType.PENDING);
-            state.setDescription("PENDING");
-            state.setMessage("Project is awaiting (first) build...");
-        }
+        JenkinsStateType jenkinsStateType = JenkinsStateType.valueOf(StringUtils.upperCase(color));
+        StateType stateType = jenkinsStateType.stateType;
+
+        state.setState(stateType);
+        state.setDescription(jenkinsStateType.description);
+        state.setMessage(jenkinsStateType.message);
     }
 
     @Override
     public String processUri(final String uri) {
-        final StringBuilder uriBuilder = new StringBuilder();
-        uriBuilder.append(super.processUri(uri));
-        if (!StringUtils.endsWith(uri, API_XML)) {
-            uriBuilder.append(API_XML);
-        }
-        return uriBuilder.toString();
+        return JenkinsUtils.appendApi(super.processUri(uri));
     }
 
 }
