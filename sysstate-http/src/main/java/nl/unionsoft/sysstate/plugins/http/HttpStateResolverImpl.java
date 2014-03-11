@@ -49,10 +49,10 @@ public class HttpStateResolverImpl implements StateResolver {
         final HttpGet httpGet = new HttpGet(uri);
         httpGet.addHeader("Connection", "close");
 
-        String userAgent = properties.get("userAgent");
-        if (StringUtils.isNotEmpty(userAgent)) {
-            httpGet.addHeader("User-Agent", userAgent);
-        }
+//        String userAgent = properties.get("userAgent");
+//        if (StringUtils.isNotEmpty(userAgent)) {
+//            httpGet.addHeader("User-Agent", userAgent);
+//        }
 
         final Long startTime = System.currentTimeMillis();
         try {

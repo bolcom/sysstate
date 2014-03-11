@@ -1,0 +1,27 @@
+
+<listView>
+    <job>
+        <name>Job1</name>
+        <url>http://someJenkinsServer/job/Job1/</url>
+        <color>blue</color>
+    </job>
+   
+    <job>
+        <name>Job2</name>
+        <url>http://someJenkinsServer/job/Job2/</url>
+        <color>yellow</color>
+    </job>
+    <job>
+        <name>Job3</name>
+        <url>http://someJenkinsServer/job/Job3/</url>
+        <color>blue</color>
+    </job>
+    <job>
+        <name>Job4</name>
+        <url>http://someJenkinsServer/job/Job4/</url>
+        <color>blue</color>
+    </job>
+ 
+    <name>Test View</name>
+    <url>http://someJenkinsServer/view/SomeView/</url>
+</listView>
