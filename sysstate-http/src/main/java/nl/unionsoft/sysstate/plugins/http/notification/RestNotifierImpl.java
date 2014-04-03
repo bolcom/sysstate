@@ -1,20 +1,10 @@
 package nl.unionsoft.sysstate.plugins.http.notification;
 
-import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import nl.unionsoft.sysstate.common.extending.Notification;
-import nl.unionsoft.sysstate.common.extending.Notifier;
-import nl.unionsoft.sysstate.common.logic.HttpClientLogic;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
@@ -22,10 +12,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.BasicHttpEntity;
-import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class RestNotifierImpl extends HttpClientNotifierImpl {
 

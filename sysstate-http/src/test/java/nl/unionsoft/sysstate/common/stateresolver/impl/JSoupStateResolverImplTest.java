@@ -48,7 +48,6 @@ public class JSoupStateResolverImplTest {
         Map<String,String> properties = new HashMap<String, String>();
         properties.put("url", "http://someurl");
         properties.put("select", "table td:contains(TROL) ~ td:eq(3)");
-        instance.setConfiguration(properties);
-        jSoupStateResolverPlugin.setState(instance, state);
+        jSoupStateResolverPlugin.setState(instance, state, properties);
     }
 }

@@ -205,7 +205,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         }
     }
 
-    public void createOrUpdateInstance(final InstanceDto dto) {
+    public void createOrUpdateInstance(final InstanceDto dto, Map<String, String> configuration) {
         final Instance instance = new Instance();
         instance.setId(dto.getId());
         // instance.setConfiguration(dto.getConfiguration());
@@ -225,7 +225,6 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         }
         instanceDao.createOrUpdate(instance);
 
-        Map<String, String> configuration = dto.getConfiguration();
         if (configuration != null) {
             for (Entry<String, String> entry : configuration.entrySet()) {
                 propertyDao.setInstanceProperty(instance, entry.getKey(), entry.getValue());

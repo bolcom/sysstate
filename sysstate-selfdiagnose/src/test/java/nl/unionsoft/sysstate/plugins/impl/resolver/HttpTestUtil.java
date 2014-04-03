@@ -23,12 +23,12 @@ public class HttpTestUtil {
         return doCall(plugin, defaultHttpClient, stream, new LinkedHashMap<String, String>());
     }
 
-    public static StateDto doCall(final StateResolver plugin, final DefaultHttpClient defaultHttpClient, final String stream, final  Map<String, String> configuration) throws IOException {
+    public static StateDto doCall(final StateResolver plugin, final DefaultHttpClient defaultHttpClient, final String stream,
+            final Map<String, String> configuration) throws IOException {
 
         final StateDto state = new StateDto();
         final InstanceDto instance = new InstanceDto();
         configuration.put("url", "SomeUrl");
-        instance.setConfiguration(configuration);
         final InputStream inputStream = HttpTestUtil.class.getResourceAsStream(stream);
         new Expectations() {
 
@@ -53,7 +53,7 @@ public class HttpTestUtil {
                 //@formatter:on
             }
         };
-        plugin.setState(instance, state);
+        plugin.setState(instance, state, configuration);
         return state;
 
     }

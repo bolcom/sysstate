@@ -7,7 +7,6 @@ import nl.unionsoft.sysstate.common.dto.StatisticsDto;
 import nl.unionsoft.sysstate.common.logic.StatisticsLogic;
 import nl.unionsoft.sysstate.dao.StatisticsDao;
 import nl.unionsoft.sysstate.logic.PluginLogic;
-import nl.unionsoft.sysstate.logic.impl.PluginLogicImpl.Plugin;
 
 import org.springframework.stereotype.Service;
 
@@ -28,10 +27,10 @@ public class StatisticsLogicImpl implements StatisticsLogic {
 
     public String getApplicationVersion() {
         String result = "Undefined";
-        Plugin sysstatePlugin = pluginLogic.getPlugin("sysstate");
-        if (sysstatePlugin != null) {
-            result = sysstatePlugin.getVersion();
-        }
+        // Plugin sysstatePlugin = pluginLogic.getPlugin("sysstate");
+        // if (sysstatePlugin != null) {
+        // result = sysstatePlugin.getVersion();
+        // }
         return result;
     }
 

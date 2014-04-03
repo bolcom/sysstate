@@ -42,7 +42,7 @@ public class InstanceMultiController {
                     instance.setEnabled(true);
                     messageLogic.addUserMessage(new MessageDto("Instance with id '" + instanceId + "' enabled!", MessageDto.GREEN));
                 }
-                instanceLogic.createOrUpdateInstance(instance);
+                instanceLogic.createOrUpdateInstance(instance, null);
                 instanceLogic.queueForUpdate(instanceId);
             }
         }

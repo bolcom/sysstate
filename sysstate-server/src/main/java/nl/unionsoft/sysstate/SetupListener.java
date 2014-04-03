@@ -128,12 +128,11 @@ public class SetupListener implements InitializingBean {
             instance.setName(name);
             instance.setProjectEnvironment(projectEnvironment);
             instance.setEnabled(true);
-            instance.setConfiguration(configuration);
             instance.setHomepageUrl(homepageUrl);
             instance.setPluginClass(plugin);
             instance.setRefreshTimeout(10000);
             instance.setTags("application");
-            instanceLogic.createOrUpdateInstance(instance);
+            instanceLogic.createOrUpdateInstance(instance, configuration);
         }
     }
 

@@ -25,7 +25,7 @@ public class PluginController {
     @RequestMapping(value = "/plugins/index", method = RequestMethod.GET)
     public ModelAndView index() {
         final ModelAndView modelAndView = new ModelAndView("list-plugin-manager");
-        modelAndView.addObject("plugins", pluginLogic.getPlugins());
+//        modelAndView.addObject("plugins", pluginLogic.getPlugins());
         return modelAndView;
     }
 }

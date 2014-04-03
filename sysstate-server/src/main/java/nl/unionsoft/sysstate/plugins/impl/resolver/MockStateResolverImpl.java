@@ -20,8 +20,7 @@ public class MockStateResolverImpl implements StateResolver {
         random = new Random();
     }
 
-    public void setState(final InstanceDto instance, final StateDto state) {
-        Map<String, String> configuration = instance.getConfiguration();
+    public void setState(final InstanceDto instance, final StateDto state, Map<String, String> configuration) {
 
         String stateStr = StringUtils.defaultIfEmpty(configuration.get("state"), "stable").toUpperCase();
         if (StringUtils.equalsIgnoreCase("RANDOM", stateStr)) {
@@ -54,7 +53,7 @@ public class MockStateResolverImpl implements StateResolver {
         return result;
     }
 
-    public String generateHomePageUrl(final InstanceDto instance) {
+    public String generateHomePageUrl(final InstanceDto instance, Map<String, String> configuration) {
         return "http://localhost/";
     }
 

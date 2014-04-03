@@ -63,6 +63,9 @@ public class Instance {
 
     @OneToMany(mappedBy = "instance", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<InstanceProperty> instanceProperties;
+    
+    @OneToMany(mappedBy = "instance", cascade = CascadeType.ALL)
+    private List<InstanceNotifier> instanceNotifiers;
 
     // @OneToOne()
     // @JoinColumn(name="LAST_STE_ID")
