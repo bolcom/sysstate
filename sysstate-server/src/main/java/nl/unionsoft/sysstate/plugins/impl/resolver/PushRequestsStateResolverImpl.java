@@ -27,7 +27,8 @@ public class PushRequestsStateResolverImpl implements StateResolver {
     @Named("stateLogic")
     private StateLogic stateLogic;
 
-    public void setState(final InstanceDto instance, final StateDto state, Map<String, String> configuration) {
+    public void setState(final InstanceDto instance, final StateDto state) {
+        Map<String, String> configuration = instance.getConfiguration();
 
         Long timeout = Long.valueOf(StringUtils.defaultIfEmpty(configuration.get("timeOut"), Long.toString(1000 * 60 * 10)));
 
@@ -76,7 +77,7 @@ public class PushRequestsStateResolverImpl implements StateResolver {
         this.stateLogic = stateLogic;
     }
 
-    public String generateHomePageUrl(final InstanceDto instance, Map<String, String> configuration) {
+    public String generateHomePageUrl(final InstanceDto instance) {
         return null;
     }
 

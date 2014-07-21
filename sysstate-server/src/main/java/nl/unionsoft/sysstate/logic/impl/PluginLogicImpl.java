@@ -6,6 +6,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -17,11 +19,13 @@ import javax.inject.Named;
 import nl.unionsoft.sysstate.common.dto.PropertyMetaList;
 import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
 import nl.unionsoft.sysstate.common.extending.ListOfValueResolver;
+import nl.unionsoft.sysstate.common.util.PropertyGroupUtil;
 import nl.unionsoft.sysstate.dao.PropertyDao;
 import nl.unionsoft.sysstate.domain.GroupProperty;
 import nl.unionsoft.sysstate.logic.PluginLogic;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,14 +45,14 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
 
     private ApplicationContext applicationContext;
 
-    // private final List<Plugin> plugins;
+    private final List<Plugin> plugins;
 
     private ClassPathXmlApplicationContext pluginApplicationContext;
 
     private static final Logger LOG = LoggerFactory.getLogger(PluginLogicImpl.class);
 
     public PluginLogicImpl() {
-        // plugins = new ArrayList<PluginLogicImpl.Plugin>();
+        plugins = new ArrayList<PluginLogicImpl.Plugin>();
     }
 
     public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
@@ -73,21 +77,20 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
                     String pluginId = mainAttributes.getValue("plugin-id");
                     String pluginVersion = mainAttributes.getValue("plugin-version");
                     if (StringUtils.isNotEmpty(pluginId) && StringUtils.isNotEmpty(pluginVersion)) {
+                        String pluginPropertiesResource = mainAttributes.getValue("plugin-properties");
 
                         if (StringUtils.isNotEmpty(pluginContext)) {
                             LOG.info("PluginContext: {}", pluginContext);
                             contextFiles.add("classpath:" + pluginContext);
                         }
-//                        Plugin plugin = new Plugin();
-//                        plugin.setId(pluginId);
-//                        plugin.setVersion(pluginVersion);
-
-                        // String pluginPropertiesResource = mainAttributes.getValue("plugin-properties");
-                        // if (StringUtils.isNotEmpty(pluginPropertiesResource)) {
-                        // plugin.setProperties(getPropertiesFromResource(pluginPropertiesResource));
-                        // }
+                        Plugin plugin = new Plugin();
+                        plugin.setId(pluginId);
+                        plugin.setVersion(pluginVersion);
+                        if (StringUtils.isNotEmpty(pluginPropertiesResource)) {
+                            plugin.setProperties(getPropertiesFromResource(pluginPropertiesResource));
+                        }
                         LOG.info("Adding plugin: '{} ({}')", pluginId, pluginVersion);
-                        // plugins.add(plugin);
+                        plugins.add(plugin);
                     }
 
                 } catch (IOException e) {
@@ -130,52 +133,51 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
         return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(pluginApplicationContext, type);
     }
 
-    // public List<Plugin> getPlugins() {
-    // return plugins;
-    // }
+    public List<Plugin> getPlugins() {
+        return plugins;
+    }
 
-    // public Plugin getPlugin(final String id) {
-    // Plugin result = null;
-    // for (Plugin plugin : plugins) {
-    // if (plugin.getId().equals(id)) {
-    // result = plugin;
-    // break;
-    // }
-    // }
-    // return result;
-    // }
+    public Plugin getPlugin(final String id) {
+        Plugin result = null;
+        for (Plugin plugin : plugins) {
+            if (plugin.getId().equals(id)) {
+                result = plugin;
+                break;
+            }
+        }
+        return result;
+    }
 
-//    public class Plugin {
-//        private String id;
-//        private String version;
-//
-//        // private Properties properties;
-//
-//        public String getId() {
-//            return id;
-//        }
-//
-//        public void setId(final String id) {
-//            this.id = id;
-//        }
-//
-//        public String getVersion() {
-//            return version;
-//        }
-//
-//        public void setVersion(final String version) {
-//            this.version = version;
-//        }
-//
-//        // public Properties getProperties() {
-//        // return properties;
-//        // }
-//        //
-//        // public void setProperties(final Properties properties) {
-//        // this.properties = properties;
-//        // }
-//
-//    }
+    public class Plugin {
+        private String id;
+        private String version;
+        private Properties properties;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(final String id) {
+            this.id = id;
+        }
+
+        public String getVersion() {
+            return version;
+        }
+
+        public void setVersion(final String version) {
+            this.version = version;
+        }
+
+        public Properties getProperties() {
+            return properties;
+        }
+
+        public void setProperties(final Properties properties) {
+            this.properties = properties;
+        }
+
+    }
 
     private Properties getPropertiesFromResource(final String propertyResource) {
         Properties properties = new Properties();
@@ -218,47 +220,46 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
     }
 
     public PropertyMetaList getPluginPropertyMetaList(final String id) {
-        // Plugin plugin = getPlugin(id);
-        // PropertyMetaList propertyMetaList = new PropertyMetaList();
-        // if (plugin != null) {
-        // Properties pluginProperties = plugin.getProperties();
-        // if (pluginProperties != null) {
-        //
-        // propertyMetaList.setName(pluginProperties.getProperty("plugin.title", id));
-        // propertyMetaList.setId(id);
-        //
-        // Map<String, Properties> globalGroupProperties = PropertyGroupUtil.getGroupProperties(pluginProperties, "global");
-        //
-        // for (Entry<String, Properties> entry : globalGroupProperties.entrySet()) {
-        //
-        // String propertyId = entry.getKey();
-        // Properties properties = entry.getValue();
-        // PropertyMetaValue propertyMetaValue = new PropertyMetaValue();
-        // propertyMetaValue.setId(propertyId);
-        // propertyMetaValue.setTitle(StringUtils.defaultIfEmpty(properties.getProperty("title"), propertyId));
-        // propertyMetaValue.setNullable(BooleanUtils.toBoolean(properties.getProperty("nullable")));
-        //
-        // GroupProperty groupProperty = propertyDao.getGroupProperty(id, propertyId);
-        // propertyMetaValue.setValue(getValueForPropMeta(properties, groupProperty));
-        //
-        // Properties innerProps = propertyMetaValue.getProperties();
-        // for (String propKey : properties.stringPropertyNames()) {
-        // if (StringUtils.startsWith(propKey, "property.")) {
-        // innerProps.setProperty(StringUtils.substringAfter(propKey, "property."), properties.getProperty(propKey));
-        // }
-        // }
-        //
-        // String lovResolver = properties.getProperty("resolver");
-        // if (StringUtils.isNotEmpty(lovResolver)) {
-        // ListOfValueResolver listOfValueResolver = getListOfValueResolver(lovResolver);
-        // propertyMetaValue.setLov(listOfValueResolver.getListOfValues(propertyMetaValue));
-        // }
-        // propertyMetaList.add(propertyMetaValue);
-        // }
-        // }
-        // }
-        // return propertyMetaList;
-        return null;
+        Plugin plugin = getPlugin(id);
+        PropertyMetaList propertyMetaList = new PropertyMetaList();
+        if (plugin != null) {
+            Properties pluginProperties = plugin.getProperties();
+            if (pluginProperties != null) {
+
+                propertyMetaList.setName(pluginProperties.getProperty("plugin.title", id));
+                propertyMetaList.setId(id);
+
+                Map<String, Properties> globalGroupProperties = PropertyGroupUtil.getGroupProperties(pluginProperties, "global");
+
+                for (Entry<String, Properties> entry : globalGroupProperties.entrySet()) {
+
+                    String propertyId = entry.getKey();
+                    Properties properties = entry.getValue();
+                    PropertyMetaValue propertyMetaValue = new PropertyMetaValue();
+                    propertyMetaValue.setId(propertyId);
+                    propertyMetaValue.setTitle(StringUtils.defaultIfEmpty(properties.getProperty("title"), propertyId));
+                    propertyMetaValue.setNullable(BooleanUtils.toBoolean(properties.getProperty("nullable")));
+
+                    GroupProperty groupProperty = propertyDao.getGroupProperty(id, propertyId);
+                    propertyMetaValue.setValue(getValueForPropMeta(properties, groupProperty));
+
+                    Properties innerProps = propertyMetaValue.getProperties();
+                    for (String propKey : properties.stringPropertyNames()) {
+                        if (StringUtils.startsWith(propKey, "property.")) {
+                            innerProps.setProperty(StringUtils.substringAfter(propKey, "property."), properties.getProperty(propKey));
+                        }
+                    }
+
+                    String lovResolver = properties.getProperty("resolver");
+                    if (StringUtils.isNotEmpty(lovResolver)) {
+                        ListOfValueResolver listOfValueResolver = getListOfValueResolver(lovResolver);
+                        propertyMetaValue.setLov(listOfValueResolver.getListOfValues(propertyMetaValue));
+                    }
+                    propertyMetaList.add(propertyMetaValue);
+                }
+            }
+        }
+        return propertyMetaList;
     }
 
     private String getValueForPropMeta(final Properties properties, final GroupProperty groupProperty) {

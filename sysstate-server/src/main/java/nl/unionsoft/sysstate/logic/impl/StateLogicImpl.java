@@ -20,7 +20,6 @@ import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.extending.StateResolver;
-import nl.unionsoft.sysstate.common.logic.NotifierLogic;
 import nl.unionsoft.sysstate.common.util.StateUtil;
 import nl.unionsoft.sysstate.common.util.SysStateStringUtils;
 import nl.unionsoft.sysstate.dao.InstanceDao;
@@ -136,11 +135,9 @@ public class StateLogicImpl implements StateLogic {
                     throw new IllegalStateException("No stateResolver found for type '" + pluginClass + "'");
                 }
                 final InstanceDto instanceDto = new InstanceDto();
-                //instanceDto.setConfiguration(instance.getConfiguration());
+                instanceDto.setConfiguration(instance.getConfiguration());
                 instanceDto.setId(instance.getId());
-                
-                //instancePropertiesConverter.convert(instance.getInstanceProperties())
-                stateResolver.setState(instanceDto, state, null);
+                stateResolver.setState(instanceDto, state);
                 if (state.getState() == null) {
                     throw new IllegalStateException("Result has no state!");
                 }
@@ -151,10 +148,12 @@ public class StateLogicImpl implements StateLogic {
                 state.setResponseTime(0L);
                 state.appendMessage(StateUtil.exceptionAsMessage(e));
 
+            } finally {
+
             }
         }
 
-        // Timing...
+        //Timing...
         final Long responseTime = System.currentTimeMillis() - now;
         if (state.getResponseTime() < responseTime) {
             state.setResponseTime(responseTime);
@@ -181,7 +180,8 @@ public class StateLogicImpl implements StateLogic {
                 throw new IllegalStateException("No stateResolver found for type '" + pluginClass + "'");
             }
             final InstanceDto instanceDto = new InstanceDto();
-            stateResolver.setState(instanceDto, state, configuration);
+            instanceDto.setConfiguration(configuration);
+            stateResolver.setState(instanceDto, state);
             if (state.getState() == null) {
                 throw new IllegalStateException("Result has no state!");
             }

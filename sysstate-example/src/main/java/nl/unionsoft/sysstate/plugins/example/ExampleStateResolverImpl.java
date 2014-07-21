@@ -1,7 +1,5 @@
 package nl.unionsoft.sysstate.plugins.example;
 
-import java.util.Map;
-
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
@@ -12,11 +10,11 @@ import org.springframework.stereotype.Service;
 @Service("exampleStateResolver")
 public class ExampleStateResolverImpl implements StateResolver {
 
-    public void setState(final InstanceDto instance, final StateDto state, Map<String, String> configuration) {
+    public void setState(final InstanceDto instance, final StateDto state) {
         state.setState(StateType.STABLE);
     }
 
-    public String generateHomePageUrl(final InstanceDto instance, Map<String, String> configuration) {
+    public String generateHomePageUrl(final InstanceDto instance) {
         return "http://www.unionsoft.nl/";
     }
 

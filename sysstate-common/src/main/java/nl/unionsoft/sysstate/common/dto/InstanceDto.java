@@ -200,13 +200,13 @@ public class InstanceDto {
         return true;
     }
 
-//    public Map<String, String> getConfiguration() {
-//        return configuration;
-//    }
-//
-//    public void setConfiguration(Map<String, String> configuration) {
-//        this.configuration = configuration;
-//    }
+    public Map<String, String> getConfiguration() {
+        return configuration;
+    }
+
+    public void setConfiguration(Map<String, String> configuration) {
+        this.configuration = configuration;
+    }
 
     public String getReference() {
         return reference;

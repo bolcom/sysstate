@@ -21,7 +21,9 @@ public class InstanceConverter implements Converter<InstanceDto, Instance> {
     @Named("projectEnvironmentConverter")
     private ProjectEnvironmentConverter projectEnvironmentConverter;
 
-
+    @Inject
+    @Named("instancePropertiesConverter")
+    private BidirectionalConverter<Map<String, String>, List<InstanceProperty>> instancePropertiesConverter;
     //
     // @Inject
     // @Named("pluginLogic")
@@ -40,6 +42,7 @@ public class InstanceConverter implements Converter<InstanceDto, Instance> {
             result.setProjectEnvironment(projectEnvironmentConverter.convert(instance.getProjectEnvironment()));
             result.setHomepageUrl(instance.getHomepageUrl());
             result.setPluginClass(instance.getPluginClass());
+            result.setConfiguration(instancePropertiesConverter.convert(instance.getInstanceProperties()));
             result.setEnabled(instance.isEnabled());
             result.setTags(instance.getTags());
             result.setReference(instance.getReference());

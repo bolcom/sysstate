@@ -28,6 +28,7 @@ public class HttpTestUtil {
         final StateDto state = new StateDto();
         final InstanceDto instance = new InstanceDto();
         properties.put("url", "SomeUrl");
+        instance.setConfiguration(properties);
         final InputStream inputStream = JenkinsServerStateResolverTest.class.getResourceAsStream(stream);
         new Expectations() {
 
@@ -52,7 +53,7 @@ public class HttpTestUtil {
                 //@formatter:on
             }
         };
-        plugin.setState(instance, state, properties);
+        plugin.setState(instance, state);
         return state;
 
     }

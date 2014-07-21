@@ -2,16 +2,13 @@ package nl.unionsoft.sysstate.plugins.http;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import nl.unionsoft.common.util.PropertiesUtil;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.extending.LayeredMap;
 import nl.unionsoft.sysstate.common.extending.StateResolver;
 import nl.unionsoft.sysstate.common.logic.HttpClientLogic;
 import nl.unionsoft.sysstate.common.util.StateUtil;
@@ -25,8 +22,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 @Service("httpStateResolver")
@@ -40,7 +35,8 @@ public class HttpStateResolverImpl implements StateResolver {
     @Named("httpClientLogic")
     private HttpClientLogic httpClientLogic;
 
-    public void setState(final InstanceDto instance, final StateDto state, Map<String, String> properties) {
+    public void setState(final InstanceDto instance, final StateDto state) {
+        Map<String, String> properties = instance.getConfiguration();
 
         HttpClient httpClient = httpClientLogic.getHttpClient(StringUtils.defaultIfEmpty(properties.get("httpClientId"), "default"));
         state.setState(StateType.STABLE);
@@ -51,7 +47,12 @@ public class HttpStateResolverImpl implements StateResolver {
             throw new IllegalStateException("URL is empty!");
         }
         final HttpGet httpGet = new HttpGet(uri);
-        addHeaders(httpGet, properties);
+        httpGet.addHeader("Connection", "close");
+
+//        String userAgent = properties.get("userAgent");
+//        if (StringUtils.isNotEmpty(userAgent)) {
+//            httpGet.addHeader("User-Agent", userAgent);
+//        }
 
         final Long startTime = System.currentTimeMillis();
         try {
@@ -66,15 +67,6 @@ public class HttpStateResolverImpl implements StateResolver {
         } catch (final Exception e) {
             LOG.warn("Caught Exception while performing request: {}", e.getMessage(), e);
             handleStateForException(state, e, startTime);
-        }
-    }
-
-    protected void addHeaders(HttpGet httpGet, Map<String, String> properties) {
-
-        httpGet.addHeader("Connection", "close");
-        Properties headers = PropertiesUtil.stringToProperties(properties.get("headers"));
-        for (String headerName : headers.stringPropertyNames()) {
-            httpGet.addHeader(headerName, headers.getProperty(headerName));
         }
     }
 
@@ -115,7 +107,8 @@ public class HttpStateResolverImpl implements StateResolver {
 
     }
 
-    public String generateHomePageUrl(final InstanceDto instance, Map<String, String> properties) {
+    public String generateHomePageUrl(final InstanceDto instance) {
+        Map<String, String> properties = instance.getConfiguration();
         String homePageUrl = processUri(properties.get(URL));
         return StringUtils.substringBefore(homePageUrl, "//") + "//" + StringUtils.substringBetween(homePageUrl, "//", "/");
     }
@@ -127,5 +120,8 @@ public class HttpStateResolverImpl implements StateResolver {
     public void setHttpClientLogic(HttpClientLogic httpClientLogic) {
         this.httpClientLogic = httpClientLogic;
     }
+    
+    
+    
 
 }

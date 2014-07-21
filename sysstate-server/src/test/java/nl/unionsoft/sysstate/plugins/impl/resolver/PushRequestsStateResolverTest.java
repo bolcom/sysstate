@@ -52,7 +52,7 @@ public class PushRequestsStateResolverTest {
         StateDto state = new StateDto();
         InstanceDto instance = new InstanceDto();
         instance.setId(1L);
-        pushRequestsStateResolverPlugin.setState(instance, state, null);
+        pushRequestsStateResolverPlugin.setState(instance, state);
         assertPending(state);
 
     }
@@ -75,7 +75,7 @@ public class PushRequestsStateResolverTest {
         StateDto state = new StateDto();
         InstanceDto instance = new InstanceDto();
         instance.setId(1L);
-        pushRequestsStateResolverPlugin.setState(instance, state, null);
+        pushRequestsStateResolverPlugin.setState(instance, state);
         assertTwaalf(state);
 
     }
@@ -101,7 +101,7 @@ public class PushRequestsStateResolverTest {
         StateDto state = new StateDto();
         InstanceDto instance = new InstanceDto();
         instance.setId(1L);
-        pushRequestsStateResolverPlugin.setState(instance, state, null);
+        pushRequestsStateResolverPlugin.setState(instance, state);
         assertTwaalf(state);
 
     }
@@ -126,7 +126,7 @@ public class PushRequestsStateResolverTest {
         StateDto state = new StateDto();
         InstanceDto instance = new InstanceDto();
         instance.setId(1L);
-        pushRequestsStateResolverPlugin.setState(instance, state, null);
+        pushRequestsStateResolverPlugin.setState(instance, state);
         assertPending(state);
 
     }
@@ -152,7 +152,7 @@ public class PushRequestsStateResolverTest {
         StateDto state = new StateDto();
         InstanceDto instance = new InstanceDto();
         instance.setId(1L);
-        pushRequestsStateResolverPlugin.setState(instance, state, null);
+        pushRequestsStateResolverPlugin.setState(instance, state);
         assertMissing(state);
     }
 
@@ -193,8 +193,9 @@ public class PushRequestsStateResolverTest {
 
         Map<String,String> properties = new HashMap<String, String>();
         properties.put("timeOut", String.valueOf(1000 * 60 * 20));
+        instance.setConfiguration(properties);
         instance.setId(1L);
-        pushRequestsStateResolverPlugin.setState(instance, state, properties);
+        pushRequestsStateResolverPlugin.setState(instance, state);
         assertMissing(state);
     }
 
@@ -220,8 +221,9 @@ public class PushRequestsStateResolverTest {
         InstanceDto instance = new InstanceDto();
         Map<String,String> properties = new HashMap<String, String>();
         properties.put("timeOut", "-1");
+        instance.setConfiguration(properties);
         instance.setId(1L);
-        pushRequestsStateResolverPlugin.setState(instance, state, properties);
+        pushRequestsStateResolverPlugin.setState(instance, state);
         assertTwaalf(state);
     }
 

@@ -94,7 +94,7 @@ public class DiscoveryController {
                         if (project != null && project.getId() != null && environment != null && environment.getId() != null) {
                             projectEnvironment.setId(projectEnvironmentLogic.createIfNotExists(project.getId(), environment.getId()));
                             instance.setEnabled(true);
-                            instanceLogic.createOrUpdateInstance(instance, null);
+                            instanceLogic.createOrUpdateInstance(instance);
                             messageLogic.addUserMessage(new MessageDto("Added instance with name " + instance.getName() + ".", MessageDto.GREEN));
                         }
                     }

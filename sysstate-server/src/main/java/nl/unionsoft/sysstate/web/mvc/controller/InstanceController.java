@@ -79,7 +79,7 @@ public class InstanceController {
             addCommons(modelAndView);
         } else {
             instance.setId(Long.valueOf(0).equals(instance.getId()) ? null : instance.getId());
-            instanceLogic.createOrUpdateInstance(instance, null);
+            instanceLogic.createOrUpdateInstance(instance);
             modelAndView = new ModelAndView("redirect:/filter/index.html");
         }
         return modelAndView;
@@ -136,7 +136,7 @@ public class InstanceController {
     public ModelAndView toggleEnabled(@PathVariable(value = "instanceId") final Long instanceId, @RequestParam(value = "redirUrl", required = false) final String redirUrl) {
         final InstanceDto instance = instanceLogic.getInstance(instanceId);
         instance.setEnabled(!instance.isEnabled());
-        instanceLogic.createOrUpdateInstance(instance, null);
+        instanceLogic.createOrUpdateInstance(instance);
         instanceLogic.queueForUpdate(instanceId);
         return new ModelAndView("redirect:/filter/index.html");
     }
