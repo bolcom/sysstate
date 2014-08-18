@@ -8,4 +8,8 @@ xmlns:context-bol="http://www.springframework.org/schema/context"
 
 	<context-bol:component-scan base-package="nl.unionsoft.sysstate.plugins.groovy" />
 
+
+    <bean name="groovyStateResolver" class="nl.unionsoft.sysstate.plugins.groovy.GroovyStateResolverImpl">
+        <property name="sysstateHome" value="${SYSSTATE_HOME}"/>
+    </bean>
 </beans>

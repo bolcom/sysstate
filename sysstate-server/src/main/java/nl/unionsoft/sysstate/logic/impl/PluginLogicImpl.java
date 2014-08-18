@@ -62,46 +62,46 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
 
     public void afterPropertiesSet() throws Exception {
         try {
-            List<String> contextFiles = new ArrayList<String>();
-            Enumeration<URL> resources = PluginLogicImpl.class.getClassLoader().getResources(JarFile.MANIFEST_NAME);
-            while (resources.hasMoreElements()) {
-                URL url = resources.nextElement();
-                LOG.debug("Found: {}", url);
-                InputStream manifestStream = null;
-                try {
-                    manifestStream = url.openStream();
-                    Manifest manifest = new Manifest(manifestStream);
-
-                    final Attributes mainAttributes = manifest.getMainAttributes();
-                    String pluginContext = mainAttributes.getValue("plugin-context");
-                    String pluginId = mainAttributes.getValue("plugin-id");
-                    String pluginVersion = mainAttributes.getValue("plugin-version");
-                    if (StringUtils.isNotEmpty(pluginId) && StringUtils.isNotEmpty(pluginVersion)) {
-                        String pluginPropertiesResource = mainAttributes.getValue("plugin-properties");
-
-                        if (StringUtils.isNotEmpty(pluginContext)) {
-                            LOG.info("PluginContext: {}", pluginContext);
-                            contextFiles.add("classpath:" + pluginContext);
-                        }
-                        Plugin plugin = new Plugin();
-                        plugin.setId(pluginId);
-                        plugin.setVersion(pluginVersion);
-                        if (StringUtils.isNotEmpty(pluginPropertiesResource)) {
-                            plugin.setProperties(getPropertiesFromResource(pluginPropertiesResource));
-                        }
-                        LOG.info("Adding plugin: '{} ({}')", pluginId, pluginVersion);
-                        plugins.add(plugin);
-                    }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    IOUtils.closeQuietly(manifestStream);
-                }
-            }
-            LOG.info("Preparing pluginApplicationContext...");
+//            List<String> contextFiles = new ArrayList<String>();
+//            Enumeration<URL> resources = PluginLogicImpl.class.getClassLoader().getResources(JarFile.MANIFEST_NAME);
+//            while (resources.hasMoreElements()) {
+//                URL url = resources.nextElement();
+//                LOG.debug("Found: {}", url);
+//                InputStream manifestStream = null;
+//                try {
+//                    manifestStream = url.openStream();
+//                    Manifest manifest = new Manifest(manifestStream);
+//
+//                    final Attributes mainAttributes = manifest.getMainAttributes();
+//                    String pluginContext = mainAttributes.getValue("plugin-context");
+//                    String pluginId = mainAttributes.getValue("plugin-id");
+//                    String pluginVersion = mainAttributes.getValue("plugin-version");
+//                    if (StringUtils.isNotEmpty(pluginId) && StringUtils.isNotEmpty(pluginVersion)) {
+//                        String pluginPropertiesResource = mainAttributes.getValue("plugin-properties");
+//
+//                        if (StringUtils.isNotEmpty(pluginContext)) {
+//                            LOG.info("PluginContext: {}", pluginContext);
+//                            contextFiles.add("classpath:" + pluginContext);
+//                        }
+//                        Plugin plugin = new Plugin();
+//                        plugin.setId(pluginId);
+//                        plugin.setVersion(pluginVersion);
+//                        if (StringUtils.isNotEmpty(pluginPropertiesResource)) {
+//                            plugin.setProperties(getPropertiesFromResource(pluginPropertiesResource));
+//                        }
+//                        LOG.info("Adding plugin: '{} ({}')", pluginId, pluginVersion);
+//                        plugins.add(plugin);
+//                    }
+//
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                } finally {
+//                    IOUtils.closeQuietly(manifestStream);
+//                }
+//            }
+//            LOG.info("Preparing pluginApplicationContext...");
             pluginApplicationContext = new ClassPathXmlApplicationContext(applicationContext);
-            pluginApplicationContext.setConfigLocations(contextFiles.toArray(new String[] {}));
+            //pluginApplicationContext.setConfigLocations(contextFiles.toArray(new String[] {}));
             pluginApplicationContext.refresh();
         } catch (Exception e) {
             LOG.error("Caught Exception while initializing plugins", e);
