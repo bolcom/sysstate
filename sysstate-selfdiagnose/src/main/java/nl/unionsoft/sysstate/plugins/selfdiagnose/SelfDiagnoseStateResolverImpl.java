@@ -57,9 +57,9 @@ public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
         if (selfdiagnose == null){
             state.setState(StateType.UNSTABLE);
             //Check if this is actually HTML content
-            if (StringUtils.equalsIgnoreCase(document.getChildNodes().item(0).getNodeName(),"FOUND HTML")){
+            if (StringUtils.equalsIgnoreCase(document.getChildNodes().item(0).getNodeName(),"HTML")){
                 state.appendMessage("The version request returned HTML instead of XML. This is a bug in SelfDiagnose for versions 2.5.1 to 2.5.7. Upgrade to SelfDiagnose 2.5.8 or higher.");
-                state.setDescription("HTML");
+                state.setDescription("HTML CONTENT");
             } else {
                 state.appendMessage("No SelfDiagnose element could be found in the document.");
                 state.setDescription("No SelfDiagnose");
