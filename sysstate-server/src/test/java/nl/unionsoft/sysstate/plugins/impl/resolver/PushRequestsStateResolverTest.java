@@ -62,7 +62,7 @@ public class PushRequestsStateResolverTest {
 
         final StateDto fetched = new StateDto();
         fetched.setDescription("Twaalf!");
-        fetched.setMessage("12!");
+        fetched.appendMessage("12!");
         fetched.setState(StateType.ERROR);
         new Expectations() {
             {
@@ -86,7 +86,7 @@ public class PushRequestsStateResolverTest {
         final StateDto lastState = new StateDto();
         lastState.setCreationDate(new DateTime().minusMinutes(5));
         lastState.setDescription("Twaalf!");
-        lastState.setMessage("12!");
+        lastState.appendMessage("12!");
         lastState.setState(StateType.ERROR);
         new Expectations() {
             {
@@ -111,7 +111,7 @@ public class PushRequestsStateResolverTest {
 
         final StateDto lastState = new StateDto();
         lastState.setDescription("Twaalf!");
-        lastState.setMessage("12!");
+        lastState.appendMessage("12!");
         lastState.setState(StateType.ERROR);
         new Expectations() {
             {
@@ -137,7 +137,7 @@ public class PushRequestsStateResolverTest {
         final StateDto lastState = new StateDto();
         lastState.setCreationDate(new DateTime().minusMinutes(15));
         lastState.setDescription("Twaalf!");
-        lastState.setMessage("12!");
+        lastState.appendMessage("12!");
         lastState.setState(StateType.STABLE);
         new Expectations() {
             {
@@ -176,7 +176,7 @@ public class PushRequestsStateResolverTest {
         final StateDto lastState = new StateDto();
         lastState.setCreationDate(new DateTime().minusMinutes(25));
         lastState.setDescription("Twaalf!");
-        lastState.setMessage("12!");
+        lastState.appendMessage("12!");
         lastState.setState(StateType.STABLE);
         new Expectations() {
             {
@@ -205,7 +205,7 @@ public class PushRequestsStateResolverTest {
         final StateDto lastState = new StateDto();
         lastState.setCreationDate(new DateTime().minusMinutes(25));
         lastState.setDescription("Twaalf!");
-        lastState.setMessage("12!");
+        lastState.appendMessage("12!");
         lastState.setState(StateType.ERROR);
         new Expectations() {
             {

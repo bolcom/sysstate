@@ -1,6 +1,7 @@
 package nl.unionsoft.sysstate.plugins.http;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -19,6 +20,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +66,14 @@ public class HttpStateResolverImpl implements StateResolver {
             // FIXME
             handleHttpResponse(state, properties, httpResponse);
 
+        } catch (ConnectTimeoutException e){
+            state.setState(StateType.ERROR);
+            state.appendMessage(StateUtil.exceptionAsMessage(e));
+            state.setDescription("HTTP TIMEOUT");
+        } catch (UnknownHostException e){
+            state.setState(StateType.ERROR);
+            state.appendMessage(StateUtil.exceptionAsMessage(e));
+            state.setDescription("HTTP HOST");
         } catch (final Exception e) {
             LOG.warn("Caught Exception while performing request: {}", e.getMessage(), e);
             handleStateForException(state, e, startTime);
@@ -87,7 +97,7 @@ public class HttpStateResolverImpl implements StateResolver {
                 } else {
                     state.setState(StateType.UNSTABLE);
                 }
-                state.setMessage(EntityUtils.toString(httpEntity));
+                state.appendMessage(EntityUtils.toString(httpEntity));
             } else {
                 handleEntity(httpEntity, configuration, state);
             }
@@ -100,7 +110,7 @@ public class HttpStateResolverImpl implements StateResolver {
         state.setState(StateType.ERROR);
         state.setDescription(exception.getMessage());
         state.setResponseTime(System.currentTimeMillis() - startTime);
-        state.setMessage(StateUtil.exceptionAsMessage(exception));
+        state.appendMessage(StateUtil.exceptionAsMessage(exception));
     }
 
     public void handleEntity(final HttpEntity httpEntity, final Map<String, String> configuration, final StateDto state) throws IOException {

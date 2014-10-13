@@ -29,7 +29,7 @@ public class JenkinsJobStateResolverImpl extends XMLBeanStateResolverImpl {
 
         state.setState(stateType);
         state.setDescription(jenkinsStateType.description);
-        state.setMessage(jenkinsStateType.message);
+        state.appendMessage(jenkinsStateType.message);
     }
 
     @Override

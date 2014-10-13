@@ -41,14 +41,14 @@ public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
         final Document document = (Document) node;
         if (document == null){
             state.setState(StateType.UNSTABLE);
-            state.setMessage("No document could be found.");
+            state.appendMessage("No document could be found.");
             state.setDescription("No Document");
             return;
         } 
         
         if (document.getChildNodes().getLength() == 0){
             state.setState(StateType.UNSTABLE);
-            state.setMessage("Document doesn't contain any child nodes");
+            state.appendMessage("Document doesn't contain any child nodes");
             state.setDescription("No childs");
             return;
         }
@@ -57,11 +57,11 @@ public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
         if (selfdiagnose == null){
             state.setState(StateType.UNSTABLE);
             //Check if this is actually HTML content
-            if (StringUtils.equalsIgnoreCase(document.getChildNodes().item(0).getNodeName(),"HTML")){
-                state.setMessage("The version request returned HTML instead of XML. This is a bug in SelfDiagnose for versions 2.5.1 to 2.5.7. Upgrade to SelfDiagnose 2.5.8 or higher.");
+            if (StringUtils.equalsIgnoreCase(document.getChildNodes().item(0).getNodeName(),"FOUND HTML")){
+                state.appendMessage("The version request returned HTML instead of XML. This is a bug in SelfDiagnose for versions 2.5.1 to 2.5.7. Upgrade to SelfDiagnose 2.5.8 or higher.");
                 state.setDescription("HTML");
             } else {
-                state.setMessage("No SelfDiagnose element could be found in the document.");
+                state.appendMessage("No SelfDiagnose element could be found in the document.");
                 state.setDescription("No SelfDiagnose");
             }
             return;
@@ -70,7 +70,7 @@ public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
         final Element results = getElementWithKeyFromElement(selfdiagnose, "results");
         if (results == null){
             state.setState(StateType.UNSTABLE);
-            state.setMessage("SelfDiagnose element does not contain any results.");
+            state.appendMessage("SelfDiagnose element does not contain any results.");
             state.setDescription("No Results");
             return;
         }
@@ -124,7 +124,7 @@ public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
         }
 
         if (messageBuilder.length() > 0) {
-            state.setMessage(messageBuilder.toString());
+            state.appendMessage(messageBuilder.toString());
         }
     }
 

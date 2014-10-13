@@ -35,7 +35,7 @@ public class StateConverter implements Converter<StateDto, State>, ConverterWith
             result = new StateDto();
             result.setId(state.getId());
             result.setDescription(state.getDescription());
-            result.setMessage(StringUtils.trim(state.getMessage()));
+            result.appendMessage(StringUtils.trim(state.getMessage()));
             result.setResponseTime(state.getResponseTime());
             result.setState(state.getState());
             result.setRating(state.getRating());

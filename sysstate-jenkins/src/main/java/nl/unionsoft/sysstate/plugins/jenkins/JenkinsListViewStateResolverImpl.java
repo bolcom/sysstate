@@ -51,7 +51,7 @@ public class JenkinsListViewStateResolverImpl extends XMLBeanStateResolverImpl {
         }
         state.setState(result);
         state.setDescription(result.name());
-        state.setMessage(messageBuilder.toString());
+        state.appendMessage(messageBuilder.toString());
 
     }
 

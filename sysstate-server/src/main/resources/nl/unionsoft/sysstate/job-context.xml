@@ -59,7 +59,7 @@
 				<prop key="org.quartz.jobStore.class">org.quartz.simpl.RAMJobStore</prop>
 				<prop key="org.quartz.threadPool.class">org.quartz.simpl.SimpleThreadPool</prop>
 				<prop key="org.quartz.threadPool.threadCount">${scheduler.threadCount}</prop>
-				<prop key="org.quartz.threadPool.threadPriority">${scheduler.threadCount}</prop>
+				<prop key="org.quartz.threadPool.threadPriority">${scheduler.threadPriority}</prop>
 			</props>
 		</property>
 

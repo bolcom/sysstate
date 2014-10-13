@@ -21,6 +21,7 @@ public class StateDto {
     public StateDto () {
         message = new StringBuilder(4012);
         rating = -1;
+        responseTime = 0;
     }
 
     public String getDescription() {
@@ -51,10 +52,6 @@ public class StateDto {
         return StringUtils.trimToEmpty(message.toString());
     }
 
-    public void setMessage(String message) {
-        this.message = new StringBuilder(4012);
-        appendMessage(message);
-    }
 
     public void appendMessage(String message) {
         if (StringUtils.isNotEmpty(message)) {

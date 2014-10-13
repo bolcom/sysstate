@@ -44,7 +44,7 @@ public class PushRequestsStateResolverImpl implements StateResolver {
                         fetchedState = lastState;
                     } else {
                         state.setState(StateType.UNSTABLE);
-                        state.setMessage("Instance hasn't reported in since " + creationDate);
+                        state.appendMessage("Instance hasn't reported in since " + creationDate);
                         state.setDescription("Missing");
                     }
                 }
@@ -56,7 +56,7 @@ public class PushRequestsStateResolverImpl implements StateResolver {
         } else {
             state.setState(fetchedState.getState());
             state.setDescription(fetchedState.getDescription());
-            state.setMessage(fetchedState.getMessage());
+            state.appendMessage(fetchedState.getMessage());
             state.setResponseTime(fetchedState.getResponseTime());
         }
     }

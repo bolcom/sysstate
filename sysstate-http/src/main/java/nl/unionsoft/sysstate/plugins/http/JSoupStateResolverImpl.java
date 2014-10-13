@@ -59,7 +59,7 @@ public class JSoupStateResolverImpl extends HttpStateResolverImpl {
         final Elements elements = document.select(select);
         if (elements == null || elements.size() == 0) {
             state.setState(StateType.UNSTABLE);
-            state.setMessage("No elements found for select '" + select + "'.");
+            state.appendMessage("No elements found for select '" + select + "'.");
         } else {
             String description = null;
             for (final Element element : elements) {
@@ -71,7 +71,7 @@ public class JSoupStateResolverImpl extends HttpStateResolverImpl {
             }
             if (StringUtils.isBlank(description)) {
                 state.setState(StateType.UNSTABLE);
-                state.setMessage("Result for given select returned a empty value.");
+                state.appendMessage("Result for given select returned a empty value.");
             }
 
         }
