@@ -36,7 +36,7 @@ public class Project {
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ProjectEnvironment> projectEnvironments;
 
-    @Column(name = "ENABLED", nullable = false, columnDefinition = "BIT")
+    @Column(name = "ENABLED", nullable = false, columnDefinition = "BIT default 1")
     private boolean enabled;
 
     public Project() {
