@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -102,5 +104,19 @@ public class GroovyScriptManager implements InitializingBean {
             return intFile;
         }
         throw new IllegalArgumentException("No internal or external script with name [" + scriptName + "] could be found.");
+    }
+    
+    public static void main(String[] args) {
+        Pattern pattern = Pattern.compile("/([a-z]*-[0-9]*)/(.*)");
+        Matcher matcher = pattern.matcher("/demo-91/tpt");
+        System.out.println("blaat");
+        if (matcher.matches())
+        {
+            System.out.println(matcher.group(0));
+            System.out.println(matcher.group(1));
+            System.out.println(matcher.group(2));
+        }
+        
+        
     }
 }
