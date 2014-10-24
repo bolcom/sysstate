@@ -14,6 +14,7 @@ public class ProjectDto {
     private String name;
     private int order;
     private boolean enabled;
+    private String tags;
     
     private final List<ProjectEnvironmentDto> projectEnvironments;
 
@@ -57,5 +58,15 @@ public class ProjectDto {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
+    
+    
 
 }

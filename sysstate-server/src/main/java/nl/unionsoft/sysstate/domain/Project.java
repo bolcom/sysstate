@@ -36,6 +36,9 @@ public class Project {
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ProjectEnvironment> projectEnvironments;
 
+    @Column(name = "TAGS", nullable = true, length = 512)
+    private String tags;
+    
     @Column(name = "ENABLED", nullable = false, columnDefinition = "BIT default 1")
     private boolean enabled;
 
@@ -82,6 +85,14 @@ public class Project {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
     }
 
 }

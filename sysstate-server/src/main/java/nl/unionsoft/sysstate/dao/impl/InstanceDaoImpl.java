@@ -82,14 +82,15 @@ public class InstanceDaoImpl implements InstanceDao {
 
     }
 
-    public List<Instance> getInstancesForPrefixes(final String projectPrefix, final String environmentPrefix) {
+    public List<Instance> getInstancesForProjectAndEnvironment(final String projectName, final String environmentName) {
         // @formatter:off
-        return entityManager
-                .createQuery( //
-                        "FROM Instance ice " + "WHERE ice.projectEnvironment.environment.name LIKE :environmentPrefix "
-                        + "AND ice.projectEnvironment.project.name LIKE :projectPrefix", Instance.class)
-                        .setParameter("projectPrefix", StringUtils.join(new Object[] { projectPrefix, "%" }))
-                        .setParameter("environmentPrefix", StringUtils.join(new Object[] { environmentPrefix, "%" })).setHint("org.hibernate.cacheable", true)
+        return entityManager.createQuery( //
+                        "FROM Instance ice " + 
+                        "WHERE ice.projectEnvironment.environment.name = :environmentName " + 
+                        "AND ice.projectEnvironment.project.name = :projectName", Instance.class)
+                        .setParameter("projectName", projectName)
+                        .setParameter("environmentName",environmentName)
+                        .setHint("org.hibernate.cacheable", true)
                         .getResultList();
         // @formatter:on;
     }

@@ -22,6 +22,7 @@ public class StateDto {
         message = new StringBuilder(4012);
         rating = -1;
         responseTime = 0;
+        creationDate = new DateTime();
     }
 
     public String getDescription() {

@@ -9,6 +9,8 @@ public interface InstanceDao {
     public void createOrUpdate(Instance instance);
 
     public List<Instance> getInstancesForProjectAndEnvironment(Long projectId, Long environmentId);
+    
+    public List<Instance> getInstancesForProjectAndEnvironment(String projectName, String environmentName);
 
     public List<Instance> getInstancesForProjectEnvironment(Long projectEnvironmentId);
 
@@ -18,6 +20,5 @@ public interface InstanceDao {
 
     public void delete(Long instanceId);
 
-    public List<Instance> getInstancesForPrefixes(String projectPrefix, String environmentPrefix);
 
 }

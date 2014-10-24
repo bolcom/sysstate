@@ -32,6 +32,9 @@ public class SysStateStringUtils {
     }
 
     public static String stripHtml(String message) {
+        if (message == null) {
+            return null;
+        }
         Matcher matcher = htmlEscapePattern.matcher(message);
         return StringUtils.trim(matcher.replaceAll(""));
     }

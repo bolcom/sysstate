@@ -39,6 +39,12 @@
             <artifactId>sysstate-http</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>nl.unionsoft.sysstate</groupId>
+            <artifactId>sysstate-groovy</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
         <!-- END: SysState -->
         <!-- START: Cache -->
         <dependency>

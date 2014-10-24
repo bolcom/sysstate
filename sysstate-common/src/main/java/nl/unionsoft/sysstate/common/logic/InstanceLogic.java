@@ -26,7 +26,7 @@ public interface InstanceLogic {
 
     public void queueForUpdate(final Long instanceId);
 
-    public List<InstanceDto> getInstancesForPrefixes(String projectPrefix, String environmentPrefix);
+    public List<InstanceDto> getInstancesForProjectAndEnvironment(String projectPrefix, String environmentPrefix);
 
     public ListResponse<InstanceDto> getInstances(ListRequest listRequest);
 

@@ -53,7 +53,7 @@ public class InstanceRestController {
             @PathVariable("project") final String project,
             @PathVariable("instance") final String instanceName) {
         //@formatter:on
-        final List<InstanceDto> instances = instanceLogic.getInstancesForPrefixes(project, environment);
+        final List<InstanceDto> instances = instanceLogic.getInstancesForProjectAndEnvironment(project, environment);
         final InstanceDto selected = getInstanceWithName(instanceName, instances);
         LOG.info("Selected instance for env '{}', prj '{}' and instanceName is: {}", new Object[] { environment, project, instanceName, selected });
         final State state = new State();
@@ -79,7 +79,7 @@ public class InstanceRestController {
             @RequestParam(value="message", required=false) final String message,
             @RequestParam(value="responseTime", required=false, defaultValue="0") final Long responseTime) {
         //@formatter:on
-        final List<InstanceDto> instances = instanceLogic.getInstancesForPrefixes(project, environment);
+        final List<InstanceDto> instances = instanceLogic.getInstancesForProjectAndEnvironment(project, environment);
         final InstanceDto selected = getInstanceWithName(instanceName, instances);
         LOG.info("Selected instance for env '{}', prj '{}' and instanceName is: {}", new Object[] { environment, project, instanceName, selected });
         if (selected != null) {
