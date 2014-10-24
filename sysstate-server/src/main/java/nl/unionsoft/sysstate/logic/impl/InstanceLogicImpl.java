@@ -208,7 +208,6 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     public void createOrUpdateInstance(final InstanceDto dto) {
         final Instance instance = new Instance();
         instance.setId(dto.getId());
-        // instance.setConfiguration(dto.getConfiguration());
         instance.setEnabled(dto.isEnabled());
         instance.setHomepageUrl(dto.getHomepageUrl());
         instance.setName(dto.getName());
@@ -303,7 +302,6 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
                 restrictions.add(new ObjectRestriction(Rule.LIKE, "tags", element));
                 restrictions.add(new ObjectRestriction(Rule.LIKE, "name", element));
                 restrictions.add(new ObjectRestriction(Rule.LIKE, "homepageUrl", element));
-                restrictions.add(new ObjectRestriction(Rule.LIKE, "configuration", element));
                 restrictions.add(new ObjectRestriction(Rule.LIKE, "pluginClass", element));
                 restrictions.add(new ObjectRestriction(Rule.LIKE, "projectEnvironment.project.name", element));
                 restrictions.add(new ObjectRestriction(Rule.LIKE, "projectEnvironment.environment.name", element));
