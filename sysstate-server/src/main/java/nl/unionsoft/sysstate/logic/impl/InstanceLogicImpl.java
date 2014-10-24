@@ -241,8 +241,8 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         removeTriggerJob(instanceId);
     }
 
-    public List<InstanceDto> getInstancesForPrefixes(final String projectPrefix, final String environmentPrefix) {
-        return ListConverter.convert(instanceConverter, instanceDao.getInstancesForPrefixes(projectPrefix, environmentPrefix));
+    public List<InstanceDto> getInstancesForProjectAndEnvironment(final String projectPrefix, final String environmentPrefix) {
+        return ListConverter.convert(instanceConverter, instanceDao.getInstancesForProjectAndEnvironment(projectPrefix, environmentPrefix));
     }
 
     public ListResponse<InstanceDto> getInstances(final ListRequest listRequest) {
