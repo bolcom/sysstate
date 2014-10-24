@@ -16,7 +16,6 @@ import nl.unionsoft.sysstate.common.extending.TimedStateResolver;
 
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
@@ -24,9 +23,6 @@ import org.springframework.stereotype.Service;
 @Service("groovyStateResolver")
 public class GroovyStateResolverImpl  extends TimedStateResolver implements ApplicationContextAware{
 
-    @Value("#{properties['SYSSTATE_HOME']}")
-    private String sysstateHome;
-    
     private ApplicationContext applicationContext;
     private GroovyScriptManager groovyScriptManager;
     
