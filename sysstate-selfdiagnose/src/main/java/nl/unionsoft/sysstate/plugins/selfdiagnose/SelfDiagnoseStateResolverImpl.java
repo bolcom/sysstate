@@ -4,9 +4,18 @@ import static nl.unionsoft.sysstate.common.util.XmlUtil.getAttributePropertyFrom
 import static nl.unionsoft.sysstate.common.util.XmlUtil.getElementWithKeyFromDocument;
 import static nl.unionsoft.sysstate.common.util.XmlUtil.getElementWithKeyFromElement;
 
+import java.io.StringWriter;
 import java.util.Map;
-import java.util.Properties;
 import java.util.regex.Pattern;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
@@ -30,8 +39,42 @@ public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
 
         final Node node = xmlObject.getDomNode();
         final Document document = (Document) node;
+        if (document == null){
+            state.setState(StateType.UNSTABLE);
+            state.appendMessage("No document could be found.");
+            state.setDescription("No Document");
+            return;
+        } 
+        
+        if (document.getChildNodes().getLength() == 0){
+            state.setState(StateType.UNSTABLE);
+            state.appendMessage("Document doesn't contain any child nodes");
+            state.setDescription("No childs");
+            return;
+        }
+        
         final Element selfdiagnose = getElementWithKeyFromDocument(document, "selfdiagnose");
+        if (selfdiagnose == null){
+            state.setState(StateType.UNSTABLE);
+            //Check if this is actually HTML content
+            if (StringUtils.equalsIgnoreCase(document.getChildNodes().item(0).getNodeName(),"HTML")){
+                state.appendMessage("The version request returned HTML instead of XML. This is a bug in SelfDiagnose for versions 2.5.1 to 2.5.7. Upgrade to SelfDiagnose 2.5.8 or higher.");
+                state.setDescription("HTML CONTENT");
+            } else {
+                state.appendMessage("No SelfDiagnose element could be found in the document.");
+                state.setDescription("No SelfDiagnose");
+            }
+            return;
+        }
+        
         final Element results = getElementWithKeyFromElement(selfdiagnose, "results");
+        if (results == null){
+            state.setState(StateType.UNSTABLE);
+            state.appendMessage("SelfDiagnose element does not contain any results.");
+            state.setDescription("No Results");
+            return;
+        }
+        
         final NodeList nodeList = results.getElementsByTagName("result");
         final int nodeListLength = nodeList.getLength();
 
@@ -81,7 +124,7 @@ public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
         }
 
         if (messageBuilder.length() > 0) {
-            state.setMessage(messageBuilder.toString());
+            state.appendMessage(messageBuilder.toString());
         }
     }
 
@@ -103,5 +146,6 @@ public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
         messageBuilder.append(StringUtils.trim(message));
         messageBuilder.append('\n');
     }
-
+    
+   
 }

@@ -38,7 +38,7 @@ public class Environment {
     @Column(name = "TAGS", nullable = true, length = 512)
     private String tags;
 
-    @Column(name = "ENABLED", nullable = false, columnDefinition = "BIT")
+    @Column(name = "ENABLED", nullable = false, columnDefinition = "BIT default 1")
     private boolean enabled;
 
     @OneToMany(mappedBy = "environment", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

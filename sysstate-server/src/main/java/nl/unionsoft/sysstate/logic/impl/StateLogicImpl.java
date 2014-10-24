@@ -33,6 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -120,7 +121,6 @@ public class StateLogicImpl implements StateLogic {
         ProjectEnvironmentDto projectEnvironment = instance.getProjectEnvironment();
         ProjectDto project = projectEnvironment.getProject();
         EnvironmentDto environment = projectEnvironment.getEnvironment();
-        final Long now = System.currentTimeMillis();
         if (!instance.isEnabled()) {
             setDisabled(state, "Disabled by instance");
         } else if (!project.isEnabled()) {
@@ -128,79 +128,60 @@ public class StateLogicImpl implements StateLogic {
         } else if (!environment.isEnabled()) {
             setDisabled(state, "Disabled by environment");
         } else {
+            
+            final InstanceDto instanceDto = new InstanceDto();
+            instanceDto.setConfiguration(instance.getConfiguration());
+            instanceDto.setId(instance.getId());
             final String pluginClass = instance.getPluginClass();
-            try {
-                final StateResolver stateResolver = stateResolverLogic.getStateResolver(pluginClass);
-                if (stateResolver == null) {
-                    throw new IllegalStateException("No stateResolver found for type '" + pluginClass + "'");
-                }
-                final InstanceDto instanceDto = new InstanceDto();
-                instanceDto.setConfiguration(instance.getConfiguration());
-                instanceDto.setId(instance.getId());
-                stateResolver.setState(instanceDto, state);
-                if (state.getState() == null) {
-                    throw new IllegalStateException("Result has no state!");
-                }
-            } catch (final RuntimeException e) {
-                LOG.warn("Unable to determine state for stateResolver in instance '{}' failed, caught RuntimeException!", instance, e);
-                state.setState(StateType.ERROR);
-                state.setDescription(e.getMessage());
-                state.setResponseTime(0L);
-                state.appendMessage(StateUtil.exceptionAsMessage(e));
-
-            } finally {
-
-            }
+            updateState(state, pluginClass, instanceDto);
         }
-
-        //Timing...
-        final Long responseTime = System.currentTimeMillis() - now;
-        if (state.getResponseTime() < responseTime) {
-            state.setResponseTime(responseTime);
-        }
-        state.setCreationDate(new DateTime());
+       
         return state;
     }
 
     private void setDisabled(StateDto state, String message) {
         state.setState(StateType.DISABLED);
         state.setDescription("DISABLED");
-        state.setMessage(message);
-        // state.setResponseTime(0L);
-
+        state.appendMessage(message);
     }
 
-    public StateDto requestState(final String pluginClass, final Map<String, String> configuration) {
-        final StateDto state = new StateDto();
-
+    
+    private void updateState(StateDto state, String pluginClass,InstanceDto instanceDto){
         final Long now = System.currentTimeMillis();
         try {
             final StateResolver stateResolver = stateResolverLogic.getStateResolver(pluginClass);
             if (stateResolver == null) {
                 throw new IllegalStateException("No stateResolver found for type '" + pluginClass + "'");
             }
-            final InstanceDto instanceDto = new InstanceDto();
-            instanceDto.setConfiguration(configuration);
+
             stateResolver.setState(instanceDto, state);
             if (state.getState() == null) {
                 throw new IllegalStateException("Result has no state!");
             }
+        } catch (final NoSuchBeanDefinitionException e) {
+            state.setState(StateType.ERROR);
+            state.setDescription("MISSING PLUGIN");
+            state.setResponseTime(0L);
+            state.appendMessage(StateUtil.exceptionAsMessage(e));
         } catch (final RuntimeException e) {
             LOG.warn("Unable to determine state, caught RuntimeException!", e);
             state.setState(StateType.ERROR);
             state.setDescription(e.getMessage());
             state.setResponseTime(0L);
             state.appendMessage(StateUtil.exceptionAsMessage(e));
-
         } finally {
             final Long responseTime = System.currentTimeMillis() - now;
             if (state.getResponseTime() < responseTime) {
                 state.setResponseTime(responseTime);
             }
+            state.setCreationDate(new DateTime());
         }
-
-        final DateTime pollDate = new DateTime();
-        state.setCreationDate(pollDate);
+    }
+    public StateDto requestState(final String pluginClass, final Map<String, String> configuration) {
+        final StateDto state = new StateDto();
+        final InstanceDto instanceDto = new InstanceDto();
+        instanceDto.setConfiguration(configuration);
+        updateState(state, pluginClass, instanceDto);
         return state;
     }
 

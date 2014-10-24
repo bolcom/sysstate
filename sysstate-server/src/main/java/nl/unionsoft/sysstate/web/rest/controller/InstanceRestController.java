@@ -86,7 +86,7 @@ public class InstanceRestController {
             final StateDto state = new StateDto();
 
             state.setState(stateType);
-            state.setMessage(message);
+            state.appendMessage(message);
             state.setResponseTime(responseTime);
             state.setDescription(description);
             pushStateLogic.push(selected.getId(), state);
