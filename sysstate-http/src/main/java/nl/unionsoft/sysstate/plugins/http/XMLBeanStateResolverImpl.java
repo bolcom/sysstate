@@ -35,9 +35,7 @@ public abstract class XMLBeanStateResolverImpl extends HttpStateResolverImpl {
         try {
             if (httpEntity != null) {
                 contentStream = httpEntity.getContent();
-                // Unmarshal - Convert to Node
                 final XmlObject xmlObject = (XmlObject) xmlBeansMarshaller.unmarshal(new StreamSource(contentStream));
-                // FIXME
                 handleXmlObject(xmlObject, state, configuration);
             }
         } catch (UnmarshallingFailureException e) {
