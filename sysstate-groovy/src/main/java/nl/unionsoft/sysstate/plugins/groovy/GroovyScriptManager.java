@@ -26,7 +26,7 @@ public class GroovyScriptManager implements InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(GroovyScriptManager.class);
 
-    private static final String[] internalGroovyResources = { "marathonStateResolver.groovy" };
+    private static final String[] internalGroovyResources = { "MarathonInstanceResolver.groovy" };
 
     private File groovyScriptsExt;
     private File groovyScriptsInt;
@@ -106,17 +106,5 @@ public class GroovyScriptManager implements InitializingBean {
         throw new IllegalArgumentException("No internal or external script with name [" + scriptName + "] could be found.");
     }
     
-    public static void main(String[] args) {
-        Pattern pattern = Pattern.compile("/([a-z]*-[0-9]*)/(.*)");
-        Matcher matcher = pattern.matcher("/demo-91/tpt");
-        System.out.println("blaat");
-        if (matcher.matches())
-        {
-            System.out.println(matcher.group(0));
-            System.out.println(matcher.group(1));
-            System.out.println(matcher.group(2));
-        }
-        
-        
-    }
+  
 }
