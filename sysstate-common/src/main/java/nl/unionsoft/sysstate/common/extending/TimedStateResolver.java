@@ -35,6 +35,6 @@ public abstract class TimedStateResolver implements StateResolver {
     private void handleStateForException(final StateDto state, final Exception exception, final Long startTime) {
         state.setState(StateType.ERROR);
         state.setDescription(exception.getMessage());
-        state.setMessage(StateUtil.exceptionAsMessage(exception));
+        state.appendMessage(StateUtil.exceptionAsMessage(exception));
     }
 }
