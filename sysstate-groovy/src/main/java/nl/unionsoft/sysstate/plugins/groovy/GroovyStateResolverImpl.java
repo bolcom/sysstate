@@ -1,6 +1,7 @@
 package nl.unionsoft.sysstate.plugins.groovy;
 
 import groovy.lang.Binding;
+import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyShell;
 
 import java.io.File;
@@ -12,6 +13,7 @@ import javax.inject.Inject;
 import nl.unionsoft.common.util.PropertiesUtil;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
+import nl.unionsoft.sysstate.common.extending.StateResolver;
 import nl.unionsoft.sysstate.common.extending.TimedStateResolver;
 
 import org.codehaus.groovy.control.CompilationFailedException;
@@ -36,16 +38,38 @@ public class GroovyStateResolverImpl  extends TimedStateResolver implements Appl
     }
 
     @Override
-    public void setStateTimed(InstanceDto instance, StateDto state) throws CompilationFailedException, IOException {
+    public void setStateTimed(InstanceDto instance, StateDto state) throws CompilationFailedException, IOException, InstantiationException, IllegalAccessException {
+        
+        
         Map<String, String> configuration = instance.getConfiguration();
-        Binding binding = new Binding();
-        binding.setVariable("state", state);
-        binding.setVariable("instance", instance);
-        binding.setVariable("properties",PropertiesUtil.stringToProperties(configuration.get("bindingProperties")));
-        binding.setVariable("applicationContext", applicationContext);
-        GroovyShell shell = new GroovyShell(getClass().getClassLoader(), binding);
+        ClassLoader classLoader = getClass().getClassLoader();
         File groovyScript = groovyScriptManager.getScriptFile(configuration.get("groovyScript"));
-        shell.evaluate(groovyScript);
+        
+        GroovyScriptType groovyScriptType = GroovyScriptType.valueOf(configuration.get("groovyScriptType"));
+        
+        if (GroovyScriptType.CLASS.equals(groovyScriptType)){
+            GroovyClassLoader groovyClassLoader = null; 
+            try {
+                groovyClassLoader = new GroovyClassLoader(classLoader);
+                Class<StateResolver> groovyStateResolverClass = groovyClassLoader.parseClass(groovyScript);
+                
+                StateResolver stateResolver = groovyStateResolverClass.newInstance();
+                stateResolver.setState(instance, state);
+      
+            } finally {
+                groovyClassLoader.close();
+            }    
+        } else {
+            
+            Binding binding = new Binding();
+            binding.setVariable("state", state);
+            binding.setVariable("instance", instance);
+            binding.setVariable("properties",PropertiesUtil.stringToProperties(configuration.get("bindingProperties")));
+            binding.setVariable("applicationContext", applicationContext);
+            GroovyShell shell = new GroovyShell(classLoader, binding);
+            shell.evaluate(groovyScript);        
+                
+        }
     }
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
