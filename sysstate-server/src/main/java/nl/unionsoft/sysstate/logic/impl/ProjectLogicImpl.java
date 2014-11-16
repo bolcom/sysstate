@@ -100,7 +100,7 @@ public class ProjectLogicImpl implements ProjectLogic {
     }
 
     public ProjectDto findProject(final String name) {
-        return projectConverter.convert(projectDao.findProject(name));
+        return projectConverter.convert(projectDao.getProjectByName(name));
     }
 
     public List<ProjectDto> getProjects() {

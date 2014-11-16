@@ -26,7 +26,7 @@ public class Environment {
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "NAME", nullable = true)
+    @Column(name = "NAME", nullable = true, unique = true)
     private String name;
 
     @Column(name = "DEFAULT_ORDER", nullable = true)
@@ -57,11 +57,11 @@ public class Environment {
     }
 
     public String getName() {
-        return StringUtils.upperCase(name);
+        return name;
     }
 
     public void setName(final String name) {
-        this.name = name;
+        this.name = StringUtils.upperCase(name);
     }
 
     public int getOrder() {

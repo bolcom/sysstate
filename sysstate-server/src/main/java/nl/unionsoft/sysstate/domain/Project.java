@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cache;
@@ -27,7 +28,7 @@ public class Project {
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "NAME", nullable = true, length = 200)
+    @Column(name = "NAME", nullable = true, length = 200, unique=true)
     private String name;
 
     @Column(name = "DEFAULT_ORDER", nullable = true)
@@ -56,11 +57,11 @@ public class Project {
     }
 
     public String getName() {
-        return StringUtils.upperCase(name);
+        return name;
     }
 
     public void setName(final String name) {
-        this.name = name;
+        this.name = StringUtils.upperCase(name);
     }
 
     public int getOrder() {

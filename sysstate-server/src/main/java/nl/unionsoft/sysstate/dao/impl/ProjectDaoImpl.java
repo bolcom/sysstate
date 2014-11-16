@@ -50,7 +50,7 @@ public class ProjectDaoImpl implements ProjectDao {
         entityManager.remove(entityManager.find(Project.class, projectId));
     }
 
-    public Project findProject(String name) {
+    public Project getProjectByName(String name) {
 
         String search = name;
         if (!StringUtils.startsWith(name, "%")) {

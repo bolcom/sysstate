@@ -13,6 +13,6 @@ public interface ProjectDao {
 
     public void delete(Long projectId);
 
-    public Project findProject(String name);
+    public Project getProjectByName(String name);
 
 }

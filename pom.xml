@@ -16,7 +16,6 @@
 		<module>sysstate-selfdiagnose</module>
 		<module>sysstate-jenkins</module>
 		<module>sysstate-http</module>
-		<module>sysstate-matrix</module>
 		<module>sysstate-example</module>
         <module>sysstate-groovy</module>
 	</modules>
