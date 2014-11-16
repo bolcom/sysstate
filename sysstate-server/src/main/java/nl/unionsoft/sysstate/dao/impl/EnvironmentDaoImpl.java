@@ -51,23 +51,16 @@ public class EnvironmentDaoImpl implements EnvironmentDao {
         entityManager.remove(entityManager.find(Environment.class, environmentId));
     }
 
-    public Environment findEnvironment(String name) {
-            String search = name;
-            if (!StringUtils.startsWith(name, "%")) {
-                search = "%" + search;
-            }
-            if (!StringUtils.endsWith(name, "%")) {
-                search = search + "%";
-            }
+    public Environment getEnvironmentByName(String name) {
             Environment environment = null;
             try {
                 environment = entityManager.createQuery(
                     "FROM Environment environment " +
-                    "WHERE environment.name LIKE :search", Environment.class)
-                    .setParameter("search", search)
+                    "WHERE environment.name = :name", Environment.class)
+                    .setParameter("name", name)
                     .getSingleResult();
             } catch (final NonUniqueResultException nre){
-                // this is ok..
+                throw new IllegalStateException("More then one environment with name [" + name + "] found.", nre);
             } catch(final NoResultException nre) {
                 // this is ok..
             }

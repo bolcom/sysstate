@@ -14,5 +14,5 @@ public interface EnvironmentLogic {
 
     public void delete(Long environmentId);
 
-    public EnvironmentDto findEnvironment(String name);
+    public EnvironmentDto getEnvironmentByName(String name);
 }

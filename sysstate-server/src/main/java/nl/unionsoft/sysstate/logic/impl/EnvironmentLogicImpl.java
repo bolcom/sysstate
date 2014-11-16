@@ -77,8 +77,8 @@ public class EnvironmentLogicImpl implements EnvironmentLogic {
         }
     }
 
-    public EnvironmentDto findEnvironment(final String name) {
-        return environmentConverter.convert(environmentDao.findEnvironment(name));
+    public EnvironmentDto getEnvironmentByName(final String name) {
+        return environmentConverter.convert(environmentDao.getEnvironmentByName(name));
     }
 
     public List<EnvironmentDto> getEnvironments() {

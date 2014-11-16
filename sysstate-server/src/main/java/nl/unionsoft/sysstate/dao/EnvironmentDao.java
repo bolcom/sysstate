@@ -14,6 +14,6 @@ public interface EnvironmentDao {
 
     public void delete(Long environmentId);
 
-    public Environment findEnvironment(String name);
+    public Environment getEnvironmentByName(String name);
 
 }

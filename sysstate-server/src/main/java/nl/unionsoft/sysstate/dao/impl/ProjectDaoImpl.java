@@ -50,20 +50,18 @@ public class ProjectDaoImpl implements ProjectDao {
         entityManager.remove(entityManager.find(Project.class, projectId));
     }
 
+    
+    
     public Project getProjectByName(String name) {
-
-        String search = name;
-        if (!StringUtils.startsWith(name, "%")) {
-            search = "%" + search;
-        }
-        if (!StringUtils.endsWith(name, "%")) {
-            search = search + "%";
-        }
         Project project = null;
         try {
-            project = entityManager.createQuery("FROM Project project " + "WHERE project.name LIKE :search", Project.class).setParameter("search", search).getSingleResult();
+            project = entityManager.createQuery(
+                    "FROM Project project " + 
+                    "WHERE project.name = :name", Project.class)
+                    .setParameter("name", name)
+                    .getSingleResult();
         } catch(final NonUniqueResultException nre) {
-            // this is ok..
+            throw new IllegalStateException("More then one projects with name [" + name + "] found.", nre);
         } catch(final NoResultException nre) {
             // this is ok..
         }
