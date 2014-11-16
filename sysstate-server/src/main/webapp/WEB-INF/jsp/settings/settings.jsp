@@ -37,3 +37,8 @@
 	<div class="clear"></div>
 </sc:authorize>
 
+<sc:authorize url="/script">
+	<a href="${contextPath}/script/index.html"  class="icon-1 info-tooltip"></a> Run Scripts<br/>
+	<i>Run Scripts (for example: Groovy Scripts)</i>					
+	<div class="clear"></div>
+</sc:authorize>

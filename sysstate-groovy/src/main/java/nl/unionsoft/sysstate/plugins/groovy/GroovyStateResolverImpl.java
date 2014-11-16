@@ -29,7 +29,7 @@ public class GroovyStateResolverImpl  extends TimedStateResolver implements Appl
     private GroovyScriptManager groovyScriptManager;
     
     @Inject
-    public GroovyStateResolverImpl(GroovyScriptManager groovyScriptManager){
+    public GroovyStateResolverImpl(GroovyScriptManager groovyScriptManager, GroovyScriptExecutor groovyScriptExecutor){
         this.groovyScriptManager = groovyScriptManager;
     }
     

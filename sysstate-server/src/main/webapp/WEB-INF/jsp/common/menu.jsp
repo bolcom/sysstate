@@ -1,4 +1,4 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+\<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
@@ -87,7 +87,7 @@
 </ul>
 <div class="nav-divider">&nbsp;</div>
 <ul class="select">
-	<li><a href="${contextPath}/settings/index.html"><b>Settings</b>
+	<li><a href="${contextPath}/settings/index.html"><b>Administrate</b>
 		<!--[if IE 7]><!--></a>
 	<!--<![endif]--> <!--[if lte IE 6]><table><tr><td><![endif]-->
 		<div class="select_sub show">
@@ -106,6 +106,9 @@
 				</sc:authorize>
 				<sc:authorize url="/plugins">
 					<li><a href="${contextPath}/plugins/index.html">Plugins</a></li>
+				</sc:authorize>
+				<sc:authorize url="/script">
+					<li><a href="${contextPath}/script/index.html">Run Script</a></li>
 				</sc:authorize>
 
 				<sc:authorize url="/discovery">
