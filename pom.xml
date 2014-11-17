@@ -507,12 +507,22 @@
 	</dependencyManagement>
 	<dependencies>
 		<!-- START: Testing -->
+		
+		<dependency>
+			<groupId>mockit</groupId>
+			<artifactId>jmockit</artifactId>
+			<version>0.999.4</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<!--  
 		<dependency>
 			<groupId>org.jmockit</groupId>
 			<artifactId>jmockit</artifactId>
 			<version>1.13</version>
- 				<scope>test</scope>
+ 			<scope>test</scope>
 		</dependency>
+		-->
 
 		<dependency>
 			<groupId>junit</groupId>
