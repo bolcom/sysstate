@@ -48,17 +48,17 @@ public class GroovyStateResolverImpl  extends TimedStateResolver implements Appl
         GroovyScriptType groovyScriptType = GroovyScriptType.valueOf(configuration.get("groovyScriptType"));
         
         if (GroovyScriptType.CLASS.equals(groovyScriptType)){
-            GroovyClassLoader groovyClassLoader = null; 
-            try {
-                groovyClassLoader = new GroovyClassLoader(classLoader);
-                Class<StateResolver> groovyStateResolverClass = groovyClassLoader.parseClass(groovyScript);
-                
-                StateResolver stateResolver = groovyStateResolverClass.newInstance();
-                stateResolver.setState(instance, state);
-      
-            } finally {
-                groovyClassLoader.close();
-            }    
+//            GroovyClassLoader groovyClassLoader = null; 
+//            try {
+//                groovyClassLoader = new GroovyClassLoader(classLoader);
+//                Class<StateResolver> groovyStateResolverClass = groovyClassLoader.parseClass(groovyScript);
+//                
+//                StateResolver stateResolver = groovyStateResolverClass.newInstance();
+//                stateResolver.setState(instance, state);
+//      
+//            } finally {
+//                groovyClassLoader.close();
+//            }    
         } else {
             
             Binding binding = new Binding();

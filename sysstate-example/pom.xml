@@ -30,25 +30,7 @@
 
 		<!-- END: SysState -->
 
-		<!-- START: Testing -->
-		<dependency>
-			<groupId>mockit</groupId>
-			<artifactId>jmockit</artifactId>
-			<scope>test</scope>
-		</dependency>
 
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>${springframework.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<!-- END: Testing -->
 	</dependencies>
 	<build>
 

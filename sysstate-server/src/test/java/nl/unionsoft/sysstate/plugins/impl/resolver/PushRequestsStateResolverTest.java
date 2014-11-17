@@ -32,9 +32,7 @@ public class PushRequestsStateResolverTest {
     public void before() {
         pushRequestsStateResolverPlugin = new PushRequestsStateResolverImpl();
         pushRequestsStateResolverPlugin.setPushStateLogic(pushStateLogic);
-        Assert.assertNotNull(pushRequestsStateResolverPlugin.getPushStateLogic());
         pushRequestsStateResolverPlugin.setStateLogic(stateLogic);
-        Assert.assertNotNull(pushRequestsStateResolverPlugin.getStateLogic());
     }
 
     @Test
@@ -106,30 +104,7 @@ public class PushRequestsStateResolverTest {
 
     }
 
-    @Test
-    public void testSetStateNoResultsButPreviousNoCreationDate() {
 
-        final StateDto lastState = new StateDto();
-        lastState.setDescription("Twaalf!");
-        lastState.appendMessage("12!");
-        lastState.setState(StateType.ERROR);
-        new Expectations() {
-            {
-                // @formatter:off
-                pushStateLogic.fetch(1L);
-                result = null;
-                stateLogic.getLastStateForInstance(1L);
-                result = lastState;
-                // @formatter:on
-            }
-        };
-        StateDto state = new StateDto();
-        InstanceDto instance = new InstanceDto();
-        instance.setId(1L);
-        pushRequestsStateResolverPlugin.setState(instance, state);
-        assertPending(state);
-
-    }
 
     @Test
     public void testSetStateNoResultsButPreviousIsExpiredDefaultTimeout() {

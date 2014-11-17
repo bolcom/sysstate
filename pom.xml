@@ -304,32 +304,6 @@
 
 			<!-- END: Logging -->
 
-			<!-- START: Testing -->
-			<dependency>
-				<groupId>mockit</groupId>
-				<artifactId>jmockit</artifactId>
-				<version>0.999.4</version>
-				<scope>test</scope>
-			</dependency>
-
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.9</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-test</artifactId>
-				<version>${springframework.version}</version>
-				<scope>provided</scope>
-				<exclusions>
-					<exclusion>
-						<groupId>junit</groupId>
-						<artifactId>junit</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
 			<!-- START: JSTL -->
 			<dependency>
 				<groupId>javax.servlet</groupId>
@@ -531,7 +505,35 @@
 			<!-- END: Jetty -->
 		</dependencies>
 	</dependencyManagement>
+	<dependencies>
+		<!-- START: Testing -->
+		<dependency>
+			<groupId>org.jmockit</groupId>
+			<artifactId>jmockit</artifactId>
+			<version>1.13</version>
+ 				<scope>test</scope>
+		</dependency>
 
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.9</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${springframework.version}</version>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+	<!-- END: Testing -->	
+	</dependencies>
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -574,14 +576,6 @@
 					</configuration>
 				</plugin>
 				<!-- STANDARD -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<configuration>
-						<source>1.5</source>
-						<target>1.5</target>
-					</configuration>
-				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>build-helper-maven-plugin</artifactId>
@@ -642,8 +636,15 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
 		</plugins>
-
 	</build>
 
 
