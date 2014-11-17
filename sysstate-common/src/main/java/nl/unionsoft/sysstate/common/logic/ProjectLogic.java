@@ -10,7 +10,7 @@ public interface ProjectLogic {
 
     public ProjectDto getProject(Long projectId);
 
-    public ProjectDto findProject(String name);
+    public ProjectDto getProjectByName(String name);
 
     public void createOrUpdateProject(ProjectDto project);
 

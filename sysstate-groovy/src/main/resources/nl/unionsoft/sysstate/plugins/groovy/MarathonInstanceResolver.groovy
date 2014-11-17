@@ -57,7 +57,7 @@ apps.each { app ->
     if (matcher.matches()){
         def environmentName = matcher[0][environmentIndex].toUpperCase();
         def projectName = matcher[0][projectIndex].toUpperCase();
-        def project = projectLogic.findProject(projectName)
+        def project = projectLogic.getProjectByName(projectName)
         if (!project){
             log.info("There's no project defined for projectName [${projectName}], creating it...")
             project = new ProjectDto()
@@ -66,7 +66,7 @@ apps.each { app ->
             projectLogic.createOrUpdateProject(project)
         }
         
-        def environment = environmentLogic.findEnvironment(environmentName)
+        def environment = environmentLogic.getEnvironmentByName(environmentName)
         if (!environment){
             log.info("There's no environment defined for environmentName [${environmentName}], creating it...")
             environment = new EnvironmentDto()

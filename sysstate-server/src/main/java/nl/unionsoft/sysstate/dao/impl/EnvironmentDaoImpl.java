@@ -1,5 +1,7 @@
 package nl.unionsoft.sysstate.dao.impl;
 
+import static org.apache.commons.lang.StringUtils.upperCase;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -11,7 +13,6 @@ import javax.persistence.NonUniqueResultException;
 import nl.unionsoft.sysstate.dao.EnvironmentDao;
 import nl.unionsoft.sysstate.domain.Environment;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,13 +55,15 @@ public class EnvironmentDaoImpl implements EnvironmentDao {
     public Environment getEnvironmentByName(String name) {
             Environment environment = null;
             try {
+                //@formatter:off
                 environment = entityManager.createQuery(
                     "FROM Environment environment " +
                     "WHERE environment.name = :name", Environment.class)
-                    .setParameter("name", name)
+                    .setParameter("name", upperCase(name))
                     .getSingleResult();
+                //@formatter:on
             } catch (final NonUniqueResultException nre){
-                throw new IllegalStateException("More then one environment with name [" + name + "] found.", nre);
+                throw new IllegalStateException("More then one environment with name [" + upperCase(name) + "] found.", nre);
             } catch(final NoResultException nre) {
                 // this is ok..
             }
