@@ -47,7 +47,10 @@ ProjectLogic projectLogic = applicationContext.getBean(ProjectLogic.class)
 EnvironmentLogic environmentLogic = applicationContext.getBean(EnvironmentLogic.class)
 
 
-def apps = marathon.getApps()["apps"];
+//def apps = marathon.getApps()["apps"];
+def apps = []
+
+def marathonInstances = []
 apps.each { app ->
     
     def appId = app["id"]
@@ -91,16 +94,31 @@ apps.each { app ->
             instance.homepageUrl=template.toString()
             instance.configuration = ['url':template.toString(),'pattern':'Maven POM properties']
             instanceLogic.createOrUpdateInstance(instance)
+            //FIXME: createOrUpdateInstance should update or return id.
+            marathonInstances << instanceLogic.getInstancesForProjectAndEnvironment(projectName, environmentName)
         } else {
             log.info("One or more instances already configured. Skipping...")
+            marathonInstances << instances
         }
     } else {
         log.info("appId [${appId}] does not match given groupMatcherPattern [${groupMatcherPattern}]. Skipping...")
     }
 }
+log.info("MarathonInstanceResolver is managing the following instances: [${marathonInstances}]")
+
+log.info("Cleaning up no longer used instances which match the given identifier [${identifier}] and are not in the list of managedInstances.")
+println(marathonInstances)
+def marathonInstanceIds = marathonInstances.collect{it.id}.flatten()
+instanceLogic.getInstances().
+    findAll{it.tags?.equals(identifier)}.
+    findAll{!marathonInstanceIds.contains(it.id)}.
+    each { marathonInstance ->
+    log.info("Removing instance [${marathonInstance}] as it is no longer used...")
+    instanceLogic.delete(marathonInstance.id)
+}
 
 log.info("Cleaning up no longer used environments which match the given identifier [${identifier}]")
-def environments = environmentLogic.getEnvironments().findAll{it.tags?.equalsIgnoreCase(identifier)}
+def environments = environmentLogic.getEnvironments().findAll{it.tags?.equals(identifier)}
 environments.each { environment ->
     def appEnvironmentPrefix ="/${environment.name.toLowerCase()}/"
     if (!apps.find{app -> app["id"].startsWith(appEnvironmentPrefix)}){
@@ -108,6 +126,7 @@ environments.each { environment ->
        environmentLogic.delete(environment.id)
     }
 }
+
 log.info("All done!")
 state.setState(StateType.STABLE)
 
