@@ -30,11 +30,16 @@ state.setState(StateType.UNSTABLE)
 def properties = binding.getVariable("properties")
 
 def groupMatcherPattern = properties["groupMatcherPattern"]
+assert groupMatcherPattern,"No groupMatcherPattern defined in properties..."
+
 def urlConstructTemplate = properties["urlConstructTemplate"]
+assert urlConstructTemplate,"No urlConstructTemplate defined in properties..."
+
 def environmentIndex = properties["environmentIndex"] as int
 def projectIndex = properties["projectIndex"] as int
 
 Marathon marathon = MarathonClient.getInstance(properties["server"])
+assert marathon,"No Marathon available. MarathonClient server creation failed."
 
 def identifier = properties["tag"]
 if (!identifier){
@@ -46,9 +51,8 @@ InstanceLogic instanceLogic = applicationContext.getBean(InstanceLogic.class)
 ProjectLogic projectLogic = applicationContext.getBean(ProjectLogic.class)
 EnvironmentLogic environmentLogic = applicationContext.getBean(EnvironmentLogic.class)
 
-
-//def apps = marathon.getApps()["apps"];
-def apps = []
+def apps = marathon.getApps()["apps"];
+//def apps = []
 
 def marathonInstances = []
 apps.each { app ->
@@ -107,7 +111,6 @@ apps.each { app ->
 log.info("MarathonInstanceResolver is managing the following instances: [${marathonInstances}]")
 
 log.info("Cleaning up no longer used instances which match the given identifier [${identifier}] and are not in the list of managedInstances.")
-println(marathonInstances)
 def marathonInstanceIds = marathonInstances.collect{it.id}.flatten()
 instanceLogic.getInstances().
     findAll{it.tags?.equals(identifier)}.
