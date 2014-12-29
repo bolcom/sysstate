@@ -44,7 +44,7 @@ if (app['tasksStaged'] > 0){
 }
 
 if (app['deployments']){
-    println("LOOOOOOOOOOOOOOOOOOOOOL")
+
     state.setState(StateType.UNSTABLE)
     state.appendMessage("Application has running/pending deployments")
     return
