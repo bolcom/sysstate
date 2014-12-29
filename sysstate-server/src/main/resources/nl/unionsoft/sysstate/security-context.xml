@@ -34,7 +34,7 @@ user    	//Average Joe
 		<intercept-url pattern="/instance/*/copy*" access="ROLE_EDITOR,ROLE_ADMIN" />		
 		<intercept-url pattern="/instance/*/refresh*" access="ROLE_EDITOR,ROLE_ADMIN" />
 		<intercept-url pattern="/instance/*/toggle/*" access="ROLE_EDITOR,ROLE_ADMIN" />
-		<intercept-url pattern="/instance/create*" access="ROLE_EDITOR,ROLE_ADMIN" />
+		<intercept-url pattern="/instance/*/create*" access="ROLE_EDITOR,ROLE_ADMIN" />
 		
 		<intercept-url pattern="/view/*/update*" access="ROLE_EDITOR,ROLE_ADMIN" />
 		<intercept-url pattern="/view/*/delete*" access="ROLE_EDITOR,ROLE_ADMIN" />

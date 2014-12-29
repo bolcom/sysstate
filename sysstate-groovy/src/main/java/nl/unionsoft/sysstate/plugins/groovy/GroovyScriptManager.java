@@ -23,7 +23,7 @@ public class GroovyScriptManager implements InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(GroovyScriptManager.class);
 
-    private static final String[] internalGroovyResources = { "MarathonInstanceResolver.groovy" };
+    private static final String[] internalGroovyResources = { "MarathonInstanceResolver.groovy","MarathonAppStateResolver.groovy" };
 
     private File groovyScriptsExt;
     private File groovyScriptsInt;
@@ -75,6 +75,7 @@ public class GroovyScriptManager implements InitializingBean {
 
         makeGroovyDir(groovyScriptsExt);
         makeGroovyDir(groovyScriptsInt);
+        FileUtils.cleanDirectory(groovyScriptsInt);
 
         for (String internalGroovyResource : internalGroovyResources) {
             File targetFile = new File(groovyScriptsInt, internalGroovyResource);
@@ -89,6 +90,7 @@ public class GroovyScriptManager implements InitializingBean {
             }
         }
     }
+
 
     public File getScriptFile(String scriptName) {
 

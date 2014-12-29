@@ -38,7 +38,7 @@ assert urlConstructTemplate,"No urlConstructTemplate defined in properties..."
 def environmentIndex = properties["environmentIndex"] as int
 def projectIndex = properties["projectIndex"] as int
 
-Marathon marathon = MarathonClient.getInstance(properties["server"])
+Marathon marathon = MarathonClient.getInstance(properties["server"].toString().trim())
 assert marathon,"No Marathon available. MarathonClient server creation failed."
 
 def identifier = properties["tag"]
