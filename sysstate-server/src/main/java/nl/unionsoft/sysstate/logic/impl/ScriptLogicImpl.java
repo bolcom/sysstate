@@ -1,5 +1,6 @@
 package nl.unionsoft.sysstate.logic.impl;
 
+import nl.unionsoft.sysstate.common.extending.ScriptExecutionResult;
 import nl.unionsoft.sysstate.common.extending.ScriptExecutor;
 import nl.unionsoft.sysstate.common.logic.ScriptLogic;
 
@@ -13,7 +14,7 @@ public class ScriptLogicImpl implements ScriptLogic, ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
-    public Object execute(String script, String scriptExecutorName) {
+    public ScriptExecutionResult execute(String script, String scriptExecutorName) {
         ScriptExecutor scriptExecutor = applicationContext.getBean(scriptExecutorName, ScriptExecutor.class);
         return scriptExecutor.executeScript(script);
 

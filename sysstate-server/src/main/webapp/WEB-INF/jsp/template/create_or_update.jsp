@@ -10,7 +10,6 @@
 						<jsp:param name="path" value="id"/>
 						<jsp:param name="label" value="ID"/>
 						<jsp:param name="comments" value="Change the ID to create a copy!"/>
-						
 					</jsp:include>
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 						<jsp:param name="path" value="css"/>

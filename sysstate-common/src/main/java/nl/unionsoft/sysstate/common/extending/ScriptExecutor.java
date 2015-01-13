@@ -5,5 +5,5 @@ import java.util.Map;
 public interface ScriptExecutor {
 
     
-    public Object executeScript(String script);
+    public ScriptExecutionResult executeScript(String script);
 }
