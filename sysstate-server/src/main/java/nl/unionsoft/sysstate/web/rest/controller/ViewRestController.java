@@ -7,6 +7,7 @@ import java.util.Properties;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import nl.unionsoft.common.converter.Converter;
 import nl.unionsoft.sysstate.Constants;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
@@ -15,6 +16,7 @@ import nl.unionsoft.sysstate.common.dto.ViewResultDto;
 import nl.unionsoft.sysstate.logic.EcoSystemLogic;
 import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.ViewLogic;
+import nl.unionsoft.sysstate.sysstate_1_0.EcoSystem;
 import nl.unionsoft.sysstate.sysstate_1_0.State;
 
 import org.springframework.stereotype.Controller;
@@ -35,21 +37,14 @@ public class ViewRestController {
     @Inject
     @Named("ecoSystemLogic")
     private EcoSystemLogic ecoSystemLogic;
+    
+    @Inject
+    @Named("restEcoSystemConverter")
+    private  Converter<EcoSystem, ViewResultDto> ecoSystemConverter;
 
-    @RequestMapping(value = "/view/{viewId}/states", method = RequestMethod.GET)
-    public List<State> statesForView(@PathVariable("viewId") Long viewId) {
-        List<State> states = new ArrayList<State>();
+    @RequestMapping(value = "/view/{viewId}/ecosystem", method = RequestMethod.GET)
+    public EcoSystem ecosystemForView(@PathVariable("viewId") Long viewId) {
         final ViewDto view = viewLogic.getView(viewId);
-        if (view != null) {
-            ViewResultDto viewResults = ecoSystemLogic.getEcoSystem(view);
-            for (InstanceDto instance : viewResults.getInstances()) {
-                StateDto stateDto = instance.getState();
-                State state = new State();
-                state.setId(stateDto.getId());
-                state.setState(stateDto.getState().toString());
-                states.add(state);
-            }
-        }
-        return states;
+        return ecoSystemConverter.convert(ecoSystemLogic.getEcoSystem(view));
     }
 }
