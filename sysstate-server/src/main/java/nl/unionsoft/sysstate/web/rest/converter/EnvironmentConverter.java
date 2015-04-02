@@ -23,6 +23,7 @@ public class EnvironmentConverter implements Converter<Environment, EnvironmentD
         }
         Environment environment = new Environment();
         environment.setId(dto.getId());
+        environment.setName(dto.getName());
         return environment;
     }
 
