@@ -5,11 +5,15 @@ import nl.unionsoft.sysstate.common.enums.StateType
 import mesosphere.marathon.client.Marathon
 import mesosphere.marathon.client.MarathonClient
 import org.springframework.context.ApplicationContext
+
+import nl.unionsoft.sysstate.common.logic.InstanceLinkLogic
 import nl.unionsoft.sysstate.common.logic.InstanceLogic
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic
 import nl.unionsoft.sysstate.common.logic.ProjectLogic
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
+
 import groovy.text.SimpleTemplateEngine
 
 
@@ -28,6 +32,7 @@ StateDto state = binding.getVariable("state")
 state.setState(StateType.UNSTABLE)
 
 def properties = binding.getVariable("properties")
+InstanceDto instance = binding.getVariable("instance")
 
 def groupMatcherPattern = properties["groupMatcherPattern"]
 assert groupMatcherPattern,"No groupMatcherPattern defined in properties..."
@@ -48,6 +53,7 @@ if (!identifier){
 
 ApplicationContext applicationContext = binding.getVariable("applicationContext")
 InstanceLogic instanceLogic = applicationContext.getBean(InstanceLogic.class)
+InstanceLinkLogic instanceLinkLogic = applicationContext.getBean(InstanceLinkLogic.class)
 ProjectLogic projectLogic = applicationContext.getBean(ProjectLogic.class)
 EnvironmentLogic environmentLogic = applicationContext.getBean(EnvironmentLogic.class)
 
@@ -86,20 +92,21 @@ apps.each { app ->
         
         if (!instances){
             log.info("No instances found! Creating...")
-            InstanceDto instance = instanceLogic.generateInstanceDto("selfDiagnoseStateResolver", project.id, environment.id)
-            instance.name = app["id"]
-            instance.tags = identifier
+            InstanceDto discoverInstance = instanceLogic.generateInstanceDto("selfDiagnoseStateResolver", project.id, environment.id)
+            discoverInstance.name = app["id"]
+            discoverInstance.tags = identifier
             
             SimpleTemplateEngine engine = new SimpleTemplateEngine()
             
             def templateBinding = ["projectName":projectName, "environmentName":environmentName]
             def template = engine.createTemplate(urlConstructTemplate).make(templateBinding)
             
-            instance.homepageUrl=template.toString()
-            instance.configuration = ['url':template.toString(),'pattern':'Maven POM properties']
-            instanceLogic.createOrUpdateInstance(instance)
+            discoverInstance.homepageUrl=template.toString()
+            discoverInstance.configuration = ['url':template.toString(),'pattern':'Maven POM properties']
+            instanceLogic.createOrUpdateInstance(discoverInstance)
             //FIXME: createOrUpdateInstance should update or return id.
-            marathonInstances << instanceLogic.getInstancesForProjectAndEnvironment(projectName, environmentName)
+            instanceLinkLogic.link(instance.id, discoverInstance.id, projectName)
+            marathonInstances << discoverInstance
         } else {
             log.info("One or more instances already configured. Skipping...")
             marathonInstances << instances

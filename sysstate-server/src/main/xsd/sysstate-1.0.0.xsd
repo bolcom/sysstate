@@ -94,6 +94,7 @@ targetNamespace="http://sysstate.unionsoft.nl/sysstate-1.0.0" elementFormDefault
 			<xs:sequence>
 				<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1" />
 				<xs:element ref="State" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="InstanceLink" minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -109,5 +110,15 @@ targetNamespace="http://sysstate.unionsoft.nl/sysstate-1.0.0" elementFormDefault
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	
+	<xs:element name="InstanceLink">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="instanceId" type="xs:long" minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
 
 </xs:schema>

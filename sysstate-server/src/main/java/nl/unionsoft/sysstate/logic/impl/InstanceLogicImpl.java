@@ -223,7 +223,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
             reference = uuid.toString();
         }
         instanceDao.createOrUpdate(instance);
-
+        dto.setId(instance.getId());
         Map<String, String> configuration = dto.getConfiguration();
         if (configuration != null) {
             for (Entry<String, String> entry : configuration.entrySet()) {
