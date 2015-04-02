@@ -289,6 +289,9 @@
 		<put-attribute name="body" value="/WEB-INF/jsp/overview/maintenance.jsp" />
 	</definition>
 
+	<definition name="network-overview" extends="overview">
+		<put-attribute name="body" value="/WEB-INF/jsp/overview/network.jsp" />
+	</definition>
 
 
 	<definition name="table-overview" extends="overview">

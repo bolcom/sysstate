@@ -64,7 +64,8 @@ public class TemplateLogicImpl implements TemplateLogic, InitializingBean {
         BASE("base", "nl/unionsoft/sysstate/css/base.css", "table-overview", 30, null),
         CI("ci", "nl/unionsoft/sysstate/css/ci.css", "table-overview", 15,"no_project_col=true\nno_weather=true\nno_popup=true\n"), 
         PRIORITY("priority", "nl/unionsoft/sysstate/css/priority.css", "priority-overview", 15, null),
-        DRILLDOWN("drilldown", "nl/unionsoft/sysstate/css/drilldown.css", "drilldown-overview", 15, null) ;
+        DRILLDOWN("drilldown", "nl/unionsoft/sysstate/css/drilldown.css", "drilldown-overview", 15, null),
+        NETWORK("network", "", "network-overview", 150, null) ;
         //@formatter:on
         public final String id;
         public final String cssFile;

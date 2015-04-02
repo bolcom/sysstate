@@ -48,8 +48,7 @@ public class InstanceConverter implements Converter<InstanceDto, Instance> {
             result.setTags(instance.getTags());
             result.setReference(instance.getReference());
             result.setRefreshTimeout(instance.getRefreshTimeout());
-            result.setInstanceLinks(ListConverter.convert(instanceLinkConverter, instance.getToInstanceLinks()));
-
+            result.setInstanceLinks(ListConverter.convert(instanceLinkConverter, instance.getOutgoingInstanceLinks()));
         }
         return result;
     }
