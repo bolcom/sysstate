@@ -6,7 +6,7 @@
 <script type="text/javascript">
 
 
-	var edges = [];
+	var edges =  new vis.DataSet();
 
 	var nodes = new vis.DataSet();
 
@@ -14,10 +14,35 @@
 		  $.ajax({
 		    url: "http://localhost:8680/services/view/1/ecosystem", 
 		    success: function(data) {
-		    	
-		    	
-		    	nodes.update([{id: '1', label: 'Node asd',  group: 'stable'}]);	
+		    	var validIds = [];
+		    	$.each(data.ecoSystem.instances, function() {
 
+		    		var instanceId = "I" + this.id;
+		    		
+		    		nodes.update([{id: instanceId, label: this.name,  group: this.state.state}]);
+		    		validIds.push(instanceId);
+		    		  $.each(this.instanceLinks, function() {
+		    			  
+		    			  var instanceLinkId = "I" + this.instanceId;
+		    			  
+		    		   		var instanceEdges = edges.get({
+				    			filter: function (item) {
+				    				return item.from == instanceId && item.to == instanceLinkId;
+				    			}
+				    		})
+				    		if (instanceEdges.length == 0){
+		    			  		edges.update([{from :  instanceId , to : "I" + this.instanceId, label : this.name}])
+				    		}
+		    		  });
+		    	});
+		    	var actualIds = nodes.getIds();
+		    	
+		    	difference = $.grep(actualIds, function(el) { return $.inArray( el, validIds ) == -1; })
+		    	$.each(difference, function() {
+		    		nodes.remove(this);
+		    	});
+		    	
+		    	
 		    },
 		    complete: function() {
 		      // Schedule the next request when the current one's complete
@@ -40,11 +65,15 @@
 		    edges: edges,
 		  };
 	  var options = {
-	    width: '400px',
-	    height: '400px',
+	    width: '100%',
+	    height: '100%',
+
+	    
+	    physics: {physics: {barnesHut: {centralGravity: 0}}, smoothCurves: false},
+	    
 	   	groups: {
 	   		
-	   		stable: {
+	   		STABLE: {
 	  		    shape: 'circle',
 	  		    color: {
 	  		      border: 'black',
@@ -56,7 +85,59 @@
 	  		    },
 	  		    fontColor: 'white',
 	  		    fontSize: 18
-	  		  }
+	  		  },
+	  		UNSTABLE: {
+	  		    shape: 'circle',
+	  		    color: {
+	  		      border: 'black',
+	  		      background: 'orange',
+	  		      highlight: {
+	  		        border: 'yellow',
+	  		        background: 'orange'
+	  		      }
+	  		    },
+	  		    fontColor: 'white',
+	  		    fontSize: 18
+	  		  },
+	  		ERROR: {
+	  		    shape: 'circle',
+	  		    color: {
+	  		      border: 'black',
+	  		      background: 'red',
+	  		      highlight: {
+	  		        border: 'yellow',
+	  		        background: 'orange'
+	  		      }
+	  		    },
+	  		    fontColor: 'white',
+	  		    fontSize: 18
+	  		  },
+	  		DISABLED: {
+	  		    shape: 'circle',
+	  		    color: {
+	  		      border: 'black',
+	  		      background: 'grey',
+	  		      highlight: {
+	  		        border: 'yellow',
+	  		        background: 'orange'
+	  		      }
+	  		    },
+	  		    fontColor: 'white',
+	  		    fontSize: 18
+	  		  },
+	  		PENDING: {
+	  		    shape: 'circle',
+	  		    color: {
+	  		      border: 'black',
+	  		      background: 'grey',
+	  		      highlight: {
+	  		        border: 'yellow',
+	  		        background: 'orange'
+	  		      }
+	  		    },
+	  		    fontColor: 'white',
+	  		    fontSize: 18
+	  		  }	  	 	  		
 	    }
 	  };
 

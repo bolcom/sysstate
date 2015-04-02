@@ -14,9 +14,27 @@ targetNamespace="http://sysstate.unionsoft.nl/sysstate-1.0.0" elementFormDefault
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="View" minOccurs="1" maxOccurs="1" />
-				<xs:element ref="ProjectList" minOccurs="1" maxOccurs="1" />
-				<xs:element ref="EnvironmentList" minOccurs="1" maxOccurs="1" />
-				<xs:element ref="InstanceList" minOccurs="1" maxOccurs="1" />
+				<xs:element ref="Project" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="projects" />
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="Environment" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="environments" />
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="Instance" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="instances" />
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -29,47 +47,33 @@ targetNamespace="http://sysstate.unionsoft.nl/sysstate-1.0.0" elementFormDefault
 		</xs:complexType>
 	</xs:element>
 
-	<xs:element name="ProjectList">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="Project" minOccurs="0" maxOccurs="unbounded">
-					<xs:annotation>
-						<xs:appinfo>
-							<jaxb:property name="projects"/>
-						</xs:appinfo>
-					</xs:annotation>
-				</xs:element>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
 
 	<xs:element name="Project">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="id" type="xs:string" minOccurs="0" maxOccurs="1" />
+				<xs:element name="id" type="xs:long" minOccurs="0" maxOccurs="1" />
+				<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />	
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 
-	<xs:element name="EnvironmentList">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="Environment" minOccurs="0" maxOccurs="unbounded">
-					<xs:annotation>
-						<xs:appinfo>
-							<jaxb:property name="environments" />
-						</xs:appinfo>
-					</xs:annotation>
-				</xs:element>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
 
 
 	<xs:element name="Environment">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="id" type="xs:string" minOccurs="0" maxOccurs="1" />
+				<xs:element name="id" type="xs:long" minOccurs="0" maxOccurs="1" />
+				<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />				
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="ProjectEnvironment">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="id" type="xs:long" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="Project" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="Environment" minOccurs="0" maxOccurs="1" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -92,8 +96,10 @@ targetNamespace="http://sysstate.unionsoft.nl/sysstate-1.0.0" elementFormDefault
 	<xs:element name="Instance">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element name="id" type="xs:long" minOccurs="0" maxOccurs="1" />
 				<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1" />
 				<xs:element ref="State" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="ProjectEnvironment" minOccurs="0" maxOccurs="1" />
 				<xs:element ref="InstanceLink" minOccurs="0" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:appinfo>
@@ -126,5 +132,32 @@ targetNamespace="http://sysstate.unionsoft.nl/sysstate-1.0.0" elementFormDefault
 		</xs:complexType>
 	</xs:element>
 	
+	<xs:element name="ProjectList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Project" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="projects"/>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="EnvironmentList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Environment" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="environments" />
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
 </xs:schema>

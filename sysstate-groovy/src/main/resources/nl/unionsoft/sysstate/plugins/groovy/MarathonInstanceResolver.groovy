@@ -105,7 +105,7 @@ apps.each { app ->
             discoverInstance.configuration = ['url':template.toString(),'pattern':'Maven POM properties']
             instanceLogic.createOrUpdateInstance(discoverInstance)
             //FIXME: createOrUpdateInstance should update or return id.
-            instanceLinkLogic.link(instance.id, discoverInstance.id, projectName)
+            instanceLinkLogic.link(instance.id, discoverInstance.id, "child")
             marathonInstances << discoverInstance
         } else {
             log.info("One or more instances already configured. Skipping...")
