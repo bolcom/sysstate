@@ -316,6 +316,8 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
             final List<Restriction> restrictions = groupRestriction.getRestrictions();
             for (final String element : StringUtils.split(tags, ' ')) {
                 restrictions.add(new ObjectRestriction(Rule.LIKE, "tags", element));
+                restrictions.add(new ObjectRestriction(Rule.LIKE, "projectEnvironment.project.tags", element));
+                restrictions.add(new ObjectRestriction(Rule.LIKE, "projectEnvironment.environment.tags", element));
             }
             listRequest.addRestriction(groupRestriction);
         }
