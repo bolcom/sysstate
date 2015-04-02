@@ -67,7 +67,7 @@ public class State {
     @ManyToOne
     @JoinColumn(name = "ICE_ID", nullable = false)
     private Instance instance;
-
+    
     public String getDescription() {
         return description;
     }

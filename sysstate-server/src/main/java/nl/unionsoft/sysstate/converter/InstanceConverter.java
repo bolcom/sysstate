@@ -8,6 +8,7 @@ import javax.inject.Named;
 
 import nl.unionsoft.common.converter.BidirectionalConverter;
 import nl.unionsoft.common.converter.Converter;
+import nl.unionsoft.common.converter.ListConverter;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.domain.Instance;
 import nl.unionsoft.sysstate.domain.InstanceProperty;
@@ -22,12 +23,12 @@ public class InstanceConverter implements Converter<InstanceDto, Instance> {
     private ProjectEnvironmentConverter projectEnvironmentConverter;
 
     @Inject
+    @Named("instanceLinkConverter")
+    private InstanceLinkConverter instanceLinkConverter;
+
+    @Inject
     @Named("instancePropertiesConverter")
     private BidirectionalConverter<Map<String, String>, List<InstanceProperty>> instancePropertiesConverter;
-    //
-    // @Inject
-    // @Named("pluginLogic")
-    // private PluginLogic pluginLogic;
 
     @Inject
     @Named("stateConverter")
@@ -47,6 +48,7 @@ public class InstanceConverter implements Converter<InstanceDto, Instance> {
             result.setTags(instance.getTags());
             result.setReference(instance.getReference());
             result.setRefreshTimeout(instance.getRefreshTimeout());
+            result.setInstanceLinks(ListConverter.convert(instanceLinkConverter, instance.getOutgoingInstanceLinks()));
         }
         return result;
     }

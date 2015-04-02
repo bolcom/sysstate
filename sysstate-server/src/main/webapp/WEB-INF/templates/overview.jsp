@@ -10,6 +10,7 @@
 		</c:if>
 		<script src="${contextPath}/scripts/colorbox/jquery.colorbox.js"></script>
 		<link rel="stylesheet" href="${contextPath}/scripts/colorbox/colorbox.css" type="text/css" />
+		<script type="text/javascript" src="${contextPath}/js/vis/vis.min.js"></script>
 		<script type="text/javascript">
 			var refresh = true;
 			function Refresh() {

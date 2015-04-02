@@ -64,12 +64,11 @@ public class Instance {
     @OneToMany(mappedBy = "instance", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<InstanceProperty> instanceProperties;
 
-    // @OneToOne()
-    // @JoinColumn(name="LAST_STE_ID")
-    // private State lastState;
-    //
-    // @OneToMany(mappedBy = "instance", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    // private List<InstanceWorkerPluginConfig> instanceWorkerPluginConfigs;
+    @OneToMany(mappedBy = "to", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<InstanceLink> incommingInstanceLinks;
+    
+    @OneToMany(mappedBy = "from", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<InstanceLink> outgoingInstanceLinks;
 
     @ManyToOne
     @JoinColumn(name = "PET_ID", nullable = false)
@@ -186,7 +185,25 @@ public class Instance {
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
+
+    public List<InstanceLink> getIncommingInstanceLinks() {
+        return incommingInstanceLinks;
+    }
+
+    public void setIncommingInstanceLinks(List<InstanceLink> incommingInstanceLinks) {
+        this.incommingInstanceLinks = incommingInstanceLinks;
+    }
+
+    public List<InstanceLink> getOutgoingInstanceLinks() {
+        return outgoingInstanceLinks;
+    }
+
+    public void setOutgoingInstanceLinks(List<InstanceLink> outgoingInstanceLinks) {
+        this.outgoingInstanceLinks = outgoingInstanceLinks;
+    }
+
     
+   
     
 
 }

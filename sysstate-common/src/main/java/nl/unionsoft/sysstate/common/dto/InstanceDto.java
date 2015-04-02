@@ -1,8 +1,9 @@
 package nl.unionsoft.sysstate.common.dto;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -40,11 +41,15 @@ public class InstanceDto {
     private StateDto lastPending;
     private StateDto lastDisabled;
 
+    
+    private List<InstanceLinkDto> instanceLinks;
+    
     @NotNull()
     private ProjectEnvironmentDto projectEnvironment;
 
     public InstanceDto() {
         configuration = new LinkedHashMap<String, String>();
+        instanceLinks = new ArrayList<InstanceLinkDto>();
         refreshTimeout = 10000;
     }
 
@@ -216,4 +221,14 @@ public class InstanceDto {
         this.reference = reference;
     }
 
+    public List<InstanceLinkDto> getInstanceLinks() {
+        return instanceLinks;
+    }
+
+    public void setInstanceLinks(List<InstanceLinkDto> instanceLinks) {
+        this.instanceLinks = instanceLinks;
+    }
+
+    
+    
 }

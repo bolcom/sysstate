@@ -109,6 +109,7 @@ public class ViewController {
                 modelAndView.addObject("controls", false);
                 modelAndView.addObject("viewResults", ecoSystemLogic.getEcoSystem(view));
                 modelAndView.addObject("properties", PropertiesUtil.stringToProperties(template.getRenderHints()));
+                modelAndView.addObject("view", view);
             }
             modelAndView.addObject("template", template);
         }
