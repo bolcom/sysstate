@@ -5,9 +5,9 @@
 <div id="mynetwork"></div>
 
 <script type="text/javascript">
-	var edges = new vis.DataSet();
+	var edges = new vis.DataSet([], {queue:true});
 
-	var nodes = new vis.DataSet();
+	var nodes = new vis.DataSet([], {queue:true});
 
 	(function worker() {
 		$.ajax({
@@ -25,17 +25,6 @@
 
 	function handleData(data){
 		var validIds = [];
-		$.each(data.ecoSystem.projects, function() {
-			var projectId = "P" + this.id;
-			nodes.update([ {
-				id : projectId,
-				label : this.name,
-				group : "PROJECT",
-				level : 2
-			} ]);
-			validIds.push(projectId)
-		});
-		
 		$.each(data.ecoSystem.environments, function() {
 			var environmentId = "E" + this.id;
 			nodes.update([ {
@@ -52,7 +41,7 @@
 			var instanceId = "I" + this.id;
 			nodes.update([ {
 				id : instanceId,
-				label : this.state.description ? this.state.description.replace(" ", "\n") : this.state.state,
+				label : "[" + this.projectEnvironment.project.name + "]\n" + (this.state.description ? this.state.description.replace(" ", "\n") : this.state.state),
 				group : this.state.state,
 				level : 1
 			} ]);
@@ -74,6 +63,8 @@
 		$.each(difference, function() {
 			nodes.remove(this);
 		});
+		nodes.flush();
+		edges.flush();
 		
 	}
 	
