@@ -128,9 +128,17 @@ targetNamespace="http://sysstate.unionsoft.nl/sysstate-1.0.0" elementFormDefault
 			<xs:sequence>
 				<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />
 				<xs:element name="instanceId" type="xs:long" minOccurs="1" maxOccurs="1" />
+				<xs:element name="direction" type="InstanceLinkDirection" minOccurs="1" maxOccurs="1"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	
+	<xs:simpleType  name="InstanceLinkDirection">
+	  <xs:restriction base="xs:string">
+	     <xs:enumeration value="INCOMMING"/>
+	     <xs:enumeration value="OUTGOING"/>
+	  </xs:restriction>
+	</xs:simpleType>
 	
 	<xs:element name="ProjectList">
 		<xs:complexType>

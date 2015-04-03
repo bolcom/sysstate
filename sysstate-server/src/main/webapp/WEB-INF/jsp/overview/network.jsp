@@ -17,7 +17,7 @@
 			},
 			complete : function() {
 				// Schedule the next request when the current one's complete
-				setTimeout(worker, 5000);
+				setTimeout(worker, 10000);
 			}
 		});
 	})();
@@ -52,14 +52,16 @@
 			var instanceId = "I" + this.id;
 			nodes.update([ {
 				id : instanceId,
-				label : this.projectEnvironment.project.name + "\n" + this.projectEnvironment.environment.name,
+				label : this.state.description ? this.state.description.replace(" ", "\n") : this.state.state,
 				group : this.state.state,
 				level : 1
 			} ]);
 			validIds.push(instanceId);
 			$.each(this.instanceLinks, function() {
-				var instanceLinkId = "I" + this.instanceId;
-				addEdgeIfNotExists(instanceId, instanceLinkId)
+				if (this.direction == 'OUTGOING'){
+					var instanceLinkId = "I" + this.instanceId;
+					addEdgeIfNotExists(instanceId, instanceLinkId)
+				}
 			});
 			addEdgeIfNotExists(instanceId, "P" + this.projectEnvironment.project.id)
 			addEdgeIfNotExists(instanceId, "E" + this.projectEnvironment.environment.id)
@@ -109,7 +111,7 @@
 			STABLE : {
 				shape : 'circle',
 				color : {
-					border : 'black',
+					border : 'white',
 					background : 'green',
 					highlight : {
 						border : 'yellow',
@@ -117,12 +119,12 @@
 					}
 				},
 				fontColor : 'white',
-				fontSize : 18
+				fontSize : 12
 			},
 			UNSTABLE : {
 				shape : 'circle',
 				color : {
-					border : 'black',
+					border : 'white',
 					background : 'orange',
 					highlight : {
 						border : 'yellow',
@@ -130,12 +132,12 @@
 					}
 				},
 				fontColor : 'white',
-				fontSize : 18
+				fontSize : 12
 			},
 			ERROR : {
 				shape : 'circle',
 				color : {
-					border : 'black',
+					border : 'white',
 					background : 'red',
 					highlight : {
 						border : 'yellow',
@@ -143,12 +145,12 @@
 					}
 				},
 				fontColor : 'white',
-				fontSize : 18
+				fontSize : 12
 			},
 			DISABLED : {
 				shape : 'circle',
 				color : {
-					border : 'black',
+					border : 'white',
 					background : 'grey',
 					highlight : {
 						border : 'yellow',
@@ -156,12 +158,12 @@
 					}
 				},
 				fontColor : 'white',
-				fontSize : 18
+				fontSize : 12
 			},
 			PENDING : {
 				shape : 'circle',
 				color : {
-					border : 'black',
+					border : 'white',
 					background : 'grey',
 					highlight : {
 						border : 'yellow',
@@ -169,12 +171,12 @@
 					}
 				},
 				fontColor : 'white',
-				fontSize : 18
+				fontSize : 12
 			},
 			PROJECT : {
-				shape : 'circle',
+				shape : 'box',
 				color : {
-					border : 'black',
+					border : 'white',
 					background : 'blue',
 					highlight : {
 						border : 'yellow',
@@ -182,12 +184,12 @@
 					}
 				},
 				fontColor : 'white',
-				fontSize : 18
+				fontSize : 16
 			},
 			ENVIRONMENT : {
-				shape : 'circle',
+				shape : 'box',
 				color : {
-					border : 'black',
+					border : 'white',
 					background : 'purple',
 					highlight : {
 						border : 'yellow',
@@ -195,7 +197,7 @@
 					}
 				},
 				fontColor : 'white',
-				fontSize : 18
+				fontSize : 16
 			}			
 		}
 	};
