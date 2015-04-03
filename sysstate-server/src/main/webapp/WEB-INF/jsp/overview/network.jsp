@@ -93,7 +93,7 @@
 	var options = {
 		width : '100%',
 		height : '100%',
-		physics: {barnesHut: {gravitationalConstant: -20000, centralGravity: 2, springLength: 130, springConstant: 0.04, damping: 0.3}},
+		
 		 smoothCurves: false,
 
 		groups : {
