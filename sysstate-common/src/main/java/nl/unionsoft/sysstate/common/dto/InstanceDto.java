@@ -42,14 +42,16 @@ public class InstanceDto {
     private StateDto lastDisabled;
 
     
-    private List<InstanceLinkDto> instanceLinks;
+    private List<InstanceLinkDto> incommingInstanceLinks;
+    private List<InstanceLinkDto> outgoingInstanceLinks;
     
     @NotNull()
     private ProjectEnvironmentDto projectEnvironment;
 
     public InstanceDto() {
         configuration = new LinkedHashMap<String, String>();
-        instanceLinks = new ArrayList<InstanceLinkDto>();
+        incommingInstanceLinks = new ArrayList<InstanceLinkDto>();
+        outgoingInstanceLinks = new ArrayList<InstanceLinkDto>();
         refreshTimeout = 10000;
     }
 
@@ -221,14 +223,23 @@ public class InstanceDto {
         this.reference = reference;
     }
 
-    public List<InstanceLinkDto> getInstanceLinks() {
-        return instanceLinks;
+    public List<InstanceLinkDto> getIncommingInstanceLinks() {
+        return incommingInstanceLinks;
     }
 
-    public void setInstanceLinks(List<InstanceLinkDto> instanceLinks) {
-        this.instanceLinks = instanceLinks;
+    public void setIncommingInstanceLinks(List<InstanceLinkDto> incommingInstanceLinks) {
+        this.incommingInstanceLinks = incommingInstanceLinks;
     }
 
+    public List<InstanceLinkDto> getOutgoingInstanceLinks() {
+        return outgoingInstanceLinks;
+    }
+
+    public void setOutgoingInstanceLinks(List<InstanceLinkDto> outgoingInstanceLinks) {
+        this.outgoingInstanceLinks = outgoingInstanceLinks;
+    }
+
+   
     
     
 }

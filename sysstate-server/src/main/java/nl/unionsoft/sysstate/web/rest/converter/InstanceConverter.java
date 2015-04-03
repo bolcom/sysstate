@@ -12,6 +12,7 @@ import nl.unionsoft.sysstate.common.dto.InstanceLinkDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.sysstate_1_0.Instance;
 import nl.unionsoft.sysstate.sysstate_1_0.InstanceLink;
+import nl.unionsoft.sysstate.sysstate_1_0.InstanceLinkDirection;
 import nl.unionsoft.sysstate.sysstate_1_0.State;
 
 @Service("restInstanceConverter")
@@ -23,7 +24,7 @@ public class InstanceConverter implements Converter<Instance, InstanceDto>{
 
     @Inject
     @Named("restInstanceLinkConverter")
-    private Converter<InstanceLink, InstanceLinkDto> instanceLinkConverter;
+    private InstanceLinkConverter instanceLinkConverter;
 
     @Inject
     @Named("restProjectEnvironmentConverter")
@@ -39,7 +40,8 @@ public class InstanceConverter implements Converter<Instance, InstanceDto>{
         instance.setName(dto.getName());
         
         instance.setState(stateConverter.convert(dto.getState()));
-        instance.getInstanceLinks().addAll(ListConverter.convert(instanceLinkConverter, dto.getInstanceLinks()));
+        instance.getInstanceLinks().addAll(ListConverter.convert(instanceLinkConverter, dto.getIncommingInstanceLinks(), InstanceLinkDirection.INCOMMING));
+        instance.getInstanceLinks().addAll(ListConverter.convert(instanceLinkConverter, dto.getOutgoingInstanceLinks(), InstanceLinkDirection.OUTGOING));
         instance.setProjectEnvironment(projectEnvironmentConverter.convert(dto.getProjectEnvironment()));
         return instance;
     }
