@@ -3,8 +3,8 @@ package nl.unionsoft.sysstate.plugins.jenkins;
 import static nl.unionsoft.sysstate.common.util.XmlUtil.getCharacterDataFromObjectWithKey;
 
 import java.util.Map;
-import java.util.Properties;
 
+import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.plugins.http.XMLBeanStateResolverImpl;
@@ -19,7 +19,7 @@ import org.w3c.dom.Node;
 public class JenkinsJobStateResolverImpl extends XMLBeanStateResolverImpl {
 
     @Override
-    protected void handleXmlObject(final XmlObject xmlObject, final StateDto state, final Map<String, String> properties) {
+    protected void handleXmlObject(final XmlObject xmlObject, final StateDto state, final Map<String, String> properties, final InstanceDto instance) {
         final Node node = xmlObject.getDomNode();
         final Document document = (Document) node;
 

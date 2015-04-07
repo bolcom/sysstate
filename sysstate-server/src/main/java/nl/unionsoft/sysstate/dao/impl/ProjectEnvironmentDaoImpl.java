@@ -10,6 +10,7 @@ import javax.persistence.NoResultException;
 import nl.unionsoft.sysstate.dao.ProjectEnvironmentDao;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -79,7 +80,7 @@ public class ProjectEnvironmentDaoImpl implements ProjectEnvironmentDao {
                             "WHERE pet.project.name = :projectName " +
                             "AND pet.environment.name = :environmentName",
                             ProjectEnvironment.class)
-                            .setParameter("projectName", projectName).setParameter("environmentName", environmentName).setHint("org.hibernate.cacheable", true)
+                            .setParameter("projectName",  StringUtils.upperCase(projectName)).setParameter("environmentName",  StringUtils.upperCase(environmentName)).setHint("org.hibernate.cacheable", true)
                             .getSingleResult();
             // @formatter:on
         } catch (final NoResultException nre) {

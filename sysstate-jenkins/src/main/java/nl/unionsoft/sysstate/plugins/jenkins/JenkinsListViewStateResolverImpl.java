@@ -4,6 +4,7 @@ import static nl.unionsoft.sysstate.common.util.XmlUtil.*;
 
 import java.util.Map;
 
+import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.plugins.http.XMLBeanStateResolverImpl;
@@ -20,7 +21,7 @@ import org.w3c.dom.NodeList;
 public class JenkinsListViewStateResolverImpl extends XMLBeanStateResolverImpl {
 
     @Override
-    protected void handleXmlObject(XmlObject xmlObject, StateDto state, Map<String, String> configuration) {
+    protected void handleXmlObject(XmlObject xmlObject, StateDto state, Map<String, String> configuration, final InstanceDto instance) {
         final Node rootNode = xmlObject.getDomNode();
         final Document document = (Document) rootNode;
         Element listView = getElementWithKeyFromDocument(document, "listView");

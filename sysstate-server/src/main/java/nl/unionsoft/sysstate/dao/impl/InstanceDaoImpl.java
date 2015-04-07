@@ -88,8 +88,8 @@ public class InstanceDaoImpl implements InstanceDao {
                         "FROM Instance ice " + 
                         "WHERE ice.projectEnvironment.environment.name = :environmentName " + 
                         "AND ice.projectEnvironment.project.name = :projectName", Instance.class)
-                        .setParameter("projectName", projectName)
-                        .setParameter("environmentName",environmentName)
+                        .setParameter("projectName", StringUtils.upperCase(projectName))
+                        .setParameter("environmentName",StringUtils.upperCase(environmentName))
                         .setHint("org.hibernate.cacheable", true)
                         .getResultList();
         // @formatter:on;

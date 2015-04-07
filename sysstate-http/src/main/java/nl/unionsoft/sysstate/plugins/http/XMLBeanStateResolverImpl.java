@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.xml.transform.stream.StreamSource;
 
+import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.util.StateUtil;
@@ -29,14 +30,14 @@ public abstract class XMLBeanStateResolverImpl extends HttpStateResolverImpl {
     private XmlBeansMarshaller xmlBeansMarshaller;
 
     @Override
-    public void handleEntity(final HttpEntity httpEntity, final  Map<String, String> configuration, final StateDto state) throws IOException {
+    public void handleEntity(final HttpEntity httpEntity, final  Map<String, String> configuration, final StateDto state,  InstanceDto instance) throws IOException {
 
         InputStream contentStream = null;
         try {
             if (httpEntity != null) {
                 contentStream = httpEntity.getContent();
                 final XmlObject xmlObject = (XmlObject) xmlBeansMarshaller.unmarshal(new StreamSource(contentStream));
-                handleXmlObject(xmlObject, state, configuration);
+                handleXmlObject(xmlObject, state, configuration, instance);
             }
         } catch (UnmarshallingFailureException e) {
             state.setState(StateType.ERROR);
@@ -62,7 +63,7 @@ public abstract class XMLBeanStateResolverImpl extends HttpStateResolverImpl {
         }
     }
 
-    protected abstract void handleXmlObject(final XmlObject xmlObject, final StateDto state,  Map<String, String> configuration);
+    protected abstract void handleXmlObject(final XmlObject xmlObject, final StateDto state,  Map<String, String> configuration, final InstanceDto instance);
 
     public XmlBeansMarshaller getXmlBeansMarshaller() {
         return xmlBeansMarshaller;

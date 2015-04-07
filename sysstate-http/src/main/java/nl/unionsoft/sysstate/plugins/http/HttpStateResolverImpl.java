@@ -64,7 +64,7 @@ public class HttpStateResolverImpl implements StateResolver {
             LOG.info("HttpRequest complete, execution took {} ms", responseTime);
             state.setResponseTime(responseTime);
             // FIXME
-            handleHttpResponse(state, properties, httpResponse);
+            handleHttpResponse(state, properties, httpResponse, instance);
 
         } catch (ConnectTimeoutException e){
             state.setState(StateType.ERROR);
@@ -84,7 +84,7 @@ public class HttpStateResolverImpl implements StateResolver {
         return uri;
     }
 
-    private void handleHttpResponse(final StateDto state, final Map<String, String> configuration, final HttpResponse httpResponse) throws IOException {
+    private void handleHttpResponse(final StateDto state, final Map<String, String> configuration, final HttpResponse httpResponse, final InstanceDto instance) throws IOException {
         HttpEntity httpEntity = null;
         try {
             final StatusLine statusLine = httpResponse.getStatusLine();
@@ -99,7 +99,7 @@ public class HttpStateResolverImpl implements StateResolver {
                 }
                 state.appendMessage(EntityUtils.toString(httpEntity));
             } else {
-                handleEntity(httpEntity, configuration, state);
+                handleEntity(httpEntity, configuration, state, instance);
             }
         } finally {
             EntityUtils.consume(httpEntity);
@@ -113,7 +113,7 @@ public class HttpStateResolverImpl implements StateResolver {
         state.appendMessage(StateUtil.exceptionAsMessage(exception));
     }
 
-    public void handleEntity(final HttpEntity httpEntity, final Map<String, String> configuration, final StateDto state) throws IOException {
+    public void handleEntity(final HttpEntity httpEntity, final Map<String, String> configuration, final StateDto state, final InstanceDto instance) throws IOException {
 
     }
 

@@ -5,6 +5,7 @@ import javax.inject.Named;
 
 import org.springframework.stereotype.Service;
 
+import nl.unionsoft.sysstate.common.dto.InstanceLinkDto;
 import nl.unionsoft.sysstate.common.logic.InstanceLinkLogic;
 import nl.unionsoft.sysstate.dao.InstanceLinkDao;
 
@@ -24,5 +25,6 @@ public class InstanceLinkLogicImpl implements InstanceLinkLogic {
     public void unlink(Long fromInstanceId, Long toInstanceId, String name) {
         instanceLinkDao.delete(fromInstanceId, toInstanceId, name);
     }
+    
 
 }

@@ -3,8 +3,8 @@ package nl.unionsoft.sysstate.plugins.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
-import java.util.Properties;
 
+import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
 
@@ -18,7 +18,7 @@ public class JSONStateResolverImpl extends HttpStateResolverImpl {
     private static final Logger LOG = LoggerFactory.getLogger(JSONStateResolverImpl.class);
 
     @Override
-    public void handleEntity(final HttpEntity httpEntity, final  Map<String, String> configuration, final StateDto state) throws IOException {
+    public void handleEntity(final HttpEntity httpEntity, final  Map<String, String> configuration, final StateDto state, InstanceDto instance) throws IOException {
         InputStream contentStream = null;
         try {
             if (httpEntity != null) {

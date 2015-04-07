@@ -4,25 +4,26 @@ import static nl.unionsoft.sysstate.common.util.XmlUtil.getAttributePropertyFrom
 import static nl.unionsoft.sysstate.common.util.XmlUtil.getElementWithKeyFromDocument;
 import static nl.unionsoft.sysstate.common.util.XmlUtil.getElementWithKeyFromElement;
 
-import java.io.StringWriter;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
+import javax.inject.Inject;
 
+import nl.unionsoft.sysstate.common.dto.InstanceDto;
+import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
+import nl.unionsoft.sysstate.common.logic.InstanceLinkLogic;
+import nl.unionsoft.sysstate.common.logic.InstanceLogic;
+import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.plugins.http.XMLBeanStateResolverImpl;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.xmlbeans.XmlObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -32,10 +33,20 @@ import org.w3c.dom.NodeList;
 @Service("selfDiagnoseStateResolver")
 public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
 
+    private static final Logger logger = LoggerFactory.getLogger(SelfDiagnoseStateResolverImpl.class);
+    
     private static final String FORMAT_XML = "?format=xml";
 
+    
+    @Inject
+    private InstanceLogic instanceLogic;
+
+    @Inject
+    private InstanceLinkLogic instanceLinkLogic;
+
+    
     @Override
-    protected void handleXmlObject(final XmlObject xmlObject, final StateDto state,  Map<String, String> configuration) {
+    protected void handleXmlObject(final XmlObject xmlObject, final StateDto state,  Map<String, String> configuration, final InstanceDto parent) {
 
         final Node node = xmlObject.getDomNode();
         final Document document = (Document) node;
@@ -81,11 +92,12 @@ public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
         final StringBuilder messageBuilder = new StringBuilder(4012);
         boolean allFailed = true;
 
-        String patternStr = configuration.get("pattern");
-        Pattern pattern = null;
-        if (StringUtils.isNotEmpty(patternStr)) {
-            pattern = Pattern.compile(patternStr);
-        }
+        Pattern versionPattern = createPatternIfApplicable(configuration.get("pattern"));
+        
+        Pattern checkbackspinservicerunningPattern = createPatternIfApplicable(StringUtils.defaultIfEmpty(configuration.get("bsrPattern"), ".*http.*://([a-zA-Z0-9]*)-([a-zA-Z0-9]*)-.*"));
+        int bsrProjectIndex = Integer.valueOf(StringUtils.defaultIfEmpty(configuration.get("bsrProjectIndex"),"2"));
+        int bsrEnvironmentIndex = Integer.valueOf(StringUtils.defaultIfEmpty(configuration.get("bsrEnvironmentIndex"),"1"));
+        
         long versionMatchCount = 0;
         for (int i = 0; i < nodeListLength; i++) {
             final Node resultNode = nodeList.item(i);
@@ -104,7 +116,7 @@ public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
                 addInfoLineToMessageBuilder(messageBuilder, task, message, status);
             }
 
-            boolean matches = pattern == null || (pattern.matcher(message).matches() || pattern.matcher(comment).matches());
+            boolean matches = versionPattern == null || (versionPattern.matcher(message).matches() || versionPattern.matcher(comment).matches());
 
             if ("reportmavenpomproperties".equals(task) && matches) {
                 // Maven
@@ -112,6 +124,15 @@ public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
                     final String version = StringUtils.trim(StringUtils.substringBetween(message, "Version=", " build"));
                     state.setDescription(version);
                     versionMatchCount++;
+                }
+            } else if ("checkbackspinservicerunning".equals(task) && StringUtils.isNotBlank(message))  {
+                Matcher matcher = checkbackspinservicerunningPattern.matcher(message);
+                if (matcher.matches()){
+                    String projectName = matcher.group(bsrProjectIndex);
+                    String environmentName = matcher.group(bsrEnvironmentIndex);
+                    if (StringUtils.isNotBlank(projectName) && StringUtils.isNotBlank(environmentName)){
+                        link(parent, projectName, environmentName);
+                    }
                 }
             }
         }
@@ -126,6 +147,27 @@ public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
         if (messageBuilder.length() > 0) {
             state.appendMessage(messageBuilder.toString());
         }
+    }
+
+    private void link(final InstanceDto parent, String projectName, String environmentName) {
+        logger.info("Linking this instance to project [{}] and environment [{}]", projectName, environmentName);
+        List<InstanceDto> instances = instanceLogic.getInstancesForProjectAndEnvironment(projectName, environmentName);
+        if (instances == null || instances.isEmpty()){
+            logger.info("The projectEnvironment for project [{}] and environment [{}] could not be found.", projectName, environmentName);
+        } else {
+            for (InstanceDto instance : instances){
+                logger.info("Linking this instance to: [{}]", instance);
+                instanceLinkLogic.link(parent.getId(), instance.getId(), "dependency");
+            }
+        }
+    }
+
+    private Pattern createPatternIfApplicable(String versionPatternString) {
+        Pattern versionPattern = null;
+        if (StringUtils.isNotEmpty(versionPatternString)) {
+            versionPattern = Pattern.compile(versionPatternString);
+        }
+        return versionPattern;
     }
 
     @Override
