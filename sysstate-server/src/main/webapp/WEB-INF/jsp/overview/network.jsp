@@ -25,17 +25,18 @@
 
 	function handleData(data){
 		var validIds = [];
-		$.each(data.ecoSystem.environments, function() {
-			var environmentId = "E" + this.id;
-			nodes.update([ {
-				id : environmentId,
-				label : this.name,
-				group : "ENVIRONMENT",
-				level : 0
-			} ]);
-			validIds.push(environmentId)
-		});				
-
+		if (data.ecoSystem.environments.length > 1) {
+			$.each(data.ecoSystem.environments, function() {
+				var environmentId = "E" + this.id;
+				nodes.update([ {
+					id : environmentId,
+					label : this.name,
+					group : "ENVIRONMENT",
+					level : 0
+				} ]);
+				validIds.push(environmentId)
+			});				
+		}
 		$.each(data.ecoSystem.instances, function() {
 
 			var instanceId = "I" + this.id;
