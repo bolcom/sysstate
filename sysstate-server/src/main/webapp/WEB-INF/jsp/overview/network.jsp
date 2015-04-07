@@ -54,7 +54,7 @@
 				}
 			});
 			addEdgeIfNotExists(instanceId, "P" + this.projectEnvironment.project.id)
-			addEdgeIfNotExists(instanceId, "E" + this.projectEnvironment.environment.id)
+			addEdgeIfNotExists("E" + this.projectEnvironment.environment.id, instanceId)
 		});
 		var actualIds = nodes.getIds();
 
@@ -94,13 +94,17 @@
 	var options = {
 		width : '100%',
 		height : '100%',
-		
-		 smoothCurves: false,
-
+		physics: {barnesHut: {springLength: 155}},
+		edges: {
+				arrowScaleFactor : 0.5,
+			    color: 'white',
+			    width: 1,
+			    style : "arrow"
+		},	
 		groups : {
 
 			STABLE : {
-				shape : 'circle',
+				shape : 'box',
 				color : {
 					border : 'white',
 					background : 'green',
@@ -113,7 +117,7 @@
 				fontSize : 12
 			},
 			UNSTABLE : {
-				shape : 'circle',
+				shape : 'box',
 				color : {
 					border : 'white',
 					background : 'orange',
@@ -126,7 +130,7 @@
 				fontSize : 12
 			},
 			ERROR : {
-				shape : 'circle',
+				shape : 'box',
 				color : {
 					border : 'white',
 					background : 'red',
@@ -139,7 +143,7 @@
 				fontSize : 12
 			},
 			DISABLED : {
-				shape : 'circle',
+				shape : 'box',
 				color : {
 					border : 'white',
 					background : 'grey',
@@ -152,7 +156,7 @@
 				fontSize : 12
 			},
 			PENDING : {
-				shape : 'circle',
+				shape : 'box',
 				color : {
 					border : 'white',
 					background : 'grey',
@@ -165,7 +169,7 @@
 				fontSize : 12
 			},
 			PROJECT : {
-				shape : 'box',
+				shape : 'circle',
 				color : {
 					border : 'white',
 					background : 'blue',
@@ -178,7 +182,7 @@
 				fontSize : 16
 			},
 			ENVIRONMENT : {
-				shape : 'box',
+				shape : 'circle',
 				color : {
 					border : 'white',
 					background : 'purple',

@@ -4,6 +4,7 @@ import static nl.unionsoft.sysstate.common.util.XmlUtil.getAttributePropertyFrom
 import static nl.unionsoft.sysstate.common.util.XmlUtil.getElementWithKeyFromDocument;
 import static nl.unionsoft.sysstate.common.util.XmlUtil.getElementWithKeyFromElement;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -155,10 +156,14 @@ public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
         if (instances == null || instances.isEmpty()){
             logger.info("The projectEnvironment for project [{}] and environment [{}] could not be found.", projectName, environmentName);
         } else {
+            
+            List<Long> linkedInstances = new ArrayList<Long>();
             for (InstanceDto instance : instances){
                 logger.info("Linking this instance to: [{}]", instance);
-                instanceLinkLogic.link(parent.getId(), instance.getId(), "dependency");
+                linkedInstances.add(instance.getId());
+                
             }
+            instanceLinkLogic.link(parent.getId(), linkedInstances, "dependency");
         }
     }
 
