@@ -49,10 +49,11 @@ public class InstanceLinkDaoImpl implements InstanceLinkDao{
                 "DELETE FROM InstanceLink ilk "+ 
                 "WHERE ilk.from.id = :instanceFromId " +
                 "AND ilk.to.id = :instanceToId " +
-                "AND ilk.name = :name", InstanceLink.class)
+                "AND ilk.name = :name")
                 .setParameter("instanceFromId", instanceFromId)
                 .setParameter("instanceToId", instanceToId)
-                .setParameter("name", name).executeUpdate();
+                .setParameter("name", name)
+                .executeUpdate();
     }
 
     @Override
@@ -60,7 +61,6 @@ public class InstanceLinkDaoImpl implements InstanceLinkDao{
         return entityManager.createQuery(
                 "FROM InstanceLink ilk " +
                 "WHERE ilk.from.id = :instanceFromId " +
-                "AND ilk.to.id = :instanceToId " +
                 "AND ilk.name = :name", InstanceLink.class)
                 .setParameter("instanceFromId", instanceFromId)
                 .setParameter("name", name)

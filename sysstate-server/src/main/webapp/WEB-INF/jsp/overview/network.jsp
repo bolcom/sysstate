@@ -92,9 +92,10 @@
 		edges : edges,
 	};
 	var options = {
+		
 		width : '100%',
 		height : '100%',
-		physics: {barnesHut: {springLength: 155}},
+		physics: {barnesHut: {springLength: 140,centralGravity: 0.4,damping: 0.10}},
 		edges: {
 				arrowScaleFactor : 0.5,
 			    color: 'white',
@@ -114,7 +115,7 @@
 					}
 				},
 				fontColor : 'white',
-				fontSize : 12
+				fontSize : 10
 			},
 			UNSTABLE : {
 				shape : 'box',
@@ -127,7 +128,7 @@
 					}
 				},
 				fontColor : 'white',
-				fontSize : 12
+				fontSize : 10
 			},
 			ERROR : {
 				shape : 'box',
@@ -140,7 +141,7 @@
 					}
 				},
 				fontColor : 'white',
-				fontSize : 12
+				fontSize : 10
 			},
 			DISABLED : {
 				shape : 'box',
@@ -153,7 +154,7 @@
 					}
 				},
 				fontColor : 'white',
-				fontSize : 12
+				fontSize : 10
 			},
 			PENDING : {
 				shape : 'box',
@@ -166,7 +167,7 @@
 					}
 				},
 				fontColor : 'white',
-				fontSize : 12
+				fontSize : 10
 			},
 			PROJECT : {
 				shape : 'circle',
@@ -179,7 +180,7 @@
 					}
 				},
 				fontColor : 'white',
-				fontSize : 16
+				fontSize : 14
 			},
 			ENVIRONMENT : {
 				shape : 'circle',
@@ -192,7 +193,7 @@
 					}
 				},
 				fontColor : 'white',
-				fontSize : 16
+				fontSize : 14
 			}			
 		}
 	};
