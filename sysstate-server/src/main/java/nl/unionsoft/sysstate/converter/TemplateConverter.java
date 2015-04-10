@@ -20,7 +20,6 @@ public class TemplateConverter implements Converter<TemplateDto, Template> {
        dto.setWriter(template.getWriter());
        dto.setContentType(template.getContentType());
        dto.setLastUpdated(template.getLastUpdated());
-       dto.setConfiguration(PropertiesUtil.stringToProperties(template.getConfiguration()));
        return dto;
     }
 

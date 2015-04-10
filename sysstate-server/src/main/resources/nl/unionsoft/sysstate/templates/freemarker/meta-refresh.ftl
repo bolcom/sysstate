@@ -31,6 +31,6 @@
 		</script>  
 	</head>
 	<body>
-			<#include body>
+		<#include body>
 	</body>
 </html>

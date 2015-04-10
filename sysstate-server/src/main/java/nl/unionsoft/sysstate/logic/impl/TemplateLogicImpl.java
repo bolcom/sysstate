@@ -37,7 +37,6 @@ public class TemplateLogicImpl implements TemplateLogic, ApplicationContextAware
     @Inject
     @Named("templateConverter")
     private TemplateConverter templateConverter;
-
   
     @Override
     public void createOrUpdate(TemplateDto dto) {
@@ -46,7 +45,6 @@ public class TemplateLogicImpl implements TemplateLogic, ApplicationContextAware
         template.setName(dto.getName());
         template.setWriter(dto.getWriter());
         template.setContentType(dto.getContentType());
-        template.setConfiguration(PropertiesUtil.propertiesToString(dto.getConfiguration()));
         templateDao.createOrUpdate(template);
     }
 
@@ -64,10 +62,7 @@ public class TemplateLogicImpl implements TemplateLogic, ApplicationContextAware
     @Override
     public void writeTemplate(TemplateDto template,  Map<String, Object> context, Writer writer) throws WriterException {
         TemplateWriter templateWriter = applicationContext.getBean(template.getWriter(), TemplateWriter.class);
-        Map<String, Object> templateContext = new HashMap<String, Object>();
-        templateContext.put("configuration", template.getConfiguration());
-        templateContext.put("context", context);
-        templateWriter.writeTemplate(template, writer, templateContext);
+        templateWriter.writeTemplate(template, writer, context);
     }
 
     @Override

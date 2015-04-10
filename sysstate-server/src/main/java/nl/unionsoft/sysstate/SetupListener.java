@@ -158,7 +158,6 @@ public class SetupListener implements InitializingBean {
             template.setContent(IOUtils.toString(is));
             template.setWriter(writer);
             template.setContentType(contentType);
-            template.setConfiguration(PropertiesUtil.stringToProperties(configuration));
             templateLogic.createOrUpdate(template);
             return template;
         } catch (IOException e) {

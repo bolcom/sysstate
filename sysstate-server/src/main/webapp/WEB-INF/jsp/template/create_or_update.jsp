@@ -16,11 +16,7 @@
 						<jsp:param name="label" value="Content"/>
 						<jsp:param name="type" value="textarea"/>
 					</jsp:include>			
-					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
-						<jsp:param name="path" value="configuration"/>
-						<jsp:param name="label" value="Configuration"/>
-						<jsp:param name="type" value="textarea"/>
-					</jsp:include>											
+										
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 						<jsp:param name="path" value="writer"/>
 						<jsp:param name="label" value="Writer"/>
