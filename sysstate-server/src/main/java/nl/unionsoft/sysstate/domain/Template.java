@@ -1,11 +1,15 @@
 package nl.unionsoft.sysstate.domain;
 
 import java.io.Serializable;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cache;
@@ -19,70 +23,62 @@ public class Template implements Serializable {
     private static final long serialVersionUID = 4470429386271283974L;
 
     @Id
-    @Column(name = "ID")
-    private String id;
+    @Column(name = "NAME", nullable = false, length = 128)
+    private String name;
 
-    @Lob()
-    @Column(name = "CSS", nullable = true)
-    private String css;
+    @Lob
+    @Column(name = "CONTENT")
+    private String content;
 
-    @Column(name = "NAME", nullable = true, length = 256)
-    private String layout;
+    @Column(name = "WRITER", nullable = false, length = 512)
+    private String writer;
 
-    @Column(name = "RENDER_HINTS", nullable = true, length = 1024)
-    private String renderHints;
+    @Column(name = "CONTENT_TYPE", nullable = false, length = 512)
+    private String contentType;
 
-    @Column(name = "REFRESH", nullable = true)
-    private int refresh;
-    @Column(name = "SYSTEM_TEMPLATE", nullable = false)
-    private boolean systemTemplate;
+    @OneToMany(mappedBy = "template", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<View> views;
 
-    public String getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
-    public void setId(final String id) {
-        this.id = id;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getCss() {
-        return css;
+    public String getContent() {
+        return content;
     }
 
-    public void setCss(final String css) {
-        this.css = css;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public String getLayout() {
-        return layout;
+ 
+
+    public String getWriter() {
+        return writer;
     }
 
-    public void setLayout(final String layout) {
-        this.layout = layout;
+    public void setWriter(String writer) {
+        this.writer = writer;
     }
 
-    public int getRefresh() {
-        return refresh;
+    public String getContentType() {
+        return contentType;
     }
 
-    public void setRefresh(final int refresh) {
-        this.refresh = refresh;
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 
-    public String getRenderHints() {
-        return renderHints;
+    public List<View> getViews() {
+        return views;
     }
 
-    public void setRenderHints(final String renderHints) {
-        this.renderHints = renderHints;
-    }
-
-    public boolean isSystemTemplate() {
-        return systemTemplate;
-    }
-
-    public void setSystemTemplate(boolean systemTemplate) {
-        this.systemTemplate = systemTemplate;
+    public void setViews(List<View> views) {
+        this.views = views;
     }
 
 }

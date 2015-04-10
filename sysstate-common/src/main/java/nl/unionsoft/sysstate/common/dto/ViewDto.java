@@ -11,8 +11,10 @@ public class ViewDto {
     @Size(min = 1, max = 128)
     private String name;
 
-    private String templateId;
+    private TemplateDto template;
+
     private String commonTags;
+    
     private FilterDto filter;
 
     public Long getId() {
@@ -32,14 +34,6 @@ public class ViewDto {
         this.name = name;
     }
 
-    public String getTemplateId() {
-        return templateId;
-    }
-
-    public void setTemplateId(final String templateId) {
-        this.templateId = templateId;
-    }
-
     public String getCommonTags() {
         return commonTags;
     }
@@ -54,6 +48,14 @@ public class ViewDto {
 
     public void setFilter(final FilterDto filter) {
         this.filter = filter;
+    }
+
+    public TemplateDto getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(TemplateDto template) {
+        this.template = template;
     }
 
 }

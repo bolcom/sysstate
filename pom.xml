@@ -82,6 +82,14 @@
 				<version>1.6.3</version>
 			</dependency>
 			<!-- END: JSoup -->
+			
+			<!-- START: Templating Engines -->
+			<dependency>
+				<groupId>org.freemarker</groupId>
+				<artifactId>freemarker</artifactId>
+				<version>2.3.22</version>
+			</dependency>			
+			<!-- END: Tempalting Engines -->
 			<!-- START: Tiles -->
 			<dependency>
 				<groupId>org.apache.tiles</groupId>

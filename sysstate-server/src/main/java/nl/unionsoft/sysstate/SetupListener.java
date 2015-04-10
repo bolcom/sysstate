@@ -104,7 +104,7 @@ public class SetupListener implements InitializingBean {
                     ViewDto viewDto = new ViewDto();
                     viewDto.setFilter(filterDto);
                     viewDto.setName("Production CI View");
-                    viewDto.setTemplateId("ci");
+                    //viewDto.setTemplateId("ci");
                     viewLogic.createOrUpdateView(viewDto);
                 }
             }

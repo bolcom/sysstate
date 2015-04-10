@@ -22,37 +22,26 @@ public class TemplateDaoImpl implements TemplateDao {
     @Named("entityManager")
     private EntityManager entityManager;
 
-    public Template getTemplate(final String templateId) {
-        return entityManager.find(Template.class, templateId);
+    public Template getTemplate(final String name) {
+        return entityManager.find(Template.class, name);
     }
 
     public void createOrUpdate(final Template template) {
-
-        final String templateId = template.getId();
-        if (StringUtils.isEmpty(templateId)) {
-            entityManager.persist(template);
-        } else {
-
-            final Template existingTemplate = entityManager.find(Template.class, templateId);
-            if (existingTemplate != null) {
-                existingTemplate.setCss(template.getCss());
-                existingTemplate.setLayout(template.getLayout());
-                existingTemplate.setRefresh(template.getRefresh());
-                existingTemplate.setRenderHints(template.getRenderHints());
-                entityManager.merge(existingTemplate);
-            } else {
-                entityManager.persist(template);
-            }
-        }
+        entityManager.merge(template);
     }
 
     public List<Template> getTemplates() {
-        final List<Template> results = entityManager.createQuery("From Template", Template.class).setHint("org.hibernate.cacheable", true).getResultList();
-        return results;
+        //@formatter:off
+        return  entityManager.createQuery("FROM Template", Template.class)
+                .setHint("org.hibernate.cacheable", true)
+                .getResultList();
+        //@formatter:on        
     }
 
-    public void delete(String templateId) {
-        entityManager.remove(entityManager.find(Template.class, templateId));
+    @Override
+    public void delete(String name) {
+        entityManager.remove(entityManager.find(Template.class, name));
+
     }
 
 }

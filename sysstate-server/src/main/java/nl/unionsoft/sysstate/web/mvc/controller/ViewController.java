@@ -1,5 +1,6 @@
 package nl.unionsoft.sysstate.web.mvc.controller;
 
+import java.io.Writer;
 import java.util.Properties;
 
 import javax.inject.Inject;
@@ -21,6 +22,9 @@ import nl.unionsoft.sysstate.logic.ViewLogic;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -60,34 +64,36 @@ public class ViewController {
     @Inject
     @Named("pluginLogic")
     private PluginLogic pluginLogic;
+    
 
     @RequestMapping(value = "/index", method = RequestMethod.GET)
-    public ModelAndView index(@RequestParam(value = "templateId", required = false) final String templateId) {
+    public void index(@RequestParam(value = "templateId", required = false) final String templateId) {
 
-        Properties viewConfiguration = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);
-
-        ModelAndView modelAndView = null;
-        final String defaultView = viewConfiguration.getProperty("defaultView", null);
-        if (StringUtils.isNotEmpty(defaultView)) {
-            modelAndView = index(Long.valueOf(defaultView));
-        } else {
-
-            Template template = getTemplate(templateId, viewConfiguration);
-            if (isMaintenanceMode(viewConfiguration)) {
-                modelAndView = new ModelAndView("maintenance-overview");
-            } else {
-                modelAndView = new ModelAndView(template.getLayout());
-                modelAndView.addObject("viewResults", ecoSystemLogic.getEcoSystem(new ViewDto()));
-            }
-            modelAndView.addObject("properties", PropertiesUtil.stringToProperties(template.getRenderHints()));
-            modelAndView.addObject("template", template);
-        }
-        return modelAndView;
+//        Properties viewConfiguration = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);
+//
+//        ModelAndView modelAndView = null;
+//        final String defaultView = viewConfiguration.getProperty("defaultView", null);
+//        if (StringUtils.isNotEmpty(defaultView)) {
+//            modelAndView = index(Long.valueOf(defaultView));
+//        } else {
+//
+//            Template template = getTemplate(templateId, viewConfiguration);
+//            if (isMaintenanceMode(viewConfiguration)) {
+//                modelAndView = new ModelAndView("maintenance-overview");
+//            } else {
+//                modelAndView = new ModelAndView(template.getLayout());
+//                modelAndView.addObject("viewResults", ecoSystemLogic.getEcoSystem(new ViewDto()));
+//            }
+//            modelAndView.addObject("properties", PropertiesUtil.stringToProperties(template.getRenderHints()));
+//            modelAndView.addObject("template", template);
+//        }
+//        return modelAndView;
     }
 
     private Template getTemplate(String templateId, Properties viewConfiguration) {
-        String templateName = StringUtils.defaultIfEmpty(templateId, viewConfiguration.getProperty("defaultTemplate", Constants.DEFAULT_TEMPLATE_VALUE));
-        return templateLogic.getTemplate(templateName);
+//        String templateName = StringUtils.defaultIfEmpty(templateId, viewConfiguration.getProperty("defaultTemplate", Constants.DEFAULT_TEMPLATE_VALUE));
+//        return templateLogic.getTemplate(templateName);
+        return null;
     }
 
     private boolean isMaintenanceMode(Properties viewConfiguration) {
@@ -95,26 +101,28 @@ public class ViewController {
     }
 
     @RequestMapping(value = "/view/{viewId}/index.html", method = RequestMethod.GET)
-    public ModelAndView index(@PathVariable("viewId") Long viewId) {
-
-        Properties viewConfiguration = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);
-        ModelAndView modelAndView = null;
+    public void index(@PathVariable("viewId") Long viewId, Writer responseWriter) {
         final ViewDto view = viewLogic.getView(viewId);
-        if (view != null) {
-            Template template = getTemplate(view.getTemplateId(), viewConfiguration);
-            if (isMaintenanceMode(viewConfiguration)) {
-                modelAndView = new ModelAndView("maintenance-overview");
-            } else {
-                modelAndView = new ModelAndView(template.getLayout());
-                modelAndView.addObject("controls", false);
-                modelAndView.addObject("viewResults", ecoSystemLogic.getEcoSystem(view));
-                modelAndView.addObject("properties", PropertiesUtil.stringToProperties(template.getRenderHints()));
-                modelAndView.addObject("view", view);
-            }
-            modelAndView.addObject("template", template);
-        }
-
-        return modelAndView;
+        
+        
+//        Properties viewConfiguration = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);
+//        ModelAndView modelAndView = null;
+//        
+//        if (view != null) {
+//          
+//            if (isMaintenanceMode(viewConfiguration)) {
+//                modelAndView = new ModelAndView("maintenance-overview");
+//            } else {
+//                modelAndView = new ModelAndView(template.getLayout());
+//                modelAndView.addObject("controls", false);
+//                modelAndView.addObject("viewResults", ecoSystemLogic.getEcoSystem(view));
+//                modelAndView.addObject("properties", PropertiesUtil.stringToProperties(template.getRenderHints()));
+//                modelAndView.addObject("view", view);
+//            }
+//            modelAndView.addObject("template", template);
+//        }
+//
+//        return modelAndView;
     }
 
     @RequestMapping(value = "/view/index", method = RequestMethod.GET)
@@ -188,5 +196,6 @@ public class ViewController {
         return modelAndView;
 
     }
+
 
 }

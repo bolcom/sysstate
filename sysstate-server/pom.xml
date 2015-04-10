@@ -108,10 +108,19 @@
             <artifactId>quartz-oracle</artifactId>
         </dependency>
         <!-- END: Quartz -->
-        <!-- START: SelfDiagnose -->
-        <!-- <dependency> <groupId>com.philemonworks</groupId> <artifactId>selfdiagnose</artifactId> </dependency> -->
-
-        <!-- END: SelfDiagnose -->
+		<!-- START: Templating Engines -->
+		<!-- 
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity</artifactId>
+		</dependency>
+		 -->
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+		</dependency>
+		
+		<!-- END: Tempalting Engines -->
         <!-- START: Hibernate -->
         <dependency>
             <groupId>org.hibernate</groupId>

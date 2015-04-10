@@ -1,18 +1,22 @@
 package nl.unionsoft.sysstate.logic;
 
-import java.util.Collection;
+import java.io.Writer;
+import java.util.List;
+import java.util.Map;
 
-import nl.unionsoft.sysstate.domain.Template;
+import nl.unionsoft.sysstate.common.dto.TemplateDto;
+import nl.unionsoft.sysstate.template.WriterException;
 
 public interface TemplateLogic {
-    public Template getTemplate(String templateId);
+    public TemplateDto getTemplate(String name);
 
-    public void createOrUpdate(Template template);
+    public void createOrUpdate(TemplateDto template);
 
-    public void delete(String templateId);
+    public void delete(String name);
+    
+    public List<TemplateDto> getTemplates();
+    
+    public void writeTemplate(TemplateDto template,Map<String, Object> context,  Writer writer) throws WriterException;
 
-    public Collection<Template> getTemplates();
-
-    public void restore(String templateId);
 
 }

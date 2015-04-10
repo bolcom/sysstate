@@ -8,6 +8,7 @@ import nl.unionsoft.common.converter.Converter;
 import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.dao.ViewDao;
 import nl.unionsoft.sysstate.domain.Filter;
+import nl.unionsoft.sysstate.domain.Template;
 import nl.unionsoft.sysstate.domain.View;
 
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class ViewDaoImpl implements ViewDao {
         }
         view.setName(viewDto.getName());
         view.setCommonTags(viewDto.getCommonTags());
-        view.setTemplate(viewDto.getTemplateId());
+        view.setTemplate(entityManager.find(Template.class, viewDto.getTemplate().getId()));
 
         Filter filter = null;
         if (viewDto.getFilter() != null && viewDto.getFilter().getId() != null) {

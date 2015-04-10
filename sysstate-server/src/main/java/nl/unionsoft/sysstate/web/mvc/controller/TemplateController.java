@@ -4,7 +4,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.validation.Valid;
 
-import nl.unionsoft.sysstate.domain.Template;
+import nl.unionsoft.sysstate.common.dto.TemplateDto;
 import nl.unionsoft.sysstate.dto.MessageDto;
 import nl.unionsoft.sysstate.logic.MessageLogic;
 import nl.unionsoft.sysstate.logic.TemplateLogic;
@@ -19,6 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller()
 public class TemplateController {
+    
     @Inject
     @Named("templateLogic")
     private TemplateLogic templateLogic;
@@ -38,51 +39,41 @@ public class TemplateController {
     @RequestMapping(value = "/template/create", method = RequestMethod.GET)
     public ModelAndView getCreate() {
         final ModelAndView modelAndView = new ModelAndView("create-update-template-manager");
-        modelAndView.addObject("template", new Template());
+        modelAndView.addObject("template", new TemplateDto());
         return modelAndView;
     }
 
-    @RequestMapping(value = "/template/{templateId}/update", method = RequestMethod.GET)
-    public ModelAndView getUpdate(@PathVariable("templateId") final String templateId) {
+    @RequestMapping(value = "/template/{name}/update", method = RequestMethod.GET)
+    public ModelAndView getUpdate(@PathVariable("name") final String name) {
         final ModelAndView modelAndView = new ModelAndView("create-update-template-manager");
-        modelAndView.addObject("template", templateLogic.getTemplate(templateId));
+        modelAndView.addObject("template", templateLogic.getTemplate(name));
         messageLogic.addUserMessage(new MessageDto("Template updates succesfully", MessageDto.GREEN));
         return modelAndView;
     }
 
-    @RequestMapping(value = "/template/{templateId}/delete", method = RequestMethod.GET)
-    public ModelAndView getDelete(@PathVariable("templateId") final String templateId) {
+    @RequestMapping(value = "/template/{name}/delete", method = RequestMethod.GET)
+    public ModelAndView getDelete(@PathVariable("name") final String name) {
         final ModelAndView modelAndView = new ModelAndView("delete-template-manager");
-        modelAndView.addObject("template", templateLogic.getTemplate(templateId));
+        modelAndView.addObject("template", templateLogic.getTemplate(name));
         return modelAndView;
+
     }
 
-    @RequestMapping(value = "/template/{templateId}/delete", method = RequestMethod.POST)
-    public ModelAndView postDelete(@PathVariable("templateId") final String templateId) {
-        templateLogic.delete(templateId);
+    @RequestMapping(value = "/template/{name}/delete", method = RequestMethod.POST)
+    public ModelAndView postDelete(@PathVariable("name") final String name) {
+        templateLogic.delete(name);
         return new ModelAndView("redirect:/template/index.html");
     }
 
-    @RequestMapping(value = "/template/{templateId}/restore", method = RequestMethod.GET)
-    public ModelAndView getRestore(@PathVariable("templateId") final String templateId) {
+    @RequestMapping(value = "/template/{name}/restore", method = RequestMethod.GET)
+    public ModelAndView getRestore(@PathVariable("name") final String name) {
         final ModelAndView modelAndView = new ModelAndView("restore-template-manager");
-        modelAndView.addObject("template", templateLogic.getTemplate(templateId));
+        modelAndView.addObject("template", templateLogic.getTemplate(name));
         return modelAndView;
-    }
-
-    @RequestMapping(value = "/template/{templateId}/restore", method = RequestMethod.POST)
-    public ModelAndView postRestore(@PathVariable("templateId") final String templateId) {
-        try {
-            templateLogic.restore(templateId);
-            messageLogic.addUserMessage(new MessageDto("Template restored succesfully.", MessageDto.GREEN));
-        } catch(final RuntimeException e) {
-            messageLogic.addUserMessage(new MessageDto("Unable to restore template.", MessageDto.RED));
-        }
-        return new ModelAndView("redirect:/template/index.html");
     }
 
     @RequestMapping(value = "/template/create", method = RequestMethod.POST)
-    public ModelAndView handleFormCreate(@Valid @ModelAttribute("template") final Template template, final BindingResult bindingResult) {
+    public ModelAndView handleFormCreate(@Valid @ModelAttribute("template") final TemplateDto template, final BindingResult bindingResult) {
 
         ModelAndView modelAndView = null;
         if (bindingResult.hasErrors()) {
@@ -94,8 +85,8 @@ public class TemplateController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/template/{templateId}/update", method = RequestMethod.POST)
-    public ModelAndView handleFormUpdate(@Valid @ModelAttribute("template") final Template template, final BindingResult bindingResult) {
+    @RequestMapping(value = "/template/{name}/update", method = RequestMethod.POST)
+    public ModelAndView handleFormUpdate(@Valid @ModelAttribute("template") final TemplateDto template, final BindingResult bindingResult) {
         return handleFormCreate(template, bindingResult);
     }
 }
