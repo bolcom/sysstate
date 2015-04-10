@@ -1,7 +1,3 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="sse" uri="http://www.unionsoft.nl/sse/" %>
-
 <table class="state_table" >
 	<colgroup id="cg_prj"/>
 	<c:forEach var="environment" items="${viewResults.environments}">
