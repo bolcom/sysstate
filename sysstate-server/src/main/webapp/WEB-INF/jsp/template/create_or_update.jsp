@@ -15,9 +15,12 @@
 						<jsp:param name="path" value="content"/>
 						<jsp:param name="label" value="Content"/>
 						<jsp:param name="type" value="textarea"/>
-						<jsp:param name="cols" value="80"/>
-						<jsp:param name="rows" value="20"/>
-					</jsp:include>					
+					</jsp:include>			
+					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
+						<jsp:param name="path" value="configuration"/>
+						<jsp:param name="label" value="Configuration"/>
+						<jsp:param name="type" value="textarea"/>
+					</jsp:include>											
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 						<jsp:param name="path" value="writer"/>
 						<jsp:param name="label" value="Writer"/>
@@ -28,7 +31,9 @@
 					</jsp:include>	
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 						<jsp:param name="type" value="submit"/>
-					</jsp:include>						
+					</jsp:include>			
+
+								
 				</table>
 			</sf:form>
 		</td>

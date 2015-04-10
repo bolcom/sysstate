@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import nl.unionsoft.common.util.PropertiesUtil;
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
@@ -80,11 +81,15 @@ public class SetupListener implements InitializingBean {
         if (initialSetup) {
             
             LOG.info("No templates found, creating some default templates...");
-            addTemplate("base.css",RESOURCE_BASE + "string/base.css","text/css", STRING_TEMPLATE_WRITER);
-            addTemplate("ci.css",RESOURCE_BASE + "string/ci.css","text/css", STRING_TEMPLATE_WRITER);
+            addTemplate("base.css",RESOURCE_BASE + "string/base.css","text/css", STRING_TEMPLATE_WRITER, null);
+            addTemplate("ci.css",RESOURCE_BASE + "string/ci.css","text/css", STRING_TEMPLATE_WRITER,null);
             
-            TemplateDto ciTemplate = addTemplate("ci.html",RESOURCE_BASE + "freemarker/ci.html","text/html", FREEMARKER_TEMPLATE_WRITER);
-            addTemplate("base.html",RESOURCE_BASE + "freemarker/base.html","text/html", FREEMARKER_TEMPLATE_WRITER);
+            addTemplate("table.jsp",RESOURCE_BASE + "freemarker/table.jsp","text/html", FREEMARKER_TEMPLATE_WRITER, null);
+
+            addTemplate("ci.html",RESOURCE_BASE + "freemarker/meta-refresh.ftl","text/html", FREEMARKER_TEMPLATE_WRITER, "css=ci.css\nrefresh=10");
+            addTemplate("base.html",RESOURCE_BASE + "freemarker/meta-refresh.ftl","text/html", FREEMARKER_TEMPLATE_WRITER, "css=base.css");
+            
+            
             
             
             LOG.info("No projects found, creating some default projects...");
@@ -128,7 +133,7 @@ public class SetupListener implements InitializingBean {
                     ViewDto viewDto = new ViewDto();
                     viewDto.setFilter(filterDto);
                     viewDto.setName("Production CI View");
-                    viewDto.setTemplate(ciTemplate);
+                    viewDto.setTemplate(templateLogic.getTemplate("ci.html"));
                     viewLogic.createOrUpdateView(viewDto);
                 }
             }
@@ -143,7 +148,7 @@ public class SetupListener implements InitializingBean {
         return configuration;
     }
 
-    private TemplateDto addTemplate(String name, String resource, String contentType, String writer){
+    private TemplateDto addTemplate(String name, String resource, String contentType, String writer, String configuration){
         LOG.info("Adding template [{}] from resource [{}]", name, resource);
         InputStream is = null;
         try {
@@ -153,6 +158,7 @@ public class SetupListener implements InitializingBean {
             template.setContent(IOUtils.toString(is));
             template.setWriter(writer);
             template.setContentType(contentType);
+            template.setConfiguration(PropertiesUtil.stringToProperties(configuration));
             templateLogic.createOrUpdate(template);
             return template;
         } catch (IOException e) {

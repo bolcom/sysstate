@@ -1,6 +1,7 @@
 package nl.unionsoft.sysstate.logic.impl;
 
 import java.io.Writer;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,6 +9,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import nl.unionsoft.common.converter.ListConverter;
+import nl.unionsoft.common.util.PropertiesUtil;
 import nl.unionsoft.sysstate.common.dto.TemplateDto;
 import nl.unionsoft.sysstate.converter.TemplateConverter;
 import nl.unionsoft.sysstate.dao.TemplateDao;
@@ -44,6 +46,7 @@ public class TemplateLogicImpl implements TemplateLogic, ApplicationContextAware
         template.setName(dto.getName());
         template.setWriter(dto.getWriter());
         template.setContentType(dto.getContentType());
+        template.setConfiguration(PropertiesUtil.propertiesToString(dto.getConfiguration()));
         templateDao.createOrUpdate(template);
     }
 
@@ -61,7 +64,10 @@ public class TemplateLogicImpl implements TemplateLogic, ApplicationContextAware
     @Override
     public void writeTemplate(TemplateDto template,  Map<String, Object> context, Writer writer) throws WriterException {
         TemplateWriter templateWriter = applicationContext.getBean(template.getWriter(), TemplateWriter.class);
-        templateWriter.writeTemplate(template, writer, context);
+        Map<String, Object> templateContext = new HashMap<String, Object>();
+        templateContext.put("configuration", template.getConfiguration());
+        templateContext.put("context", context);
+        templateWriter.writeTemplate(template, writer, templateContext);
     }
 
     @Override

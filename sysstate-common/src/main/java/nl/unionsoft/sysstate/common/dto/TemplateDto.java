@@ -1,6 +1,7 @@
 package nl.unionsoft.sysstate.common.dto;
 
 import java.util.Date;
+import java.util.Properties;
 
 public class TemplateDto {
 
@@ -13,7 +14,9 @@ public class TemplateDto {
     private String contentType;
     
     private Date lastUpdated;
-
+    
+    private Properties configuration;
+    
     public String getContent() {
         return content;
     }
@@ -52,6 +55,14 @@ public class TemplateDto {
 
     public void setLastUpdated(Date lastUpdated) {
         this.lastUpdated = lastUpdated;
+    }
+
+    public Properties getConfiguration() {
+        return configuration;
+    }
+
+    public void setConfiguration(Properties configuration) {
+        this.configuration = configuration;
     }
 
 }

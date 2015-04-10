@@ -38,6 +38,9 @@ public class Template implements Serializable {
 
     @Column(name = "CONTENT_TYPE", nullable = false, length = 512)
     private String contentType;
+    
+    @Column(name = "CONFIGURATION", nullable = true, length = 4012)
+    private String configuration;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "LAST_UPDATED", nullable = false)
@@ -93,6 +96,16 @@ public class Template implements Serializable {
     public void setLastUpdated(Date lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
+
+    public String getConfiguration() {
+        return configuration;
+    }
+
+    public void setConfiguration(String configuration) {
+        this.configuration = configuration;
+    }
+
+    
 
 
 

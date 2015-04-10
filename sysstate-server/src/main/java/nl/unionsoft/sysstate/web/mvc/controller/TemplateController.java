@@ -2,9 +2,11 @@ package nl.unionsoft.sysstate.web.mvc.controller;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -14,7 +16,6 @@ import nl.unionsoft.sysstate.logic.MessageLogic;
 import nl.unionsoft.sysstate.logic.TemplateLogic;
 import nl.unionsoft.sysstate.template.WriterException;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -43,18 +44,19 @@ public class TemplateController {
     }
     
     @RequestMapping(value = "/template/render/{name:.*}", method = RequestMethod.GET)
-    public void renderTemplate(@PathVariable("name") final String name, HttpServletResponse response) {
+    public void renderTemplate(@PathVariable("name") final String name, HttpServletResponse response, HttpServletRequest request) {
         try {
             TemplateDto template = templateLogic.getTemplate(name);
             response.addHeader("Content-Type", template.getContentType());
-            templateLogic.writeTemplate(template, new HashMap<String, Object>(), response.getWriter());
+            Map<String, Object> context = new HashMap<String, Object>();
+            context.put("request", request);
+            context.put("response", response);
+            templateLogic.writeTemplate(template, context, response.getWriter());
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (WriterException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new IllegalStateException(e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new IllegalStateException(e);
         }
 
     }
