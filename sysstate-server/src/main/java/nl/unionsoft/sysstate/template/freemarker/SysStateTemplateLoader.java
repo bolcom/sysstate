@@ -26,7 +26,7 @@ public class SysStateTemplateLoader implements TemplateLoader  {
 
     @Override
     public long getLastModified(Object templateSource) {
-        return -1;
+        return ((TemplateDto) templateSource).getLastUpdated().getTime();
     }
 
     @Override

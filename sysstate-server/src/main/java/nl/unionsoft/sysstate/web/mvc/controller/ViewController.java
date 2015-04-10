@@ -1,37 +1,34 @@
 package nl.unionsoft.sysstate.web.mvc.controller;
 
-import java.io.Writer;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import nl.unionsoft.common.util.PropertiesUtil;
 import nl.unionsoft.sysstate.Constants;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
+import nl.unionsoft.sysstate.common.dto.TemplateDto;
 import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
-import nl.unionsoft.sysstate.domain.Template;
 import nl.unionsoft.sysstate.logic.EcoSystemLogic;
 import nl.unionsoft.sysstate.logic.FilterLogic;
 import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.TemplateLogic;
 import nl.unionsoft.sysstate.logic.ViewLogic;
+import nl.unionsoft.sysstate.template.WriterException;
 
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller()
@@ -64,65 +61,34 @@ public class ViewController {
     @Inject
     @Named("pluginLogic")
     private PluginLogic pluginLogic;
-    
 
     @RequestMapping(value = "/index", method = RequestMethod.GET)
-    public void index(@RequestParam(value = "templateId", required = false) final String templateId) {
+    public void renderIndex(HttpServletResponse response) {
 
-//        Properties viewConfiguration = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);
-//
-//        ModelAndView modelAndView = null;
-//        final String defaultView = viewConfiguration.getProperty("defaultView", null);
-//        if (StringUtils.isNotEmpty(defaultView)) {
-//            modelAndView = index(Long.valueOf(defaultView));
-//        } else {
-//
-//            Template template = getTemplate(templateId, viewConfiguration);
-//            if (isMaintenanceMode(viewConfiguration)) {
-//                modelAndView = new ModelAndView("maintenance-overview");
-//            } else {
-//                modelAndView = new ModelAndView(template.getLayout());
-//                modelAndView.addObject("viewResults", ecoSystemLogic.getEcoSystem(new ViewDto()));
-//            }
-//            modelAndView.addObject("properties", PropertiesUtil.stringToProperties(template.getRenderHints()));
-//            modelAndView.addObject("template", template);
-//        }
-//        return modelAndView;
-    }
-
-    private Template getTemplate(String templateId, Properties viewConfiguration) {
-//        String templateName = StringUtils.defaultIfEmpty(templateId, viewConfiguration.getProperty("defaultTemplate", Constants.DEFAULT_TEMPLATE_VALUE));
-//        return templateLogic.getTemplate(templateName);
-        return null;
-    }
-
-    private boolean isMaintenanceMode(Properties viewConfiguration) {
-        return BooleanUtils.toBoolean(viewConfiguration.getProperty("maintenanceMode", "false"));
+        Properties viewConfiguration = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);
+        Long defaultView = Long.valueOf(viewConfiguration.getProperty("defaultView"));
+        renderIndexView(defaultView, response);
     }
 
     @RequestMapping(value = "/view/{viewId}/index.html", method = RequestMethod.GET)
-    public void index(@PathVariable("viewId") Long viewId, Writer responseWriter) {
+    public void renderIndexView(@PathVariable("viewId") Long viewId, HttpServletResponse response) {
         final ViewDto view = viewLogic.getView(viewId);
-        
-        
-//        Properties viewConfiguration = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);
-//        ModelAndView modelAndView = null;
-//        
-//        if (view != null) {
-//          
-//            if (isMaintenanceMode(viewConfiguration)) {
-//                modelAndView = new ModelAndView("maintenance-overview");
-//            } else {
-//                modelAndView = new ModelAndView(template.getLayout());
-//                modelAndView.addObject("controls", false);
-//                modelAndView.addObject("viewResults", ecoSystemLogic.getEcoSystem(view));
-//                modelAndView.addObject("properties", PropertiesUtil.stringToProperties(template.getRenderHints()));
-//                modelAndView.addObject("view", view);
-//            }
-//            modelAndView.addObject("template", template);
-//        }
-//
-//        return modelAndView;
+        TemplateDto template = view.getTemplate();
+        try {
+
+            response.addHeader("Content-Type", template.getContentType());
+            Map<String, Object> context = new HashMap<String, Object>();
+            context.put("ecoSystem", ecoSystemLogic.getEcoSystem(view));
+            templateLogic.writeTemplate(template, context, response.getWriter());
+            response.setStatus(HttpServletResponse.SC_OK);
+        } catch (WriterException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
     }
 
     @RequestMapping(value = "/view/index", method = RequestMethod.GET)
@@ -196,6 +162,5 @@ public class ViewController {
         return modelAndView;
 
     }
-
 
 }

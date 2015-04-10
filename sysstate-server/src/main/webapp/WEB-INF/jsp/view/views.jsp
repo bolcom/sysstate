@@ -17,7 +17,7 @@
 			<tr class="${(varStatus.index)%2 eq 0 ? '' : 'alternate-row' }">
 				<td>${view.id}</td>
 				<td>${view.name}</td>
-				<td>${view.templateId}</td>
+				<td><a href="/template/${view.template.name}/update.html">${view.template.name}</a></td>
 				<td>${view.commonTags}</td>
 				<td>
 					<c:if test="${not empty view.filter.id}">

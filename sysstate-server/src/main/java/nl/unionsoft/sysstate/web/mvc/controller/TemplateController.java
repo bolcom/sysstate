@@ -1,14 +1,20 @@
 package nl.unionsoft.sysstate.web.mvc.controller;
 
+import java.io.IOException;
+import java.util.HashMap;
+
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import nl.unionsoft.sysstate.common.dto.TemplateDto;
 import nl.unionsoft.sysstate.dto.MessageDto;
 import nl.unionsoft.sysstate.logic.MessageLogic;
 import nl.unionsoft.sysstate.logic.TemplateLogic;
+import nl.unionsoft.sysstate.template.WriterException;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -34,6 +40,23 @@ public class TemplateController {
         final ModelAndView modelAndView = new ModelAndView("list-template-manager");
         modelAndView.addObject("templates", templateLogic.getTemplates());
         return modelAndView;
+    }
+    
+    @RequestMapping(value = "/template/render/{name:.*}", method = RequestMethod.GET)
+    public void renderTemplate(@PathVariable("name") final String name, HttpServletResponse response) {
+        try {
+            TemplateDto template = templateLogic.getTemplate(name);
+            response.addHeader("Content-Type", template.getContentType());
+            templateLogic.writeTemplate(template, new HashMap<String, Object>(), response.getWriter());
+            response.setStatus(HttpServletResponse.SC_OK);
+        } catch (WriterException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
     }
 
     @RequestMapping(value = "/template/create", method = RequestMethod.GET)

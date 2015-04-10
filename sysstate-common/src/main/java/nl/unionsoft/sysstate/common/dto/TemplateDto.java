@@ -1,22 +1,18 @@
 package nl.unionsoft.sysstate.common.dto;
 
+import java.util.Date;
+
 public class TemplateDto {
 
-    private Long id;
-
     private String name;
-    
+
     private String content;
 
     private String writer;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private String contentType;
+    
+    private Date lastUpdated;
 
     public String getContent() {
         return content;
@@ -25,8 +21,6 @@ public class TemplateDto {
     public void setContent(String content) {
         this.content = content;
     }
-
-
 
     public String getWriter() {
         return writer;
@@ -44,6 +38,20 @@ public class TemplateDto {
         this.name = name;
     }
 
-    
-    
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public Date getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(Date lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
 }

@@ -5,37 +5,28 @@
 <table id="template-table">
 
 	<tr>
-		<th class="table-header-repeat line-left"><a href="">id</a></th>
-		<th class="table-header-repeat line-left"><a href="">System Template</a></th>
+		<th class="table-header-repeat line-left"><a href="">Name</a></th>
+		<th class="table-header-repeat line-left"><a href="">Content Type</a></th>
+		<th class="table-header-repeat line-left"><a href="">Writer</a></th>
+		<th class="table-header-repeat line-left"><a href="">Last Updated</a></th>
 		<th class="table-header-repeat line-left"><a href="">Options</a></th>
 	</tr>
 	<c:forEach items="${templates}" var="template">
 		<tr>
-			<td>${template.id}</td>
-			<td>${template.systemTemplate}
-				<c:if test="${template.systemTemplate}">
-					<font style="font-style: italic;">(Cannot be deleted)</font>
-				</c:if>
-			</td>
+			<td>${template.name}</td>
+			<td>${template.contentType}</td>
+			<td>${template.writer}</td>
+			<td>${template.lastUpdated}</td>
 			<td>
 
-				<sc:authorize url="/template/${template.id}/update">
-					<a href="${template.id}/update.html">Update</a> | 
+				<sc:authorize url="/template/${template.name}/update">
+					<a href="${template.name}/update.html">Update</a> | 
 				</sc:authorize>
-				<c:choose>
-					<c:when test="${template.systemTemplate}">
-						<sc:authorize url="/template/${template.id}/restore">
-							<a href="${template.id}/restore.html">Restore defaults</a> | 
-						</sc:authorize>
-					</c:when>
-					<c:otherwise>
-						<sc:authorize url="/template/${template.id}/delete">
-							<a href="${template.id}/delete.html">Delete</a> | 
-						</sc:authorize>	
-					</c:otherwise>
-				</c:choose>
+				<sc:authorize url="/template/${template.name}/delete">
+					<a href="${template.name}/delete.html">Delete</a> | 
+				</sc:authorize>	
 				<sc:authorize url="/index">
-					<a href="../index.html?templateId=${template.id}" target="_BLANK">Show</a>
+					<a href="/template/render/${template.name}" target="_BLANK">Render</a>
 				</sc:authorize>
 			</td>
 		</tr>

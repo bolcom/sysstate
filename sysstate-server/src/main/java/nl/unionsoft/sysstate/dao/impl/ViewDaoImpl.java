@@ -37,7 +37,7 @@ public class ViewDaoImpl implements ViewDao {
         }
         view.setName(viewDto.getName());
         view.setCommonTags(viewDto.getCommonTags());
-        view.setTemplate(entityManager.find(Template.class, viewDto.getTemplate().getId()));
+        view.setTemplate(entityManager.find(Template.class, viewDto.getTemplate().getName()));
 
         Filter filter = null;
         if (viewDto.getFilter() != null && viewDto.getFilter().getId() != null) {

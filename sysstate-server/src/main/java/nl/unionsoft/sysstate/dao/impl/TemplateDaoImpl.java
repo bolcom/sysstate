@@ -1,5 +1,6 @@
 package nl.unionsoft.sysstate.dao.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -9,7 +10,6 @@ import javax.persistence.EntityManager;
 import nl.unionsoft.sysstate.dao.TemplateDao;
 import nl.unionsoft.sysstate.domain.Template;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +27,7 @@ public class TemplateDaoImpl implements TemplateDao {
     }
 
     public void createOrUpdate(final Template template) {
+        template.setLastUpdated(new Date());
         entityManager.merge(template);
     }
 

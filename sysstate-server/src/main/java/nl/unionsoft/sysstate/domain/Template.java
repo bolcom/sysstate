@@ -1,6 +1,7 @@
 package nl.unionsoft.sysstate.domain;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -11,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -36,6 +39,10 @@ public class Template implements Serializable {
     @Column(name = "CONTENT_TYPE", nullable = false, length = 512)
     private String contentType;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "LAST_UPDATED", nullable = false)
+    private Date lastUpdated;
+
     @OneToMany(mappedBy = "template", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<View> views;
 
@@ -54,8 +61,6 @@ public class Template implements Serializable {
     public void setContent(String content) {
         this.content = content;
     }
-
- 
 
     public String getWriter() {
         return writer;
@@ -80,5 +85,15 @@ public class Template implements Serializable {
     public void setViews(List<View> views) {
         this.views = views;
     }
+
+    public Date getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(Date lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+
 
 }

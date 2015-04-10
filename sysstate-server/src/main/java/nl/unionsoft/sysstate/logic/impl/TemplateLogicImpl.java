@@ -43,6 +43,7 @@ public class TemplateLogicImpl implements TemplateLogic, ApplicationContextAware
         template.setContent(dto.getContent());
         template.setName(dto.getName());
         template.setWriter(dto.getWriter());
+        template.setContentType(dto.getContentType());
         templateDao.createOrUpdate(template);
     }
 
@@ -67,14 +68,6 @@ public class TemplateLogicImpl implements TemplateLogic, ApplicationContextAware
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
-    // public enum SystemTemplate {
-//        //@formatter:off
-//        BASE("base", "nl/unionsoft/sysstate/css/base.css", "table-overview", 30, null),
-//        CI("ci", "nl/unionsoft/sysstate/css/ci.css", "table-overview", 15,"no_project_col=true\nno_weather=true\nno_popup=true\n"), 
-//        PRIORITY("priority", "nl/unionsoft/sysstate/css/priority.css", "priority-overview", 15, null),
-//        DRILLDOWN("drilldown", "nl/unionsoft/sysstate/css/drilldown.css", "drilldown-overview", 15, null),
-//        NETWORK("network", "nl/unionsoft/sysstate/css/ci.css", "network-overview", 0, null) ;
-//        //@formatter:on
 
     @Override
     public TemplateDto getTemplate(String name) {
