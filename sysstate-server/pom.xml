@@ -335,12 +335,7 @@
                 <scope>provided</scope>
             </dependency>
             
-        <!--
-        <dependency>
-            <groupId>javax.servlet.jsp</groupId>
-            <artifactId>jsp-api</artifactId>
-        </dependency>
-        -->
+
         <!-- END: Jetty -->
 
     </dependencies>
@@ -356,6 +351,9 @@
             </resource>
             <resource>
                 <directory>src/main/generated</directory>
+            </resource>
+            <resource>
+                <directory>src/test/groovy</directory>
             </resource>
             <resource>
                 <directory>src/main/xsd</directory>
@@ -467,6 +465,7 @@
                             </goals>
                             <configuration>
                                 <sources>
+                                    <source>src/test/groovy</source>
                                     <source>src/main/xsd</source>
                                     <source>src/main/webapp</source>
                                     <source>src/main/generated</source>

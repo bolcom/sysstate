@@ -3,6 +3,7 @@ package nl.unionsoft.sysstate.web.mvc.controller;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -10,10 +11,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import nl.unionsoft.sysstate.Constants;
 import nl.unionsoft.sysstate.common.dto.TemplateDto;
+import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.dto.MessageDto;
+import nl.unionsoft.sysstate.logic.EcoSystemLogic;
 import nl.unionsoft.sysstate.logic.MessageLogic;
+import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.TemplateLogic;
+import nl.unionsoft.sysstate.logic.ViewLogic;
 import nl.unionsoft.sysstate.template.WriterException;
 
 import org.springframework.stereotype.Controller;
@@ -34,6 +40,19 @@ public class TemplateController {
     @Inject
     @Named("messageLogic")
     private MessageLogic messageLogic;
+    
+    @Inject
+    @Named("pluginLogic")
+    private PluginLogic pluginLogic;
+    
+    @Inject
+    @Named("viewLogic")
+    private ViewLogic viewLogic;
+
+    @Inject
+    @Named("ecoSystemLogic")
+    private EcoSystemLogic ecoSystemLogic;
+    
 
     // .shtml not required
     @RequestMapping(value = "/template/index", method = RequestMethod.GET)
@@ -44,11 +63,15 @@ public class TemplateController {
     }
     
     @RequestMapping(value = "/template/render/{name:.*}", method = RequestMethod.GET)
-    public void renderTemplate(@PathVariable("name") final String name, HttpServletResponse response, HttpServletRequest request) {
+    public void renderTemplate(@PathVariable("name") final String name,HttpServletRequest request, HttpServletResponse response) {
         try {
+            Properties viewConfiguration = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);
+            final ViewDto view = viewLogic.getView(Long.valueOf(viewConfiguration.getProperty("defaultView")));
+            
             TemplateDto template = templateLogic.getTemplate(name);
             response.addHeader("Content-Type", template.getContentType());
             Map<String, Object> context = new HashMap<String, Object>();
+            context.put("ecoSystem", ecoSystemLogic.getEcoSystem(view));
             context.put("request", request);
             context.put("response", response);
             templateLogic.writeTemplate(template, context, response.getWriter());

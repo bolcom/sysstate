@@ -7,6 +7,7 @@ import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -63,15 +64,15 @@ public class ViewController {
     private PluginLogic pluginLogic;
 
     @RequestMapping(value = "/index", method = RequestMethod.GET)
-    public void renderIndex(HttpServletResponse response) {
+    public void renderIndex(HttpServletResponse response, HttpServletRequest request) {
 
         Properties viewConfiguration = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);
         Long defaultView = Long.valueOf(viewConfiguration.getProperty("defaultView"));
-        renderIndexView(defaultView, response);
+        renderIndexView(defaultView, request, response);
     }
 
     @RequestMapping(value = "/view/{viewId}/index.html", method = RequestMethod.GET)
-    public void renderIndexView(@PathVariable("viewId") Long viewId, HttpServletResponse response) {
+    public void renderIndexView(@PathVariable("viewId") Long viewId,HttpServletRequest request, HttpServletResponse response) {
         final ViewDto view = viewLogic.getView(viewId);
         TemplateDto template = view.getTemplate();
         try {
@@ -79,13 +80,12 @@ public class ViewController {
             response.addHeader("Content-Type", template.getContentType());
             Map<String, Object> context = new HashMap<String, Object>();
             context.put("ecoSystem", ecoSystemLogic.getEcoSystem(view));
+            context.put("request", ecoSystemLogic.getEcoSystem(view));
             templateLogic.writeTemplate(template, context, response.getWriter());
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (WriterException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

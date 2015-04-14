@@ -83,14 +83,12 @@ public class SetupListener implements InitializingBean {
             LOG.info("No templates found, creating some default templates...");
             addTemplate("base.css",RESOURCE_BASE + "string/base.css","text/css", STRING_TEMPLATE_WRITER, null);
             addTemplate("ci.css",RESOURCE_BASE + "string/ci.css","text/css", STRING_TEMPLATE_WRITER,null);
-            
-            
 
             addTemplate("ci.html",RESOURCE_BASE + "freemarker/ci.ftl","text/html", FREEMARKER_TEMPLATE_WRITER, null);
             addTemplate("base.html",RESOURCE_BASE + "freemarker/base.ftl","text/html", FREEMARKER_TEMPLATE_WRITER, null);
             
-            addTemplate("fragments/meta-refresh.ftl",RESOURCE_BASE + "freemarker/meta-refresh.ftl","text/html", FREEMARKER_TEMPLATE_WRITER, null);
-            addTemplate("fragments/table.ftl",RESOURCE_BASE + "freemarker/table.ftl","text/html", FREEMARKER_TEMPLATE_WRITER, null);
+            addTemplate("fragments.meta-refresh.ftl",RESOURCE_BASE + "freemarker/meta-refresh.ftl","text/html", FREEMARKER_TEMPLATE_WRITER, null);
+            addTemplate("fragments.table.ftl",RESOURCE_BASE + "freemarker/table.ftl","text/html", FREEMARKER_TEMPLATE_WRITER, null);
             
             LOG.info("No projects found, creating some default projects...");
             // No projects defined..

@@ -26,18 +26,23 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 
 @Service("templateLogic")
-public class TemplateLogicImpl implements TemplateLogic, ApplicationContextAware {
+public class TemplateLogicImpl implements TemplateLogic {
 
     private ApplicationContext applicationContext;
 
-    @Inject
-    @Named("templateDao")
     private TemplateDao templateDao;
 
-    @Inject
-    @Named("templateConverter")
     private TemplateConverter templateConverter;
-  
+
+    
+    
+    @Inject
+    public TemplateLogicImpl(TemplateConverter templateConverter, TemplateDao templateDao, ApplicationContext applicationContext) {
+        this.templateConverter = templateConverter;
+        this.templateDao = templateDao;
+        this.applicationContext = applicationContext;
+    }
+
     @Override
     public void createOrUpdate(TemplateDto dto) {
         Template template = new Template();
@@ -60,15 +65,11 @@ public class TemplateLogicImpl implements TemplateLogic, ApplicationContextAware
     }
 
     @Override
-    public void writeTemplate(TemplateDto template,  Map<String, Object> context, Writer writer) throws WriterException {
+    public void writeTemplate(TemplateDto template, Map<String, Object> context, Writer writer) throws WriterException {
         TemplateWriter templateWriter = applicationContext.getBean(template.getWriter(), TemplateWriter.class);
         templateWriter.writeTemplate(template, writer, context);
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
 
     @Override
     public TemplateDto getTemplate(String name) {
