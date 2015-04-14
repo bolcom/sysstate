@@ -7,7 +7,7 @@ import nl.unionsoft.sysstate.dao.TemplateDao
 import nl.unionsoft.sysstate.logic.impl.TemplateLogicImpl
 import spock.lang.Specification
 
-class TemplateLogicTest extends Specification {
+class TemplateLogicSpec extends Specification {
 
 
     TemplateLogic templateLogic;
