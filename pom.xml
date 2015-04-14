@@ -16,7 +16,6 @@
 		<module>sysstate-selfdiagnose</module>
 		<module>sysstate-jenkins</module>
 		<module>sysstate-http</module>
-		<module>sysstate-example</module>
         <module>sysstate-groovy</module>
 	</modules>
 	<!-- START: META -->
@@ -491,11 +490,7 @@
 	</dependencyManagement>
 	<dependencies>
 		<!-- START: Testing -->
-		<dependency>
-			<groupId>org.spockframework</groupId>
-			<artifactId>spock-core</artifactId>
-			<version>0.7-groovy-2.0</version>
-		</dependency>	
+		
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -507,6 +502,17 @@
             <artifactId>groovy</artifactId>
             <scope>test</scope>
         </dependency>
+		<dependency>
+			<groupId>org.spockframework</groupId>
+			<artifactId>spock-core</artifactId>
+			<version>0.7-groovy-2.0</version>
+			<exclusions>
+				<exclusion>
+				 	<groupId>org.codehaus.groovy</groupId>
+			  		<artifactId>groovy-all</artifactId>
+  				</exclusion>
+			</exclusions>
+		</dependency>	        
 		<!-- START: Testing -->	
 		
 		
@@ -621,6 +627,21 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
+			
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-surefire-plugin</artifactId>
+			    <version>2.18</version>
+			    <configuration>
+			        <includes>
+			            <!-- By default only files ending in 'Test' will be included, so also include support for Spock style naming convention -->
+			            <!-- Oddly enough for Groovy files, *Spec.groovy does not work, but *Spec.java does -->
+			            <include>**/*Test.java</include>
+			            <include>**/*Spec.java</include>
+			        </includes>
+			    </configuration>
+			</plugin>			
+			
 		</plugins>
 	</build>
 

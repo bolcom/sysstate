@@ -7,7 +7,7 @@ import nl.unionsoft.sysstate.dao.TemplateDao
 import nl.unionsoft.sysstate.logic.impl.TemplateLogicImpl
 import spock.lang.Specification
 
-class TemplateLogicSpec extends Specification {
+class TemplateLogicTest extends Specification {
 
 
     TemplateLogic templateLogic;
@@ -18,6 +18,8 @@ class TemplateLogicSpec extends Specification {
     void setup() {
         templateLogic = new TemplateLogicImpl(new TemplateConverter(), templateDao, applicationContext)
     }
-    def "Can test"() {
+    def "Can Test"() {
+        
+        throw new IllegalStateException("meh")
     }
 }
