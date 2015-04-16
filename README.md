@@ -14,18 +14,18 @@ To improve visualization a number of templates are available:
 - A spacious table based template
 - A monitoring red/green table based template
 - A drilldown template
+- A network diagram using vis.js
 
+![Image of a Network Diagram]
+(https://github.com/UnionSoft/sysstate/images/feature_based_development.png)
 These templates are represented using views. Views allow you to combine a template and a filter to narrow down the results.
 
-Plugins
--------
-TODO
+Docker
+------
+You can easily start SysState locally using docker compose:
+- Make sure you have build the project (mvn clean package)
+- Run docker-compose up and browse to localhost:8080 for a demo instance of the application.
 
-Extendable
-----------
-SysState is extendable by placing additional plugins in the sysstate-server/plugins directory before packaging. A more versatile way to load plugins is still in progress.
-
-An example module is provided to create your own plugins (sysstate-example).
 
 SetUp
 -----

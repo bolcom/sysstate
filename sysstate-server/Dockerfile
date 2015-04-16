@@ -12,7 +12,7 @@ ENV SYSSTATE_HOME /usr/local/tomcat/.sysstate
 
 RUN mkdir /usr/local/tomcat/.sysstate
 RUN rm -rf /usr/local/tomcat/webapps/*
-COPY ./sysstate-server/target/sysstate.war /usr/local/tomcat/webapps/ROOT.war
+COPY /target/sysstate.war /usr/local/tomcat/webapps/ROOT.war
 COPY sysstate-docker.properties /usr/local/tomcat/sysstate.properties
 
 VOLUME  /usr/local/tomcat/.sysstate
