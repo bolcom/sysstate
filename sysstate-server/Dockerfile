@@ -5,7 +5,7 @@
 # TO_BUILD:	      docker build --rm -t sysstate .
 # TO_RUN:		  docker run -p 8080:8080 -v ~/sysstate/home:/usr/local/tomcat/.sysstate --link sysstate-mysql:mysql sysstate
 
-FROM tomcat:6-jre7
+FROM tomcat:8-jre8
 
 
 ENV SYSSTATE_HOME /usr/local/tomcat/.sysstate

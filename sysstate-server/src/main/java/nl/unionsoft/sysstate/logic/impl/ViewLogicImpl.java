@@ -56,4 +56,10 @@ public class ViewLogicImpl implements ViewLogic {
         return viewDao.getView(viewId);
     }
 
+    @Override
+    public ViewDto getBasicView() {
+        ViewDto view = new ViewDto();
+        return view;
+    }
+
 }

@@ -16,4 +16,6 @@ public interface ViewLogic {
     public void delete(Long id);
 
     public ViewDto getView(Long viewId);
+    
+    public ViewDto getBasicView();
 }

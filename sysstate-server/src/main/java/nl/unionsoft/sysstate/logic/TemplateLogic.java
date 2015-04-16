@@ -1,5 +1,6 @@
 package nl.unionsoft.sysstate.logic;
 
+import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 import java.util.Map;
@@ -8,9 +9,9 @@ import nl.unionsoft.sysstate.common.dto.TemplateDto;
 import nl.unionsoft.sysstate.template.WriterException;
 
 public interface TemplateLogic {
-    public TemplateDto getTemplate(String name);
+    public TemplateDto getTemplate(String name) throws IOException;
 
-    public void createOrUpdate(TemplateDto template);
+    public void createOrUpdate(TemplateDto template) throws IOException;
 
     public void delete(String name);
     

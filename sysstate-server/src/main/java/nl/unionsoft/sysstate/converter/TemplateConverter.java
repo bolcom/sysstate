@@ -15,7 +15,6 @@ public class TemplateConverter implements Converter<TemplateDto, Template> {
            return null;
        }
        TemplateDto dto = new TemplateDto();
-       dto.setContent(template.getContent());
        dto.setName(template.getName());
        dto.setWriter(template.getWriter());
        dto.setContentType(template.getContentType());

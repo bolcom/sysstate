@@ -29,10 +29,6 @@ public class Template implements Serializable {
     @Column(name = "NAME", nullable = false, length = 128)
     private String name;
 
-    @Lob
-    @Column(name = "CONTENT")
-    private String content;
-
     @Column(name = "WRITER", nullable = false, length = 512)
     private String writer;
 
@@ -53,14 +49,6 @@ public class Template implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
     }
 
     public String getWriter() {

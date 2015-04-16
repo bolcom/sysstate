@@ -64,9 +64,7 @@ public class SetupListener implements InitializingBean {
     @Named("projectEnvironmentLogic")
     private ProjectEnvironmentLogic projectEnvironmentLogic;
 
-    public static final String RESOURCE_BASE = "/nl/unionsoft/sysstate/templates/";
-    public static final String STRING_TEMPLATE_WRITER = "stringTemplateWriter";
-    public static final String FREEMARKER_TEMPLATE_WRITER = "freeMarkerTemplateWriter";
+  
     
     public void afterPropertiesSet() throws Exception {
 
@@ -80,15 +78,7 @@ public class SetupListener implements InitializingBean {
 
         if (initialSetup) {
             
-            LOG.info("No templates found, creating some default templates...");
-            addTemplate("base.css",RESOURCE_BASE + "string/base.css","text/css", STRING_TEMPLATE_WRITER, null);
-            addTemplate("ci.css",RESOURCE_BASE + "string/ci.css","text/css", STRING_TEMPLATE_WRITER,null);
-
-            addTemplate("ci.html",RESOURCE_BASE + "freemarker/ci.ftl","text/html", FREEMARKER_TEMPLATE_WRITER, null);
-            addTemplate("base.html",RESOURCE_BASE + "freemarker/base.ftl","text/html", FREEMARKER_TEMPLATE_WRITER, null);
             
-            addTemplate("fragments.meta-refresh.ftl",RESOURCE_BASE + "freemarker/meta-refresh.ftl","text/html", FREEMARKER_TEMPLATE_WRITER, null);
-            addTemplate("fragments.table.ftl",RESOURCE_BASE + "freemarker/table.ftl","text/html", FREEMARKER_TEMPLATE_WRITER, null);
             
             LOG.info("No projects found, creating some default projects...");
             // No projects defined..
@@ -126,14 +116,7 @@ public class SetupListener implements InitializingBean {
                 filterDto.setName("Production");
                 filterLogic.createOrUpdate(filterDto);
 
-                if (viewLogic.getViews().isEmpty()) {
-                    LOG.info("No views found, creating a default view...");
-                    ViewDto viewDto = new ViewDto();
-                    viewDto.setFilter(filterDto);
-                    viewDto.setName("Production CI View");
-                    viewDto.setTemplate(templateLogic.getTemplate("ci.html"));
-                    viewLogic.createOrUpdateView(viewDto);
-                }
+               
             }
         }
     }
@@ -146,24 +129,7 @@ public class SetupListener implements InitializingBean {
         return configuration;
     }
 
-    private TemplateDto addTemplate(String name, String resource, String contentType, String writer, String configuration){
-        LOG.info("Adding template [{}] from resource [{}]", name, resource);
-        InputStream is = null;
-        try {
-            is = getClass().getResourceAsStream(resource);
-            TemplateDto template = new TemplateDto();
-            template.setName(name);
-            template.setContent(IOUtils.toString(is));
-            template.setWriter(writer);
-            template.setContentType(contentType);
-            templateLogic.createOrUpdate(template);
-            return template;
-        } catch (IOException e) {
-            throw new IllegalStateException("Unable to addTemplate for resource " + resource + ", caught IOException", e);
-        } finally {
-            IOUtils.closeQuietly(is);
-        }
-    }
+   
     
     private void addTestInstance(final String name, final String projectName, final String environmentName, final Map<String, String> configuration,
             final String homepageUrl, final String plugin) {

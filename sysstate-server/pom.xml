@@ -327,12 +327,12 @@
         <dependency>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>jetty</artifactId>
-				<scope>provided</scope>
+				<scope>compile</scope>
 			</dependency>
             <dependency>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>jsp-2.1-jetty</artifactId>
-                <scope>provided</scope>
+                <scope>compile</scope>
             </dependency>
             
 
