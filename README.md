@@ -15,9 +15,8 @@ To improve visualization a number of templates are available:
 - A monitoring red/green table based template
 - A drilldown template
 - A network diagram using vis.js
+<img src="https://raw.githubusercontent.com/UnionSoft/sysstate/master/images/feature_based_development.png" width="200"/>
 
-![Image of a Network Diagram]
-(https://github.com/UnionSoft/sysstate/images/feature_based_development.png)
 These templates are represented using views. Views allow you to combine a template and a filter to narrow down the results.
 
 Docker
