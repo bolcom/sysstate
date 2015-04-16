@@ -11,6 +11,13 @@ server:
   build: sysstate-server
   ports:
     - "8080:8080"
+  environment:
+    - db.connectURI=jdbc:mysql://mysql:3306/sysstate?autoReconnect=true
+    - db.userName=sysstate
+    - db.password=sysstate
+    - hibernate.dialect=org.hibernate.dialect.MySQL5Dialect
+    - db.driver=com.mysql.jdbc.Driver
+    - hibernate.strategy=update
   links:
     - "mysql:mysql"
   volumes:
