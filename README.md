@@ -15,7 +15,9 @@ To improve visualization a number of templates are available:
 - A monitoring red/green table based template
 - A drilldown template
 - A network diagram using vis.js
-<img src="https://raw.githubusercontent.com/UnionSoft/sysstate/master/images/feature_based_development.png" width="200"/>
+
+
+<img src="https://raw.githubusercontent.com/UnionSoft/sysstate/master/images/feature_based_development.png" width="640"/>
 
 These templates are represented using views. Views allow you to combine a template and a filter to narrow down the results.
 
