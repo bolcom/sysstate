@@ -18,7 +18,7 @@ class TemplateLogicSpec extends Specification {
     void setup() {
         templateLogic = new TemplateLogicImpl(new TemplateConverter(), templateDao, applicationContext)
     }
-    def "Can Test"() {
+    def "Can Has lol"() {
         
         throw new IllegalStateException("meh")
     }
