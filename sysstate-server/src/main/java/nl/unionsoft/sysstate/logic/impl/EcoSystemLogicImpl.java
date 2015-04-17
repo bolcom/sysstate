@@ -48,7 +48,7 @@ public class EcoSystemLogicImpl implements EcoSystemLogic {
     @SuppressWarnings("unchecked")
     @Cacheable("viewResultCache")
     public ViewResultDto getEcoSystem(final ViewDto view) {
-
+        
         FilterDto filter = view.getFilter();
         if (filter == null) {
             filter = new FilterDto();

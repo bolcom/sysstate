@@ -59,7 +59,7 @@ user    	//Average Joe
 		<intercept-url pattern="/user/*/delete*" access="ROLE_ADMIN" />
 		<intercept-url pattern="/user/create*" access="ROLE_ADMIN" />		
 		
-
+		<intercept-url pattern="/j_spring_security_check" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/instancenotifier/**" access="ROLE_ADMIN" />
 		<intercept-url pattern="/projectenvironment/**/update" access="ROLE_ADMIN" />
 		<!--

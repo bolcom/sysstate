@@ -43,7 +43,7 @@
 		</c:if>
 		<!--  start login-inner -->
 		<div id="login-inner">
-			<form action="<c:url value='j_spring_security_check' />" method="post">
+			<form action="<c:url value='/j_spring_security_check' />" method="post">
 				<table border="0" cellpadding="0" cellspacing="0">
 				<tr>
 					<th>Username</th>
