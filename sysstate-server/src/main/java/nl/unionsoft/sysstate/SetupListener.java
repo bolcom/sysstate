@@ -71,10 +71,9 @@ public class SetupListener implements InitializingBean {
         boolean hasNoProjects = projectLogic.getProjects().isEmpty();
         boolean hasNoEnvironments = environmentLogic.getEnvironments().isEmpty();
         boolean hasNoInstances = instanceLogic.getInstances().isEmpty();
-        boolean hasNoTemplates = templateLogic.getTemplates().isEmpty();
         
         
-        boolean initialSetup = hasNoProjects && hasNoEnvironments && hasNoInstances && hasNoTemplates;
+        boolean initialSetup = hasNoProjects && hasNoEnvironments && hasNoInstances;
 
         if (initialSetup) {
             

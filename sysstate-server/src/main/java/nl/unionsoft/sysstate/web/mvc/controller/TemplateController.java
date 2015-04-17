@@ -14,6 +14,7 @@ import javax.validation.Valid;
 import nl.unionsoft.sysstate.Constants;
 import nl.unionsoft.sysstate.common.dto.TemplateDto;
 import nl.unionsoft.sysstate.common.dto.ViewDto;
+import nl.unionsoft.sysstate.common.dto.ViewResultDto;
 import nl.unionsoft.sysstate.dto.MessageDto;
 import nl.unionsoft.sysstate.logic.EcoSystemLogic;
 import nl.unionsoft.sysstate.logic.MessageLogic;
@@ -75,7 +76,9 @@ public class TemplateController {
             TemplateDto template = templateLogic.getTemplate(name);
             response.addHeader("Content-Type", template.getContentType());
             Map<String, Object> context = new HashMap<String, Object>();
-            context.put("ecoSystem", ecoSystemLogic.getEcoSystem(view));
+            ViewResultDto viewResult =  ecoSystemLogic.getEcoSystem(view);
+            System.out.println(viewResult.getEnvironments());
+            context.put("viewResult",viewResult);
             context.put("request", request);
             context.put("response", response);
             templateLogic.writeTemplate(template, context, response.getWriter());

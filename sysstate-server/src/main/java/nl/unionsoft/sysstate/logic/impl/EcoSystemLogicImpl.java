@@ -3,6 +3,7 @@ package nl.unionsoft.sysstate.logic.impl;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import javax.inject.Inject;
@@ -56,6 +57,7 @@ public class EcoSystemLogicImpl implements EcoSystemLogic {
         final ViewResultDto viewResult = new ViewResultDto(view);
         final CountDto instanceCount = viewResult.getInstanceCount();
         final List<EnvironmentDto> environments = viewResult.getEnvironments();
+        final List<ProjectEnvironmentDto> projectEnvironments = viewResult.getProjectEnvironments();
 
         final List<ProjectDto> projects = viewResult.getProjects();
 
@@ -63,6 +65,7 @@ public class EcoSystemLogicImpl implements EcoSystemLogic {
         viewResult.getInstances().addAll(instances);
         for (final InstanceDto instance : instances) {
             final ProjectEnvironmentDto projectEnvironment = instance.getProjectEnvironment();
+            addProjectEnvironmentIfNotExists(projectEnvironments, projectEnvironment);
             final ProjectDto project = projectEnvironment.getProject();
             addProjectIfNotExists(projects, project);
             final EnvironmentDto environment = projectEnvironment.getEnvironment();
@@ -70,7 +73,6 @@ public class EcoSystemLogicImpl implements EcoSystemLogic {
             CountUtil.add(instanceCount, instance.getState().getState());
         }
         Properties sysstateProperties = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);
-
 
         // Whack environment names...
         for (EnvironmentDto environment : environments) {
@@ -99,6 +101,16 @@ public class EcoSystemLogicImpl implements EcoSystemLogic {
         }
         if (!projectAlreadyInList) {
             projects.add(project);
+        }
+    }
+
+    private void addProjectEnvironmentIfNotExists(List<ProjectEnvironmentDto> projectEnvironments, ProjectEnvironmentDto projectEnvironment) {
+        Optional<ProjectEnvironmentDto> foundProjectEnviroment = projectEnvironments
+                .stream()
+                .filter(pe -> pe.getProject().getId().equals(projectEnvironment.getProject().getId())
+                        && pe.getEnvironment().getId().equals(projectEnvironment.getEnvironment().getId())).findAny();
+        if (!foundProjectEnviroment.isPresent()) {
+            projectEnvironments.add(projectEnvironment);
         }
     }
 

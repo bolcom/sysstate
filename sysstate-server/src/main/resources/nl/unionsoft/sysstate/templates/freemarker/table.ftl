@@ -7,7 +7,6 @@
 		<tr class="row_env">
 			<th id="col_prj" class="top_left"><a href="${contextPath}/manager/index.html" >PRJ/ENV</a> </th>
 			<#list ecoSystem.environments as environment>
-				${environment_has_next}
 				<th id="col_env_${environment.id}" class="col_env ${environment_has_next ? '' : 'top_right'}"><a href="${contextPath}/filter/environment/${environment.id}/index.html" >${environment.name}</a></th>
 			</#list>
 		</tr>

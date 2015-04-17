@@ -51,7 +51,6 @@ public class TemplateLogicImpl implements TemplateLogic {
     private Path templateHome;
 
     public static final String RESOURCE_BASE = "/nl/unionsoft/sysstate/templates/";
-    public static final String STRING_TEMPLATE_WRITER = "stringTemplateWriter";
     public static final String FREEMARKER_TEMPLATE_WRITER = "freeMarkerTemplateWriter";
 
     @Inject
@@ -90,19 +89,22 @@ public class TemplateLogicImpl implements TemplateLogic {
         Files.createDirectories(templateHome);
 
         LOG.info("No templates found, creating some default templates...");
+        addTemplate("base.css", "text/css", FREEMARKER_TEMPLATE_WRITER);
         addFile("base.css", RESOURCE_BASE + "string/base.css");
+        
+        addTemplate("ci.css", "text/css", FREEMARKER_TEMPLATE_WRITER);
         addFile("ci.css", RESOURCE_BASE + "string/ci.css");
 
-        addTemplate("ci.html", "text/html", FREEMARKER_TEMPLATE_WRITER, null);
+        addTemplate("ci.html", "text/html", FREEMARKER_TEMPLATE_WRITER);
         addFile("ci.html", RESOURCE_BASE + "freemarker/ci.ftl");
-        addTemplate("base.html", "text/html", FREEMARKER_TEMPLATE_WRITER, null);
+        addTemplate("base.html", "text/html", FREEMARKER_TEMPLATE_WRITER);
         addFile("base.html", RESOURCE_BASE + "freemarker/base.ftl");
 
         addFile("fragments.meta-refresh.ftl", RESOURCE_BASE + "freemarker/meta-refresh.ftl");
         addFile("fragments.table.ftl", RESOURCE_BASE + "freemarker/table.ftl");
     }
 
-    private void addTemplate(String name, String contentType, String writer, String configuration) throws IOException {
+    private void addTemplate(String name, String contentType, String writer) throws IOException {
 
         LOG.info("Adding template [{}] from resource [{}]", name);
 

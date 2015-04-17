@@ -9,7 +9,8 @@ public class ViewResultDto {
     private final List<ProjectDto> projects;
     private final List<EnvironmentDto> environments;
     private final List<InstanceDto> instances;
-
+    private final List<ProjectEnvironmentDto> projectEnvironments;
+    
     private final CountDto instanceCount;
 
     public ViewResultDto (ViewDto view) {
@@ -18,6 +19,7 @@ public class ViewResultDto {
         projects = new ArrayList<ProjectDto>();
         environments = new ArrayList<EnvironmentDto>();
         instances = new ArrayList<InstanceDto>();
+        projectEnvironments = new ArrayList<ProjectEnvironmentDto>();
 
     }
 
@@ -35,6 +37,10 @@ public class ViewResultDto {
 
     public CountDto getInstanceCount() {
         return instanceCount;
+    }
+
+    public List<ProjectEnvironmentDto> getProjectEnvironments() {
+        return projectEnvironments;
     }
 
     public ViewDto getView() {
