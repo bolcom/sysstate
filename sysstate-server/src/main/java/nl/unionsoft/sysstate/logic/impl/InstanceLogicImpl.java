@@ -23,7 +23,6 @@ import nl.unionsoft.common.list.model.Restriction;
 import nl.unionsoft.common.list.model.Restriction.Rule;
 import nl.unionsoft.common.list.worker.impl.BeanListRequestWorkerImpl;
 import nl.unionsoft.common.param.ParamContextLogicImpl;
-import nl.unionsoft.common.util.PropertiesUtil;
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
@@ -49,10 +48,10 @@ import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
@@ -61,6 +60,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.scheduling.quartz.JobDetailFactoryBean;
+import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -142,19 +143,25 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         Instance instance = instanceDao.getInstance(instanceId);
         if (instance != null) {
             final long id = instance.getId();
-            final String jobName = "instance-" + id + "-job";
-            final String triggerName = "instance-" + id + "-trigger";
-            final String groupName = "instances";
 
             final long refreshTimeout = instance.getRefreshTimeout();
-            final SimpleTrigger trigger = new SimpleTrigger(triggerName, groupName);
-            trigger.setRepeatCount(-1);
-            trigger.setRepeatInterval(refreshTimeout < 30000 ? 30000 : refreshTimeout);
-            trigger.setStartTime(new Date(System.currentTimeMillis() + 5000));
+            SimpleTriggerFactoryBean simpleTriggerFactoryBean = new SimpleTriggerFactoryBean();
+            simpleTriggerFactoryBean.setName( "instance-" + id + "-trigger");
+            simpleTriggerFactoryBean.setRepeatCount(-1);
+            simpleTriggerFactoryBean.setRepeatInterval(refreshTimeout < 30000 ? 30000 : refreshTimeout);
+            simpleTriggerFactoryBean.setStartTime(new Date(System.currentTimeMillis() + 5000));
 
-            final JobDetail jobDetail = new JobDetail(jobName, groupName, UpdateInstanceJob.class);
+            final SimpleTrigger trigger = simpleTriggerFactoryBean.getObject();
+
+            JobDetailFactoryBean jobDetailFactoryBean = new JobDetailFactoryBean();
+            jobDetailFactoryBean.setName("instance-" + id + "-job");
+            jobDetailFactoryBean.setGroup("instances");
+            jobDetailFactoryBean.setJobClass(UpdateInstanceJob.class);
+            
+            final JobDetail jobDetail = jobDetailFactoryBean.getObject();
             final JobDataMap jobDataMap = jobDetail.getJobDataMap();
             jobDataMap.put("instanceId", id);
+            jobDetailFactoryBean.setJobDataMap(jobDataMap);
 
             try {
                 scheduler.scheduleJob(jobDetail, trigger);
@@ -168,7 +175,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         try {
             final String jobName = "instance-" + instanceId + "-job";
             final String groupName = "instances";
-            scheduler.deleteJob(jobName, groupName);
+            scheduler.deleteJob(new JobKey(jobName, groupName));
         } catch (final SchedulerException e1) {
             e1.printStackTrace();
         }
