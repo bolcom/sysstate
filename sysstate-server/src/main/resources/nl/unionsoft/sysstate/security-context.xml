@@ -70,6 +70,7 @@ user    	//Average Joe
 		<form-login login-page="/login.html" default-target-url="/dashboard/index.html" authentication-failure-url="/login.html" always-use-default-target="false"/>
 		<logout logout-success-url="/dashboard/index.html" logout-url="/logout.html" />
 		<remember-me key="sseSecurityToken" token-validity-seconds="864000" />
+	
 	</http>
 
 	<authentication-manager>

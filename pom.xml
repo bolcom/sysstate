@@ -443,6 +443,7 @@
 			</dependency>
 			<!-- END: Spring -->
 			<!-- START: Jaxb/Json -->
+			<!--
 			<dependency>
 				<groupId>javax.xml.bind</groupId>
 				<artifactId>jaxb-api</artifactId>
@@ -462,6 +463,17 @@
 				<groupId>org.codehaus.jackson</groupId>
 				<artifactId>jackson-core-asl</artifactId>
 				<version>1.9.5</version>
+			</dependency>
+		-->
+			<dependency>
+			    <groupId>com.fasterxml.jackson.core</groupId>
+			    <artifactId>jackson-core</artifactId>
+			    <version>2.3.0</version>
+			</dependency>
+			<dependency>
+			    <groupId>com.fasterxml.jackson.core</groupId>
+			    <artifactId>jackson-databind</artifactId>
+			    <version>2.3.0</version>
 			</dependency>
 			<!-- END: Jaxb/Json -->
 			<!-- START: XMLBeans -->

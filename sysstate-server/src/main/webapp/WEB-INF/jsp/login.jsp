@@ -64,6 +64,7 @@
 					<td><input type="submit" class="submit-login"  /></td>
 				</tr>
 				</table>
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 			</form>
 		</div>
 	 	<!--  end login-inner -->

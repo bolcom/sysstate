@@ -145,15 +145,6 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         if (instance != null) {
             final long id = instance.getId();
 
-            final long refreshTimeout = instance.getRefreshTimeout();
-            SimpleTriggerFactoryBean simpleTriggerFactoryBean = new SimpleTriggerFactoryBean();
-            simpleTriggerFactoryBean.setName( "instance-" + id + "-trigger");
-            simpleTriggerFactoryBean.setRepeatCount(-1);
-            simpleTriggerFactoryBean.setRepeatInterval(refreshTimeout < 30000 ? 30000 : refreshTimeout);
-            simpleTriggerFactoryBean.setStartTime(new Date(System.currentTimeMillis() + 5000));
-            simpleTriggerFactoryBean.afterPropertiesSet();
-            final SimpleTrigger trigger = simpleTriggerFactoryBean.getObject();
-
             JobDetailFactoryBean jobDetailFactoryBean = new JobDetailFactoryBean();
             jobDetailFactoryBean.setName("instance-" + id + "-job");
             jobDetailFactoryBean.setGroup("instances");
@@ -163,6 +154,18 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
             jobDetailFactoryBean.setJobDataAsMap(jobData);
             jobDetailFactoryBean.afterPropertiesSet();
             final JobDetail jobDetail = jobDetailFactoryBean.getObject();
+            
+            final long refreshTimeout = instance.getRefreshTimeout();
+            SimpleTriggerFactoryBean simpleTriggerFactoryBean = new SimpleTriggerFactoryBean();
+            simpleTriggerFactoryBean.setName( "instance-" + id + "-trigger");
+            simpleTriggerFactoryBean.setRepeatCount(-1);
+            simpleTriggerFactoryBean.setRepeatInterval(refreshTimeout < 30000 ? 30000 : refreshTimeout);
+            simpleTriggerFactoryBean.setStartTime(new Date(System.currentTimeMillis() + 5000));
+            simpleTriggerFactoryBean.setJobDetail(jobDetail);
+            simpleTriggerFactoryBean.afterPropertiesSet();
+            final SimpleTrigger trigger = simpleTriggerFactoryBean.getObject();
+
+            
 
             try {
                 scheduler.scheduleJob(jobDetail, trigger);
