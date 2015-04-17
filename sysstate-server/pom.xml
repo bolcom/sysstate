@@ -136,9 +136,9 @@
             <artifactId>activation</artifactId>
         </dependency>
         <dependency>
-            <groupId>javassist</groupId>
-            <artifactId>javassist</artifactId>
-        </dependency>
+	        <groupId>org.javassist</groupId>
+	        <artifactId>javassist</artifactId>
+	    </dependency>
         <!-- END: Hibernate -->
 
         <!-- START: Validation -->

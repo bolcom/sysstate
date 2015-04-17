@@ -2,6 +2,7 @@ package nl.unionsoft.sysstate.logic.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -35,6 +36,7 @@ import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.common.util.PropertyGroupUtil;
+import nl.unionsoft.sysstate.converter.InstancePropertiesConverter;
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.dao.ListRequestDao;
 import nl.unionsoft.sysstate.dao.PropertyDao;
@@ -67,7 +69,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service("instanceLogic")
-@DependsOn("projectEnvironmentLogic")
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
 
@@ -127,7 +128,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
 
     @Inject
     @Named("instancePropertiesConverter")
-    private BidirectionalConverter<Properties, List<InstanceProperty>> instancePropertiesConverter;
+    private InstancePropertiesConverter instancePropertiesConverter;
 
     public void queueForUpdate(final Long instanceId) {
         updateTriggerJob(instanceDao.getInstance(instanceId));
@@ -150,18 +151,18 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
             simpleTriggerFactoryBean.setRepeatCount(-1);
             simpleTriggerFactoryBean.setRepeatInterval(refreshTimeout < 30000 ? 30000 : refreshTimeout);
             simpleTriggerFactoryBean.setStartTime(new Date(System.currentTimeMillis() + 5000));
-
+            simpleTriggerFactoryBean.afterPropertiesSet();
             final SimpleTrigger trigger = simpleTriggerFactoryBean.getObject();
 
             JobDetailFactoryBean jobDetailFactoryBean = new JobDetailFactoryBean();
             jobDetailFactoryBean.setName("instance-" + id + "-job");
             jobDetailFactoryBean.setGroup("instances");
             jobDetailFactoryBean.setJobClass(UpdateInstanceJob.class);
-            
+            Map<String, Object> jobData = new HashMap<String, Object>();
+            jobData.put("instanceId", id);
+            jobDetailFactoryBean.setJobDataAsMap(jobData);
+            jobDetailFactoryBean.afterPropertiesSet();
             final JobDetail jobDetail = jobDetailFactoryBean.getObject();
-            final JobDataMap jobDataMap = jobDetail.getJobDataMap();
-            jobDataMap.put("instanceId", id);
-            jobDetailFactoryBean.setJobDataMap(jobDataMap);
 
             try {
                 scheduler.scheduleJob(jobDetail, trigger);

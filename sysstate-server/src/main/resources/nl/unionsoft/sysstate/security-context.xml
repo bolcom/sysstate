@@ -17,7 +17,7 @@ user    	//Average Joe
 
  -->
 
-	<http auto-config="true" >
+	<http auto-config="true" use-expressions="false">
 	
 		<intercept-url pattern="/environment/**" access="ROLE_EDITOR,ROLE_ADMIN" />
 		
