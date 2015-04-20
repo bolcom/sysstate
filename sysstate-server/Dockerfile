@@ -1,4 +1,4 @@
-# VERSION:        1.0
+# VERSION:        1.1.2
 # DOCKER-VERSION: 1.2.0
 # AUTHOR:         Chris Kramer (sysstate@unionsoft.nl)
 # TO_COMPILE:     mvn clean package
