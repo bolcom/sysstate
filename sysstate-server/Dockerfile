@@ -1,8 +1,8 @@
-# VERSION:        1.0
+# VERSION:        1.1.2
 # DOCKER-VERSION: 1.2.0
 # AUTHOR:         Chris Kramer (sysstate@unionsoft.nl)
 # TO_COMPILE:     mvn clean package
-# TO_BUILD:	      docker build --rm -t sysstate .
+# TO_BUILD:	      docker build --rm -t sysstate sysstate-server
 # TO_RUN:		  docker run -p 8080:8080 -v ~/sysstate/home:/usr/local/tomcat/.sysstate --link sysstate-mysql:mysql sysstate
 
 FROM tomcat:8-jre8

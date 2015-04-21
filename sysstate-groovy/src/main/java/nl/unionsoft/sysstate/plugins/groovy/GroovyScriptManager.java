@@ -29,7 +29,8 @@ public class GroovyScriptManager implements InitializingBean {
     private File groovyScriptsInt;
 
     @Inject
-    public GroovyScriptManager(@Value("#{properties['SYSSTATE_HOME']}") String sysstateHome) {
+    public GroovyScriptManager(@Value("${SYSSTATE_HOME}") String sysstateHome) {
+        LOG.info("Constructing GroovyScriptManager with sysstateHome [{}]", sysstateHome);
         File groovyHome = new File(sysstateHome, "groovy");
         groovyScriptsExt = new File(groovyHome, "ext");
         groovyScriptsInt = new File(groovyHome, "int");
@@ -82,7 +83,7 @@ public class GroovyScriptManager implements InitializingBean {
             InputStream is = null;
             try {
                 String internalResource = "nl/unionsoft/sysstate/plugins/groovy/" + internalGroovyResource;
-                LOG.info("Copying internalResource [{}] to [{}]", internalResource, targetFile);
+                LOG.info("Copying internalResource [{}] to [{}]", internalResource, targetFile.getAbsolutePath());
                 is = this.getClass().getClassLoader().getResourceAsStream(internalResource);
                 FileUtils.copyInputStreamToFile(is, targetFile);
             } finally {
