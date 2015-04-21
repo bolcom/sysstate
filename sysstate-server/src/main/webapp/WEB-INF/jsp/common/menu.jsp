@@ -124,7 +124,9 @@
 </ul>
 <div class="nav-divider">&nbsp;</div>
 
-
+<div class="progress-bar red stripes">
+    <span style="width: 10%"></span>
+</div>
 <ul class="select">
 	<li><a href="${contextPath}/index.html" target="_BLANK""><b>Site</b>
 		<!--[if IE 7]><!--></a>

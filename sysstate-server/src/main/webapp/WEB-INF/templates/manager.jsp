@@ -18,6 +18,7 @@
 
 	<link rel="stylesheet" href="${contextPath}/scripts/colorbox/colorbox.css" type="text/css" />
 	<link rel="stylesheet" href="${contextPath}/css/manager.css" type="text/css"/>
+	<link rel="stylesheet" href="${contextPath}/css/progressbar.css" type="text/css"/>
 	<link rel="stylesheet" href="${contextPath}/css/screen.css" type="text/css" media="screen" title="default" />
 	<!--[if IE]>
 		<link rel="stylesheet" media="all" type="text/css" href="${contextPath}/css/pro_dropline_ie.css" />
