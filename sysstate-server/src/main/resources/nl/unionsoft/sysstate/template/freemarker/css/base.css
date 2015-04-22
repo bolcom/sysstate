@@ -11,22 +11,22 @@ div#links a span {
 }
 
 .top_left {
-	/* background: url("../images/left.png") no-repeat scroll left -1px; */
+	/* background: url("images/left.png") no-repeat scroll left -1px; */
 	padding: 2px 7px;;
 }
 
 .top_right {
-	/* background: url("../images/right.png") no-repeat scroll right -1px; */
+	/* background: url("images/right.png") no-repeat scroll right -1px; */
 	
 }
 
 .bottom_left {
-	/* background: url("../images/botleft.png") no-repeat scroll left bottom; */
+	/* background: url("images/botleft.png") no-repeat scroll left bottom; */
 	
 }
 
 .bottom_right {
-	/* background: url("../images/botright.png") no-repeat scroll right bottom; */
+	/* background: url("images/botright.png") no-repeat scroll right bottom; */
 	
 }
 
@@ -100,43 +100,43 @@ a:visited {
 }
 
 span.state_PENDING {
-	background: url("../images/pending.gif") no-repeat scroll left;
+	background: url("/images/pending.gif") no-repeat scroll left;
 }
 
 span.state_STABLE {
-	background: url("../images/stable.png") no-repeat scroll left;
+	background: url("/images/stable.png") no-repeat scroll left;
 }
 
 span.state_ERROR {
-	background: url("../images/unavailable.png") no-repeat scroll left;
+	background: url("/images/unavailable.png") no-repeat scroll left;
 }
 
 span.state_UNSTABLE {
-	background: url("../images/unstable.gif") no-repeat scroll left;
+	background: url("/images/unstable.gif") no-repeat scroll left;
 }
 
 span.state_DISABLED {
-	background: url("../images/disabled.png") no-repeat scroll left;
+	background: url("images/disabled.png") no-repeat scroll left;
 }
 
 span.rating_100 {
-	background: url("../images/weather/sunny.gif") no-repeat scroll left;
+	background: url("images/weather/sunny.gif") no-repeat scroll left;
 }
 
 span.rating_75 {
-	background: url("../images/weather/party_cloudy.gif") no-repeat scroll left;
+	background: url("images/weather/party_cloudy.gif") no-repeat scroll left;
 }
 
 span.rating_50 {
-	background: url("../images/weather/cloudy.gif") no-repeat scroll left;
+	background: url("images/weather/cloudy.gif") no-repeat scroll left;
 }
 
 span.rating_25 {
-	background: url("../images/weather/cloudy.gif") no-repeat scroll left;
+	background: url("images/weather/cloudy.gif") no-repeat scroll left;
 }
 
 span.rating_0 {
-	background: url("../images/weather/rain.gif") no-repeat scroll left;
+	background: url("images/weather/rain.gif") no-repeat scroll left;
 }
 
 

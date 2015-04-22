@@ -2,4 +2,4 @@
 <#assign refresh = "10">
 <#assign body = "table.ftl">
 <#assign showProjectColumn = false>
-<#include "meta-refresh.ftl">
+<#include "fragments/meta-refresh.ftl">
