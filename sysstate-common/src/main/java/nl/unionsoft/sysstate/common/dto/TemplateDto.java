@@ -7,22 +7,15 @@ public class TemplateDto {
 
     private String name;
 
-    private String content;
-
     private String writer;
 
     private String contentType;
+
+    private String resource;
+
+    private Boolean includeViewResults;
     
     private Date lastUpdated;
-    
-   
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
 
     public String getWriter() {
         return writer;
@@ -54,6 +47,22 @@ public class TemplateDto {
 
     public void setLastUpdated(Date lastUpdated) {
         this.lastUpdated = lastUpdated;
+    }
+
+    public String getResource() {
+        return resource;
+    }
+
+    public void setResource(String resource) {
+        this.resource = resource;
+    }
+
+    public Boolean getIncludeViewResults() {
+        return includeViewResults;
+    }
+
+    public void setIncludeViewResults(Boolean includeViewResults) {
+        this.includeViewResults = includeViewResults;
     }
 
 }

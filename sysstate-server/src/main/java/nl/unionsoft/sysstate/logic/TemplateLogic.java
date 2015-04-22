@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import nl.unionsoft.sysstate.common.dto.TemplateDto;
+import nl.unionsoft.sysstate.template.TemplateWriter;
 import nl.unionsoft.sysstate.template.WriterException;
 
 public interface TemplateLogic {
@@ -19,5 +20,8 @@ public interface TemplateLogic {
     
     public void writeTemplate(TemplateDto template,Map<String, Object> context,  Writer writer) throws WriterException;
 
+    public TemplateDto getBasicTemplate();
 
+    public  Map<String, TemplateWriter> getTemplateWriters();
+    
 }

@@ -24,6 +24,7 @@ import nl.unionsoft.sysstate.logic.TemplateLogic;
 import nl.unionsoft.sysstate.logic.ViewLogic;
 import nl.unionsoft.sysstate.template.WriterException;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -67,20 +68,33 @@ public class ViewController {
     public void renderIndex(HttpServletResponse response, HttpServletRequest request) {
 
         Properties viewConfiguration = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);
-        Long defaultView = Long.valueOf(viewConfiguration.getProperty("defaultView"));
-        renderIndexView(defaultView, request, response);
+
+        String defaultViewProperty = viewConfiguration.getProperty("defaultView");
+        ViewDto view = viewLogic.getBasicView();
+        if (StringUtils.isNotEmpty(defaultViewProperty)) {
+            view = viewLogic.getView(Long.valueOf(defaultViewProperty));
+        }
+        writeTemplateForView(response, request, view);
     }
 
     @RequestMapping(value = "/view/{viewId}/index.html", method = RequestMethod.GET)
-    public void renderIndexView(@PathVariable("viewId") Long viewId,HttpServletRequest request, HttpServletResponse response) {
+    public void renderIndexView(@PathVariable("viewId") Long viewId, HttpServletRequest request, HttpServletResponse response) {
         final ViewDto view = viewLogic.getView(viewId);
+        writeTemplateForView(response, request, view);
+
+    }
+
+    private void writeTemplateForView(HttpServletResponse response, HttpServletRequest request, final ViewDto view) {
         TemplateDto template = view.getTemplate();
         try {
 
             response.addHeader("Content-Type", template.getContentType());
             Map<String, Object> context = new HashMap<String, Object>();
-            context.put("ecoSystem", ecoSystemLogic.getEcoSystem(view));
-            context.put("request", ecoSystemLogic.getEcoSystem(view));
+            if (template.getIncludeViewResults()){
+                context.put("viewResult", ecoSystemLogic.getEcoSystem(view));    
+            }
+            context.put("request", request);
+            context.put("view", view);
             templateLogic.writeTemplate(template, context, response.getWriter());
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (WriterException e) {
@@ -88,7 +102,6 @@ public class ViewController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     @RequestMapping(value = "/view/index", method = RequestMethod.GET)

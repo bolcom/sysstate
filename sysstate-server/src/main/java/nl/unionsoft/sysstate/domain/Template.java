@@ -35,7 +35,13 @@ public class Template implements Serializable {
     @Column(name = "CONTENT_TYPE", nullable = false, length = 512)
     private String contentType;
     
-
+    @Column(name = "RESOURCE", nullable = false, length = 1024)
+    private String resource;
+    
+    
+    @Column(name = "INCLUDE_VIEW_RESULTS", nullable = false)
+    private Boolean includeViewResults;
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "LAST_UPDATED", nullable = false)
     private Date lastUpdated;
@@ -81,6 +87,22 @@ public class Template implements Serializable {
 
     public void setLastUpdated(Date lastUpdated) {
         this.lastUpdated = lastUpdated;
+    }
+
+    public String getResource() {
+        return resource;
+    }
+
+    public void setResource(String resource) {
+        this.resource = resource;
+    }
+
+    public Boolean getIncludeViewResults() {
+        return includeViewResults;
+    }
+
+    public void setIncludeViewResults(Boolean includeViewResults) {
+        this.includeViewResults = includeViewResults;
     }
 
 }

@@ -22,6 +22,7 @@ import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.TemplateLogic;
 import nl.unionsoft.sysstate.logic.ViewLogic;
 import nl.unionsoft.sysstate.template.WriterException;
+import nl.unionsoft.sysstate.web.lov.TemplateWriterLovResolver;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -54,6 +55,11 @@ public class TemplateController {
     @Inject
     @Named("ecoSystemLogic")
     private EcoSystemLogic ecoSystemLogic;
+    
+    @Inject
+    private TemplateWriterLovResolver templateWriterLovResolver;
+    
+
 
     @RequestMapping(value = "/template/index", method = RequestMethod.GET)
     public ModelAndView list() {
@@ -65,20 +71,13 @@ public class TemplateController {
     @RequestMapping(value = "/template/render/{name:.*}", method = RequestMethod.GET)
     public void renderTemplate(@PathVariable("name") final String name, HttpServletRequest request, HttpServletResponse response) {
         try {
-            Properties viewConfiguration = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);
-
-            String defaultViewProperty = viewConfiguration.getProperty("defaultView");
             ViewDto view = viewLogic.getBasicView();
-            if (StringUtils.isNotEmpty(defaultViewProperty)) {
-                view = viewLogic.getView(Long.valueOf(defaultViewProperty));
-            }
-
             TemplateDto template = templateLogic.getTemplate(name);
             response.addHeader("Content-Type", template.getContentType());
             Map<String, Object> context = new HashMap<String, Object>();
             ViewResultDto viewResult =  ecoSystemLogic.getEcoSystem(view);
-            System.out.println(viewResult.getEnvironments());
             context.put("viewResult",viewResult);
+            context.put("view", view);
             context.put("request", request);
             context.put("response", response);
             templateLogic.writeTemplate(template, context, response.getWriter());
@@ -95,13 +94,19 @@ public class TemplateController {
     public ModelAndView getCreate() {
         final ModelAndView modelAndView = new ModelAndView("create-update-template-manager");
         modelAndView.addObject("template", new TemplateDto());
+        addModelObjects(modelAndView);
         return modelAndView;
+    }
+
+    private void addModelObjects(final ModelAndView modelAndView) {
+        modelAndView.addObject("templateWriters", templateWriterLovResolver.getListOfValues(null));
     }
 
     @RequestMapping(value = "/template/{name}/update", method = RequestMethod.GET)
     public ModelAndView getUpdate(@PathVariable("name") final String name) throws IOException {
         final ModelAndView modelAndView = new ModelAndView("create-update-template-manager");
         modelAndView.addObject("template", templateLogic.getTemplate(name));
+        addModelObjects(modelAndView);
         messageLogic.addUserMessage(new MessageDto("Template updates succesfully", MessageDto.GREEN));
         return modelAndView;
     }
@@ -120,19 +125,13 @@ public class TemplateController {
         return new ModelAndView("redirect:/template/index.html");
     }
 
-    @RequestMapping(value = "/template/{name}/restore", method = RequestMethod.GET)
-    public ModelAndView getRestore(@PathVariable("name") final String name) throws IOException {
-        final ModelAndView modelAndView = new ModelAndView("restore-template-manager");
-        modelAndView.addObject("template", templateLogic.getTemplate(name));
-        return modelAndView;
-    }
 
     @RequestMapping(value = "/template/create", method = RequestMethod.POST)
     public ModelAndView handleFormCreate(@Valid @ModelAttribute("template") final TemplateDto template, final BindingResult bindingResult) throws IOException {
-
         ModelAndView modelAndView = null;
         if (bindingResult.hasErrors()) {
             modelAndView = new ModelAndView("create-update-template-manager");
+            addModelObjects(modelAndView);
         } else {
             templateLogic.createOrUpdate(template);
             modelAndView = new ModelAndView("redirect:/template/index.html");

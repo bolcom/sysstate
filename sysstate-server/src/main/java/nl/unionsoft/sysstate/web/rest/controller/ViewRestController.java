@@ -19,6 +19,7 @@ import nl.unionsoft.sysstate.logic.ViewLogic;
 import nl.unionsoft.sysstate.sysstate_1_0.EcoSystem;
 import nl.unionsoft.sysstate.sysstate_1_0.State;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,14 +38,26 @@ public class ViewRestController {
     @Inject
     @Named("ecoSystemLogic")
     private EcoSystemLogic ecoSystemLogic;
-    
+
     @Inject
     @Named("restEcoSystemConverter")
-    private  Converter<EcoSystem, ViewResultDto> ecoSystemConverter;
+    private Converter<EcoSystem, ViewResultDto> ecoSystemConverter;
 
     @RequestMapping(value = "/view/{viewId}/ecosystem", method = RequestMethod.GET)
     public EcoSystem ecosystemForView(@PathVariable("viewId") Long viewId) {
-        final ViewDto view = viewLogic.getView(viewId);
-        return ecoSystemConverter.convert(ecoSystemLogic.getEcoSystem(view));
+
+        if (viewId == 0L) {
+            Properties viewConfiguration = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);
+            String defaultViewProperty = viewConfiguration.getProperty("defaultView");
+            ViewDto view = viewLogic.getBasicView();
+            if (StringUtils.isNotEmpty(defaultViewProperty)) {
+                view = viewLogic.getView(Long.valueOf(defaultViewProperty));
+            }
+            return ecoSystemConverter.convert(ecoSystemLogic.getEcoSystem(view));
+        } else {
+            final ViewDto view = viewLogic.getView(viewId);
+            return ecoSystemConverter.convert(ecoSystemLogic.getEcoSystem(view));
+        }
     }
+
 }

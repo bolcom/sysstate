@@ -8,6 +8,8 @@
 		<th class="table-header-repeat line-left"><a href="">Name</a></th>
 		<th class="table-header-repeat line-left"><a href="">Content Type</a></th>
 		<th class="table-header-repeat line-left"><a href="">Writer</a></th>
+		<th class="table-header-repeat line-left"><a href="">Resource</a></th>
+		<th class="table-header-repeat line-left"><a href="">View results</a></th>
 		<th class="table-header-repeat line-left"><a href="">Last Updated</a></th>
 		<th class="table-header-repeat line-left"><a href="">Options</a></th>
 	</tr>
@@ -16,6 +18,8 @@
 			<td>${template.name}</td>
 			<td>${template.contentType}</td>
 			<td>${template.writer}</td>
+			<td>${template.resource}</td>
+			<td>${template.includeViewResults}</td>
 			<td>${template.lastUpdated}</td>
 			<td>
 

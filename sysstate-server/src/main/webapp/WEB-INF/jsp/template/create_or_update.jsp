@@ -12,22 +12,28 @@
 						<jsp:param name="comments" value="Changing an existing name will copy the template."/>
 					</jsp:include>
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
-						<jsp:param name="path" value="content"/>
-						<jsp:param name="label" value="Content"/>
-						<jsp:param name="type" value="textarea"/>
-					</jsp:include>			
-										
-					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 						<jsp:param name="path" value="writer"/>
 						<jsp:param name="label" value="Writer"/>
-					</jsp:include>									
+						<jsp:param name="type" value="select"/>
+						<jsp:param name="items" value="templateWriters"/>
+						<jsp:param name="allowEmpty" value="false"/>
+					</jsp:include>							
+					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
+						<jsp:param name="path" value="resource"/>
+						<jsp:param name="label" value="Resource"/>
+					</jsp:include>														
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 						<jsp:param name="path" value="contentType"/>
 						<jsp:param name="label" value="ContentType"/>
 					</jsp:include>	
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 						<jsp:param name="type" value="submit"/>
-					</jsp:include>			
+					</jsp:include>	
+					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
+						<jsp:param name="path" value="includeViewResults"/>
+						<jsp:param name="label" value="Include View Results"/>
+						<jsp:param name="type" value="checkbox"/>
+					</jsp:include>							
 
 								
 				</table>

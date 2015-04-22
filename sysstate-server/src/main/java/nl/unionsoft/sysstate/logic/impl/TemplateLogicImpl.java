@@ -1,25 +1,17 @@
 package nl.unionsoft.sysstate.logic.impl;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Writer;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import nl.unionsoft.common.converter.ListConverter;
-import nl.unionsoft.common.util.PropertiesUtil;
-import nl.unionsoft.sysstate.SetupListener;
 import nl.unionsoft.sysstate.common.dto.TemplateDto;
 import nl.unionsoft.sysstate.converter.TemplateConverter;
 import nl.unionsoft.sysstate.dao.TemplateDao;
@@ -28,17 +20,23 @@ import nl.unionsoft.sysstate.logic.TemplateLogic;
 import nl.unionsoft.sysstate.template.TemplateWriter;
 import nl.unionsoft.sysstate.template.WriterException;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 
 @Service("templateLogic")
 public class TemplateLogicImpl implements TemplateLogic {
+
+    private static final String CI_FTL_NAME = "ci.html";
+    private static final String BASE_FTL_NAME = "base.html";
+    private static final String NETWORK_FTL_NAME = "network.html";
+
+    private static final String BASE_FTL_RESOURCE = "base.ftl";
+    private static final String CI_FTL_RESOURCE = "ci.ftl";
+    private static final String NETWORK_FTL_RESOURCE = "network.ftl";
 
     private static final Logger LOG = LoggerFactory.getLogger(TemplateLogicImpl.class);
 
@@ -69,18 +67,9 @@ public class TemplateLogicImpl implements TemplateLogic {
         template.setName(dto.getName());
         template.setWriter(dto.getWriter());
         template.setContentType(dto.getContentType());
-        setContent(dto.getName(), dto.getContent());
+        template.setResource(dto.getResource());
+        template.setIncludeViewResults(dto.getIncludeViewResults());
         templateDao.createOrUpdate(template);
-    }
-
-    private String getContent(String name) throws IOException {
-        Path template = templateHome.resolve(name);
-        return new String(Files.readAllBytes(template));
-    }
-
-    private void setContent(String name, String content) throws IOException {
-        Path template = templateHome.resolve(name);
-        Files.write(template, content.getBytes(), StandardOpenOption.CREATE);
     }
 
     @PostConstruct
@@ -89,45 +78,26 @@ public class TemplateLogicImpl implements TemplateLogic {
         Files.createDirectories(templateHome);
 
         LOG.info("No templates found, creating some default templates...");
-        addTemplate("base.css", "text/css", FREEMARKER_TEMPLATE_WRITER);
-        addFile("base.css", RESOURCE_BASE + "string/base.css");
-        
-        addTemplate("ci.css", "text/css", FREEMARKER_TEMPLATE_WRITER);
-        addFile("ci.css", RESOURCE_BASE + "string/ci.css");
 
-        addTemplate("ci.html", "text/html", FREEMARKER_TEMPLATE_WRITER);
-        addFile("ci.html", RESOURCE_BASE + "freemarker/ci.ftl");
-        addTemplate("base.html", "text/html", FREEMARKER_TEMPLATE_WRITER);
-        addFile("base.html", RESOURCE_BASE + "freemarker/base.ftl");
-
-        addFile("fragments.meta-refresh.ftl", RESOURCE_BASE + "freemarker/meta-refresh.ftl");
-        addFile("fragments.table.ftl", RESOURCE_BASE + "freemarker/table.ftl");
+        addTemplate("base.css", "text/css", FREEMARKER_TEMPLATE_WRITER, "css/base.css", false);
+        addTemplate("ci.css", "text/css", FREEMARKER_TEMPLATE_WRITER, "css/ci.css", false);
+        addTemplate(CI_FTL_NAME, ContentType.TEXT_HTML.getMimeType(), FREEMARKER_TEMPLATE_WRITER, CI_FTL_RESOURCE, true);
+        addTemplate(BASE_FTL_NAME, ContentType.TEXT_HTML.getMimeType(), FREEMARKER_TEMPLATE_WRITER, BASE_FTL_RESOURCE, true);
+        addTemplate(NETWORK_FTL_NAME, ContentType.TEXT_HTML.getMimeType(), FREEMARKER_TEMPLATE_WRITER, NETWORK_FTL_RESOURCE, false);
     }
 
-    private void addTemplate(String name, String contentType, String writer) throws IOException {
+    private void addTemplate(String name, String contentType, String writer, String resource, Boolean includeViewResults) throws IOException {
 
         LOG.info("Adding template [{}] from resource [{}]", name);
 
         Template template = new Template();
         template.setName(name);
-
         template.setWriter(writer);
         template.setContentType(contentType);
-
+        template.setResource(resource);
+        template.setIncludeViewResults(includeViewResults);
         templateDao.createOrUpdate(template);
 
-    }
-
-    private void addFile(String name, String resource) throws IOException {
-        LOG.info("Adding file [{}] from resource [{}]", name, resource);
-
-        try (InputStream is = getClass().getResourceAsStream(resource)) {
-
-            if (!Files.exists(templateHome.resolve(name))) {
-                setContent(name, IOUtils.toString(is));
-            }
-
-        }
     }
 
     @Override
@@ -149,9 +119,23 @@ public class TemplateLogicImpl implements TemplateLogic {
 
     @Override
     public TemplateDto getTemplate(String name) throws IOException {
-        TemplateDto template = templateConverter.convert(templateDao.getTemplate(name));
-        template.setContent(getContent(name));
+        return templateConverter.convert(templateDao.getTemplate(name));
+    }
+
+    @Override
+    public TemplateDto getBasicTemplate() {
+        TemplateDto template = new TemplateDto();
+        template.setContentType(ContentType.TEXT_HTML.getMimeType());
+        template.setName(BASE_FTL_NAME);
+        template.setWriter(FREEMARKER_TEMPLATE_WRITER);
+        template.setResource(BASE_FTL_RESOURCE);
+        template.setIncludeViewResults(true);
         return template;
+    }
+
+    @Override
+    public Map<String, TemplateWriter> getTemplateWriters() {
+        return applicationContext.getBeansOfType(TemplateWriter.class);
     }
 
 }

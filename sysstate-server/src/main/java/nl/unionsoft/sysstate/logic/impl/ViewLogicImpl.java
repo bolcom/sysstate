@@ -8,10 +8,12 @@ import javax.inject.Named;
 import nl.unionsoft.common.converter.Converter;
 import nl.unionsoft.common.list.model.ListRequest;
 import nl.unionsoft.common.list.model.ListResponse;
+import nl.unionsoft.sysstate.common.dto.TemplateDto;
 import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.dao.ListRequestDao;
 import nl.unionsoft.sysstate.dao.ViewDao;
 import nl.unionsoft.sysstate.domain.View;
+import nl.unionsoft.sysstate.logic.TemplateLogic;
 import nl.unionsoft.sysstate.logic.ViewLogic;
 
 import org.springframework.stereotype.Service;
@@ -30,6 +32,10 @@ public class ViewLogicImpl implements ViewLogic {
     @Named("viewDao")
     private ViewDao viewDao;
 
+    @Inject
+    private TemplateLogic templateLogic;
+
+    
     @Inject
     @Named("viewConverter")
     private Converter<ViewDto, View> viewConverter;
@@ -59,6 +65,7 @@ public class ViewLogicImpl implements ViewLogic {
     @Override
     public ViewDto getBasicView() {
         ViewDto view = new ViewDto();
+        view.setTemplate(templateLogic.getBasicTemplate());
         return view;
     }
 

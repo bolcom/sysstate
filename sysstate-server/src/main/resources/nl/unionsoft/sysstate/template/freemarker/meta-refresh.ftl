@@ -13,10 +13,11 @@
 					location.reload();	
 				}
 			};
-
+			<#if refresh??>
 			$(document).ready(function() {
 			 	setTimeout("Refresh()", ${refresh}000); 
 			});
+			</#if>
 		</script>
 		<script type="text/javascript">
 			$(function(){
