@@ -64,6 +64,7 @@ public class TemplateLogicImpl implements TemplateLogic {
     @Override
     public void createOrUpdate(TemplateDto dto) throws IOException {
         Template template = new Template();
+        template.setId(dto.getId());
         template.setName(dto.getName());
         template.setWriter(dto.getWriter());
         template.setContentType(dto.getContentType());

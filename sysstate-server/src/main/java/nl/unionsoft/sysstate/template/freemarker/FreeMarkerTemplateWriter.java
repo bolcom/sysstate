@@ -2,9 +2,10 @@ package nl.unionsoft.sysstate.template.freemarker;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
-import java.util.HashMap;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -32,12 +33,13 @@ public class FreeMarkerTemplateWriter implements TemplateWriter {
     @Inject
     public FreeMarkerTemplateWriter(@Value("#{properties['SYSSTATE_HOME']}") String sysstateHome) throws IOException {
         cfg = new Configuration(Configuration.VERSION_2_3_22);
-        FileTemplateLoader ftl = new FileTemplateLoader(new File(sysstateHome, "templates"));
+        Path templatePath = Paths.get(sysstateHome,"templates");
+        Files.createDirectories(templatePath);
+        FileTemplateLoader ftl = new FileTemplateLoader(templatePath.toFile());
         ClassTemplateLoader ctl = new ClassTemplateLoader(getClass(), "");
         TemplateLoader[] loaders = new TemplateLoader[] { ftl, ctl };
         MultiTemplateLoader mtl = new MultiTemplateLoader(loaders);
         cfg.setTemplateLoader(mtl);
-
     }
 
     @Override

@@ -23,7 +23,13 @@ public class TemplateDaoImpl implements TemplateDao {
     private EntityManager entityManager;
 
     public Template getTemplate(final String name) {
-        return entityManager.find(Template.class, name);
+        //@formatter: off
+        return entityManager.createQuery(
+                "FROM Template "
+                + "WHERE name = :name", Template.class)
+                .setParameter("name", name)
+                .getSingleResult();
+        //@formatter: on
     }
 
     public void createOrUpdate(final Template template) {
@@ -41,8 +47,7 @@ public class TemplateDaoImpl implements TemplateDao {
 
     @Override
     public void delete(String name) {
-        entityManager.remove(entityManager.find(Template.class, name));
-
+        entityManager.remove(getTemplate(name));
     }
 
 }
