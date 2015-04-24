@@ -24,7 +24,7 @@ public class TemplateLovResolver implements ListOfValueResolver {
     public Map<String, String> getListOfValues(final PropertyMetaValue propertyMetaValue) {
         Map<String, String> results = new LinkedHashMap<String, String>();
         for (TemplateDto template : templateLogic.getTemplates()) {
-            results.put(template.getName(), template.getName());
+            results.put(String.valueOf(template.getId()), template.getName());
         }
         return results;
     }

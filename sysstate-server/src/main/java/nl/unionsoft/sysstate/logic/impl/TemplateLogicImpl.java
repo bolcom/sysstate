@@ -7,12 +7,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import nl.unionsoft.common.converter.ListConverter;
 import nl.unionsoft.sysstate.common.dto.TemplateDto;
+import nl.unionsoft.sysstate.converter.OptionalConverter;
 import nl.unionsoft.sysstate.converter.TemplateConverter;
 import nl.unionsoft.sysstate.dao.TemplateDao;
 import nl.unionsoft.sysstate.domain.Template;
@@ -43,7 +45,7 @@ public class TemplateLogicImpl implements TemplateLogic {
     private ApplicationContext applicationContext;
 
     private TemplateDao templateDao;
-
+    
     private TemplateConverter templateConverter;
 
     private Path templateHome;
@@ -80,17 +82,20 @@ public class TemplateLogicImpl implements TemplateLogic {
 
         LOG.info("No templates found, creating some default templates...");
 
-        addTemplate("base.css", "text/css", FREEMARKER_TEMPLATE_WRITER, "css/base.css", false);
-        addTemplate("ci.css", "text/css", FREEMARKER_TEMPLATE_WRITER, "css/ci.css", false);
-        addTemplate(CI_FTL_NAME, ContentType.TEXT_HTML.getMimeType(), FREEMARKER_TEMPLATE_WRITER, CI_FTL_RESOURCE, true);
-        addTemplate(BASE_FTL_NAME, ContentType.TEXT_HTML.getMimeType(), FREEMARKER_TEMPLATE_WRITER, BASE_FTL_RESOURCE, true);
-        addTemplate(NETWORK_FTL_NAME, ContentType.TEXT_HTML.getMimeType(), FREEMARKER_TEMPLATE_WRITER, NETWORK_FTL_RESOURCE, false);
+        addTemplateIfNotExists("base.css", "text/css", FREEMARKER_TEMPLATE_WRITER, "css/base.css", false);
+        addTemplateIfNotExists("ci.css", "text/css", FREEMARKER_TEMPLATE_WRITER, "css/ci.css", false);
+        addTemplateIfNotExists(CI_FTL_NAME, ContentType.TEXT_HTML.getMimeType(), FREEMARKER_TEMPLATE_WRITER, CI_FTL_RESOURCE, true);
+        addTemplateIfNotExists(BASE_FTL_NAME, ContentType.TEXT_HTML.getMimeType(), FREEMARKER_TEMPLATE_WRITER, BASE_FTL_RESOURCE, true);
+        addTemplateIfNotExists(NETWORK_FTL_NAME, ContentType.TEXT_HTML.getMimeType(), FREEMARKER_TEMPLATE_WRITER, NETWORK_FTL_RESOURCE, false);
     }
 
-    private void addTemplate(String name, String contentType, String writer, String resource, Boolean includeViewResults) throws IOException {
-
+    private void addTemplateIfNotExists(String name, String contentType, String writer, String resource, Boolean includeViewResults) throws IOException {
+        Optional<Template> optTemplate = templateDao.getTemplate(name);
+        if (optTemplate.isPresent()){
+            return;
+        }
+        
         LOG.info("Adding template [{}] from resource [{}]", name);
-
         Template template = new Template();
         template.setName(name);
         template.setWriter(writer);
@@ -120,7 +125,7 @@ public class TemplateLogicImpl implements TemplateLogic {
 
     @Override
     public TemplateDto getTemplate(String name) throws IOException {
-        return templateConverter.convert(templateDao.getTemplate(name));
+        return OptionalConverter.fromOptional(templateDao.getTemplate(name), templateConverter);
     }
 
     @Override

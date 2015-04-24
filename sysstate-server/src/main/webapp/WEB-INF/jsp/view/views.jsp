@@ -31,9 +31,6 @@
 					<sc:authorize url="/view/${view.id}/delete">
 						<a href="${view.id}/delete.html">Delete</a> |
 					</sc:authorize>
-					<sc:authorize url="/view/${view.id}/dashboard">
-						<a class="inline" href="${view.id}/details.html" title="Details">Details</a> | 
-					</sc:authorize>
 					<sc:authorize url="/view/${view.id}/index">
 						<a class="inline" href="${view.id}/index.html" title="Preview">Preview</a> |
 						<a href="${view.id}/index.html" title="Index">Index</a>

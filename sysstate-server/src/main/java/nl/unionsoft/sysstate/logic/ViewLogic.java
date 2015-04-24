@@ -1,6 +1,7 @@
 package nl.unionsoft.sysstate.logic;
 
 import java.util.List;
+import java.util.Optional;
 
 import nl.unionsoft.common.list.model.ListRequest;
 import nl.unionsoft.common.list.model.ListResponse;
@@ -15,7 +16,7 @@ public interface ViewLogic {
 
     public void delete(Long id);
 
-    public ViewDto getView(Long viewId);
+    public Optional<ViewDto> getView(Long viewId);
     
     public ViewDto getBasicView();
 }

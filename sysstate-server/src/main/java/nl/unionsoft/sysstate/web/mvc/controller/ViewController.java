@@ -3,6 +3,7 @@ package nl.unionsoft.sysstate.web.mvc.controller;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import javax.inject.Inject;
@@ -17,6 +18,7 @@ import nl.unionsoft.sysstate.common.dto.TemplateDto;
 import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
+import nl.unionsoft.sysstate.domain.View;
 import nl.unionsoft.sysstate.logic.EcoSystemLogic;
 import nl.unionsoft.sysstate.logic.FilterLogic;
 import nl.unionsoft.sysstate.logic.PluginLogic;
@@ -64,24 +66,36 @@ public class ViewController {
     @Named("pluginLogic")
     private PluginLogic pluginLogic;
 
+
+
+    
     @RequestMapping(value = "/index", method = RequestMethod.GET)
     public void renderIndex(HttpServletResponse response, HttpServletRequest request) {
 
         Properties viewConfiguration = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);
 
         String defaultViewProperty = viewConfiguration.getProperty("defaultView");
-        ViewDto view = viewLogic.getBasicView();
+        ViewDto view = null;
         if (StringUtils.isNotEmpty(defaultViewProperty)) {
-            view = viewLogic.getView(Long.valueOf(defaultViewProperty));
+            Optional<ViewDto> optView = viewLogic.getView(Long.valueOf(defaultViewProperty));
+            if (optView.isPresent()){
+                view = optView.get();    
+            }
+        }
+        if (view == null){
+            view = viewLogic.getBasicView();
         }
         writeTemplateForView(response, request, view);
     }
 
     @RequestMapping(value = "/view/{viewId}/index.html", method = RequestMethod.GET)
     public void renderIndexView(@PathVariable("viewId") Long viewId, HttpServletRequest request, HttpServletResponse response) {
-        final ViewDto view = viewLogic.getView(viewId);
-        writeTemplateForView(response, request, view);
-
+        final Optional<ViewDto> optView = viewLogic.getView(viewId);
+        if (optView.isPresent()){
+            writeTemplateForView(response, request, optView.get());
+        } else {
+            writeTemplateForView(response, request, viewLogic.getBasicView());    
+        }
     }
 
     private void writeTemplateForView(HttpServletResponse response, HttpServletRequest request, final ViewDto view) {
@@ -165,15 +179,6 @@ public class ViewController {
     @RequestMapping(value = "/view/{viewId}/update", method = RequestMethod.POST)
     public ModelAndView handleFormUpdate(@Valid @ModelAttribute("view") final ViewDto view, final BindingResult bindingResult) {
         return handleFormCreate(view, bindingResult);
-    }
-
-    @RequestMapping(value = "/view/{viewId}/details", method = RequestMethod.GET)
-    public ModelAndView dashboard(@PathVariable("viewId") Long viewId) {
-        final ModelAndView modelAndView = new ModelAndView("details-view-manager");
-        final ViewDto view = viewLogic.getView(viewId);
-        modelAndView.addObject("viewResults", ecoSystemLogic.getEcoSystem(view));
-        return modelAndView;
-
     }
 
 }
