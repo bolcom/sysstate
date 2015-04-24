@@ -67,6 +67,10 @@ public class ViewController {
     private PluginLogic pluginLogic;
 
 
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public void renderSlash(HttpServletResponse response, HttpServletRequest request) {
+        renderIndex(response, request);
+    }
 
     
     @RequestMapping(value = "/index", method = RequestMethod.GET)

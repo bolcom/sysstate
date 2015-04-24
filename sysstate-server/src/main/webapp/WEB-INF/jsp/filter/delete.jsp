@@ -5,7 +5,7 @@
 <table>
 	<tr valign="top">
 		<td>
-			<form action="${contextPath}/filter/${filter.id}/delete/confirmed.html" method="post">
+			<sf:form commandName="filter" method="POST">
 				<table id="id-form">
 					<tr>
 						<th colspan="3"><h3>Confirm delete</h3></th>
@@ -32,7 +32,7 @@
 						<jsp:param name="type" value="submit"/>
 					</jsp:include>		
 				</table>
-			</form>
+			</sf:form>
 		</td>
 	</tr>
 </table>

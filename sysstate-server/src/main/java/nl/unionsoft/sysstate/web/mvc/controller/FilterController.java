@@ -138,7 +138,7 @@ public class FilterController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/filter/{filterId}/delete/confirmed", method = RequestMethod.POST)
+    @RequestMapping(value = "/filter/{filterId}/delete", method = RequestMethod.POST)
     public ModelAndView handleDelete(@PathVariable("filterId") final Long filterId, @RequestParam(value = "redirUrl", required = false) final String redirUrl) {
         filterLogic.delete(filterId);
         return new ModelAndView("redirect:/filter/index.html");

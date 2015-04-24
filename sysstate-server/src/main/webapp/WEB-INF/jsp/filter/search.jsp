@@ -156,6 +156,7 @@ $(function(){
 			</c:when>
 			<c:otherwise>
 				<form name="instancesForm" action="${contextPath}/instance/multi.html" id="instancesForm" method="POST">
+					<sc:csrfInput/>
 					<table id="instances-table">
 						<tr>
 							<th class="table-header-check"><a id="toggle-all" ></a> </th>

@@ -61,7 +61,10 @@ public class TemplateDaoImpl implements TemplateDao {
 
     @Override
     public void delete(String name) {
-        entityManager.remove(getTemplate(name));
+        Optional<Template> optTemplate = getTemplate(name);
+        if (optTemplate.isPresent()){
+            entityManager.remove(optTemplate.get());    
+        }
     }
 
 }
