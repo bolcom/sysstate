@@ -12,9 +12,13 @@ public enum StateType {
         return order;
     }
 
+    public static StateType defaultStateType(StateType stateType) {
+        return stateType == null ? PENDING : stateType;
+    }
+
     public static StateType transfer(StateType from, StateType to) {
         StateType result = from;
-        if (to.order > from.order) {
+        if (defaultStateType(to).order > defaultStateType(from).order) {
             result = to;
         }
         return result;

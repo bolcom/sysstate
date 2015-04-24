@@ -80,8 +80,6 @@ public class TemplateLogicImpl implements TemplateLogic {
         LOG.info("Creating templates directory...");
         Files.createDirectories(templateHome);
 
-        LOG.info("No templates found, creating some default templates...");
-
         addTemplateIfNotExists("base.css", "text/css", FREEMARKER_TEMPLATE_WRITER, "css/base.css", false);
         addTemplateIfNotExists("ci.css", "text/css", FREEMARKER_TEMPLATE_WRITER, "css/ci.css", false);
         addTemplateIfNotExists(CI_FTL_NAME, ContentType.TEXT_HTML.getMimeType(), FREEMARKER_TEMPLATE_WRITER, CI_FTL_RESOURCE, true);

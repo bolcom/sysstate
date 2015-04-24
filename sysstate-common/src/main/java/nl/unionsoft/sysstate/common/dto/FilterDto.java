@@ -113,4 +113,73 @@ public class FilterDto implements Serializable {
         this.views = views;
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((environments == null) ? 0 : environments.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((projects == null) ? 0 : projects.hashCode());
+        result = prime * result + ((search == null) ? 0 : search.hashCode());
+        result = prime * result + ((stateResolvers == null) ? 0 : stateResolvers.hashCode());
+        result = prime * result + ((states == null) ? 0 : states.hashCode());
+        result = prime * result + ((tags == null) ? 0 : tags.hashCode());
+        result = prime * result + ((views == null) ? 0 : views.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        FilterDto other = (FilterDto) obj;
+        if (environments == null) {
+            if (other.environments != null)
+                return false;
+        } else if (!environments.equals(other.environments))
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (projects == null) {
+            if (other.projects != null)
+                return false;
+        } else if (!projects.equals(other.projects))
+            return false;
+        if (search == null) {
+            if (other.search != null)
+                return false;
+        } else if (!search.equals(other.search))
+            return false;
+        if (stateResolvers == null) {
+            if (other.stateResolvers != null)
+                return false;
+        } else if (!stateResolvers.equals(other.stateResolvers))
+            return false;
+        if (states == null) {
+            if (other.states != null)
+                return false;
+        } else if (!states.equals(other.states))
+            return false;
+        if (tags == null) {
+            if (other.tags != null)
+                return false;
+        } else if (!tags.equals(other.tags))
+            return false;
+        if (views == null) {
+            if (other.views != null)
+                return false;
+        } else if (!views.equals(other.views))
+            return false;
+        return true;
+    }
+    
+    
+
 }

@@ -25,9 +25,10 @@
 					</th>
 				</#if>
 				<#list viewResult.environments as environment>
-					
+					<#assign found=false>
 					<#list viewResult.projectEnvironments as projectEnvironment>
 						<#if projectEnvironment.project.id == project.id && projectEnvironment.environment.id == environment.id>
+							<#assign found=true>
 							<td id="row_prj_${project.id}_env_${environment.id}" class="row_prj_env state_${projectEnvironment.state!'PENDING'}">
 								<div class="row_prj_env" style="position: relative;" >
 									<div">
@@ -51,6 +52,9 @@
 							</td>
 						</#if>
 					</#list>
+					<#if !found>
+						<td id="row_prj_${project.id}_env_${environment.id}" class="row_prj_env">&nbsp;</td>
+					</#if>
 				</#list>	
 			</tr>
 		</#list>			

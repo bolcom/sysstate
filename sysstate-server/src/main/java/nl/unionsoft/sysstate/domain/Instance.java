@@ -12,6 +12,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -24,7 +25,14 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
-@Table(name = "SSE_INSTANCE")
+//@formatter:off
+@Table(name = "SSE_INSTANCE", indexes = { 
+        @Index(columnList = "NAME"), 
+        @Index(columnList = "TAGS"),
+        @Index(columnList = "HOMEPAGE_URL"),
+        @Index(columnList = "PLUGIN")
+        })
+//@formatter:on
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Instance {
 
@@ -66,7 +74,7 @@ public class Instance {
 
     @OneToMany(mappedBy = "to", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<InstanceLink> incommingInstanceLinks;
-    
+
     @OneToMany(mappedBy = "from", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<InstanceLink> outgoingInstanceLinks;
 
@@ -201,9 +209,5 @@ public class Instance {
     public void setOutgoingInstanceLinks(List<InstanceLink> outgoingInstanceLinks) {
         this.outgoingInstanceLinks = outgoingInstanceLinks;
     }
-
-    
-   
-    
 
 }
