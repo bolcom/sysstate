@@ -1,12 +1,10 @@
 package nl.unionsoft.sysstate.web.rest.controller;
 
 import javax.inject.Inject;
-import javax.inject.Named;
-
-import nl.unionsoft.sysstate.common.dto.ViewDto;
-import nl.unionsoft.sysstate.sysstate_1_0.EcoSystem;
 
 import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SchedulerMetaData;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,13 +12,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller()
 public class SchedulerRestController {
+
+    private Scheduler quartzScheduler;
+
     @Inject
-    @Named("scheduler")
-    private Scheduler scheduler;
+    public SchedulerRestController(Scheduler quartzScheduler) {
+        this.quartzScheduler = quartzScheduler;
+    }
     
     @RequestMapping(value = "/scheduler/", method = RequestMethod.GET)
-    public Scheduler ecosystemForView(@PathVariable("viewId") Long viewId) {
-        final ViewDto view = viewLogic.getView(viewId);
-        return ecoSystemConverter.convert(ecoSystemLogic.getEcoSystem(view));
+    public nl.unionsoft.sysstate.sysstate_1_0.Scheduler getScheduler() throws SchedulerException {
+        nl.unionsoft.sysstate.sysstate_1_0.Scheduler scheduler = new nl.unionsoft.sysstate.sysstate_1_0.Scheduler();
+        SchedulerMetaData schedulerMetaData = quartzScheduler.getMetaData();
+        scheduler.setCapacity(schedulerMetaData.getThreadPoolSize());
+        scheduler.setLoad(quartzScheduler.getCurrentlyExecutingJobs().size());
+        return scheduler;
     }
 }

@@ -191,14 +191,37 @@ $(document).ready(function(){
 	$(document).pngFix( );
 });
 </script>
+
+	<script type="text/javascript">
+
+		(function worker() {
+			$.ajax({
+				url : "${contextPath}/services/scheduler/",
+				success : function(data) {
+					handleData(data);
+				},
+				complete : function() {
+					// Schedule the next request when the current one's complete
+					setTimeout(worker, 5000);
+				}
+			});
+		})();
+
+		function handleData(data){
+			var load = data.scheduler.load;
+			var capacity = data.scheduler.capacity;
+			var percentageLoad = Math.round((load/capacity)*100);
+			$('span#scheduler').css("width",percentageLoad + "%");
+		}
+	
+	</script>
 </head>
 <body>
 	
 	 
 	<!-- Start: page-top-outer -->
 	
-	<div id="page-top-outer">    
-	
+	<div id="page-top-outer">
 		<!-- Start: page-top -->
 		<div id="page-top">
 		 
@@ -210,6 +233,13 @@ $(document).ready(function(){
 			</div>
 			 
 			<!-- end logo -->
+			
+			<!--  start top-scheduler-->
+			<div id="top-scheduler">
+				<div class="progress-bar red stripes" style="width:100px;">
+	    			<span id="scheduler" style="width: 0%"></span>
+				</div>
+			</div>
 			
 			<!--  start top-search--> 
 			<div id="top-search">
@@ -229,6 +259,7 @@ $(document).ready(function(){
 					</table>
 				</form>
 			</div>
+
 			
 		 	<!--  end top-search -->
 		 	<div class="clear"></div>
