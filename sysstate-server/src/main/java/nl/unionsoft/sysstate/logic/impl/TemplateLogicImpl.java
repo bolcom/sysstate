@@ -5,19 +5,23 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import nl.unionsoft.common.converter.ListConverter;
+import nl.unionsoft.sysstate.Constants;
 import nl.unionsoft.sysstate.common.dto.TemplateDto;
 import nl.unionsoft.sysstate.converter.OptionalConverter;
 import nl.unionsoft.sysstate.converter.TemplateConverter;
 import nl.unionsoft.sysstate.dao.TemplateDao;
 import nl.unionsoft.sysstate.domain.Template;
+import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.TemplateLogic;
 import nl.unionsoft.sysstate.template.TemplateWriter;
 import nl.unionsoft.sysstate.template.WriterException;
@@ -50,14 +54,16 @@ public class TemplateLogicImpl implements TemplateLogic {
 
     private Path templateHome;
 
+    private PluginLogic pluginLogic;
+    
     public static final String RESOURCE_BASE = "/nl/unionsoft/sysstate/templates/";
     public static final String FREEMARKER_TEMPLATE_WRITER = "freeMarkerTemplateWriter";
 
     @Inject
-    public TemplateLogicImpl(TemplateConverter templateConverter, TemplateDao templateDao, ApplicationContext applicationContext,
+    public TemplateLogicImpl(TemplateConverter templateConverter, TemplateDao templateDao, ApplicationContext applicationContext, PluginLogic pluginLogic,
             @Value("#{properties['SYSSTATE_HOME']}") String sysstateHome) {
         this.templateHome = Paths.get(sysstateHome, "templates");
-
+        this.pluginLogic = pluginLogic;
         this.templateConverter = templateConverter;
         this.templateDao = templateDao;
         this.applicationContext = applicationContext;
@@ -118,7 +124,10 @@ public class TemplateLogicImpl implements TemplateLogic {
     @Override
     public void writeTemplate(TemplateDto template, Map<String, Object> context, Writer writer) throws WriterException {
         TemplateWriter templateWriter = applicationContext.getBean(template.getWriter(), TemplateWriter.class);
-        templateWriter.writeTemplate(template, writer, context);
+        Map<String, Object> updatedContext = new HashMap<String, Object>();
+        context.forEach((key, value) ->  updatedContext.put(key, value));
+        updatedContext.put("baseUrl", pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME).getProperty("baseUrl"));
+        templateWriter.writeTemplate(template, writer, updatedContext);
     }
 
     @Override

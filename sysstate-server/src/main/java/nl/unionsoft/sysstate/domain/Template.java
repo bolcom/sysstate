@@ -11,6 +11,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -20,7 +21,9 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
-@Table(name = "SSE_TEMPLATE")
+@Table(name = "SSE_TEMPLATE",  indexes = { 
+        @Index(columnList = "NAME")
+        })
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Template implements Serializable {
 
