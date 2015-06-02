@@ -25,12 +25,12 @@
 												
 					</jsp:include>		
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
-						<jsp:param name="path" value="templateId"/>
+						<jsp:param name="path" value="template.name"/>
 						<jsp:param name="label" value="Template"/>
 						<jsp:param name="type" value="select"/>
 						<jsp:param name="items" value="templates"/>
-						<jsp:param name="itemLabel" value="id"/>
-						<jsp:param name="itemValue" value="id"/>						
+						<jsp:param name="itemLabel" value="name"/>
+						<jsp:param name="itemValue" value="name"/>						
 					</jsp:include>										
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 						<jsp:param name="path" value="commonTags"/>

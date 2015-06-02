@@ -1,6 +1,7 @@
 package nl.unionsoft.sysstate.logic.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -9,9 +10,15 @@ import nl.unionsoft.common.converter.Converter;
 import nl.unionsoft.common.list.model.ListRequest;
 import nl.unionsoft.common.list.model.ListResponse;
 import nl.unionsoft.sysstate.common.dto.ViewDto;
+import nl.unionsoft.sysstate.converter.OptionalConverter;
+import nl.unionsoft.sysstate.dao.FilterDao;
 import nl.unionsoft.sysstate.dao.ListRequestDao;
+import nl.unionsoft.sysstate.dao.TemplateDao;
 import nl.unionsoft.sysstate.dao.ViewDao;
+import nl.unionsoft.sysstate.domain.Filter;
+import nl.unionsoft.sysstate.domain.Template;
 import nl.unionsoft.sysstate.domain.View;
+import nl.unionsoft.sysstate.logic.TemplateLogic;
 import nl.unionsoft.sysstate.logic.ViewLogic;
 
 import org.springframework.stereotype.Service;
@@ -31,6 +38,15 @@ public class ViewLogicImpl implements ViewLogic {
     private ViewDao viewDao;
 
     @Inject
+    private TemplateLogic templateLogic;
+
+    @Inject
+    private TemplateDao templateDao;
+
+    @Inject
+    private FilterDao filterDao;
+
+    @Inject
     @Named("viewConverter")
     private Converter<ViewDto, View> viewConverter;
 
@@ -44,7 +60,26 @@ public class ViewLogicImpl implements ViewLogic {
     }
 
     public void createOrUpdateView(ViewDto viewDto) {
-        viewDao.createOrUpdateView(viewDto);
+
+        View view = new View();
+        view.setId(viewDto.getId());
+        view.setCommonTags(viewDto.getCommonTags());
+        view.setName(viewDto.getName());
+        Filter filter = null;
+        if (viewDto.getFilter() != null && viewDto.getFilter().getId() != null){
+            filter = filterDao.getFilter(viewDto.getFilter().getId());
+        }
+        view.setFilter(filter);
+        
+        Template template = null;
+        if (viewDto.getTemplate() != null) {
+            Optional<Template> optTemplate = templateDao.getTemplate(viewDto.getTemplate().getName());
+            if (optTemplate.isPresent()) {
+                template = optTemplate.get();
+            }
+        }
+        view.setTemplate(template);
+        viewDao.createOrUpdateView(view);
     }
 
     public void delete(Long id) {
@@ -52,8 +87,15 @@ public class ViewLogicImpl implements ViewLogic {
 
     }
 
-    public ViewDto getView(Long viewId) {
-        return viewDao.getView(viewId);
+    public Optional<ViewDto> getView(Long viewId) {
+        return OptionalConverter.convert(viewDao.getView(viewId), viewConverter);
+    }
+
+    @Override
+    public ViewDto getBasicView() {
+        ViewDto view = new ViewDto();
+        view.setTemplate(templateLogic.getBasicTemplate());
+        return view;
     }
 
 }

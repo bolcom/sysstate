@@ -9,6 +9,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -25,14 +26,18 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
-@Table(name = "SSE_STATE")
+//@formatter:off
+@Table(name = "SSE_STATE",  indexes = { 
+        @Index(columnList = "lastUpdate"), 
+        @Index(columnList = "STATE"),
+        })
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @NamedQueries({
     @NamedQuery(name = "findLastStateForInstance", query = "FROM State WHERE instance.id = :instanceId ORDER BY lastUpdate DESC"),
     @NamedQuery(name = "findLastStateForInstanceWithStateType", query = "FROM State WHERE instance.id = :instanceId AND state = :stateType ORDER BY lastUpdate DESC")
     }
-
 )
+//@formatter:on
 public class State {
 
     @Id

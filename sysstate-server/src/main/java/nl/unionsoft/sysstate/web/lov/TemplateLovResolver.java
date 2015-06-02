@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
+import nl.unionsoft.sysstate.common.dto.TemplateDto;
 import nl.unionsoft.sysstate.common.extending.ListOfValueResolver;
 import nl.unionsoft.sysstate.domain.Template;
 import nl.unionsoft.sysstate.logic.TemplateLogic;
@@ -22,8 +23,8 @@ public class TemplateLovResolver implements ListOfValueResolver {
 
     public Map<String, String> getListOfValues(final PropertyMetaValue propertyMetaValue) {
         Map<String, String> results = new LinkedHashMap<String, String>();
-        for (Template template : templateLogic.getTemplates()) {
-            results.put(template.getId(), template.getId());
+        for (TemplateDto template : templateLogic.getTemplates()) {
+            results.put(String.valueOf(template.getId()), template.getName());
         }
         return results;
     }

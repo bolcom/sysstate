@@ -2,17 +2,22 @@ package nl.unionsoft.sysstate.web.mvc.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
+import nl.unionsoft.sysstate.logic.impl.InstanceLogicImpl;
 
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.quartz.impl.matchers.GroupMatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,6 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller()
 public class SchedulerController {
+    private static final Logger LOG = LoggerFactory.getLogger(SchedulerController.class);
 
     @Inject
     @Named("instanceLogic")
@@ -29,23 +35,28 @@ public class SchedulerController {
     @Named("scheduler")
     private Scheduler scheduler;
 
-    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/scheduler/index", method = RequestMethod.GET)
     public ModelAndView active() {
         List<Task> tasks = new ArrayList<Task>();
-        List<JobExecutionContext> jobExecutionContexts;
         try {
-            jobExecutionContexts = scheduler.getCurrentlyExecutingJobs();
-            for (JobExecutionContext jobExecutionContext : jobExecutionContexts) {
-                Trigger trigger = jobExecutionContext.getTrigger();
-                JobDetail jobDetail = jobExecutionContext.getJobDetail();
-                Task task = new Task();
-                task.setJobDetail(jobDetail);
-                task.setJobExecutionContext(jobExecutionContext);
-                task.setTriggers(new Trigger[] { trigger });
-                tasks.add(task);
-            }
+            List<JobExecutionContext> jobExecutionContexts = scheduler.getCurrentlyExecutingJobs();
+            scheduler
+                    .getJobKeys(GroupMatcher.anyJobGroup())
+                    .stream()
+                    .forEach(jobKey -> {
+                        Optional<JobExecutionContext> optionalJobExecutionContext = jobExecutionContexts.stream()
+                                .filter(jec -> jec.getJobDetail().getKey().equals(jobKey)).findFirst();
+                        try {
+                            if (optionalJobExecutionContext.isPresent()){
+                                tasks.add(new Task(scheduler.getJobDetail(jobKey), scheduler.getTriggersOfJob(jobKey), optionalJobExecutionContext));    
+                            }
+                        } catch (Exception e) {
+                            LOG.info("Unable to add task, caught Exception", e);
+                        }
+                    });
+
         } catch (SchedulerException e) {
+            LOG.info("Unable to add tasks, caught SchedulerException", e);
         }
         final ModelAndView modelAndView = new ModelAndView("scheduler-manager");
         modelAndView.addObject("tasks", tasks);
@@ -58,33 +69,22 @@ public class SchedulerController {
         List<Task> tasks = new ArrayList<Task>();
 
         try {
-            for (String groupName : scheduler.getJobGroupNames()) {
-                for (String jobName : scheduler.getJobNames(groupName)) {
-                    Task task = new Task();
-                    JobDetail jobDetail = scheduler.getJobDetail(jobName, groupName);
-                    task.setJobDetail(jobDetail);
-                    task.setTriggers(scheduler.getTriggersOfJob(jobName, groupName));
-                    tasks.add(task);
-                }
-            }
-        } catch (SchedulerException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            @SuppressWarnings("unchecked")
             List<JobExecutionContext> jobExecutionContexts = scheduler.getCurrentlyExecutingJobs();
-            for (JobExecutionContext jobExecutionContext : jobExecutionContexts) {
-                for (Task task : tasks) {
-                    JobDetail jobDetail = task.getJobDetail();
-                    if (jobDetail.getFullName().equals(jobExecutionContext.getJobDetail().getFullName())) {
-                        task.setJobExecutionContext(jobExecutionContext);
-                        break;
-                    }
-                }
-            }
+            scheduler
+                    .getJobKeys(GroupMatcher.anyJobGroup())
+                    .stream()
+                    .forEach(jobKey -> {
+                        Optional<JobExecutionContext> jobExecutionContext = jobExecutionContexts.stream()
+                                .filter(jec -> jec.getJobDetail().getKey().equals(jobKey)).findFirst();
+                        try {
+                            tasks.add(new Task(scheduler.getJobDetail(jobKey), scheduler.getTriggersOfJob(jobKey), jobExecutionContext));
+                        } catch (Exception e) {
+                            LOG.info("Unable to add task, caught Exception", e);
+                        }
+                    });
+
         } catch (SchedulerException e) {
-            e.printStackTrace();
+            LOG.info("Unable to add tasks, caught SchedulerException", e);
         }
 
         final ModelAndView modelAndView = new ModelAndView("scheduler-manager");
@@ -93,32 +93,26 @@ public class SchedulerController {
     }
 
     public class Task {
-        private JobExecutionContext jobExecutionContext;
-        private JobDetail jobDetail;
-        private Trigger[] triggers;
+        private final Optional<JobExecutionContext> jobExecutionContext;
+        private final JobDetail jobDetail;
+        private final List<? extends Trigger> triggers;
+
+        public Task(JobDetail jobDetail, List<? extends Trigger> triggers, Optional<JobExecutionContext> jobExecutionContext) {
+            this.jobExecutionContext = jobExecutionContext;
+            this.jobDetail = jobDetail;
+            this.triggers = triggers;
+        }
 
         public JobDetail getJobDetail() {
             return jobDetail;
         }
 
-        public void setJobDetail(final JobDetail jobDetail) {
-            this.jobDetail = jobDetail;
-        }
-
-        public Trigger[] getTriggers() {
+        public List<? extends Trigger> getTriggers() {
             return triggers;
         }
 
-        public void setTriggers(final Trigger[] triggers) {
-            this.triggers = triggers;
-        }
-
-        public JobExecutionContext getJobExecutionContext() {
+        public Optional<JobExecutionContext> getJobExecutionContext() {
             return jobExecutionContext;
-        }
-
-        public void setJobExecutionContext(final JobExecutionContext jobExecutionContext) {
-            this.jobExecutionContext = jobExecutionContext;
         }
 
     }

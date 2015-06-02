@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans:beans xmlns="http://www.springframework.org/schema/security" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.0.xsd">
 
 
 <!-- 
@@ -17,7 +17,7 @@ user    	//Average Joe
 
  -->
 
-	<http auto-config="true" >
+	<http auto-config="true" use-expressions="false">
 	
 		<intercept-url pattern="/environment/**" access="ROLE_EDITOR,ROLE_ADMIN" />
 		
@@ -40,7 +40,9 @@ user    	//Average Joe
 		<intercept-url pattern="/view/*/delete*" access="ROLE_EDITOR,ROLE_ADMIN" />
 		<intercept-url pattern="/view/create*" access="ROLE_EDITOR,ROLE_ADMIN" />
 		
-		<intercept-url pattern="/template/**" access="ROLE_ADMIN" />
+		<intercept-url pattern="/template/*/delete*" access="ROLE_ADMIN" />
+		<intercept-url pattern="/template/*/create*" access="ROLE_ADMIN" />
+		<intercept-url pattern="/template/*/update*" access="ROLE_ADMIN" />	
         
 		<intercept-url pattern="/filter/*/delete*" access="ROLE_EDITOR,ROLE_ADMIN" />
 		<intercept-url pattern="/instance/multi/enable*" access="ROLE_EDITOR,ROLE_ADMIN" />
@@ -57,7 +59,7 @@ user    	//Average Joe
 		<intercept-url pattern="/user/*/delete*" access="ROLE_ADMIN" />
 		<intercept-url pattern="/user/create*" access="ROLE_ADMIN" />		
 		
-
+		<intercept-url pattern="/j_spring_security_check" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		<intercept-url pattern="/instancenotifier/**" access="ROLE_ADMIN" />
 		<intercept-url pattern="/projectenvironment/**/update" access="ROLE_ADMIN" />
 		<!--
@@ -68,6 +70,7 @@ user    	//Average Joe
 		<form-login login-page="/login.html" default-target-url="/dashboard/index.html" authentication-failure-url="/login.html" always-use-default-target="false"/>
 		<logout logout-success-url="/dashboard/index.html" logout-url="/logout.html" />
 		<remember-me key="sseSecurityToken" token-validity-seconds="864000" />
+	
 	</http>
 
 	<authentication-manager>

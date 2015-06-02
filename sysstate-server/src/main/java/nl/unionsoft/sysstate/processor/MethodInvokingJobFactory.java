@@ -18,6 +18,7 @@ import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 /**
@@ -67,14 +68,22 @@ public class MethodInvokingJobFactory implements FactoryBean<JobDetail>, Initial
         final Class<?> jobClass = (concurrent ? MethodInvokingJob.class : StatefulMethodInvokingJob.class);
 
         // Build JobDetail instance.
-        jobDetail = new JobDetail(name, group, jobClass);
+        
+        JobDetailFactoryBean jobDetailFactoryBean = new JobDetailFactoryBean();
+        jobDetailFactoryBean.setName(name);
+        jobDetailFactoryBean.setGroup(group);
+        jobDetailFactoryBean.setJobClass(jobClass);
+        jobDetailFactoryBean.setDurability(true);
+
+        //jobDetail.setVolatility(false);        
+        jobDetail = jobDetailFactoryBean.getObject();
+        
         final JobDataMap jobDataMap = jobDetail.getJobDataMap();
         jobDataMap.put("beanRef", targetObjectRef);
         jobDataMap.put("methodName", targetMethodName);
         jobDataMap.put("callMethod", callMethod);
 
-        jobDetail.setVolatility(false);
-        jobDetail.setDurability(true);
+
     }
 
     /**

@@ -8,34 +8,38 @@
 				<table id="id-form">
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 						<jsp:param name="path" value="id"/>
-						<jsp:param name="label" value="ID"/>
-						<jsp:param name="comments" value="Change the ID to create a copy!"/>
+						<jsp:param name="type" value="hidden"/>
+					</jsp:include>							
+					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
+						<jsp:param name="path" value="name"/>
+						<jsp:param name="label" value="Name"/>
+						<jsp:param name="comments" value="The name of a template must be unique."/>
 					</jsp:include>
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
-						<jsp:param name="path" value="css"/>
-						<jsp:param name="label" value="Css"/>
-						<jsp:param name="type" value="textarea"/>
-						<jsp:param name="cols" value="80"/>
-						<jsp:param name="rows" value="20"/>
-					</jsp:include>					
+						<jsp:param name="path" value="writer"/>
+						<jsp:param name="label" value="Writer"/>
+						<jsp:param name="type" value="select"/>
+						<jsp:param name="items" value="templateWriters"/>
+						<jsp:param name="allowEmpty" value="false"/>
+					</jsp:include>							
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
-						<jsp:param name="path" value="renderHints"/>
-						<jsp:param name="label" value="RenderHints"/>
-						<jsp:param name="type" value="textarea"/>
-						<jsp:param name="cols" value="80"/>
-						<jsp:param name="rows" value="3"/>
-					</jsp:include>	
+						<jsp:param name="path" value="resource"/>
+						<jsp:param name="label" value="Resource"/>
+					</jsp:include>														
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
-						<jsp:param name="path" value="layout"/>
-						<jsp:param name="label" value="Layout"/>
-					</jsp:include>									
-					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
-						<jsp:param name="path" value="refresh"/>
-						<jsp:param name="label" value="Refresh"/>
+						<jsp:param name="path" value="contentType"/>
+						<jsp:param name="label" value="ContentType"/>
 					</jsp:include>	
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 						<jsp:param name="type" value="submit"/>
-					</jsp:include>						
+					</jsp:include>	
+					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
+						<jsp:param name="path" value="includeViewResults"/>
+						<jsp:param name="label" value="Include View Results"/>
+						<jsp:param name="type" value="checkbox"/>
+					</jsp:include>							
+
+								
 				</table>
 			</sf:form>
 		</td>

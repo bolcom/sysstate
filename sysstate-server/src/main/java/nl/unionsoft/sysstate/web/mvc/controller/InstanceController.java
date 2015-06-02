@@ -149,7 +149,7 @@ public class InstanceController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/instance/{instanceId}/delete/confirmed", method = RequestMethod.POST)
+    @RequestMapping(value = "/instance/{instanceId}/delete", method = RequestMethod.POST)
     public ModelAndView handleDelete(@PathVariable("instanceId") final Long instanceId, @RequestParam(value = "redirUrl", required = false) final String redirUrl) {
         instanceLogic.delete(instanceId);
         return new ModelAndView("redirect:/filter/index.html");

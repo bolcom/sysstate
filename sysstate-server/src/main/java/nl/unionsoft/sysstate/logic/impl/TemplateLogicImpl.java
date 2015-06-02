@@ -1,158 +1,154 @@
 package nl.unionsoft.sysstate.logic.impl;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import nl.unionsoft.common.converter.ListConverter;
+import nl.unionsoft.sysstate.Constants;
+import nl.unionsoft.sysstate.common.dto.TemplateDto;
+import nl.unionsoft.sysstate.converter.OptionalConverter;
+import nl.unionsoft.sysstate.converter.TemplateConverter;
 import nl.unionsoft.sysstate.dao.TemplateDao;
 import nl.unionsoft.sysstate.domain.Template;
+import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.TemplateLogic;
+import nl.unionsoft.sysstate.template.TemplateWriter;
+import nl.unionsoft.sysstate.template.WriterException;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 @Service("templateLogic")
-public class TemplateLogicImpl implements TemplateLogic, InitializingBean {
+public class TemplateLogicImpl implements TemplateLogic {
+
+    private static final String CI_FTL_NAME = "ci.html";
+    private static final String BASE_FTL_NAME = "base.html";
+    private static final String NETWORK_FTL_NAME = "network.html";
+
+    private static final String BASE_FTL_RESOURCE = "base.ftl";
+    private static final String CI_FTL_RESOURCE = "ci.ftl";
+    private static final String NETWORK_FTL_RESOURCE = "network.ftl";
+
     private static final Logger LOG = LoggerFactory.getLogger(TemplateLogicImpl.class);
 
-    @Inject
-    @Named("templateDao")
+    private ApplicationContext applicationContext;
+
     private TemplateDao templateDao;
+    
+    private TemplateConverter templateConverter;
 
-    public Template getTemplate(final String templateId) {
-        Template result = null;
-        if (StringUtils.isNotEmpty(templateId)) {
-            result = templateDao.getTemplate(templateId);
-        }
+    private Path templateHome;
 
-        if (result == null) {
-            result = SystemTemplate.BASE.asTemplate();
-        }
-        return result;
+    private PluginLogic pluginLogic;
+    
+    public static final String RESOURCE_BASE = "/nl/unionsoft/sysstate/templates/";
+    public static final String FREEMARKER_TEMPLATE_WRITER = "freeMarkerTemplateWriter";
+
+    @Inject
+    public TemplateLogicImpl(TemplateConverter templateConverter, TemplateDao templateDao, ApplicationContext applicationContext, PluginLogic pluginLogic,
+            @Value("#{properties['SYSSTATE_HOME']}") String sysstateHome) {
+        this.templateHome = Paths.get(sysstateHome, "templates");
+        this.pluginLogic = pluginLogic;
+        this.templateConverter = templateConverter;
+        this.templateDao = templateDao;
+        this.applicationContext = applicationContext;
     }
 
-    public void createOrUpdate(final Template template) {
+    @Override
+    public void createOrUpdate(TemplateDto dto) throws IOException {
+        Template template = new Template();
+        template.setId(dto.getId());
+        template.setName(dto.getName());
+        template.setWriter(dto.getWriter());
+        template.setContentType(dto.getContentType());
+        template.setResource(dto.getResource());
+        template.setIncludeViewResults(dto.getIncludeViewResults());
         templateDao.createOrUpdate(template);
     }
 
-    public Collection<Template> getTemplates() {
+    @PostConstruct
+    public void addTemplatesIfNoneExist() throws IOException {
+        LOG.info("Creating templates directory...");
+        Files.createDirectories(templateHome);
 
-        final Map<String, Template> templates = new HashMap<String, Template>();
-        for (final SystemTemplate systemTemplate : SystemTemplate.values()) {
-            final Template template = systemTemplate.asTemplate();
-            templates.put(template.getId(), template);
-        }
-
-        for (final Template template : templateDao.getTemplates()) {
-            templates.put(template.getId(), template);
-        }
-        return templates.values();
+        addTemplateIfNotExists("base.css", "text/css", FREEMARKER_TEMPLATE_WRITER, "css/base.css", false);
+        addTemplateIfNotExists("ci.css", "text/css", FREEMARKER_TEMPLATE_WRITER, "css/ci.css", false);
+        addTemplateIfNotExists(CI_FTL_NAME, ContentType.TEXT_HTML.getMimeType(), FREEMARKER_TEMPLATE_WRITER, CI_FTL_RESOURCE, true);
+        addTemplateIfNotExists(BASE_FTL_NAME, ContentType.TEXT_HTML.getMimeType(), FREEMARKER_TEMPLATE_WRITER, BASE_FTL_RESOURCE, true);
+        addTemplateIfNotExists(NETWORK_FTL_NAME, ContentType.TEXT_HTML.getMimeType(), FREEMARKER_TEMPLATE_WRITER, NETWORK_FTL_RESOURCE, false);
     }
 
-    public enum SystemTemplate {
-        //@formatter:off
-        BASE("base", "nl/unionsoft/sysstate/css/base.css", "table-overview", 30, null),
-        CI("ci", "nl/unionsoft/sysstate/css/ci.css", "table-overview", 15,"no_project_col=true\nno_weather=true\nno_popup=true\n"), 
-        PRIORITY("priority", "nl/unionsoft/sysstate/css/priority.css", "priority-overview", 15, null),
-        DRILLDOWN("drilldown", "nl/unionsoft/sysstate/css/drilldown.css", "drilldown-overview", 15, null),
-        NETWORK("network", "nl/unionsoft/sysstate/css/ci.css", "network-overview", 0, null) ;
-        //@formatter:on
-        public final String id;
-        public final String cssFile;
-        public final String layout;
-        public final int refresh;
-        public final String renderHints;
-
-        private SystemTemplate (final String id, final String cssFile, final String layout, final int refresh, final String renderHints) {
-            this.id = id;
-            this.cssFile = cssFile;
-            this.layout = layout;
-            this.refresh = refresh;
-            this.renderHints = renderHints;
+    private void addTemplateIfNotExists(String name, String contentType, String writer, String resource, Boolean includeViewResults) throws IOException {
+        Optional<Template> optTemplate = templateDao.getTemplate(name);
+        if (optTemplate.isPresent()){
+            return;
         }
-
-        public static SystemTemplate getTemplateForId(final String id) {
-            SystemTemplate result = null;
-            for (final SystemTemplate systemTemplate : values()) {
-                if (StringUtils.equalsIgnoreCase(systemTemplate.id, id)) {
-                    result = systemTemplate;
-                }
-            }
-            return result;
-        }
-
-        public Template asTemplate() {
-            Template template = null;
-            final InputStream cssInputStream = getClass().getClassLoader().getResourceAsStream(cssFile);
-            template = new Template();
-            template.setId(id);
-            template.setLayout(layout);
-            template.setRefresh(refresh);
-            template.setRenderHints(renderHints);
-            template.setSystemTemplate(true);
-            if (cssInputStream != null) {
-                try {
-                    final String css = IOUtils.toString(cssInputStream);
-                    template.setCss(css);
-                } catch(final FileNotFoundException e) {
-                    LOG.error("Unable to get template, caught FileNotFoundException", e);
-                } catch(final IOException e) {
-                    LOG.error("Unable to get template, caught IOException", e);
-                } finally {
-                    IOUtils.closeQuietly(cssInputStream);
-                }
-            }
-            return template;
-        }
+        
+        LOG.info("Adding template [{}] from resource [{}]", name);
+        Template template = new Template();
+        template.setName(name);
+        template.setWriter(writer);
+        template.setContentType(contentType);
+        template.setResource(resource);
+        template.setIncludeViewResults(includeViewResults);
+        templateDao.createOrUpdate(template);
 
     }
 
-    public void afterPropertiesSet() throws Exception {
-        for (final SystemTemplate systemTemplate : SystemTemplate.values()) {
-            final Template template = systemTemplate.asTemplate();
-            if (templateDao.getTemplate(template.getId()) == null) {
-                templateDao.createOrUpdate(template);
-            }
-        }
+    @Override
+    public void delete(String name) {
+        templateDao.delete(name);
     }
 
-    public void delete(String templateId) {
-
-        final Template template = templateDao.getTemplate(templateId);
-        if (template.isSystemTemplate()) {
-            throw new IllegalStateException("Cannot delete a system template!");
-        }
-
-        templateDao.delete(templateId);
+    @Override
+    public List<TemplateDto> getTemplates() {
+        return ListConverter.convert(templateConverter, templateDao.getTemplates());
 
     }
 
-    public void restore(String templateId) {
+    @Override
+    public void writeTemplate(TemplateDto template, Map<String, Object> context, Writer writer) throws WriterException {
+        TemplateWriter templateWriter = applicationContext.getBean(template.getWriter(), TemplateWriter.class);
+        Map<String, Object> updatedContext = new HashMap<String, Object>();
+        context.forEach((key, value) ->  updatedContext.put(key, value));
+        updatedContext.put("baseUrl", pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME).getProperty("baseUrl"));
+        templateWriter.writeTemplate(template, writer, updatedContext);
+    }
 
-        final Template template = templateDao.getTemplate(templateId);
-        if (!template.isSystemTemplate()) {
-            throw new IllegalStateException("Cannot restore  a non system template!");
-        }
+    @Override
+    public TemplateDto getTemplate(String name) throws IOException {
+        return OptionalConverter.fromOptional(templateDao.getTemplate(name), templateConverter);
+    }
 
-        final SystemTemplate systemTemplate = SystemTemplate.getTemplateForId(templateId);
-        if (systemTemplate == null) {
-            // No longer exists as an systemTempalte
-            template.setSystemTemplate(false);
-            templateDao.createOrUpdate(template);
-        } else {
-            templateDao.createOrUpdate(systemTemplate.asTemplate());
-        }
+    @Override
+    public TemplateDto getBasicTemplate() {
+        TemplateDto template = new TemplateDto();
+        template.setContentType(ContentType.TEXT_HTML.getMimeType());
+        template.setName(BASE_FTL_NAME);
+        template.setWriter(FREEMARKER_TEMPLATE_WRITER);
+        template.setResource(BASE_FTL_RESOURCE);
+        template.setIncludeViewResults(true);
+        return template;
+    }
 
+    @Override
+    public Map<String, TemplateWriter> getTemplateWriters() {
+        return applicationContext.getBeansOfType(TemplateWriter.class);
     }
 
 }

@@ -279,32 +279,8 @@
 
 
 
-	<!-- Overviews -->
-
-	<definition name="overview" template="/WEB-INF/templates/overview.jsp">
-		<put-attribute name="body" value="" />
-	</definition>
-
-	<definition name="maintenance-overview" extends="overview">
-		<put-attribute name="body" value="/WEB-INF/jsp/overview/maintenance.jsp" />
-	</definition>
-
-	<definition name="network-overview" extends="overview">
-		<put-attribute name="body" value="/WEB-INF/jsp/overview/network.jsp" />
-	</definition>
 
 
-	<definition name="table-overview" extends="overview">
-		<put-attribute name="body" value="/WEB-INF/jsp/overview/table.jsp" />
-	</definition>
-
-	<definition name="priority-overview" extends="overview">
-		<put-attribute name="body" value="/WEB-INF/jsp/overview/priority.jsp" />
-	</definition>
-	
-	<definition name="drilldown-overview" extends="overview">
-		<put-attribute name="body" value="/WEB-INF/jsp/overview/drilldown.jsp" />
-	</definition>
 
 
 </tiles-definitions>

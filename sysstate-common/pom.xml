@@ -22,19 +22,6 @@
 			<artifactId>xmlbeans</artifactId>
 		</dependency>
 		<!-- END: XMLBeans -->
-		<!-- START: GSON -->
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-		</dependency>
-		<!-- END: GSON -->
-
-		<!-- START: JSoup -->
-		<dependency>
-			<groupId>org.jsoup</groupId>
-			<artifactId>jsoup</artifactId>
-		</dependency>
-		<!-- END: JSoup -->
 
 		<!-- START: Unionsoft Commons -->
 		<dependency>
