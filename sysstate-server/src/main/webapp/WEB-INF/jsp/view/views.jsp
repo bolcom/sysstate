@@ -17,7 +17,7 @@
 			<tr class="${(varStatus.index)%2 eq 0 ? '' : 'alternate-row' }">
 				<td>${view.id}</td>
 				<td>${view.name}</td>
-				<td>${view.templateId}</td>
+				<td><a href="/template/${view.template.name}/update.html">${view.template.name}</a></td>
 				<td>${view.commonTags}</td>
 				<td>
 					<c:if test="${not empty view.filter.id}">
@@ -31,11 +31,7 @@
 					<sc:authorize url="/view/${view.id}/delete">
 						<a href="${view.id}/delete.html">Delete</a> |
 					</sc:authorize>
-					<sc:authorize url="/view/${view.id}/dashboard">
-						<a class="inline" href="${view.id}/details.html" title="Details">Details</a> | 
-					</sc:authorize>
 					<sc:authorize url="/view/${view.id}/index">
-						<a class="inline" href="${view.id}/index.html" title="Preview">Preview</a> |
 						<a href="${view.id}/index.html" title="Index">Index</a>
 					</sc:authorize>
 				</td>

@@ -26,8 +26,9 @@ public class View {
     @Column(name = "NAME", nullable = true)
     private String name;
 
-    @Column(name = "TEMPLATE", nullable = true, length = 128)
-    private String template;
+    @ManyToOne
+    @JoinColumn(name = "TPE_ID", nullable = false)
+    private Template template;
 
     @Column(name = "COMMON_TAGS", nullable = true, length = 512)
     private String commonTags;
@@ -52,13 +53,6 @@ public class View {
         this.id = id;
     }
 
-    public String getTemplate() {
-        return template;
-    }
-
-    public void setTemplate(String template) {
-        this.template = template;
-    }
 
     public String getCommonTags() {
         return commonTags;
@@ -75,5 +69,15 @@ public class View {
     public void setFilter(Filter filter) {
         this.filter = filter;
     }
+
+    public Template getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(Template template) {
+        this.template = template;
+    }
+    
+    
 
 }

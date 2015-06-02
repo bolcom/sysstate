@@ -15,7 +15,8 @@
 	
 	<title>SysState Administrator</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-
+	
+	<sc:csrfMetaTags />
 	<link rel="stylesheet" href="${contextPath}/scripts/colorbox/colorbox.css" type="text/css" />
 	<link rel="stylesheet" href="${contextPath}/css/manager.css" type="text/css"/>
 	<link rel="stylesheet" href="${contextPath}/css/progressbar.css" type="text/css"/>

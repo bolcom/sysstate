@@ -1,13 +1,15 @@
 package nl.unionsoft.sysstate.dao;
 
-import nl.unionsoft.sysstate.common.dto.ViewDto;
+import java.util.Optional;
+
+import nl.unionsoft.sysstate.domain.View;
 
 public interface ViewDao {
 
-    public void createOrUpdateView(ViewDto view);
+    public void createOrUpdateView(View view);
 
     public void delete(Long id);
 
-    public ViewDto getView(Long viewId);
+    public Optional<View> getView(Long viewId);
 
 }

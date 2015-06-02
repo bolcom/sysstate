@@ -32,7 +32,7 @@
 				<bean class="org.springframework.web.servlet.view.xml.MarshallingView">
 					<property name="marshaller" ref="jaxbMarshaller" />
 				</bean>
-				<bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" />
+				<bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView" />
 			</list>
 		</property>
 	</bean>

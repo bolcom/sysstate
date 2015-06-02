@@ -43,15 +43,15 @@
 		</c:if>
 		<!--  start login-inner -->
 		<div id="login-inner">
-			<form action="<c:url value='j_spring_security_check' />" method="post">
+			<form action="<c:url value='/login' />" method="post">
 				<table border="0" cellpadding="0" cellspacing="0">
 				<tr>
 					<th>Username</th>
-					<td><input type="text" name="j_username" value=""  class="login-inp"/></td>
+					<td><input type="text" name="username" value=""  class="login-inp"/></td>
 				</tr>
 				<tr>
 					<th>Password</th>
-					<td><input type="password" name="j_password"  onfocus="this.value=''" class="login-inp" /></td>
+					<td><input type="password" name="password"  onfocus="this.value=''" class="login-inp" /></td>
 				</tr>
 				<tr>
 					<th></th>
@@ -64,6 +64,7 @@
 					<td><input type="submit" class="submit-login"  /></td>
 				</tr>
 				</table>
+				<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
 			</form>
 		</div>
 	 	<!--  end login-inner -->

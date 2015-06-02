@@ -2,9 +2,11 @@
 <%@taglib prefix="s" uri="http://www.springframework.org/tags" %>
 <%@taglib prefix="sf" uri="http://www.springframework.org/tags/form" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@taglib prefix="sc" uri="http://www.springframework.org/security/tags"%>
 
 <h1>Confirm deletion of ${fn:length(instances)} instances.</h1>
 <form action="${contextPath}/instance/multi/delete/confirm.html" method="POST">
+	<sc:csrfInput/>
 	<table id="instances-table">
 		<tr>
 			<th class="table-header-repeat line-left"><a href="">Env</a></th>

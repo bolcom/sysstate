@@ -17,7 +17,7 @@ public class SysStateServerServiceImpl {
         ServerServiceImpl serverService = new ServerServiceImpl("/");
         serverService.setPort(CONNECTOR_PORT);
         // serverService.setOverrideDescriptor("./src/main/resources/override-web.xml");
-        serverService.setWar("./src/main/webapp");
+        serverService.setWar("src/main/webapp");
         serverService.setHost(CONNECTOR_HOST);
         
 

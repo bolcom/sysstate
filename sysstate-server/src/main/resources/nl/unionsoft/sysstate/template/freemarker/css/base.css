@@ -1,0 +1,197 @@
+div#links a span {
+	display: none;
+}
+
+.state_table {
+	border-collapse: collapse;
+}
+
+.row_env {
+	background-color: rgb(180, 180, 180);
+}
+
+.top_left {
+	/* background: url("images/left.png") no-repeat scroll left -1px; */
+	padding: 2px 7px;;
+}
+
+.top_right {
+	/* background: url("images/right.png") no-repeat scroll right -1px; */
+	
+}
+
+.bottom_left {
+	/* background: url("images/botleft.png") no-repeat scroll left bottom; */
+	
+}
+
+.bottom_right {
+	/* background: url("images/botright.png") no-repeat scroll right bottom; */
+	
+}
+
+.foot {
+	background-color: rgb(180, 180, 180);
+	border-top: 1px solid #FFFFFF;
+}
+
+.row_prj_name {
+	text-align: left;
+	padding-left: 5px;
+}
+
+.env_prj_name {
+	display: none;
+}
+
+#cg_prj {
+	width: 170px;
+}
+.cg_env {
+	width: 170px;
+	border-left: 1px Solid #FFFFFF;
+}
+
+.row_prj {
+	border-top: 1px solid #FFFFFF;
+	height: 16px;
+	vertical-align: top;
+}
+
+.row_prj_even {
+	background: none repeat scroll 0 0 rgb(255, 255, 255);
+}
+
+.row_prj_odd {
+	background: none repeat scroll 0 0 rgb(240, 240, 240);
+}
+
+body,th,td {
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+
+td {
+	vertical-align: top;
+}
+image {
+	border-style: none;
+}
+
+a:link {
+	color: Black;
+	TEXT-DECORATION: none;
+	font-weight: bold;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+a:active {
+	color: Black;
+	TEXT-DECORATION: none;
+	font-weight: bold;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+a:visited {
+	color: Black;
+	TEXT-DECORATION: none;
+	font-weight: bold;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+span.state_PENDING {
+	background: url("/images/pending.gif") no-repeat scroll left;
+}
+
+span.state_STABLE {
+	background: url("/images/stable.png") no-repeat scroll left;
+}
+
+span.state_ERROR {
+	background: url("/images/unavailable.png") no-repeat scroll left;
+}
+
+span.state_UNSTABLE {
+	background: url("/images/unstable.gif") no-repeat scroll left;
+}
+
+span.state_DISABLED {
+	background: url("images/disabled.png") no-repeat scroll left;
+}
+
+span.rating_100 {
+	background: url("images/weather/sunny.gif") no-repeat scroll left;
+}
+
+span.rating_75 {
+	background: url("images/weather/party_cloudy.gif") no-repeat scroll left;
+}
+
+span.rating_50 {
+	background: url("images/weather/cloudy.gif") no-repeat scroll left;
+}
+
+span.rating_25 {
+	background: url("images/weather/cloudy.gif") no-repeat scroll left;
+}
+
+span.rating_0 {
+	background: url("images/weather/rain.gif") no-repeat scroll left;
+}
+
+
+font.state_TOTAL {
+	font-weight: bold;
+	color: black;
+}
+
+font.state_PENDING {
+	font-weight: bold;
+	color: rgb(169, 169, 169);
+}
+font.state_DISABLED {
+	font-weight: bold;
+	color: rgb(0, 0, 0);
+}
+
+font.state_STABLE {
+	font-weight: bold;
+	color: rgb(50, 205, 50);
+}
+
+font.state_ERROR {
+	font-weight: bold;
+	color: red;
+}
+
+font.state_UNSTABLE {
+	font-weight: bold;
+	color: rgb(255, 140, 0);
+}
+
+td.state_PENDING {
+	
+}
+
+td.state_STABLE {
+	
+}
+td.state_DISABLED {
+	
+}
+img {
+	border:0px;
+}
+
+
+td.state_ERROR {
+	background-color: rgb(245, 200, 200);
+}
+
+td.state_UNSTABLE {
+	background-color: rgb(255, 200, 100);
+}
+
+td.state_NOCONFIG {
+	
+}

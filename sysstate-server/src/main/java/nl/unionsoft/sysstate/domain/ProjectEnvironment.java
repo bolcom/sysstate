@@ -9,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -18,7 +19,11 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
-@Table(name = "SSE_PROJECT_ENVIRONMENT")
+//@formatter:off
+@Table(name = "SSE_PROJECT_ENVIRONMENT", indexes = { 
+        @Index(columnList = "HOMEPAGE_URL"), 
+        })
+//@formatter:on
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class ProjectEnvironment {
 

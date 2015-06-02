@@ -10,6 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -19,7 +20,12 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
-@Table(name = "SSE_PROJECT")
+//@formatter:off
+@Table(name = "SSE_PROJECT", indexes = { 
+        @Index(columnList = "NAME"), 
+        @Index(columnList = "TAGS"),
+        })
+//@formatter:on
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Project {
 

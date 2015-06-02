@@ -12,9 +12,9 @@
 
 
 
-	<bean id="handleStateCleanupTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+	<bean id="handleStateCleanupTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
 		<property name="jobDetail">
-			<bean class="org.springframework.scheduling.quartz.JobDetailBean">
+			<bean class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
 				<property name="jobClass" value="nl.unionsoft.sysstate.job.StateCleanupJob" />
 				<property name="name" value="stateCleanupJob" />
 			</bean>
@@ -22,12 +22,11 @@
 		<property name="startDelay" value="30000" />
 		<property name="repeatCount" value="-1" />
 		<property name="repeatInterval" value="300000" /> <!-- every 300 seconds -->
-		<property name="volatility" value="false" />
 	</bean>
 
-	<bean id="handleHttpClientCleanupTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+	<bean id="handleHttpClientCleanupTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
 		<property name="jobDetail">
-			<bean class="org.springframework.scheduling.quartz.JobDetailBean">
+			<bean class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
 				<property name="jobClass" value="nl.unionsoft.sysstate.job.HttpClientCleanUpJob" />
 				<property name="name" value="httpClientCleanUpJob" />
 			</bean>
@@ -35,7 +34,6 @@
 		<property name="startDelay" value="10000" />
 		<property name="repeatCount" value="-1" />
 		<property name="repeatInterval" value="10000" /> <!-- every 10 seconds -->
-		<property name="volatility" value="false" />
 	</bean>
 
 

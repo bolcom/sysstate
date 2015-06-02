@@ -1,88 +1,126 @@
 package nl.unionsoft.sysstate.domain;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
+import javax.persistence.Index;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
-@Table(name = "SSE_TEMPLATE")
+@Table(name = "SSE_TEMPLATE",  indexes = { 
+        @Index(columnList = "NAME")
+        })
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Template implements Serializable {
 
     private static final long serialVersionUID = 4470429386271283974L;
 
-    @Id
+    @Id()
     @Column(name = "ID")
-    private String id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    
+    @Column(name = "NAME", length = 128, nullable = false, unique = true)
+    private String name;
 
-    @Lob()
-    @Column(name = "CSS", nullable = true)
-    private String css;
+    @Column(name = "WRITER", nullable = false, length = 512)
+    private String writer;
 
-    @Column(name = "NAME", nullable = true, length = 256)
-    private String layout;
+    @Column(name = "CONTENT_TYPE", nullable = false, length = 512)
+    private String contentType;
+    
+    @Column(name = "RESOURCE", nullable = false, length = 1024)
+    private String resource;
+    
+    
+    @Column(name = "INCLUDE_VIEW_RESULTS", nullable = false)
+    private Boolean includeViewResults;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "LAST_UPDATED", nullable = false)
+    private Date lastUpdated;
 
-    @Column(name = "RENDER_HINTS", nullable = true, length = 1024)
-    private String renderHints;
+    @OneToMany(mappedBy = "template", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<View> views;
 
-    @Column(name = "REFRESH", nullable = true)
-    private int refresh;
-    @Column(name = "SYSTEM_TEMPLATE", nullable = false)
-    private boolean systemTemplate;
+    public String getName() {
+        return name;
+    }
 
-    public String getId() {
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getWriter() {
+        return writer;
+    }
+
+    public void setWriter(String writer) {
+        this.writer = writer;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public List<View> getViews() {
+        return views;
+    }
+
+    public void setViews(List<View> views) {
+        this.views = views;
+    }
+
+    public Date getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(Date lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    public String getResource() {
+        return resource;
+    }
+
+    public void setResource(String resource) {
+        this.resource = resource;
+    }
+
+    public Boolean getIncludeViewResults() {
+        return includeViewResults;
+    }
+
+    public void setIncludeViewResults(Boolean includeViewResults) {
+        this.includeViewResults = includeViewResults;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(final String id) {
+    public void setId(Long id) {
         this.id = id;
     }
-
-    public String getCss() {
-        return css;
-    }
-
-    public void setCss(final String css) {
-        this.css = css;
-    }
-
-    public String getLayout() {
-        return layout;
-    }
-
-    public void setLayout(final String layout) {
-        this.layout = layout;
-    }
-
-    public int getRefresh() {
-        return refresh;
-    }
-
-    public void setRefresh(final int refresh) {
-        this.refresh = refresh;
-    }
-
-    public String getRenderHints() {
-        return renderHints;
-    }
-
-    public void setRenderHints(final String renderHints) {
-        this.renderHints = renderHints;
-    }
-
-    public boolean isSystemTemplate() {
-        return systemTemplate;
-    }
-
-    public void setSystemTemplate(boolean systemTemplate) {
-        this.systemTemplate = systemTemplate;
-    }
+    
+    
 
 }

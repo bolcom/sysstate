@@ -11,12 +11,12 @@ import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
-import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
 import nl.unionsoft.sysstate.logic.FilterLogic;
+import nl.unionsoft.sysstate.logic.TemplateLogic;
 import nl.unionsoft.sysstate.logic.ViewLogic;
 
 import org.slf4j.Logger;
@@ -48,23 +48,32 @@ public class SetupListener implements InitializingBean {
     @Inject
     @Named("viewLogic")
     private ViewLogic viewLogic;
+    
+    @Inject
+    @Named("templateLogic")
+    private TemplateLogic templateLogic;
 
     @Inject
     @Named("projectEnvironmentLogic")
     private ProjectEnvironmentLogic projectEnvironmentLogic;
 
+  
+    
     public void afterPropertiesSet() throws Exception {
 
         boolean hasNoProjects = projectLogic.getProjects().isEmpty();
         boolean hasNoEnvironments = environmentLogic.getEnvironments().isEmpty();
         boolean hasNoInstances = instanceLogic.getInstances().isEmpty();
-
+        
+        
         boolean initialSetup = hasNoProjects && hasNoEnvironments && hasNoInstances;
 
         if (initialSetup) {
+            
+            
+            
             LOG.info("No projects found, creating some default projects...");
             // No projects defined..
-
             createProject("GOOG");
             createProject("YAHO");
             createProject("BING");
@@ -99,24 +108,21 @@ public class SetupListener implements InitializingBean {
                 filterDto.setName("Production");
                 filterLogic.createOrUpdate(filterDto);
 
-                if (viewLogic.getViews().isEmpty()) {
-                    LOG.info("No views found, creating a default view...");
-                    ViewDto viewDto = new ViewDto();
-                    viewDto.setFilter(filterDto);
-                    viewDto.setName("Production CI View");
-                    viewDto.setTemplateId("ci");
-                    viewLogic.createOrUpdateView(viewDto);
-                }
+               
             }
         }
     }
 
+    
+    
     private Map<String, String> createHttpConfiguration(final String url) {
         Map<String, String> configuration = new HashMap<String, String>();
         configuration.put("url", url);
         return configuration;
     }
 
+   
+    
     private void addTestInstance(final String name, final String projectName, final String environmentName, final Map<String, String> configuration,
             final String homepageUrl, final String plugin) {
         ProjectEnvironmentDto projectEnvironment = projectEnvironmentLogic.getProjectEnvironment(projectName, environmentName);
