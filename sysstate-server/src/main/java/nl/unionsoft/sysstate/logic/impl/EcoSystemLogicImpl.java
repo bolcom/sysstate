@@ -1,5 +1,7 @@
 package nl.unionsoft.sysstate.logic.impl;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -25,6 +27,9 @@ import nl.unionsoft.sysstate.logic.EcoSystemLogic;
 import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.util.CountUtil;
 
+import org.apache.commons.beanutils.BeanComparator;
+import org.apache.commons.collections.comparators.ComparableComparator;
+import org.apache.commons.collections.comparators.NullComparator;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,8 +61,6 @@ public class EcoSystemLogicImpl implements EcoSystemLogic {
         }
         final ViewResultDto viewResult = new ViewResultDto(view);
         
-        
-        
         final ListResponse<InstanceDto> instanceListResponse = instanceLogic.getInstances(filter);
         final List<InstanceDto> instances = instanceListResponse.getResults();
         
@@ -70,8 +73,17 @@ public class EcoSystemLogicImpl implements EcoSystemLogic {
         
         viewResult.getInstances().addAll(instances);
         countInstances(instances, viewResult.getInstanceCount());
+        
+        sortViewResult(viewResult);
 
         return viewResult;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private void sortViewResult(final ViewResultDto viewResult) {
+        final Comparator orderComparator = new BeanComparator("order", new NullComparator(ComparableComparator.getInstance()));
+        Collections.sort(viewResult.getProjects(), orderComparator);
+        Collections.sort(viewResult.getEnvironments(), orderComparator);
     }
 
     private void enrichProjectEnvironments(Set<ProjectEnvironmentDto> projectEnvironments, List<InstanceDto> instances, String commonDescriptionTags) {
