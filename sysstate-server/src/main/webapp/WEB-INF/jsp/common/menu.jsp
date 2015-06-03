@@ -74,16 +74,6 @@
     <li><a href="${contextPath}/scheduler/index.html"><b>Schedule</b>
         <!--[if IE 7]><!--></a>
     <!--<![endif]--> <!--[if lte IE 6]><table><tr><td><![endif]-->
-        <div class="select_sub show">
-            <ul class="sub">
-                <sc:authorize url="/scheduler">
-                    <li><a href="${contextPath}/scheduler/index.html">Active</a></li>
-                </sc:authorize>
-                <sc:authorize url="/scheduler/all">
-                    <li><a href="${contextPath}/scheduler/all/index.html">All</a></li>
-                </sc:authorize>
-            </ul>
-        </div> <!--[if lte IE 6]></td></tr></table></a><![endif]--></li>
 </ul>
 <div class="nav-divider">&nbsp;</div>
 <ul class="select">

@@ -5,17 +5,27 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import nl.unionsoft.sysstate.common.dto.Task;
+import nl.unionsoft.sysstate.common.dto.InstanceTaskDto;
+import nl.unionsoft.sysstate.common.dto.TaskDto;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.SchedulerLogic;
 
+import org.apache.commons.beanutils.BeanComparator;
+import org.apache.commons.collections.comparators.ComparableComparator;
+import org.apache.commons.collections.comparators.NullComparator;
+import org.apache.commons.collections.comparators.ReverseComparator;
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerMetaData;
@@ -38,8 +48,8 @@ public class SchedulerLogicImpl implements SchedulerLogic {
     private Scheduler scheduler;
 
     @Override
-    public List<Task> retrieveTasks() {
-        List<Task> tasks = new ArrayList<Task>();
+    public List<TaskDto> retrieveTasks() {
+        List<TaskDto> tasks = new ArrayList<TaskDto>();
         try {
             List<JobExecutionContext> jobExecutionContexts = scheduler.getCurrentlyExecutingJobs();
             LocalDateTime now = LocalDateTime.now();
@@ -50,8 +60,8 @@ public class SchedulerLogicImpl implements SchedulerLogic {
                     .forEach(jobKey -> {
 
                         try {
-                            Task task = new Task();
-                            // JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+                            TaskDto task = createTask(jobKey);
+
                             task.setName(jobKey.getName());
                             task.setGroup(jobKey.getGroup());
                             // List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
@@ -63,33 +73,52 @@ public class SchedulerLogicImpl implements SchedulerLogic {
                                 JobExecutionContext jobExecutionContext = optionalJobExecutionContext.get();
                                 LocalDateTime fireTime = jobExecutionContext.getFireTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
-                                
                                 Duration duration = Duration.between(fireTime, now);
                                 task.setRunTimeMillis(duration.toMillis());
-                                
-                                LocalDateTime tempDateTime = LocalDateTime.from( fireTime );
-                                long hours = tempDateTime.until( now, ChronoUnit.HOURS);
-                                tempDateTime = tempDateTime.plusHours( hours );
 
-                                long minutes = tempDateTime.until( now, ChronoUnit.MINUTES);
-                                tempDateTime = tempDateTime.plusMinutes( minutes );
+                                LocalDateTime tempDateTime = LocalDateTime.from(fireTime);
+                                long hours = tempDateTime.until(now, ChronoUnit.HOURS);
+                                tempDateTime = tempDateTime.plusHours(hours);
+
+                                long minutes = tempDateTime.until(now, ChronoUnit.MINUTES);
+                                tempDateTime = tempDateTime.plusMinutes(minutes);
 
                                 long seconds = tempDateTime.until(now, ChronoUnit.SECONDS);
-                                
-                                task.setRunTime(String.format("%sh %sm %ss", new Object[]{hours, minutes, seconds}));
+
+                                task.setRunTime(String.format("%sh %sm %ss", new Object[] { hours, minutes, seconds }));
                             }
                             tasks.add(task);
                         } catch (Exception e) {
                             LOG.error("Unable to get task for jobKey [{}]", jobKey, e);
                         }
-
                     });
 
         } catch (SchedulerException e) {
             LOG.info("Unable to add tasks, caught SchedulerException", e);
         }
+        sortTasks(tasks);
         return tasks;
 
+    }
+
+    private void sortTasks(List<TaskDto> tasks) {
+        final Comparator orderComparator = new BeanComparator("runTimeMillis", new NullComparator(new ReverseComparator(ComparableComparator.getInstance())));
+        Collections.sort(tasks, orderComparator);
+    }
+
+    private TaskDto createTask(JobKey jobKey) throws SchedulerException {
+        if (jobKey.getGroup().equalsIgnoreCase("instances")) {
+            JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+            JobDataMap jobDataMap = jobDetail.getJobDataMap();
+            Long instanceId = jobDataMap.getLong("instanceId");
+            InstanceTaskDto instanceTask = new InstanceTaskDto();
+            if (instanceId != null && instanceId > 0) {
+                instanceTask.setInstance(instanceLogic.getInstance(instanceId));
+            }
+            return instanceTask;
+        } else {
+            return new TaskDto();
+        }
     }
 
     @Override

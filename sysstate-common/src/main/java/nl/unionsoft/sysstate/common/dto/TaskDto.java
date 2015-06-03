@@ -1,13 +1,20 @@
 package nl.unionsoft.sysstate.common.dto;
 
-import java.util.Date;
-
-public class Task {
+public class TaskDto {
 
     private String name;
     private String group;
     private String runTime;
     private long runTimeMillis;
+    private final String type;
+
+    protected TaskDto(String type) {
+        this.type = type;
+    }
+
+    public TaskDto() {
+        this("generic");
+    }
 
     public String getName() {
         return name;
@@ -39,6 +46,10 @@ public class Task {
 
     public void setRunTimeMillis(long runTimeMillis) {
         this.runTimeMillis = runTimeMillis;
+    }
+
+    public String getType() {
+        return type;
     }
 
 }
