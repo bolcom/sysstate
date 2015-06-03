@@ -10,28 +10,16 @@
 			<tr>
 				<th class="table-header-repeat line-left"><a href="">Name</a></th>
 				<th class="table-header-repeat line-left"><a href="">Group</a></th>
-				<th class="table-header-repeat line-left"><a href="">PreviousFireTime</a></th>
-				<th class="table-header-repeat line-left"><a href="">NextFireTime</a></th>
-				<th class="table-header-repeat line-left"><a href="">EndTime</a></th>
 				<th class="table-header-repeat line-left"><a href="">RunTime</a></th>
+				<th class="table-header-repeat line-left"><a href="">RunTime Milliseconds</a></th>
 			</tr>
 		 	<c:forEach var="task" items="${tasks}" varStatus="vsTasks">
-		 		<c:set var="triggers" value="${task.triggers }"/>
-		 		<c:set var="jobExecutionContext" value="${task.jobExecutionContext }"/>
-		 		<c:forEach var="trigger" items="${triggers}" varStatus="vsTriggers">
-			 		<tr>
-			 			<c:set var="jobDetail" value="${task.jobDetail}"/>
-			 			<c:if test="${vsTriggers.first}">
-				 			<td rowspan="${fn:length(triggers)}">${jobDetail.name}</td>
-				 			<td rowspan="${fn:length(triggers)}">${jobDetail.group}</td>
-			 			</c:if>
-			 			<td>${trigger.previousFireTime }</td>
-			 			<td>${trigger.nextFireTime }</td>
-			 			<td>${trigger.endTime}</td>
-			 			<td>${jobExecutionContext.jobRunTime}</td>
+		 		<tr>
+		 			<td>${task.name}</td>
+		 			<td>${task.group}</td>
+		 			<td>${task.runTime}</td>
+		 			<td>${task.runTimeMillis}ms</td>
 			 		</tr>
-		 		
-		 		</c:forEach>
 		 	</c:forEach> 
 		</table>
 </div>

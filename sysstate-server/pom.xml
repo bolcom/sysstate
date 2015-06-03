@@ -312,18 +312,28 @@
         </dependency>
         <!-- END: JodaTime -->
 
-        <!-- START: Jetty -->
-        <dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>jetty</artifactId>
+		<!-- START: Jetty -->
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>9.2.11.v20150529</version>
 			<scope>provided</scope>
 		</dependency>
-        <dependency>
-            <groupId>org.mortbay.jetty</groupId>
-            <artifactId>jsp-2.1-jetty</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <!-- END: Jetty -->
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-jsp</artifactId>
+			<version>9.2.11.v20150529</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-webapp</artifactId>
+			<version>9.2.11.v20150529</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<!-- END: Jetty -->
 
     </dependencies>
     <build>

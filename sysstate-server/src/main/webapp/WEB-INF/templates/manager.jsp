@@ -184,14 +184,7 @@ $('#d').trigger('change');
 </script>
 
 
-<!-- MUST BE THE LAST SCRIPT IN <HEAD></HEAD></HEAD> png fix -->
-<script src="${contextPath}/js/jquery/jquery.pngFix.pack.js" type="text/javascript"></script>
-<script type="text/javascript">
-$(document).ready(function(){
-	$(document).pngFix( );
-});
-</script>
-
+	<!-- Scheduler Load -->
 	<script type="text/javascript">
 
 		(function worker() {
@@ -213,8 +206,19 @@ $(document).ready(function(){
 			var percentageLoad = Math.round((load/capacity)*100);
 			$('span#scheduler').css("width",percentageLoad + "%");
 		}
-	
+		
 	</script>
+
+
+
+	<!-- MUST BE THE LAST SCRIPT IN <HEAD></HEAD></HEAD> png fix -->
+	<script src="${contextPath}/js/jquery/jquery.pngFix.pack.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$(document).pngFix( );
+	});
+	</script>
+
 </head>
 <body>
 	
@@ -236,9 +240,11 @@ $(document).ready(function(){
 			
 			<!--  start top-scheduler-->
 			<div id="top-scheduler">
-				<div class="progress-bar red stripes" style="width:100px;">
-	    			<span id="scheduler" style="width: 0%"></span>
-				</div>
+				<a href="${contextPath}/scheduler/index.html">
+					<div class="progress-bar blue stripes" style="width:100px;">
+		    			<span id="scheduler" style="width: 0%"></span>
+					</div>
+				</a>
 			</div>
 			
 			<!--  start top-search--> 
