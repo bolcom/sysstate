@@ -127,13 +127,13 @@ public class InstanceController {
     }
 
     @RequestMapping(value = "/instance/{instanceId}/refresh", method = RequestMethod.GET)
-    public ModelAndView refresh(@PathVariable(value = "instanceId") final Long instanceId, @RequestParam(value = "redirUrl", required = false) final String redirUrl) {
+    public ModelAndView refresh(@PathVariable(value = "instanceId") final Long instanceId) {
         instanceLogic.queueForUpdate(instanceId);
         return new ModelAndView("redirect:/filter/index.html");
     }
 
     @RequestMapping(value = "/instance/{instanceId}/toggle/enabled", method = RequestMethod.GET)
-    public ModelAndView toggleEnabled(@PathVariable(value = "instanceId") final Long instanceId, @RequestParam(value = "redirUrl", required = false) final String redirUrl) {
+    public ModelAndView toggleEnabled(@PathVariable(value = "instanceId") final Long instanceId) {
         final InstanceDto instance = instanceLogic.getInstance(instanceId);
         instance.setEnabled(!instance.isEnabled());
         instanceLogic.createOrUpdateInstance(instance);
@@ -150,7 +150,7 @@ public class InstanceController {
     }
 
     @RequestMapping(value = "/instance/{instanceId}/delete", method = RequestMethod.POST)
-    public ModelAndView handleDelete(@PathVariable("instanceId") final Long instanceId, @RequestParam(value = "redirUrl", required = false) final String redirUrl) {
+    public ModelAndView handleDelete(@PathVariable("instanceId") final Long instanceId) {
         instanceLogic.delete(instanceId);
         return new ModelAndView("redirect:/filter/index.html");
     }

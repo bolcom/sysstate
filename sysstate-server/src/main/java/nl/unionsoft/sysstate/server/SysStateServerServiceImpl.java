@@ -1,52 +1,40 @@
-
 package nl.unionsoft.sysstate.server;
 
-import java.util.Scanner;
-
-import nl.unionsoft.common.server.ServerServiceImpl;
-
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.DefaultHandler;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.webapp.WebAppContext;
 
 public class SysStateServerServiceImpl {
 
+    private static final String WAR = "src/main/webapp";
     public static final String CONNECTOR_HOST = "localhost";
     public static final int CONNECTOR_PORT = 8680;
 
-    public static void main(final String[] args) {
+    public static final String CONTEXT_PATH = "/";
 
-        ServerServiceImpl serverService = new ServerServiceImpl("/");
-        serverService.setPort(CONNECTOR_PORT);
-        // serverService.setOverrideDescriptor("./src/main/resources/override-web.xml");
-        serverService.setWar("src/main/webapp");
-        serverService.setHost(CONNECTOR_HOST);
+    public static void main(final String[] args) throws Exception {
+
+        Server server = new Server();
+
+
+        final WebAppContext webappcontext = new WebAppContext();
+        webappcontext.setContextPath(CONTEXT_PATH);
+        webappcontext.setWar(WAR);
+
+        final HandlerCollection handlers = new HandlerCollection();
+        handlers.setHandlers(new Handler[] { webappcontext, new DefaultHandler() });
+        server.setHandler(handlers);
+
+        final ServerConnector connector = new ServerConnector(server);
+        connector.setPort(CONNECTOR_PORT);
+        server.setConnectors(new Connector[] {connector});
         
-
-        if (serverService.startServer()) {
-            final Scanner scanner = new Scanner(System.in);
-
-            try {
-                String line;
-                boolean keepAsking = true;
-                while (keepAsking) {
-                    System.out.print("(start/stop/exit/restart):");
-                    line = StringUtils.lowerCase(scanner.nextLine());
-                    if ("exit".equals(line)) {
-                        serverService.stopServer();
-                        keepAsking = false;
-                    } else if ("start".equals(line)) {
-                        serverService.startServer();
-                    } else if ("stop".equals(line)) {
-                        serverService.stopServer();
-                    } else if ("restart".equals(line)) {
-                        serverService.stopServer();
-                        serverService.startServer();
-                    }
-                }
-            } finally {
-                scanner.close();
-            }
-        }
-
+        server.start();
+        server.join();
+        
     }
-
 }

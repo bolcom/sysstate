@@ -19,6 +19,7 @@
 	<sc:csrfMetaTags />
 	<link rel="stylesheet" href="${contextPath}/scripts/colorbox/colorbox.css" type="text/css" />
 	<link rel="stylesheet" href="${contextPath}/css/manager.css" type="text/css"/>
+	<link rel="stylesheet" href="${contextPath}/css/progressbar.css" type="text/css"/>
 	<link rel="stylesheet" href="${contextPath}/css/screen.css" type="text/css" media="screen" title="default" />
 	<!--[if IE]>
 		<link rel="stylesheet" media="all" type="text/css" href="${contextPath}/css/pro_dropline_ie.css" />
@@ -183,21 +184,48 @@ $('#d').trigger('change');
 </script>
 
 
-<!-- MUST BE THE LAST SCRIPT IN <HEAD></HEAD></HEAD> png fix -->
-<script src="${contextPath}/js/jquery/jquery.pngFix.pack.js" type="text/javascript"></script>
-<script type="text/javascript">
-$(document).ready(function(){
-	$(document).pngFix( );
-});
-</script>
+	<!-- Scheduler Load -->
+	<script type="text/javascript">
+
+		(function worker() {
+			$.ajax({
+				url : "${contextPath}/services/scheduler/",
+				success : function(data) {
+					handleData(data);
+				},
+				complete : function() {
+					// Schedule the next request when the current one's complete
+					setTimeout(worker, 5000);
+				}
+			});
+		})();
+
+		function handleData(data){
+			var load = data.scheduler.load;
+			var capacity = data.scheduler.capacity;
+			var percentageLoad = Math.round((load/capacity)*100);
+			$('span#scheduler').css("width",percentageLoad + "%");
+		}
+		
+	</script>
+
+
+
+	<!-- MUST BE THE LAST SCRIPT IN <HEAD></HEAD></HEAD> png fix -->
+	<script src="${contextPath}/js/jquery/jquery.pngFix.pack.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$(document).pngFix( );
+	});
+	</script>
+
 </head>
 <body>
 	
 	 
 	<!-- Start: page-top-outer -->
 	
-	<div id="page-top-outer">    
-	
+	<div id="page-top-outer">
 		<!-- Start: page-top -->
 		<div id="page-top">
 		 
@@ -209,6 +237,15 @@ $(document).ready(function(){
 			</div>
 			 
 			<!-- end logo -->
+			
+			<!--  start top-scheduler-->
+			<div id="top-scheduler">
+				<a href="${contextPath}/scheduler/index.html">
+					<div class="progress-bar blue stripes" style="width:100px;">
+		    			<span id="scheduler" style="width: 0%"></span>
+					</div>
+				</a>
+			</div>
 			
 			<!--  start top-search--> 
 			<div id="top-search">
@@ -228,6 +265,7 @@ $(document).ready(function(){
 					</table>
 				</form>
 			</div>
+
 			
 		 	<!--  end top-search -->
 		 	<div class="clear"></div>

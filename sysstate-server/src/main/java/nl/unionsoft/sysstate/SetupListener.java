@@ -48,7 +48,7 @@ public class SetupListener implements InitializingBean {
     @Inject
     @Named("viewLogic")
     private ViewLogic viewLogic;
-    
+
     @Inject
     @Named("templateLogic")
     private TemplateLogic templateLogic;
@@ -57,21 +57,16 @@ public class SetupListener implements InitializingBean {
     @Named("projectEnvironmentLogic")
     private ProjectEnvironmentLogic projectEnvironmentLogic;
 
-  
-    
     public void afterPropertiesSet() throws Exception {
 
         boolean hasNoProjects = projectLogic.getProjects().isEmpty();
         boolean hasNoEnvironments = environmentLogic.getEnvironments().isEmpty();
         boolean hasNoInstances = instanceLogic.getInstances().isEmpty();
-        
-        
+
         boolean initialSetup = hasNoProjects && hasNoEnvironments && hasNoInstances;
 
         if (initialSetup) {
-            
-            
-            
+
             LOG.info("No projects found, creating some default projects...");
             // No projects defined..
             createProject("GOOG");
@@ -93,13 +88,13 @@ public class SetupListener implements InitializingBean {
 
             LOG.info("No instances found, creating some default instances...");
             addTestInstance("google", "GOOG", "PROD", createHttpConfiguration("http://www.google.nl"), "http://www.google.nl", "httpStateResolver");
-            addTestInstance("google", "GOOG", "MOCK", null, "http://www.yahoo.com", "mockStateResolver");
+            addTestInstance("google", "GOOG", "MOCK", createMockConfiguration(60000), "http://www.yahoo.com", "mockStateResolver");
             addTestInstance("yahoo", "YAHO", "PROD", createHttpConfiguration("http://www.yahoo.com"), "http://www.yahoo.com", "httpStateResolver");
-            addTestInstance("yahoo", "YAHO", "MOCK", null, "http://www.yahoo.com", "mockStateResolver");
+            addTestInstance("yahoo", "YAHO", "MOCK", createMockConfiguration(30000), "http://www.yahoo.com", "mockStateResolver");
             addTestInstance("bing", "BING", "PROD", createHttpConfiguration("http://www.bing.com"), "http://www.bing.com", "httpStateResolver");
-            addTestInstance("bing", "BING", "MOCK", null, "http://www.bing.com", "mockStateResolver");
+            addTestInstance("bing", "BING", "MOCK", createMockConfiguration(15000), "http://www.bing.com", "mockStateResolver");
             addTestInstance("ilse", "ILSE", "PROD", createHttpConfiguration("http://www.ilse.nl"), "http://www.ilse.nl", "httpStateResolver");
-            addTestInstance("ilse", "ILSE", "MOCK", null, "http://www.ilse.nl", "mockStateResolver");
+            addTestInstance("ilse", "ILSE", "MOCK", createMockConfiguration(7500), "http://www.ilse.nl", "mockStateResolver");
 
             if (filterLogic.getFilters().isEmpty()) {
                 LOG.info("No filters found, creating a default filter...");
@@ -108,21 +103,22 @@ public class SetupListener implements InitializingBean {
                 filterDto.setName("Production");
                 filterLogic.createOrUpdate(filterDto);
 
-               
             }
         }
     }
 
-    
-    
+    private Map<String, String> createMockConfiguration(int sleep) {
+        Map<String, String> configuration = new HashMap<String, String>();
+        configuration.put("sleep", String.valueOf(sleep));
+        return configuration;
+    }
+
     private Map<String, String> createHttpConfiguration(final String url) {
         Map<String, String> configuration = new HashMap<String, String>();
         configuration.put("url", url);
         return configuration;
     }
 
-   
-    
     private void addTestInstance(final String name, final String projectName, final String environmentName, final Map<String, String> configuration,
             final String homepageUrl, final String plugin) {
         ProjectEnvironmentDto projectEnvironment = projectEnvironmentLogic.getProjectEnvironment(projectName, environmentName);
