@@ -7,6 +7,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +21,7 @@ import nl.unionsoft.sysstate.common.logic.SchedulerLogic;
 
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.collections.comparators.ComparableComparator;
+import org.apache.commons.collections.comparators.ComparatorChain;
 import org.apache.commons.collections.comparators.NullComparator;
 import org.apache.commons.collections.comparators.ReverseComparator;
 import org.quartz.JobDataMap;
@@ -29,6 +31,7 @@ import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerMetaData;
+import org.quartz.Trigger;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +67,10 @@ public class SchedulerLogicImpl implements SchedulerLogic {
 
                             task.setName(jobKey.getName());
                             task.setGroup(jobKey.getGroup());
-                            // List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
+                            List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
+
+                            task.setNextRunTime(triggers.stream().map(t -> t.getNextFireTime()).min(Date::compareTo).get());
+                            task.setLastRunTime(triggers.stream().map(t -> t.getPreviousFireTime()).max(Date::compareTo).get());
 
                             Optional<JobExecutionContext> optionalJobExecutionContext = jobExecutionContexts.stream()
                                     .filter(jec -> jec.getJobDetail().getKey().equals(jobKey)).findFirst();
@@ -102,8 +108,10 @@ public class SchedulerLogicImpl implements SchedulerLogic {
     }
 
     private void sortTasks(List<TaskDto> tasks) {
-        final Comparator orderComparator = new BeanComparator("runTimeMillis", new NullComparator(new ReverseComparator(ComparableComparator.getInstance())));
-        Collections.sort(tasks, orderComparator);
+        ComparatorChain comparatorChain = new ComparatorChain();
+        comparatorChain.addComparator(new BeanComparator("runTimeMillis", new NullComparator(new ReverseComparator(ComparableComparator.getInstance()))));
+        comparatorChain.addComparator(new BeanComparator("nextRunTime", new NullComparator(ComparableComparator.getInstance())));
+        Collections.sort(tasks, comparatorChain);
     }
 
     private TaskDto createTask(JobKey jobKey) throws SchedulerException {
