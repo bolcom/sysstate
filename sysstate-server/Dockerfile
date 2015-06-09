@@ -10,12 +10,10 @@ FROM tomcat:8-jre8
 
 ENV SYSSTATE_HOME /usr/local/tomcat/.sysstate
 
-ADD log4j.xml /usr/local/tomcat/log4j.xml
-ENV JAVA_OPTS -Dlog4j.configuration=file:/usr/local/tomcat/log4j.xml
+ADD log4j.xml /usr/local/tomcat/.sysstate/log4j.xml
+ENV JAVA_OPTS -Dlog4j.configuration=file:/usr/local/tomcat/.sysstate/log4j.xml -Xmx1024m -Xms256m
 
-RUN mkdir /usr/local/tomcat/.sysstate
 RUN rm -rf /usr/local/tomcat/webapps/*
 COPY /target/sysstate.war /usr/local/tomcat/webapps/ROOT.war
-
 
 VOLUME  /usr/local/tomcat/.sysstate
