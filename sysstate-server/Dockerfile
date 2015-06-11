@@ -11,7 +11,11 @@ FROM tomcat:8-jre8
 ENV SYSSTATE_HOME /usr/local/tomcat/.sysstate
 
 ADD log4j.xml /usr/local/tomcat/.sysstate/log4j.xml
-ENV JAVA_OPTS -Dlog4j.configuration=file:/usr/local/tomcat/.sysstate/log4j.xml -Xmx1024m -Xms256m
+ENV JAVA_OPTS -server -Dlog4j.configuration=file:/usr/local/tomcat/.sysstate/log4j.xml \
+			  -Xmx512m -Xms128m -XX:MaxMetaspaceSize=512m \
+			  -XX:+PrintGCDateStamps -verbose:gc -XX:+PrintGCDetails -Xloggc:"/usr/local/tomcat/.sysstate/log/jvm.log" \ 
+			  -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=10 -XX:GCLogFileSize=100M \
+			  -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/usr/local/tomcat/.sysstate/hprof-dumps
 
 RUN rm -rf /usr/local/tomcat/webapps/*
 COPY /target/sysstate.war /usr/local/tomcat/webapps/ROOT.war

@@ -42,7 +42,7 @@ public class HttpStateResolverImpl implements StateResolver {
 
         HttpClient httpClient = httpClientLogic.getHttpClient(StringUtils.defaultIfEmpty(properties.get("httpClientId"), "default"));
         state.setState(StateType.STABLE);
-        LOG.info("Preparing httpRequest...");
+        LOG.debug("Preparing httpRequest...");
 
         final String uri = processUri(properties.get(URL));
         if (StringUtils.isEmpty(uri)) {
@@ -58,10 +58,10 @@ public class HttpStateResolverImpl implements StateResolver {
 
         final Long startTime = System.currentTimeMillis();
         try {
-            LOG.info("Executing httpRequest...");
+            LOG.debug("Executing httpRequest...");
             final HttpResponse httpResponse = httpClient.execute(httpGet);
             final long responseTime = System.currentTimeMillis() - startTime;
-            LOG.info("HttpRequest complete, execution took {} ms", responseTime);
+            LOG.debug("HttpRequest complete, execution took {} ms", responseTime);
             state.setResponseTime(responseTime);
             // FIXME
             handleHttpResponse(state, properties, httpResponse, instance);

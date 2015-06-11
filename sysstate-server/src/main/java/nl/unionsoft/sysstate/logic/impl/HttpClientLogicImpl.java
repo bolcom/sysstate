@@ -39,7 +39,7 @@ public class HttpClientLogicImpl implements HttpClientLogic, InitializingBean {
 
     public void closeIdleConnections() {
         for (Entry<String, HttpClient> entry : httpClients.entrySet()) {
-            LOG.info("Closing idle httpClient Connections for client '{}'", entry.getKey());
+            LOG.debug("Closing idle httpClient Connections for client '{}'", entry.getKey());
             HttpClient httpClient = entry.getValue();
             ClientConnectionManager clientConnectionManager = httpClient.getConnectionManager();
             clientConnectionManager.closeExpiredConnections();
