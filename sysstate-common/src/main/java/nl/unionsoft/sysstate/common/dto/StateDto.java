@@ -18,11 +18,20 @@ public class StateDto {
     private int rating;
     public static final int DESCRIPTION_MAX_LENGTH = 15;
 
-    public StateDto () {
+    public static final StateDto PENDING = new StateDto(StateType.PENDING, "Pending");
+    
+    public StateDto() {
         message = new StringBuilder(4012);
         rating = -1;
         responseTime = 0;
         creationDate = new DateTime();
+    }
+
+    public StateDto(StateType stateType, String description) {
+        this();
+        this.state = stateType;
+        this.description = description;
+        this.lastUpdate = new DateTime();
     }
 
     public String getDescription() {
@@ -52,7 +61,6 @@ public class StateDto {
     public String getMessage() {
         return StringUtils.trimToEmpty(message.toString());
     }
-
 
     public void appendMessage(String message) {
         if (StringUtils.isNotEmpty(message)) {

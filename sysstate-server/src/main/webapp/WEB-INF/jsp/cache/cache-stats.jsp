@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@taglib prefix="sc" uri="http://www.springframework.org/security/tags"%>
 <script type="text/javascript">
 $(function(){
 	$('#toggle-all').click(function(){
@@ -14,6 +15,7 @@ $(function(){
 
   
 <form method="POST" action="clear.html" name="cacheForm" id="cache-form">
+	<sc:csrfInput/>
 	<table id="cache-stats-table">
 		<tr>
 			<th class="table-header-check"><a id="toggle-all" ></a> </th>

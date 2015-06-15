@@ -2,9 +2,8 @@ package nl.unionsoft.sysstate.logic.impl;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -22,6 +21,7 @@ import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.extending.StateResolver;
 import nl.unionsoft.sysstate.common.util.StateUtil;
 import nl.unionsoft.sysstate.common.util.SysStateStringUtils;
+import nl.unionsoft.sysstate.converter.OptionalConverter;
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.dao.StateDao;
 import nl.unionsoft.sysstate.domain.State;
@@ -37,7 +37,6 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.HtmlUtils;
 
 @Service("stateLogic")
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -91,7 +90,11 @@ public class StateLogicImpl implements StateLogic {
         final InstanceDto instance = dto.getInstance();
         if (instance != null) {
             final Long instanceId = instance.getId();
-            State state = stateDao.getLastStateForInstance(instance.getId());
+            Optional<State> optionalState = stateDao.getLastStateForInstance(instance.getId());
+            State state = null;
+            if (optionalState.isPresent()){
+                state = optionalState.get();
+            }
             final Date stateDate = dto.getCreationDate().toDate();
             if (!match(dto, state)) {
                 //@formatter:off
@@ -208,7 +211,7 @@ public class StateLogicImpl implements StateLogic {
     }
 
     public StateDto getLastStateForInstance(final Long instanceId) {
-        return stateConverter.convert(stateDao.getLastStateForInstance(instanceId));
+        return OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instanceId), stateConverter, StateDto.PENDING);
     }
 
 }

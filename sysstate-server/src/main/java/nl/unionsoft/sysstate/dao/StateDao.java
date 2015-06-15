@@ -1,6 +1,7 @@
 package nl.unionsoft.sysstate.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import nl.unionsoft.common.list.model.ListRequest;
 import nl.unionsoft.common.list.model.ListResponse;
@@ -11,9 +12,9 @@ public interface StateDao {
 
     public void createOrUpdate(State state);
 
-    public State getLastStateForInstance(Long instanceId);
+    public Optional<State> getLastStateForInstance(Long instanceId);
 
-    public State getLastStateForInstance(Long instanceId, StateType stateType);
+    public Optional<State> getLastStateForInstance(Long instanceId, StateType stateType);
 
     public void cleanStatesOlderThanDays(int nrOfDays);
 

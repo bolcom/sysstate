@@ -2,10 +2,12 @@ package nl.unionsoft.sysstate.dao.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 
 import nl.unionsoft.common.list.model.ListRequest;
@@ -47,36 +49,36 @@ public class StateDaoImpl implements StateDao {
         }
     }
 
-    public State getLastStateForInstance(final Long instanceId) {
-        State result = null;
+    public Optional<State> getLastStateForInstance(final Long instanceId) {
         try {
             // @formatter:off
-            result = entityManager.createNamedQuery("findLastStateForInstance", State.class)
+            return Optional.of(entityManager.createNamedQuery("findLastStateForInstance", State.class)
                     .setParameter("instanceId", instanceId)
                     .setMaxResults(1)
                     .setHint("org.hibernate.cacheable", true)
-                    .getSingleResult();
+                    .getSingleResult());
             // @formatter:on
         } catch (NoResultException nre) {
             // Nothing to see here, move along!
+        } catch (EntityNotFoundException e) {
+            LOG.warn("Unable to find an state for instanceId [{}] while there should've been one. Maybe it got cleaned up?", instanceId, e);
         }
-        return result;
+        return Optional.empty();
     }
 
-    public State getLastStateForInstance(final Long instanceId, final StateType stateType) {
-        State result = null;
+    public Optional<State> getLastStateForInstance(final Long instanceId, final StateType stateType) {
         try {
             // @formatter:off
-            result = entityManager.createNamedQuery("findLastStateForInstanceWithStateType", State.class)
+            return Optional.of(entityManager.createNamedQuery("findLastStateForInstanceWithStateType", State.class)
                     .setParameter("instanceId", instanceId)
                     .setParameter("stateType", stateType)
                     .setMaxResults(1)
-                    .getSingleResult();
+                    .getSingleResult());
             // @formatter:on
         } catch (NoResultException nre) {
             // Nothing to see here, move along!
         }
-        return result;
+        return Optional.empty();
     }
 
     public List<State> getStates() {

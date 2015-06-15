@@ -23,6 +23,15 @@ public class OptionalConverter {
         }
         return null;
     }
+    
+    public static <T, F, E> T fromOptional(Optional<F> from, Converter<T, F> converter, T defaultValue) {
+        if (from.isPresent()) {
+            return converter.convert(from.get());
+        } else {
+            return defaultValue;
+        }
+    }
+
 
     public static <T, F, E> Optional<T> toOptional(F from, Converter<T, F> converter) {
         if (from == null) {

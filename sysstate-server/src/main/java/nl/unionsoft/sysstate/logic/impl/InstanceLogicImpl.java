@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Stack;
 import java.util.UUID;
@@ -13,7 +14,6 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import nl.unionsoft.common.converter.BidirectionalConverter;
 import nl.unionsoft.common.converter.Converter;
 import nl.unionsoft.common.converter.ListConverter;
 import nl.unionsoft.common.list.model.GroupRestriction;
@@ -37,12 +37,12 @@ import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.common.util.PropertyGroupUtil;
 import nl.unionsoft.sysstate.converter.InstancePropertiesConverter;
+import nl.unionsoft.sysstate.converter.OptionalConverter;
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.dao.ListRequestDao;
 import nl.unionsoft.sysstate.dao.PropertyDao;
 import nl.unionsoft.sysstate.dao.StateDao;
 import nl.unionsoft.sysstate.domain.Instance;
-import nl.unionsoft.sysstate.domain.InstanceProperty;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
 import nl.unionsoft.sysstate.domain.State;
 import nl.unionsoft.sysstate.job.UpdateInstanceJob;
@@ -51,7 +51,6 @@ import nl.unionsoft.sysstate.logic.StateLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
 import org.apache.commons.lang.StringUtils;
-import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
@@ -61,7 +60,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import org.springframework.stereotype.Service;
@@ -154,18 +152,16 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
             jobDetailFactoryBean.setJobDataAsMap(jobData);
             jobDetailFactoryBean.afterPropertiesSet();
             final JobDetail jobDetail = jobDetailFactoryBean.getObject();
-            
+
             final long refreshTimeout = instance.getRefreshTimeout();
             SimpleTriggerFactoryBean simpleTriggerFactoryBean = new SimpleTriggerFactoryBean();
-            simpleTriggerFactoryBean.setName( "instance-" + id + "-trigger");
+            simpleTriggerFactoryBean.setName("instance-" + id + "-trigger");
             simpleTriggerFactoryBean.setRepeatCount(-1);
             simpleTriggerFactoryBean.setRepeatInterval(refreshTimeout < 30000 ? 30000 : refreshTimeout);
             simpleTriggerFactoryBean.setStartTime(new Date(System.currentTimeMillis() + 5000));
             simpleTriggerFactoryBean.setJobDetail(jobDetail);
             simpleTriggerFactoryBean.afterPropertiesSet();
             final SimpleTrigger trigger = simpleTriggerFactoryBean.getObject();
-
-            
 
             try {
                 scheduler.scheduleJob(jobDetail, trigger);
@@ -207,12 +203,12 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     private void setLastStatesForInstance(final InstanceDto instance) {
         if (instance != null && instance.getId() != null) {
             final Long instanceId = instance.getId();
-            instance.setState(stateConverter.convert(stateDao.getLastStateForInstance(instanceId)));
-            instance.setLastStable(stateConverter.convert(stateDao.getLastStateForInstance(instanceId, StateType.STABLE)));
-            instance.setLastUnstable(stateConverter.convert(stateDao.getLastStateForInstance(instanceId, StateType.UNSTABLE)));
-            instance.setLastError(stateConverter.convert(stateDao.getLastStateForInstance(instanceId, StateType.ERROR)));
-            instance.setLastPending(stateConverter.convert(stateDao.getLastStateForInstance(instanceId, StateType.PENDING)));
-            instance.setLastDisabled(stateConverter.convert(stateDao.getLastStateForInstance(instanceId, StateType.DISABLED)));
+            instance.setState(OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instanceId), stateConverter, StateDto.PENDING));
+            instance.setLastStable(OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instanceId, StateType.STABLE), stateConverter));
+            instance.setLastUnstable(OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instanceId, StateType.UNSTABLE), stateConverter));
+            instance.setLastError(OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instanceId, StateType.ERROR), stateConverter));
+            instance.setLastPending(OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instanceId, StateType.PENDING), stateConverter));
+            instance.setLastDisabled(OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instanceId, StateType.DISABLED), stateConverter));
         }
     }
 
@@ -258,7 +254,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     public ListResponse<InstanceDto> getInstances(final ListRequest listRequest) {
         final ListResponse<InstanceDto> listResponse = listRequestDao.getResults(Instance.class, listRequest, instanceConverter);
         for (final InstanceDto instance : listResponse.getResults()) {
-            instance.setState(stateConverter.convert(stateDao.getLastStateForInstance(instance.getId())));
+            instance.setState(OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instance.getId()), stateConverter, StateDto.PENDING));
         }
         return listResponse;
     }
