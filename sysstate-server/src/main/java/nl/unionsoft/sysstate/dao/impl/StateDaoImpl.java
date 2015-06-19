@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class StateDaoImpl implements StateDao {
     private static final Logger LOG = LoggerFactory.getLogger(StateDaoImpl.class);
+
     @Inject
     @Named("criteriaListRequestWorker")
     private ListRequestWorker listRequestWorker;
@@ -55,7 +56,6 @@ public class StateDaoImpl implements StateDao {
             return Optional.of(entityManager.createNamedQuery("findLastStateForInstance", State.class)
                     .setParameter("instanceId", instanceId)
                     .setMaxResults(1)
-                    .setHint("org.hibernate.cacheable", true)
                     .getSingleResult());
             // @formatter:on
         } catch (NoResultException nre) {
@@ -82,7 +82,7 @@ public class StateDaoImpl implements StateDao {
     }
 
     public List<State> getStates() {
-        return entityManager.createQuery("FROM State", State.class).setHint("org.hibernate.cacheable", true).getResultList();
+        return entityManager.createQuery("FROM State", State.class).getResultList();
     }
 
     public void cleanStatesOlderThanDays(int maxDaysToKeepStates) {

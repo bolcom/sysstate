@@ -29,8 +29,8 @@ public class EnvironmentDaoImpl implements EnvironmentDao {
         return entityManager.createQuery( //
                 "FROM Environment environment ORDER by order ASC ", Environment.class)
                 .setHint("org.hibernate.cacheable", true)
-                
                 .getResultList();
+        //@formatter:on
     }
 
     public Environment getEnvironment(final Long environmentId) {
@@ -47,28 +47,26 @@ public class EnvironmentDaoImpl implements EnvironmentDao {
 
     }
 
-
     public void delete(final Long environmentId) {
         entityManager.remove(entityManager.find(Environment.class, environmentId));
     }
 
     public Environment getEnvironmentByName(String name) {
-            Environment environment = null;
-            try {
-                //@formatter:off
+        Environment environment = null;
+        try {
+            //@formatter:off
                 environment = entityManager.createQuery(
                     "FROM Environment environment " +
                     "WHERE environment.name = :name", Environment.class)
                     .setParameter("name", upperCase(name))
                     .getSingleResult();
                 //@formatter:on
-            } catch (final NonUniqueResultException nre){
-                throw new IllegalStateException("More then one environment with name [" + upperCase(name) + "] found.", nre);
-            } catch(final NoResultException nre) {
-                // this is ok..
-            }
-            return environment;
+        } catch (final NonUniqueResultException nre) {
+            throw new IllegalStateException("More then one environment with name [" + upperCase(name) + "] found.", nre);
+        } catch (final NoResultException nre) {
+            // this is ok..
+        }
+        return environment;
     }
-
 
 }

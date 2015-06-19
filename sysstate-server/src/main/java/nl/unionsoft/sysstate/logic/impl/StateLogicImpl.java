@@ -8,7 +8,6 @@ import java.util.Properties;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import nl.unionsoft.common.converter.Converter;
 import nl.unionsoft.common.list.model.ListRequest;
 import nl.unionsoft.common.list.model.ListResponse;
 import nl.unionsoft.sysstate.Constants;
@@ -22,6 +21,7 @@ import nl.unionsoft.sysstate.common.extending.StateResolver;
 import nl.unionsoft.sysstate.common.util.StateUtil;
 import nl.unionsoft.sysstate.common.util.SysStateStringUtils;
 import nl.unionsoft.sysstate.converter.OptionalConverter;
+import nl.unionsoft.sysstate.converter.StateConverter;
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.dao.StateDao;
 import nl.unionsoft.sysstate.domain.State;
@@ -34,6 +34,8 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,7 +60,7 @@ public class StateLogicImpl implements StateLogic {
 
     @Inject
     @Named("stateConverter")
-    private Converter<StateDto, State> stateConverter;
+    private StateConverter stateConverter;
 
     @Inject
     @Named("pluginLogic")
@@ -85,14 +87,15 @@ public class StateLogicImpl implements StateLogic {
     public ListResponse<State> getStates(final ListRequest listRequest) {
         return stateDao.getStates(listRequest);
     }
-
-    public void createOrUpdate(final StateDto dto) {
+    
+    @CachePut(value = "lastStateForInstanceCache", key="#dto.instance.id")
+    public StateDto createOrUpdate(final StateDto dto) {
         final InstanceDto instance = dto.getInstance();
         if (instance != null) {
             final Long instanceId = instance.getId();
             Optional<State> optionalState = stateDao.getLastStateForInstance(instance.getId());
             State state = null;
-            if (optionalState.isPresent()){
+            if (optionalState.isPresent()) {
                 state = optionalState.get();
             }
             final Date stateDate = dto.getCreationDate().toDate();
@@ -116,6 +119,7 @@ public class StateLogicImpl implements StateLogic {
             stateDao.createOrUpdate(state);
             dto.setId(state.getId());
         }
+        return dto;
     }
 
     public StateDto requestStateForInstance(final InstanceDto instance) {
@@ -131,14 +135,14 @@ public class StateLogicImpl implements StateLogic {
         } else if (!environment.isEnabled()) {
             setDisabled(state, "Disabled by environment");
         } else {
-            
+
             final InstanceDto instanceDto = new InstanceDto();
             instanceDto.setConfiguration(instance.getConfiguration());
             instanceDto.setId(instance.getId());
             final String pluginClass = instance.getPluginClass();
             updateState(state, pluginClass, instanceDto);
         }
-       
+
         return state;
     }
 
@@ -148,8 +152,7 @@ public class StateLogicImpl implements StateLogic {
         state.appendMessage(message);
     }
 
-    
-    private void updateState(StateDto state, String pluginClass,InstanceDto instanceDto){
+    private void updateState(StateDto state, String pluginClass, InstanceDto instanceDto) {
         final Long now = System.currentTimeMillis();
         try {
             final StateResolver stateResolver = stateResolverLogic.getStateResolver(pluginClass);
@@ -180,6 +183,7 @@ public class StateLogicImpl implements StateLogic {
             state.setCreationDate(new DateTime());
         }
     }
+
     public StateDto requestState(final String pluginClass, final Map<String, String> configuration) {
         final StateDto state = new StateDto();
         final InstanceDto instanceDto = new InstanceDto();
@@ -203,15 +207,23 @@ public class StateLogicImpl implements StateLogic {
 
         boolean result = false;
         if (otherState != null) {
-            result = StringUtils.equals(thisState.getDescription(), otherState.getDescription()) && thisState.getState() == otherState.getState();
+            result = StringUtils.equals(thisState.getDescription(), otherState.getDescription())
+                    && thisState.getState() == otherState.getState();
 
         }
         return result;
 
     }
 
+    
+    @Cacheable(value = "lastStateForInstanceCache", key = "#instanceId")
     public StateDto getLastStateForInstance(final Long instanceId) {
-        return OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instanceId), stateConverter, StateDto.PENDING);
+        return OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instanceId), stateConverter, false, StateDto.PENDING);
+    }
+
+    @Override
+    public StateDto getLastStateForInstance(Long instanceId, StateType stateType) {
+        return OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instanceId, stateType), stateConverter, false, StateDto.PENDING);
     }
 
 }

@@ -1,12 +1,16 @@
 package nl.unionsoft.sysstate.common.dto;
 
+import java.io.Serializable;
+
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.util.SysStateStringUtils;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 
-public class StateDto {
+public class StateDto implements Serializable {
+
+    private static final long serialVersionUID = -7907799338579793939L;
     private Long id;
     private String description;
     private StateType state;
@@ -19,7 +23,7 @@ public class StateDto {
     public static final int DESCRIPTION_MAX_LENGTH = 15;
 
     public static final StateDto PENDING = new StateDto(StateType.PENDING, "Pending");
-    
+
     public StateDto() {
         message = new StringBuilder(4012);
         rating = -1;

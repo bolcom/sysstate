@@ -49,7 +49,9 @@ public class ProjectEnvironmentDaoImpl implements ProjectEnvironmentDao {
                     .createQuery("FROM ProjectEnvironment pet " +
                             "WHERE pet.project.id = :projectId " +
                             "AND pet.environment.id = :environmentId", ProjectEnvironment.class)
-                            .setParameter("projectId", projectId).setParameter("environmentId", environmentId).setHint("org.hibernate.cacheable", true)
+                            .setParameter("projectId", projectId)
+                            .setParameter("environmentId", environmentId)
+                            .setHint("org.hibernate.cacheable", true)
                             .getSingleResult();
             // @formatter:on
         } catch (final NoResultException nre) {
@@ -80,7 +82,9 @@ public class ProjectEnvironmentDaoImpl implements ProjectEnvironmentDao {
                             "WHERE pet.project.name = :projectName " +
                             "AND pet.environment.name = :environmentName",
                             ProjectEnvironment.class)
-                            .setParameter("projectName",  StringUtils.upperCase(projectName)).setParameter("environmentName",  StringUtils.upperCase(environmentName)).setHint("org.hibernate.cacheable", true)
+                            .setParameter("projectName",  StringUtils.upperCase(projectName))
+                            .setParameter("environmentName",  StringUtils.upperCase(environmentName))
+                            .setHint("org.hibernate.cacheable", true)
                             .getSingleResult();
             // @formatter:on
         } catch (final NoResultException nre) {

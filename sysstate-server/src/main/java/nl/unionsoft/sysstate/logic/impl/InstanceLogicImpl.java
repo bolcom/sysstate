@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.Stack;
 import java.util.UUID;
@@ -38,13 +37,13 @@ import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.common.util.PropertyGroupUtil;
 import nl.unionsoft.sysstate.converter.InstancePropertiesConverter;
 import nl.unionsoft.sysstate.converter.OptionalConverter;
+import nl.unionsoft.sysstate.converter.StateConverter;
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.dao.ListRequestDao;
 import nl.unionsoft.sysstate.dao.PropertyDao;
 import nl.unionsoft.sysstate.dao.StateDao;
 import nl.unionsoft.sysstate.domain.Instance;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
-import nl.unionsoft.sysstate.domain.State;
 import nl.unionsoft.sysstate.job.UpdateInstanceJob;
 import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
@@ -85,10 +84,6 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     private ListRequestDao listRequestDao;
 
     @Inject
-    @Named("stateDao")
-    private StateDao stateDao;
-
-    @Inject
     @Named("propertyDao")
     private PropertyDao propertyDao;
 
@@ -110,7 +105,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
 
     @Inject
     @Named("stateConverter")
-    private Converter<StateDto, State> stateConverter;
+    private StateConverter stateConverter;
 
     @Inject
     @Named("environmentLogic")
@@ -203,12 +198,12 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     private void setLastStatesForInstance(final InstanceDto instance) {
         if (instance != null && instance.getId() != null) {
             final Long instanceId = instance.getId();
-            instance.setState(OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instanceId), stateConverter, StateDto.PENDING));
-            instance.setLastStable(OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instanceId, StateType.STABLE), stateConverter));
-            instance.setLastUnstable(OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instanceId, StateType.UNSTABLE), stateConverter));
-            instance.setLastError(OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instanceId, StateType.ERROR), stateConverter));
-            instance.setLastPending(OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instanceId, StateType.PENDING), stateConverter));
-            instance.setLastDisabled(OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instanceId, StateType.DISABLED), stateConverter));
+            instance.setState(stateLogic.getLastStateForInstance(instanceId));
+            instance.setLastStable(stateLogic.getLastStateForInstance(instanceId, StateType.STABLE));
+            instance.setLastUnstable(stateLogic.getLastStateForInstance(instanceId, StateType.UNSTABLE));
+            instance.setLastError(stateLogic.getLastStateForInstance(instanceId, StateType.ERROR));
+            instance.setLastPending(stateLogic.getLastStateForInstance(instanceId, StateType.PENDING));
+            instance.setLastDisabled(stateLogic.getLastStateForInstance(instanceId, StateType.DISABLED));
         }
     }
 
@@ -253,9 +248,10 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
 
     public ListResponse<InstanceDto> getInstances(final ListRequest listRequest) {
         final ListResponse<InstanceDto> listResponse = listRequestDao.getResults(Instance.class, listRequest, instanceConverter);
-        for (final InstanceDto instance : listResponse.getResults()) {
-            instance.setState(OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instance.getId()), stateConverter, StateDto.PENDING));
-        }
+        listResponse
+                .getResults()
+                .parallelStream()
+                .forEach(instance -> instance.setState(stateLogic.getLastStateForInstance(instance.getId())));
         return listResponse;
     }
 

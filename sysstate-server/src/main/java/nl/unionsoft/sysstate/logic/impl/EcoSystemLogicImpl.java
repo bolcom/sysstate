@@ -52,7 +52,6 @@ public class EcoSystemLogicImpl implements EcoSystemLogic {
     @Named("pluginLogic")
     private PluginLogic pluginLogic;
 
-    @Cacheable("viewResultCache")
     public ViewResultDto getEcoSystem(final ViewDto view) {
 
         FilterDto filter = view.getFilter();
@@ -95,6 +94,7 @@ public class EcoSystemLogicImpl implements EcoSystemLogic {
             if (projectEnvironmentInstances.size() == 1){
                 InstanceDto instance = projectEnvironmentInstances.get(0);
                 StateDto state = instance.getState();
+                
                 CountUtil.add(count, state.getState());
                 projectEnvironment.setDescription(state.getDescription());
                 projectEnvironment.setState(state.getState());
