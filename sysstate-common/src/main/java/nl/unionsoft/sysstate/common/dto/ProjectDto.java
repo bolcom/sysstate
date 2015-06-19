@@ -1,12 +1,16 @@
 package nl.unionsoft.sysstate.common.dto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-public class ProjectDto {
+public class ProjectDto implements Serializable {
+
+    private static final long serialVersionUID = 3498883220576092884L;
+
     private Long id;
 
     @NotNull()
@@ -15,7 +19,7 @@ public class ProjectDto {
     private int order;
     private boolean enabled;
     private String tags;
-    
+
     private final List<ProjectEnvironmentDto> projectEnvironments;
 
     public ProjectDto() {
@@ -91,7 +95,5 @@ public class ProjectDto {
             return false;
         return true;
     }
-    
-    
 
 }

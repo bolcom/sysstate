@@ -1,9 +1,14 @@
 package nl.unionsoft.sysstate.common.dto;
 
+import java.io.Serializable;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-public class EnvironmentDto {
+public class EnvironmentDto implements Serializable {
+
+    private static final long serialVersionUID = 8246343549796642142L;
+
     private Long id;
 
     @NotNull()

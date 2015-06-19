@@ -123,12 +123,24 @@ public class EcoSystemLogicImpl implements EcoSystemLogic {
     }
 
     private Set<EnvironmentDto> getEnvironmentsFromProjectEnvironments(Set<ProjectEnvironmentDto> projectEnvironments) {
-        return projectEnvironments.stream().map(ProjectEnvironmentDto::getEnvironment).sorted((e1, e2) -> Integer.compare(e1.getOrder(), e2.getOrder())).distinct().collect(Collectors.toSet());
+        //@formatter:off
+        return projectEnvironments.parallelStream()
+                .map(ProjectEnvironmentDto::getEnvironment)
+                .sorted((e1, e2) -> Integer.compare(e1.getOrder(), e2.getOrder()))
+                .distinct()
+                .collect(Collectors.toSet());
+        //@formatter:on
     }
 
     
     private Set<ProjectDto> getProjectsFromProjectEnvironments(Set<ProjectEnvironmentDto> projectEnvironments) {
-        return projectEnvironments.stream().map(ProjectEnvironmentDto::getProject).sorted((p1, p2) -> Integer.compare(p1.getOrder(), p2.getOrder())).distinct().collect(Collectors.toSet());
+        //@formatter:off
+        return projectEnvironments.parallelStream()
+                .map(ProjectEnvironmentDto::getProject)
+                .sorted((p1, p2) -> Integer.compare(p1.getOrder(), p2.getOrder()))
+                .distinct()
+                .collect(Collectors.toSet());
+        //@formatter:on
     }
 
     

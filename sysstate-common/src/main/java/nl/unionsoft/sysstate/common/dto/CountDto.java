@@ -1,7 +1,10 @@
 package nl.unionsoft.sysstate.common.dto;
 
-public class CountDto {
+import java.io.Serializable;
 
+public class CountDto implements Serializable {
+
+    private static final long serialVersionUID = -3909506894037864215L;
     private int stable;
     private int unstable;
     private int error;

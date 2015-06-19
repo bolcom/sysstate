@@ -1,11 +1,14 @@
 package nl.unionsoft.sysstate.common.dto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import nl.unionsoft.sysstate.common.enums.StateType;
 
-public class ProjectEnvironmentDto {
+public class ProjectEnvironmentDto implements Serializable {
+
+    private static final long serialVersionUID = 7380736171899573671L;
 
     private Long id;
     private ProjectDto project;
@@ -125,7 +128,5 @@ public class ProjectEnvironmentDto {
             return false;
         return true;
     }
-    
-    
 
 }

@@ -1,7 +1,10 @@
 package nl.unionsoft.sysstate.common.dto;
 
-public class InstanceLinkDto {
+import java.io.Serializable;
 
+public class InstanceLinkDto implements Serializable {
+
+    private static final long serialVersionUID = -3245171821584603449L;
     private String name;
     private Long instanceId;
 

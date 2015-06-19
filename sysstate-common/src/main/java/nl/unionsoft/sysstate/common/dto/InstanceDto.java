@@ -1,5 +1,6 @@
 package nl.unionsoft.sysstate.common.dto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -9,7 +10,9 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-public class InstanceDto {
+public class InstanceDto implements Serializable {
+
+    private static final long serialVersionUID = -4695232477842680459L;
 
     private Long id;
 
@@ -41,10 +44,9 @@ public class InstanceDto {
     private StateDto lastPending;
     private StateDto lastDisabled;
 
-    
     private List<InstanceLinkDto> incommingInstanceLinks;
     private List<InstanceLinkDto> outgoingInstanceLinks;
-    
+
     @NotNull()
     private ProjectEnvironmentDto projectEnvironment;
 
@@ -239,7 +241,4 @@ public class InstanceDto {
         this.outgoingInstanceLinks = outgoingInstanceLinks;
     }
 
-   
-    
-    
 }

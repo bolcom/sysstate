@@ -59,7 +59,7 @@ public class SchedulerLogicImpl implements SchedulerLogic {
 
             scheduler
                     .getJobKeys(GroupMatcher.anyJobGroup())
-                    .stream()
+                    .parallelStream()
                     .forEach(jobKey -> {
 
                         try {
@@ -69,8 +69,20 @@ public class SchedulerLogicImpl implements SchedulerLogic {
                             task.setGroup(jobKey.getGroup());
                             List<? extends Trigger> triggers = scheduler.getTriggersOfJob(jobKey);
 
-                            task.setNextRunTime(triggers.stream().map(t -> t.getNextFireTime()).min(Date::compareTo).get());
-                            task.setLastRunTime(triggers.stream().map(t -> t.getPreviousFireTime()).max(Date::compareTo).get());
+                            Optional<Date> nextRunTime =triggers.stream().map(t -> t.getNextFireTime()).min(Date::compareTo);
+                            if (nextRunTime.isPresent()) {
+                                task.setNextRunTime(nextRunTime.get());
+                            }
+
+                            //@formatter:off
+                            Optional<Date> optionalLastRunTime = triggers.stream()
+                                    .filter(t -> t.getPreviousFireTime() != null)
+                                    .map(t -> t.getPreviousFireTime())
+                                    .max(Date::compareTo);
+                            //@formatter:on
+                            if (optionalLastRunTime.isPresent()) {
+                                task.setLastRunTime(optionalLastRunTime.get());
+                            }
 
                             Optional<JobExecutionContext> optionalJobExecutionContext = jobExecutionContexts.stream()
                                     .filter(jec -> jec.getJobDetail().getKey().equals(jobKey)).findFirst();
