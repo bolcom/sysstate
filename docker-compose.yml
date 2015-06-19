@@ -20,8 +20,8 @@ server:
     - hibernate.strategy=update
   links:
     - "mysql:mysql"
-  volumes:
-    - "~/sysstate/home:/usr/local/tomcat/.sysstate"
+#  volumes:
+#    - "~/sysstate/home:/usr/local/tomcat/.sysstate"
 
 
 

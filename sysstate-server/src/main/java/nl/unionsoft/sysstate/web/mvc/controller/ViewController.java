@@ -111,7 +111,7 @@ public class ViewController {
             if (template.getIncludeViewResults()){
                 context.put("viewResult", ecoSystemLogic.getEcoSystem(view));    
             }
-            context.put("request", request);
+            context.put("contextPath", request.getContextPath());
             context.put("view", view);
             templateLogic.writeTemplate(template, context, response.getWriter());
             response.setStatus(HttpServletResponse.SC_OK);

@@ -86,7 +86,7 @@ public class EcoSystemLogicImpl implements EcoSystemLogic {
     }
 
     private void enrichProjectEnvironments(Set<ProjectEnvironmentDto> projectEnvironments, List<InstanceDto> instances, String commonDescriptionTags) {
-        projectEnvironments.stream().parallel().forEach(projectEnvironment -> {
+        projectEnvironments.parallelStream().forEach(projectEnvironment -> {
             LOG.debug("Enriching projectEnvironment [{}]...", projectEnvironment);
             CountDto count = projectEnvironment.getCount();
             

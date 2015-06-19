@@ -49,13 +49,13 @@ public class TemplateLogicImpl implements TemplateLogic {
     private ApplicationContext applicationContext;
 
     private TemplateDao templateDao;
-    
+
     private TemplateConverter templateConverter;
 
     private Path templateHome;
 
     private PluginLogic pluginLogic;
-    
+
     public static final String RESOURCE_BASE = "/nl/unionsoft/sysstate/templates/";
     public static final String FREEMARKER_TEMPLATE_WRITER = "freeMarkerTemplateWriter";
 
@@ -95,10 +95,10 @@ public class TemplateLogicImpl implements TemplateLogic {
 
     private void addTemplateIfNotExists(String name, String contentType, String writer, String resource, Boolean includeViewResults) throws IOException {
         Optional<Template> optTemplate = templateDao.getTemplate(name);
-        if (optTemplate.isPresent()){
+        if (optTemplate.isPresent()) {
             return;
         }
-        
+
         LOG.info("Adding template [{}] from resource [{}]", name);
         Template template = new Template();
         template.setName(name);
@@ -124,10 +124,7 @@ public class TemplateLogicImpl implements TemplateLogic {
     @Override
     public void writeTemplate(TemplateDto template, Map<String, Object> context, Writer writer) throws WriterException {
         TemplateWriter templateWriter = applicationContext.getBean(template.getWriter(), TemplateWriter.class);
-        Map<String, Object> updatedContext = new HashMap<String, Object>();
-        context.forEach((key, value) ->  updatedContext.put(key, value));
-        updatedContext.put("baseUrl", pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME).getProperty("baseUrl"));
-        templateWriter.writeTemplate(template, writer, updatedContext);
+        templateWriter.writeTemplate(template, writer, context);
     }
 
     @Override

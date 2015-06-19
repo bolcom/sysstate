@@ -2,10 +2,10 @@
 		
 	<head>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-		<script src="${baseUrl}/scripts/colorbox/jquery.colorbox.js"></script>
-		<link rel="stylesheet" type="text/css" href="${baseUrl}/template/render/${css}">	
-		<link rel="stylesheet" type="text/css" href="${baseUrl}/scripts/colorbox/colorbox.css" />
-		<script type="text/javascript" src="${baseUrl}/js/vis/vis.min.js"></script>
+		<script src="${contextPath}/scripts/colorbox/jquery.colorbox.js"></script>
+		<link rel="stylesheet" type="text/css" href="${contextPath}/template/render/${css}">	
+		<link rel="stylesheet" type="text/css" href="${contextPath}/scripts/colorbox/colorbox.css" />
+		<script type="text/javascript" src="${contextPath}/js/vis/vis.min.js"></script>
 		<script type="text/javascript">
 			var refresh = true;
 			function Refresh() {

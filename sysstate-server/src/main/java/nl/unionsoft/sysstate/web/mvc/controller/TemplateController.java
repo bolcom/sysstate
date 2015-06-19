@@ -78,8 +78,7 @@ public class TemplateController {
             ViewResultDto viewResult =  ecoSystemLogic.getEcoSystem(view);
             context.put("viewResult",viewResult);
             context.put("view", view);
-            context.put("request", request);
-            context.put("response", response);
+            context.put("contextPath", request.getContextPath());
             templateLogic.writeTemplate(template, context, response.getWriter());
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (WriterException e) {

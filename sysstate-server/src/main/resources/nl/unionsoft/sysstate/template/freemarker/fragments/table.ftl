@@ -6,11 +6,11 @@
 	<thead class="head">
 		<tr class="row_env">
 			<#if showProjectColumn!true>
-				<th id="col_prj" class="top_left"><a href="${baseUrl}/dashboard/index.html" >PRJ/ENV</a> </th>
+				<th id="col_prj" class="top_left"><a href="${contextPath}/dashboard/index.html" >PRJ/ENV</a> </th>
 			</#if>
 			
 			<#list viewResult.environments as environment>
-				<th id="col_env_${environment.id}" class="col_env <#if !environment_has_next>top_right</#if>"><a href="${baseUrl}/filter/environment/${environment.id?c}/index.html" >${environment.name}</a></th>
+				<th id="col_env_${environment.id}" class="col_env <#if !environment_has_next>top_right</#if>"><a href="${contextPath}/filter/environment/${environment.id?c}/index.html" >${environment.name}</a></th>
 			</#list>
 		</tr>
 	</thead>
@@ -19,7 +19,7 @@
 			<tr id="row_prj_${project.id}" class="row_prj <#if project_index % 2 == 0>row_prj_odd<#else>row_prj_even</#if>">
 				<#if showProjectColumn!true>
 					<th class="row_prj_name">
-						<a href="${baseUrl}/filter/project/${project.id?c}/index.html" >
+						<a href="${contextPath}/filter/project/${project.id?c}/index.html" >
 							${project.name}
 						</a>
 					</th>
@@ -32,9 +32,9 @@
 							<td id="row_prj_${project.id}_env_${environment.id}" class="row_prj_env state_${projectEnvironment.state!'PENDING'}">
 								<div class="row_prj_env" style="position: relative;" >
 									<div">
-										<a href="${baseUrl}/projectEnvironment/project/${project.id?c}/environment/${environment.id?c}/details.html" title="Configuration">
+										<a href="${contextPath}/projectEnvironment/project/${project.id?c}/environment/${environment.id?c}/details.html" title="Configuration">
 											<span class="row_prj_env_int_state state_${projectEnvironment.state!'UNKNOWN'}">
-											<img src="${baseUrl}/images/transparant.gif"/></span>
+											<img src="${contextPath}/images/transparant.gif"/></span>
 											
 											<span class="env_prj_name">${project.name}</span>
 											<#if projectEnvironment.instances?has_content>

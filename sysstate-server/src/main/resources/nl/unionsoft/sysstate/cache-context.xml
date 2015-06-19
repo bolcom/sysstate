@@ -14,7 +14,7 @@
 
 	<!-- Ehcache library setup -->
 	<bean id="ehCache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
-		<property name="configLocation" value="classpath:ehcache.xml" />
+		<property name="configLocation" value="${ehcache.configlocation}" />
 	</bean>
 
 	<cache:annotation-driven cache-manager="cacheManager" />
