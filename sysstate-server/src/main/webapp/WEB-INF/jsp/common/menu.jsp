@@ -19,33 +19,29 @@
 	<!--<![endif]--></li>
 </ul>
 <div class="nav-divider">&nbsp;</div>
-<ul class="select">
-	<li><a href="${contextPath}/view/index.html"><b>Views</b>
-		<!--[if IE 7]><!--></a>
-	<!--<![endif]--> <!--[if lte IE 6]><table><tr><td><![endif]-->
-		<div class="select_sub show">
-			<ul class="sub">
-				<sc:authorize url="/view/create">
-					<li><a href="${contextPath}/view/create.html"><img src="${contextPath}/images/create.png" /> Add</a></li>
-				</sc:authorize>
-			</ul>
-		</div> <!--[if lte IE 6]></td></tr></table></a><![endif]--></li>
-</ul>
-<div class="nav-divider">&nbsp;</div>
-
 
 <ul class="select">
 	<li><a href="${contextPath}/filter/index.html"><b>Instances</b>
 		<!--[if IE 7]><!--></a>
 	<!--<![endif]--> <!--[if lte IE 6]><table><tr><td><![endif]-->
-		<div class="select_sub show">
-			<ul class="sub">
-				<li><a href="${contextPath}/instance/create.html">New</a></li>
+		</li>
+</ul>
+<div class="nav-divider">&nbsp;</div>
 
-				<li><a href="${contextPath}/filter/list.html">Instance
-						Filters</a></li>
-			</ul>
-		</div> <!--[if lte IE 6]></td></tr></table></a><![endif]--></li>
+<sc:authorize url="/project/index">
+	<ul class="select">
+		<li><a href="${contextPath}/filter/list.html"><b>Filters</b>
+			<!--[if IE 7]><!--></a>
+		<!--<![endif]--></li>
+	</ul>
+	<div class="nav-divider">&nbsp;</div>
+</sc:authorize>
+
+<ul class="select">
+	<li><a href="${contextPath}/view/index.html"><b>Views</b>
+		<!--[if IE 7]><!--></a>
+	<!--<![endif]--> <!--[if lte IE 6]><table><tr><td><![endif]-->
+		</li>
 </ul>
 <div class="nav-divider">&nbsp;</div>
 
@@ -69,48 +65,11 @@
 
 
 <sc:authentication property="principal" var="user" />
-
 <ul class="select">
-    <li><a href="${contextPath}/scheduler/index.html"><b>Schedule</b>
-        <!--[if IE 7]><!--></a>
-    <!--<![endif]--> <!--[if lte IE 6]><table><tr><td><![endif]-->
-</ul>
-<div class="nav-divider">&nbsp;</div>
-<ul class="select">
-	<li><a href="${contextPath}/settings/index.html"><b>Administrate</b>
-		<!--[if IE 7]><!--></a>
-	<!--<![endif]--> <!--[if lte IE 6]><table><tr><td><![endif]-->
-		<div class="select_sub show">
-			<ul class="sub">
-				<sc:authorize url="/configuration">
-					<li><a href="${contextPath}/configuration/index.html">Configuration</a></li>
-				</sc:authorize>
-				<sc:authorize url="/cache">
-					<li><a href="${contextPath}/cache/index.html">Cache</a></li>
-				</sc:authorize>
-				<sc:authorize url="/template">
-					<li><a href="${contextPath}/template/index.html">Templates</a></li>
-				</sc:authorize>
-				<sc:authorize url="/user">
-					<li><a href="${contextPath}/user/index.html">Users</a></li>
-				</sc:authorize>
-				<sc:authorize url="/plugins">
-					<li><a href="${contextPath}/plugins/index.html">Plugins</a></li>
-				</sc:authorize>
-				<sc:authorize url="/script">
-					<li><a href="${contextPath}/script/index.html">Run Script</a></li>
-				</sc:authorize>
-
-				<sc:authorize url="/discovery">
-				<!-- 
-					<li><a href="${contextPath}/discovery/index.html">Discovery</a></li>
-					 -->
-				</sc:authorize>
-				<sc:authorize url="/text">
-					<li><a href="${contextPath}/text/index.html">Texts</a></li>
-				</sc:authorize>
-			</ul>
-		</div> <!--[if lte IE 6]></td></tr></table></a><![endif]--></li>
+	<li><a href="${contextPath}/settings/index.html"><b>Settings</b>
+			<!--[if IE 7]><!--></a>
+		<!--<![endif]--></li>
+	</ul>
 </ul>
 <div class="nav-divider">&nbsp;</div>
 

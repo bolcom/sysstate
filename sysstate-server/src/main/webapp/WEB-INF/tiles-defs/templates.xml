@@ -147,6 +147,7 @@
 	<definition name="list-project-manager" extends="manager">
 		<put-attribute name="contents" value="/WEB-INF/jsp/project/projects.jsp" />
 		<put-attribute name="page-heading" value="Projects" />
+		<put-attribute name="related-activities" value="/WEB-INF/jsp/project/related_activities.jsp" />
 	</definition>
 	
 	<definition name="delete-project-manager" extends="manager">
