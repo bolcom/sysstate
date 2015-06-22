@@ -1,6 +1,5 @@
 package nl.unionsoft.sysstate.template.freemarker;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
@@ -14,6 +13,8 @@ import nl.unionsoft.sysstate.common.dto.TemplateDto;
 import nl.unionsoft.sysstate.template.TemplateWriter;
 import nl.unionsoft.sysstate.template.WriterException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -28,12 +29,16 @@ import freemarker.template.TemplateException;
 @Service("freeMarkerTemplateWriter")
 public class FreeMarkerTemplateWriter implements TemplateWriter {
 
+    
+    private static final Logger LOG = LoggerFactory.getLogger(FreeMarkerTemplateWriter.class);
+    
     private Configuration cfg;
 
     @Inject
-    public FreeMarkerTemplateWriter(@Value("#{properties['SYSSTATE_HOME']}") String sysstateHome) throws IOException {
+    public FreeMarkerTemplateWriter(@Value("${SYSSTATE_HOME}") String sysstateHome) throws IOException {
         cfg = new Configuration(Configuration.VERSION_2_3_22);
         Path templatePath = Paths.get(sysstateHome,"templates");
+        LOG.info("Creating directories for templatePath [{}]...", templatePath);
         Files.createDirectories(templatePath);
         FileTemplateLoader ftl = new FileTemplateLoader(templatePath.toFile());
         ClassTemplateLoader ctl = new ClassTemplateLoader(getClass(), "");
