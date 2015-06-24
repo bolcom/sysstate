@@ -2,6 +2,7 @@ package nl.unionsoft.sysstate.dao.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -9,7 +10,6 @@ import javax.persistence.EntityManager;
 
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.domain.Instance;
-import nl.unionsoft.sysstate.domain.InstanceProperty;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
 
 import org.apache.commons.lang.StringUtils;
@@ -31,16 +31,20 @@ public class InstanceDaoImpl implements InstanceDao {
             instance.setCreationDate(new Date());
             entityManager.persist(instance);
         } else {
-            final Instance editInstance = getInstance(instance.getId());
-            editInstance.setName(instance.getName());
-            editInstance.setHomepageUrl(instance.getHomepageUrl());
-            editInstance.setRefreshTimeout(instance.getRefreshTimeout());
-            editInstance.setPluginClass(instance.getPluginClass());
-            editInstance.setProjectEnvironment(entityManager.find(ProjectEnvironment.class, instance.getProjectEnvironment().getId()));
-            editInstance.setEnabled(instance.isEnabled());
-            editInstance.setTags(instance.getTags());
-            editInstance.setCreationDate(instance.getCreationDate());
-            entityManager.merge(editInstance);
+            final Optional<Instance> optionalExistingInstance = getInstance(instance.getId());
+            if (!optionalExistingInstance.isPresent()) {
+                throw new IllegalStateException("The instance with id [{}] could not be found!");
+            }
+            Instance existingInstance = optionalExistingInstance.get();
+            existingInstance.setName(instance.getName());
+            existingInstance.setHomepageUrl(instance.getHomepageUrl());
+            existingInstance.setRefreshTimeout(instance.getRefreshTimeout());
+            existingInstance.setPluginClass(instance.getPluginClass());
+            existingInstance.setProjectEnvironment(entityManager.find(ProjectEnvironment.class, instance.getProjectEnvironment().getId()));
+            existingInstance.setEnabled(instance.isEnabled());
+            existingInstance.setTags(instance.getTags());
+            existingInstance.setCreationDate(instance.getCreationDate());
+            entityManager.merge(existingInstance);
         }
     }
 
@@ -62,19 +66,10 @@ public class InstanceDaoImpl implements InstanceDao {
         return entityManager.createQuery("FROM Instance", Instance.class).setHint("org.hibernate.cacheable", true).getResultList();
     }
 
-    public Instance getInstance(final Long instanceId) {
-
+    public Optional<Instance> getInstance(final Long instanceId) {
         Instance result = entityManager.find(Instance.class, instanceId);
-        
-//        List<InstanceProperty> instanceProperties = entityManager.createQuery("FROM InstanceProperty WHERE instance = :instance", InstanceProperty.class).setParameter("instance", result).getResultList();
-//        System.out.println("Found:" + instanceProperties.size());
-//        for (InstanceProperty instanceProperty : instanceProperties) {
-//            System.out.println(instanceProperty.getInstance().getId());
-//            System.out.println(instanceProperty.getKey() + ": " + instanceProperty.getValue());
-//
-//        }
-//        System.out.println("Relational Lookup:" + result.getInstanceProperties().size());
-        return result;
+        return Optional.ofNullable(result);
+
     }
 
     public void delete(final Long instanceId) {
