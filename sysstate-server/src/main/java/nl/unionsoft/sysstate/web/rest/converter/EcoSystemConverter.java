@@ -34,6 +34,10 @@ public class EcoSystemConverter implements Converter<EcoSystem, ViewResultDto> {
     @Named("restEnvironmentConverter")
     private EnvironmentConverter environmentConverter;
 
+    @Inject
+    @Named("restProjectEnvironmentConverter")
+    private ProjectEnvironmentConverter projectEnvironmentConverter;
+    
     
     @Override
     public EcoSystem convert(ViewResultDto dto) {
@@ -44,6 +48,7 @@ public class EcoSystemConverter implements Converter<EcoSystem, ViewResultDto> {
         ecoSystem.getEnvironments().addAll(ListConverter.convert(environmentConverter, dto.getEnvironments()));
         ecoSystem.getProjects().addAll(ListConverter.convert(projectConverter, dto.getProjects()));
         ecoSystem.getInstances().addAll(ListConverter.convert(instanceConverter, dto.getInstances()));
+        ecoSystem.getProjectEnvironments().addAll(ListConverter.convert(projectEnvironmentConverter, dto.getProjectEnvironments()));
         return ecoSystem;
     }
 }
