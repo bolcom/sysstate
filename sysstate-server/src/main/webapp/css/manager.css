@@ -359,4 +359,43 @@ td.state_NOCONFIG {
 #states-table td.state_UNSTABLE {
 	background-color: rgb(255, 200, 100);
 }
+
+
+/*******************************************
+ * InstanceLinks Table                     *
+ *******************************************/
+#instancelink-table {
+	margin-bottom: 20px;
+	width: 900px;
+}
+
+#instancelink-table	td a {
+	color: #393939;
+}
+
+#instancelink-table	td a:hover {
+	text-decoration: underline;
+}
+
+#instancelink-table	th {
+	height: 50px;
+	text-align: left;
+}
+
+#instancelink-table	.minwidth-1 {
+	min-width: 110px;
+}
+
+#instancelink-table	.minwidth-2 {
+	min-width: 180px;
+}
+
+#instancelink-table td {
+	border: 1px solid #d2d2d2;
+	padding: 10px 0 10px 10px;
+}
+
+#instancelink-table tr.alternate-row {
+	background: #ececec;
+}
  

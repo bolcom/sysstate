@@ -47,19 +47,19 @@ public class GroovyStateResolverImpl extends TimedStateResolver implements Appli
 
         GroovyScriptType groovyScriptType = GroovyScriptType.valueOf(configuration.get("groovyScriptType"));
 
-        if (GroovyScriptType.CLASS.equals(groovyScriptType)) {
-            // GroovyClassLoader groovyClassLoader = null;
-            // try {
-            // groovyClassLoader = new GroovyClassLoader(classLoader);
-            // Class<StateResolver> groovyStateResolverClass = groovyClassLoader.parseClass(groovyScript);
-            //
-            // StateResolver stateResolver = groovyStateResolverClass.newInstance();
-            // stateResolver.setState(instance, state);
-            //
-            // } finally {
-            // groovyClassLoader.close();
-            // }
-        } else {
+//        if (GroovyScriptType.CLASS.equals(groovyScriptType)) {
+//            // GroovyClassLoader groovyClassLoader = null;
+//            // try {
+//            // groovyClassLoader = new GroovyClassLoader(classLoader);
+//            // Class<StateResolver> groovyStateResolverClass = groovyClassLoader.parseClass(groovyScript);
+//            //
+//            // StateResolver stateResolver = groovyStateResolverClass.newInstance();
+//            // stateResolver.setState(instance, state);
+//            //
+//            // } finally {
+//            // groovyClassLoader.close();
+//            // }
+//        } else {
 
             Binding binding = new Binding();
             binding.setVariable("state", state);
@@ -68,8 +68,8 @@ public class GroovyStateResolverImpl extends TimedStateResolver implements Appli
             binding.setVariable("applicationContext", applicationContext);
             GroovyShell shell = new GroovyShell(classLoader, binding);
             shell.evaluate(groovyScript);
-
-        }
+//
+//        }
     }
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

@@ -438,4 +438,9 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return propertyMetas;
     }
 
+    @Override
+    public List<InstanceDto> getInstancesForEnvironment(Long environmentId) {
+        return ListConverter.convert(instanceConverter, instanceDao.getInstancesForEnvironment(environmentId));
+    }
+
 }

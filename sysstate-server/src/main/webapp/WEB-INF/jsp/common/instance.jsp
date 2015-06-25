@@ -108,10 +108,10 @@
 			</sc:authorize>
 			
 			<c:if test="${not empty state.message}">
-				<a class="inline" href="${contextPath}/state/instance/${instance.id}/message.html" title="Message"><img src="${contextPath}/images/message.gif" /></a>
+				<a href="${contextPath}/state/instance/${instance.id}/message.html" title="Message"><img src="${contextPath}/images/message.gif" /></a>
 			</c:if>
 			<sc:authorize url="/instance/${instance.id}/details">
-				<a class="inline" href="${contextPath}/instance/${instance.id}/details.html" title="Details"><img src="${contextPath}/images/details.gif" /></a>
+				<a href="${contextPath}/instance/${instance.id}/details.html" title="Details"><img src="${contextPath}/images/details.gif" /></a>
 			</sc:authorize> 
 			
 		</td>

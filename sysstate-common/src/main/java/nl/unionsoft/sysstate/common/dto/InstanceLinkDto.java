@@ -6,7 +6,8 @@ public class InstanceLinkDto implements Serializable {
 
     private static final long serialVersionUID = -3245171821584603449L;
     private String name;
-    private Long instanceId;
+    private Long instanceToId;
+    private Long instanceFromId;
 
     public String getName() {
         return name;
@@ -16,12 +17,20 @@ public class InstanceLinkDto implements Serializable {
         this.name = name;
     }
 
-    public Long getInstanceId() {
-        return instanceId;
+    public Long getInstanceToId() {
+        return instanceToId;
     }
 
-    public void setInstanceId(Long instanceId) {
-        this.instanceId = instanceId;
+    public void setInstanceToId(Long instanceToId) {
+        this.instanceToId = instanceToId;
+    }
+
+    public Long getInstanceFromId() {
+        return instanceFromId;
+    }
+
+    public void setInstanceFromId(Long instanceFromId) {
+        this.instanceFromId = instanceFromId;
     }
 
 }

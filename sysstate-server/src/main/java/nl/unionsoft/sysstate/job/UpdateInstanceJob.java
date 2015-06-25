@@ -47,7 +47,6 @@ public class UpdateInstanceJob extends AutowiringJob {
         }
         LOG.info("Starting job with instance '{}'", instance);
         try {
-
             final StateDto state = stateLogic.requestStateForInstance(instance);
             finalizeState(instance, state);
             LOG.info("job for instance '{}' completed, state: {}", instance, state);

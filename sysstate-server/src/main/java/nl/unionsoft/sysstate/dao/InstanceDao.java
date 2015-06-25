@@ -1,5 +1,6 @@
 package nl.unionsoft.sysstate.dao;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +21,8 @@ public interface InstanceDao {
     public Optional<Instance> getInstance(Long instanceId);
 
     public void delete(Long instanceId);
+
+    public List<Instance> getInstancesForEnvironment(Long environmentId);
 
 
 }

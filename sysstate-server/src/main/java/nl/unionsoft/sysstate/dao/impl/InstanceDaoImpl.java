@@ -98,4 +98,16 @@ public class InstanceDaoImpl implements InstanceDao {
         // @formatter:on
     }
 
+    @Override
+    public List<Instance> getInstancesForEnvironment(Long environmentId) {
+        // @formatter:off
+        return entityManager.createQuery( //
+                        "FROM Instance ice " + 
+                        "WHERE ice.projectEnvironment.environment.id = :environmentId ", Instance.class)
+                        .setParameter("environmentId", environmentId)
+                        .setHint("org.hibernate.cacheable", true)
+                        .getResultList();
+        // @formatter:on;
+    }
+
 }

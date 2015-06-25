@@ -131,6 +131,7 @@ public class StateLogicImpl implements StateLogic {
     }
 
     public StateDto requestStateForInstance(final InstanceDto instance) {
+
         final StateDto state = new StateDto();
         state.setInstance(instance);
         ProjectEnvironmentDto projectEnvironment = instance.getProjectEnvironment();
@@ -143,12 +144,8 @@ public class StateLogicImpl implements StateLogic {
         } else if (!environment.isEnabled()) {
             setDisabled(state, "Disabled by environment");
         } else {
-
-            final InstanceDto instanceDto = new InstanceDto();
-            instanceDto.setConfiguration(instance.getConfiguration());
-            instanceDto.setId(instance.getId());
             final String pluginClass = instance.getPluginClass();
-            updateState(state, pluginClass, instanceDto);
+            updateState(state, pluginClass, instance);
         }
 
         return state;

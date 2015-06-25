@@ -23,7 +23,7 @@ public class InstanceLinkConverter implements ConverterWithConfig<InstanceLink, 
         }
 
         InstanceLink instanceLink = new InstanceLink();
-        instanceLink.setInstanceId(dto.getInstanceId());
+        instanceLink.setInstanceId(dto.getInstanceToId());
         instanceLink.setName(dto.getName());
         instanceLink.setDirection(direction);
         return instanceLink;

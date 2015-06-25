@@ -11,6 +11,7 @@ import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.InstanceLinkDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
+import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.sysstate_1_0.Instance;
 import nl.unionsoft.sysstate.sysstate_1_0.InstanceLink;
 import nl.unionsoft.sysstate.sysstate_1_0.ProjectEnvironment;
@@ -37,6 +38,7 @@ public class ProjectEnvironmentConverter implements Converter<ProjectEnvironment
         projectEnvironment.setId(dto.getId());
         projectEnvironment.setProject(projectConverter.convert(dto.getProject()));
         projectEnvironment.setEnvironment(environmentConverter.convert(dto.getEnvironment()));
+        projectEnvironment.setState((dto.getState() == null ? StateType.PENDING : dto.getState()).name());
         return projectEnvironment;
     }
 
