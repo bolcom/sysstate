@@ -88,6 +88,7 @@ targetNamespace="http://sysstate.unionsoft.nl/sysstate-1.0.0" elementFormDefault
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="id" type="xs:long" minOccurs="0" maxOccurs="1" />
+				<xs:element name="state" type="xs:string" minOccurs="0" maxOccurs="1" />
 				<xs:element ref="Project" minOccurs="0" maxOccurs="1" />
 				<xs:element ref="Environment" minOccurs="0" maxOccurs="1" />
 			</xs:sequence>

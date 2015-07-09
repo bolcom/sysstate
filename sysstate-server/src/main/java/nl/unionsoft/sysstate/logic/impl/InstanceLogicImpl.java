@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Stack;
 import java.util.UUID;
@@ -28,7 +29,6 @@ import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
-import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.extending.ListOfValueResolver;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
@@ -41,7 +41,6 @@ import nl.unionsoft.sysstate.converter.StateConverter;
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.dao.ListRequestDao;
 import nl.unionsoft.sysstate.dao.PropertyDao;
-import nl.unionsoft.sysstate.dao.StateDao;
 import nl.unionsoft.sysstate.domain.Instance;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
 import nl.unionsoft.sysstate.job.UpdateInstanceJob;
@@ -124,45 +123,56 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     private InstancePropertiesConverter instancePropertiesConverter;
 
     public void queueForUpdate(final Long instanceId) {
-        updateTriggerJob(instanceDao.getInstance(instanceId));
+
+        Optional<Instance> optionalInstance = instanceDao.getInstance(instanceId);
+        if (!optionalInstance.isPresent()) {
+            throw new IllegalStateException("No instance could be found for the given instanceId [" + instanceId + "]");
+        }
+        updateTriggerJob(optionalInstance.get());
     }
 
     private void updateTriggerJob(final Instance instance) {
+        if (instance == null) {
+            throw new IllegalStateException("Instance is required!");
+        }
         LOG.info("Creating or updating queue job for instance with id: {}", instance.getId());
         removeTriggerJob(instance.getId());
         addTriggerJob(instance.getId());
     }
 
     public void addTriggerJob(final long instanceId) {
-        Instance instance = instanceDao.getInstance(instanceId);
-        if (instance != null) {
-            final long id = instance.getId();
+        Optional<Instance> optionalInstance = instanceDao.getInstance(instanceId);
+        if (!optionalInstance.isPresent()) {
+            throw new IllegalStateException("No instance could be found for instanceId [" + instanceId + "]");
+        }
+        Instance instance = optionalInstance.get();
 
-            JobDetailFactoryBean jobDetailFactoryBean = new JobDetailFactoryBean();
-            jobDetailFactoryBean.setName("instance-" + id + "-job");
-            jobDetailFactoryBean.setGroup("instances");
-            jobDetailFactoryBean.setJobClass(UpdateInstanceJob.class);
-            Map<String, Object> jobData = new HashMap<String, Object>();
-            jobData.put("instanceId", id);
-            jobDetailFactoryBean.setJobDataAsMap(jobData);
-            jobDetailFactoryBean.afterPropertiesSet();
-            final JobDetail jobDetail = jobDetailFactoryBean.getObject();
+        final long id = instance.getId();
 
-            final long refreshTimeout = instance.getRefreshTimeout();
-            SimpleTriggerFactoryBean simpleTriggerFactoryBean = new SimpleTriggerFactoryBean();
-            simpleTriggerFactoryBean.setName("instance-" + id + "-trigger");
-            simpleTriggerFactoryBean.setRepeatCount(-1);
-            simpleTriggerFactoryBean.setRepeatInterval(refreshTimeout < 30000 ? 30000 : refreshTimeout);
-            simpleTriggerFactoryBean.setStartTime(new Date(System.currentTimeMillis() + 5000));
-            simpleTriggerFactoryBean.setJobDetail(jobDetail);
-            simpleTriggerFactoryBean.afterPropertiesSet();
-            final SimpleTrigger trigger = simpleTriggerFactoryBean.getObject();
+        JobDetailFactoryBean jobDetailFactoryBean = new JobDetailFactoryBean();
+        jobDetailFactoryBean.setName("instance-" + id + "-job");
+        jobDetailFactoryBean.setGroup("instances");
+        jobDetailFactoryBean.setJobClass(UpdateInstanceJob.class);
+        Map<String, Object> jobData = new HashMap<String, Object>();
+        jobData.put("instanceId", id);
+        jobDetailFactoryBean.setJobDataAsMap(jobData);
+        jobDetailFactoryBean.afterPropertiesSet();
+        final JobDetail jobDetail = jobDetailFactoryBean.getObject();
 
-            try {
-                scheduler.scheduleJob(jobDetail, trigger);
-            } catch (final SchedulerException e) {
-                e.printStackTrace();
-            }
+        final long refreshTimeout = instance.getRefreshTimeout();
+        SimpleTriggerFactoryBean simpleTriggerFactoryBean = new SimpleTriggerFactoryBean();
+        simpleTriggerFactoryBean.setName("instance-" + id + "-trigger");
+        simpleTriggerFactoryBean.setRepeatCount(-1);
+        simpleTriggerFactoryBean.setRepeatInterval(refreshTimeout < 30000 ? 30000 : refreshTimeout);
+        simpleTriggerFactoryBean.setStartTime(new Date(System.currentTimeMillis() + 5000));
+        simpleTriggerFactoryBean.setJobDetail(jobDetail);
+        simpleTriggerFactoryBean.afterPropertiesSet();
+        final SimpleTrigger trigger = simpleTriggerFactoryBean.getObject();
+
+        try {
+            scheduler.scheduleJob(jobDetail, trigger);
+        } catch (final SchedulerException e) {
+            e.printStackTrace();
         }
     }
 
@@ -186,8 +196,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
 
     public InstanceDto getInstance(final Long instanceId, final boolean states) {
 
-        final InstanceDto result = instanceConverter.convert(instanceDao.getInstance(instanceId));
-
+        final InstanceDto result = OptionalConverter.fromOptional(instanceDao.getInstance(instanceId), instanceConverter);
         if (states) {
             setLastStatesForInstance(result);
         }
@@ -248,10 +257,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
 
     public ListResponse<InstanceDto> getInstances(final ListRequest listRequest) {
         final ListResponse<InstanceDto> listResponse = listRequestDao.getResults(Instance.class, listRequest, instanceConverter);
-        listResponse
-                .getResults()
-                .parallelStream()
-                .forEach(instance -> instance.setState(stateLogic.getLastStateForInstance(instance.getId())));
+        listResponse.getResults().parallelStream().forEach(instance -> instance.setState(stateLogic.getLastStateForInstance(instance.getId())));
         return listResponse;
     }
 
@@ -430,6 +436,11 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
             }
         }
         return propertyMetas;
+    }
+
+    @Override
+    public List<InstanceDto> getInstancesForEnvironment(Long environmentId) {
+        return ListConverter.convert(instanceConverter, instanceDao.getInstancesForEnvironment(environmentId));
     }
 
 }

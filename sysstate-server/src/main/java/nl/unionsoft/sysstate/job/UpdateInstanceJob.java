@@ -41,9 +41,12 @@ public class UpdateInstanceJob extends AutowiringJob {
         long instanceId = jobDataMap.getLong("instanceId");
 
         InstanceDto instance = instanceLogic.getInstance(instanceId);
+        if (instance == null) {
+            LOG.error("Instance with instanceId [{}] (no longer) exists!", instanceId);
+            return;
+        }
         LOG.info("Starting job with instance '{}'", instance);
         try {
-
             final StateDto state = stateLogic.requestStateForInstance(instance);
             finalizeState(instance, state);
             LOG.info("job for instance '{}' completed, state: {}", instance, state);
@@ -56,8 +59,5 @@ public class UpdateInstanceJob extends AutowiringJob {
     private void finalizeState(final InstanceDto instance, final StateDto state) {
         stateLogic.createOrUpdate(state);
     }
-
-
-
 
 }

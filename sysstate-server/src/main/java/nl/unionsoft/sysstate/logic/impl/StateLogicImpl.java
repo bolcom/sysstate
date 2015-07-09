@@ -24,6 +24,7 @@ import nl.unionsoft.sysstate.converter.OptionalConverter;
 import nl.unionsoft.sysstate.converter.StateConverter;
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.dao.StateDao;
+import nl.unionsoft.sysstate.domain.Instance;
 import nl.unionsoft.sysstate.domain.State;
 import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
@@ -87,42 +88,50 @@ public class StateLogicImpl implements StateLogic {
     public ListResponse<State> getStates(final ListRequest listRequest) {
         return stateDao.getStates(listRequest);
     }
-    
-    @CachePut(value = "lastStateForInstanceCache", key="#dto.instance.id")
+
+    @CachePut(value = "lastStateForInstanceCache", key = "#dto.instance.id")
     public StateDto createOrUpdate(final StateDto dto) {
-        final InstanceDto instance = dto.getInstance();
-        if (instance != null) {
-            final Long instanceId = instance.getId();
-            Optional<State> optionalState = stateDao.getLastStateForInstance(instance.getId());
-            State state = null;
-            if (optionalState.isPresent()) {
-                state = optionalState.get();
-            }
-            final Date stateDate = dto.getCreationDate().toDate();
-            if (!match(dto, state)) {
-                //@formatter:off
+        if (dto.getInstance() == null) {
+            throw new IllegalStateException("State must have an instance!");
+        }
+
+        final Long instanceId = dto.getInstance().getId();
+        Optional<Instance> optionalInstance = instanceDao.getInstance(instanceId);
+        if (!optionalInstance.isPresent()){
+            throw new IllegalStateException("No instance for instanceId [" + instanceId + "] could not be found.");
+        }
+        Instance instance = optionalInstance.get();
+        Optional<State> optionalState = stateDao.getLastStateForInstance(instanceId);
+        State state = null;
+        if (optionalState.isPresent()) {
+            state = optionalState.get();
+        }
+        final Date stateDate = dto.getCreationDate().toDate();
+        if (!match(dto, state)) {
+            //@formatter:off
                 LOG.info("State '{}' for instance '{}' changed! old='{}', new='{}'", new Object[] {
                         state, instanceId,dto, state });
                 //@formatter:on
-                state = new State();
-                state.setDescription(dto.getDescription());
-                state.setInstance(instanceDao.getInstance(instanceId));
-                state.setCreationDate(stateDate);
-                state.setState(dto.getState());
-            } else {
-                LOG.info("State '{}' for instance '{}' hasn't changed, updating timestamps, rating & messages only...", state, instance);
-            }
-            state.setMessage(SysStateStringUtils.stripHtml(dto.getMessage()));
-            state.setResponseTime(dto.getResponseTime());
-            state.setLastUpdate(stateDate);
-            state.setRating(dto.getRating());
-            stateDao.createOrUpdate(state);
-            dto.setId(state.getId());
+            state = new State();
+            state.setDescription(dto.getDescription());
+            
+            state.setInstance(instance);
+            state.setCreationDate(stateDate);
+            state.setState(dto.getState());
+        } else {
+            LOG.info("State '{}' for instanceId '{}' hasn't changed, updating timestamps, rating & messages only...", state, instanceId);
         }
+        state.setMessage(SysStateStringUtils.stripHtml(dto.getMessage()));
+        state.setResponseTime(dto.getResponseTime());
+        state.setLastUpdate(stateDate);
+        state.setRating(dto.getRating());
+        stateDao.createOrUpdate(state);
+        dto.setId(state.getId());
         return dto;
     }
 
     public StateDto requestStateForInstance(final InstanceDto instance) {
+
         final StateDto state = new StateDto();
         state.setInstance(instance);
         ProjectEnvironmentDto projectEnvironment = instance.getProjectEnvironment();
@@ -135,12 +144,8 @@ public class StateLogicImpl implements StateLogic {
         } else if (!environment.isEnabled()) {
             setDisabled(state, "Disabled by environment");
         } else {
-
-            final InstanceDto instanceDto = new InstanceDto();
-            instanceDto.setConfiguration(instance.getConfiguration());
-            instanceDto.setId(instance.getId());
             final String pluginClass = instance.getPluginClass();
-            updateState(state, pluginClass, instanceDto);
+            updateState(state, pluginClass, instance);
         }
 
         return state;
@@ -207,15 +212,13 @@ public class StateLogicImpl implements StateLogic {
 
         boolean result = false;
         if (otherState != null) {
-            result = StringUtils.equals(thisState.getDescription(), otherState.getDescription())
-                    && thisState.getState() == otherState.getState();
+            result = StringUtils.equals(thisState.getDescription(), otherState.getDescription()) && thisState.getState() == otherState.getState();
 
         }
         return result;
 
     }
 
-    
     @Cacheable(value = "lastStateForInstanceCache", key = "#instanceId")
     public StateDto getLastStateForInstance(final Long instanceId) {
         return OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instanceId), stateConverter, false, StateDto.PENDING);

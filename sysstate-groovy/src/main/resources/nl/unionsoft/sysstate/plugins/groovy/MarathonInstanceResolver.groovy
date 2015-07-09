@@ -1,10 +1,8 @@
-@Grab(group='com.github.mohitsoni', module='marathon-client', version='0.4.1')
 import java.util.regex.Matcher;
 import nl.unionsoft.sysstate.common.dto.*
 import nl.unionsoft.sysstate.common.enums.StateType
-import mesosphere.marathon.client.Marathon
-import mesosphere.marathon.client.MarathonClient
 import org.springframework.context.ApplicationContext
+import groovy.json.*
 
 import nl.unionsoft.sysstate.common.logic.InstanceLinkLogic
 import nl.unionsoft.sysstate.common.logic.InstanceLogic
@@ -20,13 +18,13 @@ import groovy.text.SimpleTemplateEngine
 /**
  * Example binding properties
  * server=http://marathon.dev.mycompany.com
- * groupMatcherPattern=/([a-z]*-[0-9]*)/(.*)
+ * applicationLabel=application
+ * environmentLabel=environment
+ * tags=marathon
  * urlConstructTemplate=http://${projectName.toLowerCase()}.${environmentName.toLowerCase()}.cd.dev.mycompany.com/internal/selfdiagnose.html
- * environmentIndex=1
- * projectIndex=2
  * 
  */
-Logger log = LoggerFactory.getLogger(this.class);
+
 
 StateDto state = binding.getVariable("state")
 state.setState(StateType.UNSTABLE)
@@ -34,110 +32,125 @@ state.setState(StateType.UNSTABLE)
 def properties = binding.getVariable("properties")
 InstanceDto instance = binding.getVariable("instance")
 
-def groupMatcherPattern = properties["groupMatcherPattern"]
-assert groupMatcherPattern,"No groupMatcherPattern defined in properties..."
-
-def urlConstructTemplate = properties["urlConstructTemplate"]
-assert urlConstructTemplate,"No urlConstructTemplate defined in properties..."
-
-def environmentIndex = properties["environmentIndex"] as int
-def projectIndex = properties["projectIndex"] as int
-
-Marathon marathon = MarathonClient.getInstance(properties["server"].toString().trim())
-assert marathon,"No Marathon available. MarathonClient server creation failed."
-
-def identifier = properties["tag"]
-if (!identifier){
-    identifier = "marathon"
-}
+def applicationLabel = properties["applicationLabel"] ? properties["applicationLabel"] : 'application'
+def environmentLabel = properties["environmentLabel"] ? properties["environmentLabel"] : 'environment'
 
 ApplicationContext applicationContext = binding.getVariable("applicationContext")
-InstanceLogic instanceLogic = applicationContext.getBean(InstanceLogic.class)
-InstanceLinkLogic instanceLinkLogic = applicationContext.getBean(InstanceLinkLogic.class)
-ProjectLogic projectLogic = applicationContext.getBean(ProjectLogic.class)
-EnvironmentLogic environmentLogic = applicationContext.getBean(EnvironmentLogic.class)
 
-def apps = marathon.getApps()["apps"];
-//def apps = []
+def marathonInstanceSync = new MarathonInstanceSync(
+        serverUrl : properties["server"].toString().trim(),
+        urlConstructTemplate : properties["urlConstructTemplate"], 
+        parentInstance : binding.getVariable("instance"),
+        tags : properties["tags"] ? properties['tags'] : 'marathon',
+        projectLogic : applicationContext.getBean(ProjectLogic.class),
+        environmentLogic: applicationContext.getBean(EnvironmentLogic.class),
+        instanceLogic : applicationContext.getBean(InstanceLogic.class),
+        instanceLinkLogic : applicationContext.getBean(InstanceLinkLogic.class))
 
-def marathonInstances = []
-apps.each { app ->
+marathonInstanceSync.sync();
+
+class MarathonInstanceSync{
+
+    Logger log = LoggerFactory.getLogger(MarathonInstanceSync.class);
+
+    def serverUrl;
+    def urlConstructTemplate;
+    def tags;
     
-    def appId = app["id"]
-    Matcher matcher = appId =~ groupMatcherPattern 
-    log.info("Validating environment for app with id [${appId}]")
+    InstanceDto parentInstance;
+
+    ProjectLogic projectLogic;
+    EnvironmentLogic environmentLogic;
+    InstanceLogic instanceLogic;
+    InstanceLinkLogic instanceLinkLogic;
     
-    if (matcher.matches()){
-        def environmentName = matcher[0][environmentIndex].toUpperCase();
-        def projectName = matcher[0][projectIndex].toUpperCase();
-        def project = projectLogic.getProjectByName(projectName)
-        if (!project){
+    def sync() {
+        def result = new JsonSlurper().parseText(new URL("${serverUrl}/v2/apps/").text)
+        
+        def validInstanceIds = []
+        result['apps'].each { app ->
+            def environmentName = app['labels']['environment']?.toString()?.toUpperCase();
+            def applicationName = app['labels']['application']?.toString()?.toUpperCase();
+            if (environmentName && applicationName){
+                log.info("Found app [${app['id']} with environment [${environmentName}] and application [${applicationName}]")
+                createProjectIfNotExists(applicationName);
+                createEnvironmentIfNotExists(environmentName)
+                def component = app['id'].toString().tokenize('/')[-1]
+                log.info("Searching for instance with component [${component}] for applicationName [${applicationName}] and environmentName [${environmentName}]")
+                def projectEnvironmentInstances = instanceLogic.getInstancesForProjectAndEnvironment(applicationName, environmentName)
+                def componentInstances = projectEnvironmentInstances.findAll{InstanceDto i -> i.tags.contains(component)} 
+                if (componentInstances){
+                    log.info("Instance with component [${component}], applicationName [${applicationName}] and environmentName [${environmentName}] is already configured.")
+                    validInstanceIds += componentInstances.collect{InstanceDto i -> i.id}
+                } else {
+                    log.info("No instances found for application [${applicationName}], environment [${environmentName}] and component [${component}]! Creating one...")
+                    validInstanceIds << createInstance(applicationName, environmentName, component)
+                }
+            }
+        }
+        
+        deleteNoLongerValidInstances(validInstanceIds)
+        deleteEnvironmentsWithtoutInstances()
+        
+        
+    }
+    
+    def deleteEnvironmentsWithtoutInstances(){
+        log.info("Deleting Environments without instances...")
+        environmentLogic.getEnvironments().each{ environment ->
+            if (!instanceLogic.getInstancesForEnvironment(environment.id)){
+                log.info("Deleting environment with id [${environment.id}] since it is no longer used.")
+                environmentLogic.delete(environment.id)
+            }
+        }
+    }
+    
+    def deleteNoLongerValidInstances(def validInstanceIds) {
+        log.info("Deleting linked instances that are not in the validInstanceIds list [${validInstanceIds}]")
+        parentInstance.getOutgoingInstanceLinks().findAll{ it.name == 'child'}.each { InstanceLinkDto instanceLink ->
+            def instanceId = instanceLink.instanceToId
+            if (!validInstanceIds.contains(instanceId)){
+                log.info("Deleting instance with id [${instanceId}] sinze it is no longer used.")
+                instanceLogic.delete(instanceId)
+            }
+        }
+    }
+
+    long createInstance(String applicationName, String environmentName, String component) {
+        ProjectDto project = projectLogic.getProjectByName(applicationName);
+        EnvironmentDto environment = environmentLogic.getEnvironmentByName(environmentName);
+        InstanceDto childInstance = instanceLogic.generateInstanceDto("selfDiagnoseStateResolver", project.id, environment.id)
+        childInstance.name = component
+        SimpleTemplateEngine engine = new SimpleTemplateEngine()
+        def templateBinding = ["projectName":component, "environmentName":environmentName]
+        def template = engine.createTemplate(urlConstructTemplate).make(templateBinding)
+        childInstance.homepageUrl=template.toString()
+        childInstance.configuration = ['url':template.toString(),'pattern':'Maven POM properties']
+        childInstance.tags = [tags, component].join(" ");
+        instanceLogic.createOrUpdateInstance(childInstance)
+        instanceLinkLogic.link(parentInstance.id, childInstance.id, "child")
+        return childInstance.id
+    }
+
+    def createProjectIfNotExists(String projectName) {
+        if (!projectLogic.getProjectByName(projectName)){
             log.info("There's no project defined for projectName [${projectName}], creating it...")
-            project = new ProjectDto()
+            def project = new ProjectDto()
             project.name = projectName
-            project.tags = identifier
             projectLogic.createOrUpdateProject(project)
         }
-        
-        def environment = environmentLogic.getEnvironmentByName(environmentName)
-        if (!environment){
+    }
+
+    def createEnvironmentIfNotExists(String environmentName) {
+        if (!environmentLogic.getEnvironmentByName(environmentName)){
             log.info("There's no environment defined for environmentName [${environmentName}], creating it...")
-            environment = new EnvironmentDto()
+            def environment = new EnvironmentDto()
             environment.name = environmentName
-            environment.tags = identifier
             environmentLogic.createOrUpdate(environment)
         }
-        
-        List<InstanceDto> instances = instanceLogic.getInstancesForProjectAndEnvironment(projectName, environmentName)
-        
-        if (!instances){
-            log.info("No instances found! Creating...")
-            InstanceDto discoverInstance = instanceLogic.generateInstanceDto("selfDiagnoseStateResolver", project.id, environment.id)
-            discoverInstance.name = app["id"]
-            discoverInstance.tags = identifier
-            
-            SimpleTemplateEngine engine = new SimpleTemplateEngine()
-            
-            def templateBinding = ["projectName":projectName, "environmentName":environmentName]
-            def template = engine.createTemplate(urlConstructTemplate).make(templateBinding)
-            
-            discoverInstance.homepageUrl=template.toString()
-            discoverInstance.configuration = ['url':template.toString(),'pattern':'Maven POM properties']
-            instanceLogic.createOrUpdateInstance(discoverInstance)
-            //FIXME: createOrUpdateInstance should update or return id.
-            instanceLinkLogic.link(instance.id, discoverInstance.id, "child")
-            marathonInstances << discoverInstance
-        } else {
-            log.info("One or more instances already configured. Skipping...")
-            marathonInstances << instances
-        }
-    } else {
-        log.info("appId [${appId}] does not match given groupMatcherPattern [${groupMatcherPattern}]. Skipping...")
-    }
-}
-log.info("MarathonInstanceResolver is managing the following instances: [${marathonInstances}]")
-
-log.info("Cleaning up no longer used instances which match the given identifier [${identifier}] and are not in the list of managedInstances.")
-def marathonInstanceIds = marathonInstances.collect{it.id}.flatten()
-instanceLogic.getInstances().
-    findAll{it.tags?.equals(identifier)}.
-    findAll{!marathonInstanceIds.contains(it.id)}.
-    each { marathonInstance ->
-    log.info("Removing instance [${marathonInstance}] as it is no longer used...")
-    instanceLogic.delete(marathonInstance.id)
-}
-
-log.info("Cleaning up no longer used environments which match the given identifier [${identifier}]")
-def environments = environmentLogic.getEnvironments().findAll{it.tags?.equals(identifier)}
-environments.each { environment ->
-    def appEnvironmentPrefix ="/${environment.name.toLowerCase()}/"
-    if (!apps.find{app -> app["id"].startsWith(appEnvironmentPrefix)}){
-       log.info("Removing environment [${environment.name}] as it is no longer used...")
-       environmentLogic.delete(environment.id)
     }
 }
 
-log.info("All done!")
 state.setState(StateType.STABLE)
 
 

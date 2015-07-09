@@ -16,7 +16,8 @@ public class InstanceLinkConverter implements Converter<InstanceLinkDto, Instanc
         }
         InstanceLinkDto dto = new InstanceLinkDto();
         dto.setName(instanceLink.getName());
-        dto.setInstanceId(instanceLink.getTo().getId());
+        dto.setInstanceToId(instanceLink.getTo().getId());
+        dto.setInstanceFromId(instanceLink.getFrom().getId());
         return dto;
     }
 

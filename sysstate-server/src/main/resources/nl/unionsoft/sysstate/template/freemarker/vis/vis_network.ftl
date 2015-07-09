@@ -37,7 +37,7 @@
 			var instanceId = "I" + this.id;
 			nodes.update([ {
 				id : instanceId,
-				label : "[" + this.projectEnvironment.project.name + "]\n" + (this.state.description ? this.state.description.replace(" ", "\n") : this.state.state),
+				label : "[" + this.projectEnvironment.project.name + ": " + this.name + "]\n" + (this.state.description ? this.state.description.replace(" ", "\n") : this.state.state),
 				group : this.state.state,
 				level : 1
 			} ]);
