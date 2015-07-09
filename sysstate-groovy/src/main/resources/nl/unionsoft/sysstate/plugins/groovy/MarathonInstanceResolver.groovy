@@ -1,8 +1,3 @@
-@Grapes(
-@Grab(group='org.codehaus.groovy', module='groovy-json', version='2.4.0-rc-1')
-)
-
-
 import java.util.regex.Matcher;
 import nl.unionsoft.sysstate.common.dto.*
 import nl.unionsoft.sysstate.common.enums.StateType
