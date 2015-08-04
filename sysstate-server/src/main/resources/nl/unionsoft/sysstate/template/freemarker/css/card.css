@@ -3,9 +3,77 @@ body,th,td {
 	font-size: 11px;
 }
 
-
-
 div#cardbox {
-	background-color: white;
+	
+}
+
+.card {
+	height:100px;
+}
+
+
+div.card-panel {
+
+}
+
+.header-small {
+	height:20px;
+	text-align: center;
+}
+
+.header-small.red{
+	background-color: red;
+}
+
+.header-small.green{
+	background-color: green;
+}
+
+.header-small.yellow{
+	background-color: yellow;
+}
+
+.header-small.grey{
+	background-color: red;
+
+}
+.instance-details .ERROR {
+	background-color: red;
+}
+
+.instance-details .STABLE {
+	background-color: green;
+}
+
+.instance-details .UNSTABLE {
+	background-color: yellow;
+}
+
+.instance-details .PENDING {
+	background-color: gray;
+}
+
+.instance-details .UNKNOWN {
+	background-color: gray;
+}
+
+
+
+
+
+.statebox {
+	
+}
+
+.state {
+}
+
+.instance-details{
+
+	
+}
+
+.instances {
+	padding:2px !important;
 }
 

@@ -66,7 +66,7 @@ public class TemplateLogicImpl implements TemplateLogic {
     }
 
     @Override
-    public void createOrUpdate(TemplateDto dto) throws IOException {
+    public void createOrUpdate(TemplateDto dto) {
         Template template = new Template();
         template.setId(dto.getId());
         template.setName(dto.getName());
@@ -126,7 +126,7 @@ public class TemplateLogicImpl implements TemplateLogic {
     }
 
     @Override
-    public TemplateDto getTemplate(String name) throws IOException {
+    public TemplateDto getTemplate(String name)  {
         return OptionalConverter.fromOptional(templateDao.getTemplate(name), templateConverter);
     }
 
