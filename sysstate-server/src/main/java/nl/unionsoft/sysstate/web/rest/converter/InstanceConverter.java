@@ -38,7 +38,7 @@ public class InstanceConverter implements Converter<Instance, InstanceDto>{
         Instance instance = new Instance();
         instance.setId(dto.getId());
         instance.setName(dto.getName());
-        
+        instance.setHomepageUrl(dto.getHomepageUrl());
         instance.setState(stateConverter.convert(dto.getState()));
         instance.getInstanceLinks().addAll(ListConverter.convert(instanceLinkConverter, dto.getIncommingInstanceLinks(), InstanceLinkDirection.INCOMMING));
         instance.getInstanceLinks().addAll(ListConverter.convert(instanceLinkConverter, dto.getOutgoingInstanceLinks(), InstanceLinkDirection.OUTGOING));

@@ -20,12 +20,12 @@
 		var cardBox =$('#cardbox') 
 		var validIds = [];
 		$.each(data.ecoSystem.projectEnvironments, function() {
-			console.log("Checking if cardBox already has an element with id [#pe" + this.id + "]")
 			var projectEnvironmentId ='pe' + this.id;
+			console.log("Checking if cardBox already has an element with id [#" + projectEnvironmentId + "]")
 			var card = $('#' + projectEnvironmentId);   
 			if (!card.length) {
-				console.log("No card defined, adding new card for projectEnvironmentId [" + projectEnvironmentId + "]")			
-				card = addCard(cardBox, projectEnvironmentId);
+				console.log("No card defined, adding new card...")			
+				card = addCard(cardBox, projectEnvironmentId, this);
 			}
 			setCardContent(card, this, data.ecoSystem.instances);
 			validIds.push(projectEnvironmentId)
@@ -48,7 +48,6 @@
 	
 	function setCardContent(card, projectEnvironment, instances){
 		var panel = card.find(".card");
-		panel.find(".environment").text("[" + projectEnvironment.project.name + "] [" + projectEnvironment.environment.name + "]");
 		var stateClass = getClassForState(projectEnvironment.state);
 		panel.find(".header-small").attr('class', "waves-effect waves-block waves-light header-small " + stateClass );
 		
@@ -65,7 +64,7 @@
 		return $('\
 			<div id="i' + instance.id + '" class="instance-details">\
 				<span class="statebox ' + instance.state.state + '">&nbsp;</span>\
-				<span class="state">' + instance.name + '</span>\
+				<span class="state"><a href="'+ instance.homepageUrl +'">' + instance.name + '</a></span>\
 			</div>\
 			');
 	}
@@ -88,13 +87,13 @@
 	}
 	
 	
-	function addCard(parent, projectEnvironmentId){
+	function addCard(parent, cardId, projectEnvironment){
 		var row = findRow(parent);
 		return $('\
-       		<div class="col s12 m1" id="' + projectEnvironmentId + '">\
+       		<div class="col s12 m1" id="' + cardId + '">\
 		 		<div class="card">\
 			        <div class="waves-effect waves-block waves-light header-small grey">\
-			        	<span class="environment">[]</span>\
+			        	<span class="environment">[<a href="${contextPath}/filter/project/' + projectEnvironment.project.id + '/index.html" >' + projectEnvironment.project.name + '</a>] [<a href="${contextPath}/filter/environment/' + projectEnvironment.environment.id + '/index.html" >' + projectEnvironment.environment.name + '</a>]</span>\
 			        </div>\
 			        <div class="instances card-content">\
 	              	</div>\

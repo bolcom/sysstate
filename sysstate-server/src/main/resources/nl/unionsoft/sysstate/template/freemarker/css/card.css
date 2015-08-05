@@ -12,6 +12,12 @@ div#cardbox {
 	height:100px;
 }
 
+a:link {
+	color: black;
+}
+a:VISITED{
+	color:black;
+}
 
 div.card-panel {
 
