@@ -45,7 +45,10 @@
         <servlet-name>default</servlet-name>
         <url-pattern>/js/*</url-pattern>
     </servlet-mapping>
-
+	<servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/materialize/*</url-pattern>
+    </servlet-mapping>
 
 	<!-- Rest -->
 	<servlet>

@@ -37,6 +37,13 @@ targetNamespace="http://sysstate.unionsoft.nl/sysstate-1.0.0" elementFormDefault
 						</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
+				<xs:element ref="ProjectEnvironment" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="projectEnvironments" />
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
 				<xs:element ref="Instance" minOccurs="0" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:appinfo>

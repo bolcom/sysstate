@@ -11,6 +11,7 @@ import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
+import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
@@ -104,6 +105,9 @@ public class SetupListener implements InitializingBean {
                 filterLogic.createOrUpdate(filterDto);
 
             }
+            if (viewLogic.getViews().isEmpty()) {
+                createView("complete card", "card.html");
+            }
         }
     }
 
@@ -117,6 +121,13 @@ public class SetupListener implements InitializingBean {
         Map<String, String> configuration = new HashMap<String, String>();
         configuration.put("url", url);
         return configuration;
+    }
+
+    private void createView(String name, String template) {
+        ViewDto view = new ViewDto();
+        view.setName(name);
+        view.setTemplate(templateLogic.getTemplate(template));
+        viewLogic.createOrUpdateView(view);
     }
 
     private void addTestInstance(final String name, final String projectName, final String environmentName, final Map<String, String> configuration,

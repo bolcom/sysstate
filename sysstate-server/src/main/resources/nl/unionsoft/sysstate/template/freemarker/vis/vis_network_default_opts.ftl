@@ -1,6 +1,6 @@
 width : '100%',
 height : '100%',
-physics: {barnesHut: {springLength: 140,centralGravity: 0.4,damping: 0.10}},
+physics: {barnesHut: {springLength: 110,centralGravity: 0.6,damping: 0.08}},
 edges: {
 		arrowScaleFactor : 0.5,
 	    color: 'white',
@@ -85,7 +85,7 @@ groups : {
 			}
 		},
 		fontColor : 'white',
-		fontSize : 14
+		fontSize : 12
 	},
 	ENVIRONMENT : {
 		shape : 'circle',
@@ -98,6 +98,6 @@ groups : {
 			}
 		},
 		fontColor : 'white',
-		fontSize : 14
+		fontSize : 12
 	}			
 }
