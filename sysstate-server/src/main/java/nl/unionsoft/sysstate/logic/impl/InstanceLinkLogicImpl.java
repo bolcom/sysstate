@@ -21,12 +21,12 @@ public class InstanceLinkLogicImpl implements InstanceLinkLogic {
 
     @Override
     public void link(Long fromInstanceId, Long toInstanceId, String name) {
-        instanceLinkDao.create(fromInstanceId, toInstanceId, name);
+        //instanceLinkDao.create(fromInstanceId, toInstanceId, name);
     }
 
     @Override
     public void unlink(Long fromInstanceId, Long toInstanceId, String name) {
-        instanceLinkDao.delete(fromInstanceId, toInstanceId, name);
+        //instanceLinkDao.delete(fromInstanceId, toInstanceId, name);
     }
 
     @Override

@@ -174,8 +174,8 @@ public class StateLogicImpl implements StateLogic {
             state.setDescription("MISSING PLUGIN");
             state.setResponseTime(0L);
             state.appendMessage(StateUtil.exceptionAsMessage(e));
-        } catch (final RuntimeException e) {
-            LOG.warn("Unable to determine state, caught RuntimeException!", e);
+        } catch (final Exception e) {
+            LOG.warn("Unable to determine state, caught Exception!", e);
             state.setState(StateType.ERROR);
             state.setDescription(e.getMessage());
             state.setResponseTime(0L);
