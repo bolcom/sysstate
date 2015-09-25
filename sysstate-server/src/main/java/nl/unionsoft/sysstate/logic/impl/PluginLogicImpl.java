@@ -286,4 +286,9 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
     public ListOfValueResolver getListOfValueResolver(String name) {
         return pluginApplicationContext.getBean(name, ListOfValueResolver.class);
     }
+
+    @Override
+    public ListOfValueResolver getListOfValueResolver(Class<? extends ListOfValueResolver> lovResolverClass) {
+        return pluginApplicationContext.getBean(lovResolverClass);
+    }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.transaction.Transactional;
 
 import nl.unionsoft.sysstate.common.logic.InstanceLinkLogic;
 import nl.unionsoft.sysstate.dao.InstanceLinkDao;
@@ -21,15 +22,16 @@ public class InstanceLinkLogicImpl implements InstanceLinkLogic {
 
     @Override
     public void link(Long fromInstanceId, Long toInstanceId, String name) {
-        //instanceLinkDao.create(fromInstanceId, toInstanceId, name);
+        instanceLinkDao.create(fromInstanceId, toInstanceId, name);
     }
 
     @Override
     public void unlink(Long fromInstanceId, Long toInstanceId, String name) {
-        //instanceLinkDao.delete(fromInstanceId, toInstanceId, name);
+        instanceLinkDao.delete(fromInstanceId, toInstanceId, name);
     }
 
     @Override
+    @Transactional
     public void link(Long fromInstanceId, List<Long> toInstanceIds, String name) {
 
         for (Long toInstanceId : toInstanceIds) {

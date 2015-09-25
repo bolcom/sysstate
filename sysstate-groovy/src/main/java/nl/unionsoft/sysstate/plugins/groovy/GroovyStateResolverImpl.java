@@ -6,8 +6,6 @@ import groovy.lang.GroovyShell;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -21,6 +19,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
+
 
 @Service("groovyStateResolver")
 public class GroovyStateResolverImpl extends TimedStateResolver implements ApplicationContextAware {
@@ -45,31 +44,13 @@ public class GroovyStateResolverImpl extends TimedStateResolver implements Appli
         ClassLoader classLoader = getClass().getClassLoader();
         File groovyScript = groovyScriptManager.getScriptFile(configuration.get("groovyScript"));
 
-        GroovyScriptType groovyScriptType = GroovyScriptType.valueOf(configuration.get("groovyScriptType"));
-
-//        if (GroovyScriptType.CLASS.equals(groovyScriptType)) {
-//            // GroovyClassLoader groovyClassLoader = null;
-//            // try {
-//            // groovyClassLoader = new GroovyClassLoader(classLoader);
-//            // Class<StateResolver> groovyStateResolverClass = groovyClassLoader.parseClass(groovyScript);
-//            //
-//            // StateResolver stateResolver = groovyStateResolverClass.newInstance();
-//            // stateResolver.setState(instance, state);
-//            //
-//            // } finally {
-//            // groovyClassLoader.close();
-//            // }
-//        } else {
-
-            Binding binding = new Binding();
-            binding.setVariable("state", state);
-            binding.setVariable("instance", instance);
-            binding.setVariable("properties", PropertiesUtil.stringToProperties(configuration.get("bindingProperties")));
-            binding.setVariable("applicationContext", applicationContext);
-            GroovyShell shell = new GroovyShell(classLoader, binding);
-            shell.evaluate(groovyScript);
-//
-//        }
+        Binding binding = new Binding();
+        binding.setVariable("state", state);
+        binding.setVariable("instance", instance);
+        binding.setVariable("properties", PropertiesUtil.stringToProperties(configuration.get("bindingProperties")));
+        binding.setVariable("applicationContext", applicationContext);
+        GroovyShell shell = new GroovyShell(classLoader, binding);
+        shell.evaluate(groovyScript);
     }
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

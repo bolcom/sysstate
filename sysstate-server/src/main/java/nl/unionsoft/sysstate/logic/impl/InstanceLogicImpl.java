@@ -1,11 +1,13 @@
 package nl.unionsoft.sysstate.logic.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Stack;
@@ -24,6 +26,7 @@ import nl.unionsoft.common.list.model.Restriction;
 import nl.unionsoft.common.list.model.Restriction.Rule;
 import nl.unionsoft.common.list.worker.impl.BeanListRequestWorkerImpl;
 import nl.unionsoft.common.param.ParamContextLogicImpl;
+import nl.unionsoft.sysstate.common.annotations.ParameterDefinition;
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
@@ -420,22 +423,44 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         List<PropertyMetaValue> propertyMetas = new ArrayList<PropertyMetaValue>();
         while (!classStack.empty()) {
             Class<?> stackClass = classStack.pop();
-            Map<String, Properties> instanceGroupProperties = PropertyGroupUtil.getGroupProperties(pluginLogic.getPropertiesForClass(stackClass), "instance");
-            for (Entry<String, Properties> entry : instanceGroupProperties.entrySet()) {
-                String id = entry.getKey();
-                Properties properties = entry.getValue();
-                PropertyMetaValue propertyMetaValue = new PropertyMetaValue();
-                propertyMetaValue.setId(id);
-                propertyMetaValue.setTitle(properties.getProperty("title", id));
-                String lovResolver = properties.getProperty("resolver");
-                if (StringUtils.isNotEmpty(lovResolver)) {
-                    ListOfValueResolver listOfValueResolver = pluginLogic.getListOfValueResolver(lovResolver);
-                    propertyMetaValue.setLov(listOfValueResolver.getListOfValues(propertyMetaValue));
-                }
-                propertyMetas.add(propertyMetaValue);
-            }
+            addPropertyMetasFromPropertyFiles(propertyMetas, stackClass);
+
         }
+
+        getPropertyMetasFromAnnotations(componentClass);
+        
+        
         return propertyMetas;
+    }
+
+    private List<PropertyMetaValue> getPropertyMetasFromAnnotations(Class<?> componentClass) {
+        
+        return Arrays.stream(componentClass.getFields()).map(f -> {
+            ParameterDefinition parameterDefinition = f.getAnnotation(ParameterDefinition.class);
+            if (parameterDefinition == null){
+                return null;
+            }
+            PropertyMetaValue propertyMetaValue = new PropertyMetaValue();
+            return propertyMetaValue;
+        }).collect(Collectors.toList());
+        
+    }
+
+    private void addPropertyMetasFromPropertyFiles(List<PropertyMetaValue> propertyMetas, Class<?> stackClass) {
+        Map<String, Properties> instanceGroupProperties = PropertyGroupUtil.getGroupProperties(pluginLogic.getPropertiesForClass(stackClass), "instance");
+        for (Entry<String, Properties> entry : instanceGroupProperties.entrySet()) {
+            String id = entry.getKey();
+            Properties properties = entry.getValue();
+            PropertyMetaValue propertyMetaValue = new PropertyMetaValue();
+            propertyMetaValue.setId(id);
+            propertyMetaValue.setTitle(properties.getProperty("title", id));
+            String lovResolver = properties.getProperty("resolver");
+            if (StringUtils.isNotEmpty(lovResolver)) {
+                ListOfValueResolver listOfValueResolver = pluginLogic.getListOfValueResolver(lovResolver);
+                propertyMetaValue.setLov(listOfValueResolver.getListOfValues(propertyMetaValue));
+            }
+            propertyMetas.add(propertyMetaValue);
+        }
     }
 
     @Override

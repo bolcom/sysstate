@@ -1,3 +1,5 @@
+package nl.unionsoft.sysstate.plugins.groovy.internal
+
 import java.util.regex.Matcher;
 import nl.unionsoft.sysstate.common.dto.*
 import nl.unionsoft.sysstate.common.enums.StateType
@@ -65,7 +67,7 @@ class MarathonInstanceSync{
     InstanceLinkLogic instanceLinkLogic;
     
     def sync() {
-        def result = new JsonSlurper().parseText(new URL("${serverUrl}/v2/apps/").text)
+        def result = new JsonSlurper().parseText(new URL("${serverUrl}/v2/apps/").getText(["connectTimeout" : 5000, "readTimeout":5000], "UTF-8"))
         
         def validInstanceIds = []
         result['apps'].each { app ->

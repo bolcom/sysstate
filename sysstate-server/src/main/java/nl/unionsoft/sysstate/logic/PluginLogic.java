@@ -29,5 +29,7 @@ public interface PluginLogic {
     public Properties getPluginProperties(String name);
 
     public ListOfValueResolver getListOfValueResolver(String name);
+    
+    public ListOfValueResolver getListOfValueResolver(Class<? extends ListOfValueResolver> lovResolverClass);
 
 }

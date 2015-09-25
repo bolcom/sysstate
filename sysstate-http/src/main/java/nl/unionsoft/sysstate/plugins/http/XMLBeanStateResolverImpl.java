@@ -41,7 +41,7 @@ public abstract class XMLBeanStateResolverImpl extends HttpStateResolverImpl {
             }
         } catch (UnmarshallingFailureException e) {
             state.setState(StateType.ERROR);
-            LOG.error("Unable to unmarshal object", e);
+            LOG.error("Unable to unmarshal object [" + e.getMessage()+ "]");
             state.setDescription("XML FAILURE");
             state.appendMessage(StateUtil.exceptionAsMessage(e));
         } catch (IllegalCharException e) {
@@ -49,11 +49,6 @@ public abstract class XMLBeanStateResolverImpl extends HttpStateResolverImpl {
             LOG.error("Caught IllegalCharException while unmarshalling object", e);
             state.setDescription("XML FAILURE");
             state.appendMessage(StateUtil.exceptionAsMessage(e));
-        } catch (final IllegalStateException e) {
-            LOG.error("Caught IllegalStateException", e);
-            state.setState(StateType.ERROR);
-            state.setDescription(e.getMessage());
-
         } catch (final IOException e) {
             LOG.error("Caught IOException", e);
             state.setState(StateType.ERROR);
