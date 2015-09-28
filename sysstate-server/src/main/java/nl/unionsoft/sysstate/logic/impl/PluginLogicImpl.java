@@ -123,7 +123,7 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
         try {
             Class<?> beanClass = Class.forName(name);
             result = (T) pluginApplicationContext.getBean(beanClass);
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
             result = (T) pluginApplicationContext.getBean(name);
         }
         return result;
