@@ -110,15 +110,7 @@
                 <version>2.9.2-01</version>
                 <extensions>true</extensions>
             </plugin>
-            <!-- Configure Clover for Maven plug-in. Please note that it's not bound to any execution phase, -->
-            <!-- so you'll have to call Clover goals from command line. -->
-            <!-- 
-            <plugin>
-                <groupId>com.atlassian.maven.plugins</groupId>
-                <artifactId>maven-clover2-plugin</artifactId>
-                <version>4.0.3</version>
-            </plugin>
-             -->
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>

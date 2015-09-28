@@ -1,28 +1,25 @@
 package nl.unionsoft.sysstate.plugins.groovy.marathon
 
-import javax.inject.Named;
-
 import groovy.json.JsonSlurper
-import nl.unionsoft.sysstate.common.annotations.ParameterDefinition;
-import nl.unionsoft.sysstate.common.dto.InstanceDto;
-import nl.unionsoft.sysstate.common.dto.StateDto;
-import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.extending.StateResolver;
-@Named
+
+import javax.inject.Named
+
+import nl.unionsoft.sysstate.common.dto.InstanceDto
+import nl.unionsoft.sysstate.common.dto.StateDto
+import nl.unionsoft.sysstate.common.enums.StateType
+import nl.unionsoft.sysstate.common.extending.StateResolver
+
+@Named("marathonAppStateResolver")
 class MarathonAppStateResolver implements StateResolver{
-
-    @ParameterDefinition(title = "Server Url")
-    String serverUrl
-
-    @ParameterDefinition(title = "Application Path")
-    String applicationPath
-
-    @ParameterDefinition(title = "Ignore HealthStatus")
-    boolean ignoreHealthStatus
-
 
     @Override
     public void setState(InstanceDto instance, StateDto state) {
+
+        Map<String, String> configuration = instance.getConfiguration()
+
+        def applicationPath = configuration.get("applicationPath");
+        def ignoreHealthStatus = configuration.get("ignoreHealthStatus").toBoolean()
+        def serverUrl = configuration.get("serverUrl").trim()
 
         assert applicationPath,"No applicationPath defined in properties..."
         assert serverUrl,"No server defined in properties..."
