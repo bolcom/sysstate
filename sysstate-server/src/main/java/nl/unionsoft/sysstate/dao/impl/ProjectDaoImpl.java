@@ -48,6 +48,15 @@ public class ProjectDaoImpl implements ProjectDao {
     }
 
     public void delete(final Long projectId) {
+        
+        Long instanceCount = entityManager.createQuery(
+                "SELECT COUNT(instance) FROM Instance instance " + 
+                "WHERE instance.projectEnvironment.project.id = :projectId", Long.class)
+                .setParameter("projectId", projectId).getSingleResult();
+        
+        if (instanceCount != 0){
+            throw new IllegalStateException("Unable to delete project with id [" + projectId + "], it still contains [" + instanceCount +"] instances.");
+        }
         entityManager.remove(entityManager.find(Project.class, projectId));
     }
     

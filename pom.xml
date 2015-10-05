@@ -69,29 +69,7 @@
 	<dependencyManagement>
 		<dependencies>
 		
-	        <!-- START: Groovy -->
-	        <dependency>
-	            <groupId>org.codehaus.groovy</groupId>
-	            <artifactId>groovy</artifactId>
-	            <version>2.3.4</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>org.codehaus.groovy</groupId>
-	            <artifactId>groovy-templates</artifactId>
-	            <version>2.3.4</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>org.codehaus.groovy</groupId>
-	            <artifactId>groovy-json</artifactId>
-	            <version>2.3.4</version>
-	        </dependency>
-
-	        <dependency>
-	            <groupId>org.apache.ivy</groupId>
-	            <artifactId>ivy</artifactId>
-	            <version>2.3.0</version>
-	        </dependency>
-	       <!-- END: Groovy -->
+	        
 			<!-- START: Cache -->
 			<dependency>
 				<groupId>net.sf.ehcache</groupId>
@@ -537,13 +515,6 @@
 			</exclusions>
 		</dependency>	        
 		<!-- START: Testing -->	
-		<!-- START: Groovy -->
-		 <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy</artifactId>
-        </dependency>
-        <!-- END: Groovy -->	
-		
 	</dependencies>
 	<build>
 		<pluginManagement>
@@ -650,7 +621,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.2</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>

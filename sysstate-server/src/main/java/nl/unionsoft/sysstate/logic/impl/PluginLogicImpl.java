@@ -123,7 +123,7 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
         try {
             Class<?> beanClass = Class.forName(name);
             result = (T) pluginApplicationContext.getBean(beanClass);
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
             result = (T) pluginApplicationContext.getBean(name);
         }
         return result;
@@ -285,5 +285,10 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
 
     public ListOfValueResolver getListOfValueResolver(String name) {
         return pluginApplicationContext.getBean(name, ListOfValueResolver.class);
+    }
+
+    @Override
+    public ListOfValueResolver getListOfValueResolver(Class<? extends ListOfValueResolver> lovResolverClass) {
+        return pluginApplicationContext.getBean(lovResolverClass);
     }
 }

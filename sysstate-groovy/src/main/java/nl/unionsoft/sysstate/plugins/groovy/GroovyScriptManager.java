@@ -23,24 +23,17 @@ public class GroovyScriptManager implements InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(GroovyScriptManager.class);
 
-    private static final String[] internalGroovyResources = { "MarathonInstanceResolver.groovy","MarathonAppStateResolver.groovy" };
-
-    private File groovyScriptsExt;
-    private File groovyScriptsInt;
+    private File groovyHome;
 
     @Inject
     public GroovyScriptManager(@Value("${SYSSTATE_HOME}") String sysstateHome) {
         LOG.info("Constructing GroovyScriptManager with sysstateHome [{}]", sysstateHome);
-        File groovyHome = new File(sysstateHome, "groovy");
-        groovyScriptsExt = new File(groovyHome, "ext");
-        groovyScriptsInt = new File(groovyHome, "int");
-
+        groovyHome = new File(sysstateHome, "groovy");
     }
 
     public Set<String> getScriptNames() {
         Set<String> results = new TreeSet<String>();
-        results.addAll(getFileNames(getGroovyScriptsFromDir(groovyScriptsExt)));
-        results.addAll(getFileNames(getGroovyScriptsFromDir(groovyScriptsInt)));
+        results.addAll(getFileNames(getGroovyScriptsFromDir(groovyHome)));
         return results;
     }
 
@@ -74,37 +67,16 @@ public class GroovyScriptManager implements InitializingBean {
 
     public void afterPropertiesSet() throws Exception {
 
-        makeGroovyDir(groovyScriptsExt);
-        makeGroovyDir(groovyScriptsInt);
-        FileUtils.cleanDirectory(groovyScriptsInt);
-
-        for (String internalGroovyResource : internalGroovyResources) {
-            File targetFile = new File(groovyScriptsInt, internalGroovyResource);
-            InputStream is = null;
-            try {
-                String internalResource = "nl/unionsoft/sysstate/plugins/groovy/" + internalGroovyResource;
-                LOG.info("Copying internalResource [{}] to [{}]", internalResource, targetFile.getAbsolutePath());
-                is = this.getClass().getClassLoader().getResourceAsStream(internalResource);
-                FileUtils.copyInputStreamToFile(is, targetFile);
-            } finally {
-                IOUtils.closeQuietly(is);
-            }
-        }
+        makeGroovyDir(groovyHome);
     }
-
 
     public File getScriptFile(String scriptName) {
 
-        File extFile = new File(groovyScriptsExt, scriptName);
+        File extFile = new File(groovyHome, scriptName);
         if (extFile.exists()) {
             return extFile;
         }
-        File intFile = new File(groovyScriptsInt, scriptName);
-        if (intFile.exists()) {
-            return intFile;
-        }
         throw new IllegalArgumentException("No internal or external script with name [" + scriptName + "] could be found.");
     }
-    
-  
+
 }

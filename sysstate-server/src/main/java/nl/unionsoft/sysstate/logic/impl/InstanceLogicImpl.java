@@ -420,22 +420,28 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         List<PropertyMetaValue> propertyMetas = new ArrayList<PropertyMetaValue>();
         while (!classStack.empty()) {
             Class<?> stackClass = classStack.pop();
-            Map<String, Properties> instanceGroupProperties = PropertyGroupUtil.getGroupProperties(pluginLogic.getPropertiesForClass(stackClass), "instance");
-            for (Entry<String, Properties> entry : instanceGroupProperties.entrySet()) {
-                String id = entry.getKey();
-                Properties properties = entry.getValue();
-                PropertyMetaValue propertyMetaValue = new PropertyMetaValue();
-                propertyMetaValue.setId(id);
-                propertyMetaValue.setTitle(properties.getProperty("title", id));
-                String lovResolver = properties.getProperty("resolver");
-                if (StringUtils.isNotEmpty(lovResolver)) {
-                    ListOfValueResolver listOfValueResolver = pluginLogic.getListOfValueResolver(lovResolver);
-                    propertyMetaValue.setLov(listOfValueResolver.getListOfValues(propertyMetaValue));
-                }
-                propertyMetas.add(propertyMetaValue);
-            }
+            addPropertyMetasFromPropertyFiles(propertyMetas, stackClass);
+
         }
+        
         return propertyMetas;
+    }
+
+    private void addPropertyMetasFromPropertyFiles(List<PropertyMetaValue> propertyMetas, Class<?> stackClass) {
+        Map<String, Properties> instanceGroupProperties = PropertyGroupUtil.getGroupProperties(pluginLogic.getPropertiesForClass(stackClass), "instance");
+        for (Entry<String, Properties> entry : instanceGroupProperties.entrySet()) {
+            String id = entry.getKey();
+            Properties properties = entry.getValue();
+            PropertyMetaValue propertyMetaValue = new PropertyMetaValue();
+            propertyMetaValue.setId(id);
+            propertyMetaValue.setTitle(properties.getProperty("title", id));
+            String lovResolver = properties.getProperty("resolver");
+            if (StringUtils.isNotEmpty(lovResolver)) {
+                ListOfValueResolver listOfValueResolver = pluginLogic.getListOfValueResolver(lovResolver);
+                propertyMetaValue.setLov(listOfValueResolver.getListOfValues(propertyMetaValue));
+            }
+            propertyMetas.add(propertyMetaValue);
+        }
     }
 
     @Override
