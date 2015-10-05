@@ -49,11 +49,13 @@ class MarathonPatternInstanceResolver implements StateResolver{
         def idPattern = properties["idPattern"] ? properties["idPattern"] : '/([a-z]*-[0-9]*|[a-z]*)(?:.*-|/)([a-z]*)(?:/|$)(.*)'
         def environmentIndex = (properties["environmentIndex"] ? properties["environmentIndex"] : '1') as int
         def applicationIndex = (properties["applicationIndex"] ? properties["applicationIndex"] : '2') as int
+        def connectTimeout = (properties["connectTimeout"] ? properties['connectTimeout'] : '5000') as int
+        def readTimeout = (properties["readTimeout"] ? properties['readTimeout'] : '5000') as int
         
         def serverUrl = properties["serverUrl"].toString().trim()
         def tags = properties["tags"] ? properties['tags'] : 'marathon'
         
-        def result = new JsonSlurper().parseText(new URL("${serverUrl}/v2/apps/").getText(["connectTimeout" : 5000, "readTimeout":5000], "UTF-8"))
+        def result = new JsonSlurper().parseText(new URL("${serverUrl}/v2/apps/").getText(["connectTimeout" : connectTimeout, "readTimeout":readTimeout], "UTF-8"))
         
         def validInstanceIds = []
         result['apps'].each { app ->

@@ -20,11 +20,14 @@ class MarathonAppStateResolver implements StateResolver{
         def applicationPath = configuration.get("applicationPath");
         def ignoreHealthStatus = configuration.get("ignoreHealthStatus").toBoolean()
         def serverUrl = configuration.get("serverUrl").trim()
+        
+        def connectTimeout = (properties["connectTimeout"] ? properties['connectTimeout'] : '5000') as int
+        def readTimeout = (properties["readTimeout"] ? properties['readTimeout'] : '5000') as int
 
         assert applicationPath,"No applicationPath defined in properties..."
         assert serverUrl,"No server defined in properties..."
 
-        def appResults = new JsonSlurper().parseText(new URL("${serverUrl}/v2/apps${applicationPath}").getText(["connectTimeout" : 5000, "readTimeout":5000], "UTF-8"))
+        def appResults = new JsonSlurper().parseText(new URL("${serverUrl}/v2/apps${applicationPath}").getText(["connectTimeout" : connectTimeout, "readTimeout":readTimeout], "UTF-8"))
         def app = appResults['app']
 
         if (app['tasksStaged'] + app['tasksRunning'] == 0){

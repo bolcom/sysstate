@@ -50,8 +50,11 @@ class MarathonLabelInstanceResolver implements StateResolver{
         def environmentLabel = properties["environmentLabel"] ? properties["environmentLabel"] : 'environment'
         def serverUrl = properties["server"].toString().trim()
         def tags = properties["tags"] ? properties['tags'] : 'marathon'
+        def connectTimeout = (properties["connectTimeout"] ? properties['connectTimeout'] : '5000') as int
+        def readTimeout = (properties["readTimeout"] ? properties['readTimeout'] : '5000') as int
         
-        def result = new JsonSlurper().parseText(new URL("${serverUrl}/v2/apps/").getText(["connectTimeout" : 5000, "readTimeout":5000], "UTF-8"))
+                
+        def result = new JsonSlurper().parseText(new URL("${serverUrl}/v2/apps/").getText(["connectTimeout" : connectTimeout, "readTimeout":readTimeout], "UTF-8"))
         
         def validInstanceIds = []
         result['apps'].each { app ->
