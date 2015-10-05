@@ -48,6 +48,16 @@ public class EnvironmentDaoImpl implements EnvironmentDao {
     }
 
     public void delete(final Long environmentId) {
+        
+        Long instanceCount = entityManager.createQuery(
+                "SELECT COUNT(instance) FROM Instance instance " + 
+                "WHERE instance.projectEnvironment.environment.id = :environmentId", Long.class)
+                .setParameter("environmentId", environmentId).getSingleResult();
+        
+        if (instanceCount != 0){
+            throw new IllegalStateException("Unable to delete environment with id [" + environmentId + "], it still contains [" + instanceCount +"] instances.");
+        }
+        
         entityManager.remove(entityManager.find(Environment.class, environmentId));
     }
 

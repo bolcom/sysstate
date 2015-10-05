@@ -22,10 +22,10 @@ import nl.unionsoft.sysstate.common.logic.ProjectLogic
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-@Named("marathonInstanceResolver")
-class MarathonInstanceResolver implements StateResolver{
+@Named("marathonLabelInstanceResolver")
+class MarathonLabelInstanceResolver implements StateResolver{
 
-    Logger log = LoggerFactory.getLogger(MarathonInstanceResolver.class);
+    Logger log = LoggerFactory.getLogger(MarathonLabelInstanceResolver.class);
     
     @Inject
     private InstanceLogic instanceLogic
