@@ -51,7 +51,9 @@ class MarathonPatternInstanceResolver implements StateResolver{
         def applicationIndex = (properties["applicationIndex"] ? properties["applicationIndex"] : '2') as int
         def connectTimeout = (properties["connectTimeout"] ? properties['connectTimeout'] : '5000') as int
         def readTimeout = (properties["readTimeout"] ? properties['readTimeout'] : '5000') as int
-        
+
+        def environmentTemplate = properties["environmentTemplate"] ? properties['environmentTemplate'] : 'use-${environmentName}'
+                
         def serverUrl = properties["serverUrl"].toString().trim()
         def tags = properties["tags"] ? properties['tags'] : 'marathon'
         
@@ -66,7 +68,10 @@ class MarathonPatternInstanceResolver implements StateResolver{
                 return
             }
 
-            def environmentName = idMatcher[0][environmentIndex].toString().toUpperCase();
+            def engine = new SimpleTemplateEngine()
+            def binding = ["environmentName":idMatcher[0][environmentIndex].toString().toUpperCase()]            
+            def environmentName = engine.createTemplate(environmentTemplate).make(binding).toString()
+            
             def applicationName = idMatcher[0][applicationIndex].toString().toUpperCase();
 
             if (environmentName && applicationName){
