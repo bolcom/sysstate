@@ -1,5 +1,5 @@
 
- <div id="cardbox"></div>
+ <div id="cardbox"><div class="row"></div></div>
  
 <script type="text/javascript">
 	
@@ -96,37 +96,39 @@
 	
 	
 	function addCard(parent, cardId, projectEnvironment){
-		var row = findRow(parent);
 		
+		var row = parent.find('.row:first')
 		var color = stringToColour(projectEnvironment.environment.name);
 		
-		return $('\
-       		<div class="col s12 m1" id="' + cardId + '">\
+		var environmentName = projectEnvironment.environment.name;
+		var cousin = row.find('.env-' + environmentName + ':first');
+		console.log(cousin[0])
+		
+		var newCard = $('\
+       		<div class="col s12 m1 env-' + environmentName + '" id="' + cardId + '">\
 		 		<div class="card">\
 			        <div class="waves-effect waves-block waves-light header-small grey">\
-			        	<span class="environment">[<a href="${contextPath}/filter/project/' + projectEnvironment.project.id + '/index.html" >' + projectEnvironment.project.name + '</a>] [<a href="${contextPath}/filter/environment/' + projectEnvironment.environment.id + '/index.html" >' + projectEnvironment.environment.name + '</a>]</span>\
+			        	<span class="environment">[<a href="${contextPath}/filter/project/' + projectEnvironment.project.id + '/index.html" >' + projectEnvironment.project.name + '</a>] [<a href="${contextPath}/filter/environment/' + projectEnvironment.environment.id + '/index.html" >' +environmentName + '</a>]</span>\
 			        </div>\
 			        <div class="instances card-content">\
 	              	</div>\
 			        <div class="waves-effect waves-block waves-light footer-tiny" style="background-color:' + color + '">\
-	&nbsp\
+						&nbsp\
 			        </div>\
 				</div>\
 			</div>\
-	    ').appendTo(row);		
+	    ');
+		if (cousin[0]){
+			console.log("Found cousin [" + cousin[0] + "] for environmentName [" + environmentName + "]");
+			return newCard.insertAfter(cousin[0]);
+		} else {
+			console.log("No cousin found for environmentName [" + environmentName + "]");
+			return newCard.appendTo(row);		
+		}
+		
 	}
 	
-	function findRow(parent){
-		var row = null;
-		$(".row").each(function() {
-			row = $(this);
-		});
-		
-		if (row == null){
-			row = $('<div class="row"></div>').appendTo(parent);
-		}
-		return row;
-	}
+	
 	
 	
 	
