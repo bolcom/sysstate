@@ -16,6 +16,14 @@
 		});
 	})();
 
+	var stringToColour = function(str) {
+	    // str to hash
+	    for (var i = 0, hash = 0; i < str.length; hash = str.charCodeAt(i++) + ((hash << 5) - hash));
+	    // int/hash to hex
+	    for (var i = 0, colour = "#"; i < 3; colour += ("00" + ((hash >> i++ * 8) & 0xFF).toString(16)).slice(-2));
+	    return colour;
+	}
+
 	function handleData(data){
 		var cardBox =$('#cardbox') 
 		var validIds = [];
@@ -89,6 +97,9 @@
 	
 	function addCard(parent, cardId, projectEnvironment){
 		var row = findRow(parent);
+		
+		var color = stringToColour(projectEnvironment.environment.name);
+		
 		return $('\
        		<div class="col s12 m1" id="' + cardId + '">\
 		 		<div class="card">\
@@ -97,6 +108,9 @@
 			        </div>\
 			        <div class="instances card-content">\
 	              	</div>\
+			        <div class="waves-effect waves-block waves-light footer-tiny" style="background-color:' + color + '">\
+	&nbsp\
+			        </div>\
 				</div>\
 			</div>\
 	    ').appendTo(row);		

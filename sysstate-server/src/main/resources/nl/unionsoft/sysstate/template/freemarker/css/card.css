@@ -1,4 +1,4 @@
-body,th,td {
+body, th, td {
 	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
 	font-size: 11px;
 	background-color: #333;
@@ -9,41 +9,42 @@ div#cardbox {
 }
 
 .card {
-	height:100px;
+	height: 100px;
 }
 
 a:link {
 	color: black;
 }
-a:VISITED{
-	color:black;
+
+a:VISITED {
+	color: black;
 }
 
 div.card-panel {
-
+	
 }
 
 .header-small {
-	height:20px;
+	height: 20px;
 	text-align: center;
 }
 
-.header-small.red{
+.header-small.red {
 	background-color: red;
 }
 
-.header-small.green{
+.header-small.green {
 	background-color: green;
 }
 
-.header-small.yellow{
+.header-small.yellow {
 	background-color: yellow;
 }
 
-.header-small.grey{
+.header-small.grey {
 	background-color: red;
-
 }
+
 .instance-details .ERROR {
 	background-color: red;
 }
@@ -64,23 +65,25 @@ div.card-panel {
 	background-color: gray;
 }
 
-
-
-
+.footer-tiny {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 10px;
+}
 
 .statebox {
 	
 }
 
 .state {
+	
 }
 
-.instance-details{
-
+.instance-details {
 	
 }
 
 .instances {
-	padding:2px !important;
+	padding: 2px !important;
 }
-
