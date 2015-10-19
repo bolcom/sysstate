@@ -2,7 +2,6 @@ package nl.unionsoft.sysstate.plugins.groovy.marathon
 
 
 import groovy.json.JsonSlurper
-import groovy.text.SimpleTemplateEngine
 
 import javax.inject.Inject
 import javax.inject.Named

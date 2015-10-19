@@ -3,6 +3,7 @@ package nl.unionsoft.sysstate.plugins.groovy.marathon
 
 import groovy.json.JsonSlurper
 import groovy.text.SimpleTemplateEngine
+import groovy.text.TemplateEngine
 
 import javax.inject.Inject
 import javax.inject.Named
@@ -19,6 +20,7 @@ import nl.unionsoft.sysstate.common.logic.InstanceLinkLogic
 import nl.unionsoft.sysstate.common.logic.InstanceLogic
 import nl.unionsoft.sysstate.common.logic.ProjectLogic
 
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -38,7 +40,6 @@ class MarathonPatternInstanceResolver implements StateResolver{
 
     @Inject
     private InstanceLinkLogic instanceLinkLogic
-    
             
     @Override
     public void setState(InstanceDto parent, StateDto state) {
@@ -57,7 +58,9 @@ class MarathonPatternInstanceResolver implements StateResolver{
         def serverUrl = properties["serverUrl"].toString().trim()
         def tags = properties["tags"] ? properties['tags'] : 'marathon'
         
-        def result = new JsonSlurper().parseText(new URL("${serverUrl}/v2/apps/").getText(["connectTimeout" : connectTimeout, "readTimeout":readTimeout], "UTF-8"))
+        def url = new URL("${serverUrl}/v2/apps/")
+        def text = url.getText(["connectTimeout" : connectTimeout, "readTimeout":readTimeout], "UTF-8")
+        def result = new JsonSlurper().parseText(text)
         
         def validInstanceIds = []
         result['apps'].each { app ->
@@ -68,12 +71,9 @@ class MarathonPatternInstanceResolver implements StateResolver{
                 return
             }
 
-            def engine = new SimpleTemplateEngine()
-            def binding = ["environmentName":idMatcher[0][environmentIndex].toString().toUpperCase()]            
-            def environmentName = engine.createTemplate(environmentTemplate).make(binding).toString()
-            
+            StrSubstitutor strsub = new StrSubstitutor(["environmentName":idMatcher[0][environmentIndex].toString().toUpperCase()])
+            def environmentName = strsub.replace(environmentTemplate)
             def applicationName = idMatcher[0][applicationIndex].toString().toUpperCase();
-
             if (environmentName && applicationName){
                 log.info("Found app [${app['id']} with environment [${environmentName}] and application [${applicationName}]")
                 def project = findOrCreateProject(applicationName);

@@ -96,6 +96,8 @@ public class SetupListener implements InitializingBean {
             addTestInstance("bing", "BING", "MOCK", createMockConfiguration(15000), "http://www.bing.com", "mockStateResolver");
             addTestInstance("ilse", "ILSE", "PROD", createHttpConfiguration("http://www.ilse.nl"), "http://www.ilse.nl", "httpStateResolver");
             addTestInstance("ilse", "ILSE", "MOCK", createMockConfiguration(7500), "http://www.ilse.nl", "mockStateResolver");
+            //addTestInstance("marathon", "ILSE", "MOCK", createMarathonPatternResolverConfiguration("http://path.to.marathon"), "http://path.to.marathon", "marathonPatternInstanceResolver");    
+            
 
             if (filterLogic.getFilters().isEmpty()) {
                 LOG.info("No filters found, creating a default filter...");
@@ -114,6 +116,12 @@ public class SetupListener implements InitializingBean {
     private Map<String, String> createMockConfiguration(int sleep) {
         Map<String, String> configuration = new HashMap<String, String>();
         configuration.put("sleep", String.valueOf(sleep));
+        return configuration;
+    }
+    
+    private Map<String, String> createMarathonPatternResolverConfiguration(String serverUrl){
+        Map<String, String> configuration = new HashMap<String, String>();
+        configuration.put("serverUrl", serverUrl);
         return configuration;
     }
 
