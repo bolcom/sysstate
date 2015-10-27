@@ -35,10 +35,12 @@ public class TemplateLogicImpl implements TemplateLogic {
 
     private static final String CI_FTL_NAME = "ci.html";
     private static final String BASE_FTL_NAME = "base.html";
+    private static final String TABLE_FTL_NAME = "table.html";
     private static final String NETWORK_FTL_NAME = "network.html";
     private static final String CARD_FTL_NAME = "card.html";
 
     private static final String BASE_FTL_RESOURCE = "base.ftl";
+    private static final String TABLE_FTL_RESOURCE = "table.ftl";
     private static final String CI_FTL_RESOURCE = "ci.ftl";
     private static final String NETWORK_FTL_RESOURCE = "network.ftl";
     private static final String CARD_FTL_RESOURCE = "card.ftl";
@@ -84,11 +86,13 @@ public class TemplateLogicImpl implements TemplateLogic {
 
         addTemplateIfNotExists("base.css", "text/css", FREEMARKER_TEMPLATE_WRITER, "css/base.css", false);
         addTemplateIfNotExists("card.css", "text/css", FREEMARKER_TEMPLATE_WRITER, "css/card.css", false);
+        addTemplateIfNotExists("table.css", "text/css", FREEMARKER_TEMPLATE_WRITER, "css/table.css", false);
         addTemplateIfNotExists("ci.css", "text/css", FREEMARKER_TEMPLATE_WRITER, "css/ci.css", false);
         addTemplateIfNotExists(CI_FTL_NAME, ContentType.TEXT_HTML.getMimeType(), FREEMARKER_TEMPLATE_WRITER, CI_FTL_RESOURCE, true);
         addTemplateIfNotExists(BASE_FTL_NAME, ContentType.TEXT_HTML.getMimeType(), FREEMARKER_TEMPLATE_WRITER, BASE_FTL_RESOURCE, true);
         addTemplateIfNotExists(NETWORK_FTL_NAME, ContentType.TEXT_HTML.getMimeType(), FREEMARKER_TEMPLATE_WRITER, NETWORK_FTL_RESOURCE, false);
         addTemplateIfNotExists(CARD_FTL_NAME, ContentType.TEXT_HTML.getMimeType(), FREEMARKER_TEMPLATE_WRITER, CARD_FTL_RESOURCE, false);
+        addTemplateIfNotExists(TABLE_FTL_NAME, ContentType.TEXT_HTML.getMimeType(), FREEMARKER_TEMPLATE_WRITER, TABLE_FTL_RESOURCE, false);
     }
 
     private void addTemplateIfNotExists(String name, String contentType, String writer, String resource, Boolean includeViewResults) throws IOException {
