@@ -94,27 +94,35 @@
 		}
 	}
 	
+	function getCousin(cousinSelectionMethod, row, projectEnvironment){
+		switch(cousinSelectionMethod) {
+			case "project":
+				return row.find('.prj-' + projectEnvironment.project.id + ':first');
+				break;
+			case "environment":
+			default:			
+				return row.find('.env-' + projectEnvironment.environment.id + ':first');
+				break;
+		}
+	}
 	
 	function addCard(parent, cardId, projectEnvironment){
 		
 		var row = parent.find('.row:first')
 		var color = stringToColour(projectEnvironment.environment.name);
-		
+		var cousin = getCousin(getUrlParameter('csm'), row, projectEnvironment)
+
 		var environmentName = projectEnvironment.environment.name;
-		var cousin = row.find('.env-' + environmentName + ':first');
-		console.log(cousin[0])
-		
 		var newCard = $('\
-       		<div class="col s12 m1 env-' + environmentName + '" id="' + cardId + '">\
+       		<div class="col s12 m1 env-' + projectEnvironment.environment.id + ' prj-' + projectEnvironment.project.id + '" id="' + cardId + '">\
 		 		<div class="card">\
 			        <div class="waves-effect waves-block waves-light header-small grey">\
-			        	<span class="environment">[<a href="${contextPath}/filter/project/' + projectEnvironment.project.id + '/index.html" >' + projectEnvironment.project.name + '</a>] [<a href="${contextPath}/filter/environment/' + projectEnvironment.environment.id + '/index.html" >' +environmentName + '</a>]</span>\
+			        	<span class="environment">[<a href="${contextPath}/filter/environment/' + projectEnvironment.environment.id + '/index.html" >' +environmentName + '</a>]</span>\
 			        </div>\
-			        <div class="instances card-content">\
+				    <div>\
+				    	<div class="background">' + projectEnvironment.project.name + '</div>\
+				        <div class="instances card-content"></div>\
 	              	</div>\
-			        <div class="waves-effect waves-block waves-light footer-tiny" style="background-color:' + color + '">\
-						&nbsp\
-			        </div>\
 				</div>\
 			</div>\
 	    ');
@@ -128,7 +136,20 @@
 		
 	}
 	
+	var getUrlParameter = function getUrlParameter(sParam) {
+	    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+	        sURLVariables = sPageURL.split('&'),
+	        sParameterName,
+	        i;
 	
+	    for (i = 0; i < sURLVariables.length; i++) {
+	        sParameterName = sURLVariables[i].split('=');
+	
+	        if (sParameterName[0] === sParam) {
+	            return sParameterName[1] === undefined ? true : sParameterName[1];
+	        }
+	    }
+	};	
 	
 	
 	
