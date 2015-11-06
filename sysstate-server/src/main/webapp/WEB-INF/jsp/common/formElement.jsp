@@ -22,9 +22,10 @@
 				</c:when>
 				<c:otherwise>
 					<c:set var="label" value="${param.label}"/>
+					<c:set var="description" value="${param.description}"/>
 					<c:set var="path" value="${param.path}"/>
 					<c:set var="comments" value="${param.comments}"/>
-					<th valign="top"><c:out  value="${label}"/>:</th>
+					<td valign="top"><b><c:out  value="${label}" escapeXml="true"/></b>:<br/><i>${description}</i></td>
 					<td>
 						<c:choose>
 							<c:when test="${type == 'input' || type == 'null' || empty type}">
@@ -46,10 +47,7 @@
 									<c:otherwise>
 										<textarea class="form-textarea" cols="${cols}" rows="${rows}" name="${path}"><c:out value="${param.value}"/></textarea>
 									</c:otherwise>
-								
 								</c:choose>
-								
-								
 							</c:when>		
 							<c:when test="${type == 'select'}">
 							
@@ -78,8 +76,6 @@
 										</c:otherwise>
 									</c:choose>
 							 	</sf:select>
-						 	
-							 	
 							</c:when>
 						</c:choose>
 						<c:if test="${not empty comments}">
@@ -101,8 +97,7 @@
 					</td>		
 				</c:otherwise>	
 			</c:choose>
-</tr>
-	
+		</tr>	
 	</c:otherwise>
 </c:choose>
 

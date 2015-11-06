@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Properties;
-import java.util.Stack;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -30,11 +28,14 @@ import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
 import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.extending.ListOfValueResolver;
+import nl.unionsoft.sysstate.common.extending.DescriptedStateResolver;
+import nl.unionsoft.sysstate.common.extending.PluginDescriptor;
+import nl.unionsoft.sysstate.common.extending.PropertyFilePluginDescriptor;
+import nl.unionsoft.sysstate.common.extending.StateResolver;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
+import nl.unionsoft.sysstate.common.logic.ListOfValueLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
-import nl.unionsoft.sysstate.common.util.PropertyGroupUtil;
 import nl.unionsoft.sysstate.converter.InstancePropertiesConverter;
 import nl.unionsoft.sysstate.converter.OptionalConverter;
 import nl.unionsoft.sysstate.converter.StateConverter;
@@ -57,7 +58,9 @@ import org.quartz.SimpleTrigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import org.springframework.stereotype.Service;
@@ -111,6 +114,10 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     private EnvironmentLogic environmentLogic;
 
     @Inject
+    @Named("listOfValueLogic")
+    private ListOfValueLogic listOfValueLogic;
+    
+    @Inject
     @Named("projectEnvironmentLogic")
     private ProjectEnvironmentLogic projectEnvironmentLogic;
 
@@ -121,6 +128,9 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     @Inject
     @Named("instancePropertiesConverter")
     private InstancePropertiesConverter instancePropertiesConverter;
+
+    @Inject
+    private ApplicationContext applicationContext;
 
     public void queueForUpdate(final Long instanceId) {
 
@@ -407,42 +417,15 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     public List<PropertyMetaValue> getPropertyMeta(String type) {
 
         Object component = pluginLogic.getComponent(type);
-
-        Class<?> componentClass = component.getClass();
-
-        Stack<Class<?>> classStack = new Stack<Class<?>>();
-        Class<?> superClass = componentClass;
-        while (!Object.class.equals(superClass)) {
-            classStack.push(superClass);
-            superClass = superClass.getSuperclass();
+        if (component instanceof DescriptedStateResolver){
+            DescriptedStateResolver<PluginDescriptor<StateResolver, InstanceDto>> descriptedStateResolver = (DescriptedStateResolver<PluginDescriptor<StateResolver, InstanceDto>>) component;
+            return descriptedStateResolver.createPluginDescriptor().getPropertyMeta(descriptedStateResolver);
+        }  else {
+            return new PropertyFilePluginDescriptor(listOfValueLogic).getPropertyMeta((StateResolver) component);
         }
 
-        List<PropertyMetaValue> propertyMetas = new ArrayList<PropertyMetaValue>();
-        while (!classStack.empty()) {
-            Class<?> stackClass = classStack.pop();
-            addPropertyMetasFromPropertyFiles(propertyMetas, stackClass);
-
-        }
-        
-        return propertyMetas;
     }
 
-    private void addPropertyMetasFromPropertyFiles(List<PropertyMetaValue> propertyMetas, Class<?> stackClass) {
-        Map<String, Properties> instanceGroupProperties = PropertyGroupUtil.getGroupProperties(pluginLogic.getPropertiesForClass(stackClass), "instance");
-        for (Entry<String, Properties> entry : instanceGroupProperties.entrySet()) {
-            String id = entry.getKey();
-            Properties properties = entry.getValue();
-            PropertyMetaValue propertyMetaValue = new PropertyMetaValue();
-            propertyMetaValue.setId(id);
-            propertyMetaValue.setTitle(properties.getProperty("title", id));
-            String lovResolver = properties.getProperty("resolver");
-            if (StringUtils.isNotEmpty(lovResolver)) {
-                ListOfValueResolver listOfValueResolver = pluginLogic.getListOfValueResolver(lovResolver);
-                propertyMetaValue.setLov(listOfValueResolver.getListOfValues(propertyMetaValue));
-            }
-            propertyMetas.add(propertyMetaValue);
-        }
-    }
 
     @Override
     public List<InstanceDto> getInstancesForEnvironment(Long environmentId) {

@@ -238,6 +238,7 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
                     PropertyMetaValue propertyMetaValue = new PropertyMetaValue();
                     propertyMetaValue.setId(propertyId);
                     propertyMetaValue.setTitle(StringUtils.defaultIfEmpty(properties.getProperty("title"), propertyId));
+                    propertyMetaValue.setDescription(properties.getProperty("description"));
                     propertyMetaValue.setNullable(BooleanUtils.toBoolean(properties.getProperty("nullable")));
 
                     GroupProperty groupProperty = propertyDao.getGroupProperty(id, propertyId);

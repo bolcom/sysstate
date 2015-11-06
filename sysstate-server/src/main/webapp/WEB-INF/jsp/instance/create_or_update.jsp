@@ -26,9 +26,6 @@
 						<jsp:param name="path" value="id"/>
 						<jsp:param name="type" value="hidden"/>
 					</jsp:include>
-					
-		
-					
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 						<jsp:param name="path" value="name"/>
 						<jsp:param name="label" value="Name"/>
@@ -46,6 +43,7 @@
 						
 						<c:forEach var="propertyMeta" items="${propertyMetas}">
 							<c:set var="type" value="textarea"/>
+
 							<c:set var="items" value=""/>
 							<c:if test="${propertyMeta.lov != null}">
 								<c:set var="type" value="select"/>
@@ -56,6 +54,7 @@
 							<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 								<jsp:param name="path" value="configuration['${propertyMeta.id}']"/>
 								<jsp:param name="label" value="${propertyMeta.title}"/>
+								<jsp:param name="description" value="${propertyMeta.description}"/>								
 								<jsp:param name="cols" value="80"/>
 								<jsp:param name="rows" value="3"/>
 								<jsp:param name="items" value="${items}"/>

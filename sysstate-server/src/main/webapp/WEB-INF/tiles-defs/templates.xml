@@ -272,17 +272,5 @@
 
 
 
-	<!-- Discovery Manager -->
-	<definition name="discovery-manager" extends="manager">
-		<put-attribute name="contents" value="/WEB-INF/jsp/discovery/discover.jsp" />
-		<put-attribute name="page-heading" value="Discovery" />
-	</definition>
-
-
-
-
-
-
-
 </tiles-definitions>
                 

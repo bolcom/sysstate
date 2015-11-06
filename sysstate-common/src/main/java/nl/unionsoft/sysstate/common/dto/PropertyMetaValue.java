@@ -8,6 +8,7 @@ public class PropertyMetaValue {
     private String id;
     private String value;
     private String title;
+    private String description;
     private boolean nullable;
 
     private Properties properties;
@@ -78,6 +79,14 @@ public class PropertyMetaValue {
      */
     public void setProperties(final Properties properties) {
         this.properties = properties;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 }

@@ -37,9 +37,6 @@
 			</c:otherwise>
 		</c:choose>
 		
-		<c:if test="${param.options}">
-		</c:if>
-	
 		<c:if test="${not empty instance.name }">
 			<br><c:out value="${instance.name}" escapeXml="true" />
 		</c:if>
