@@ -5,8 +5,8 @@ import javax.inject.Named;
 import javax.validation.Valid;
 
 import nl.unionsoft.sysstate.common.dto.TextDto;
+import nl.unionsoft.sysstate.common.logic.TextLogic;
 import nl.unionsoft.sysstate.domain.Text;
-import nl.unionsoft.sysstate.logic.TextLogic;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;

@@ -1,10 +1,16 @@
 package nl.unionsoft.sysstate.dao.impl;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import nl.unionsoft.sysstate.domain.Text;
 
@@ -43,5 +49,15 @@ public class TextDao {
 
     public void delete(final Long textId) {
         entityManager.remove(entityManager.find(Text.class, textId));
+    }
+
+    public List<Text> getTexts(String[] tags) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Text> cq = cb.createQuery(Text.class);
+        Root<Text> text = cq.from(Text.class);
+        cq.select(text);
+        Predicate[] restrictions = Arrays.stream(tags).map(tag -> cb.like(text.get("tags"), "%" + tag + "%")).collect(Collectors.toList()).toArray(new Predicate[] {});
+        cq.where(cb.and(restrictions));
+        return entityManager.createQuery(cq).getResultList();
     }
 }

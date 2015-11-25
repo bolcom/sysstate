@@ -21,7 +21,7 @@ user    	//Average Joe
 	
 		<intercept-url pattern="/environment/**" access="ROLE_EDITOR,ROLE_ADMIN" />
 		
-		<intercept-url pattern="/text/**" access="ROLE_DEVELOPER" />
+		<intercept-url pattern="/text/**" access="ROLE_EDITOR,ROLE_ADMIN" />
 		
 		<intercept-url pattern="/project/**" access="ROLE_EDITOR,ROLE_ADMIN" />
 		<intercept-url pattern="/script/**" access="ROLE_ADMIN" />

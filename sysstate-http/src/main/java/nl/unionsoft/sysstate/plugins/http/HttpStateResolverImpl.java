@@ -88,9 +88,10 @@ public class HttpStateResolverImpl implements StateResolver {
         HttpEntity httpEntity = null;
         try {
             final StatusLine statusLine = httpResponse.getStatusLine();
-            state.setDescription("Status " + statusLine.getStatusCode());
-            httpEntity = httpResponse.getEntity();
             final int statusCode = statusLine.getStatusCode();
+            state.setDescription("Status " +statusCode);
+            httpEntity = httpResponse.getEntity();
+
             if (statusCode >= 300) {
                 if (statusCode >= 400) {
                     state.setState(StateType.ERROR);

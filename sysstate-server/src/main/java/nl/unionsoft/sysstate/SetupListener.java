@@ -11,11 +11,13 @@ import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
+import nl.unionsoft.sysstate.common.dto.TextDto;
 import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
+import nl.unionsoft.sysstate.common.logic.TextLogic;
 import nl.unionsoft.sysstate.logic.FilterLogic;
 import nl.unionsoft.sysstate.logic.TemplateLogic;
 import nl.unionsoft.sysstate.logic.ViewLogic;
@@ -45,6 +47,10 @@ public class SetupListener implements InitializingBean {
     @Inject
     @Named("filterLogic")
     private FilterLogic filterLogic;
+
+    @Inject
+    @Named("textLogic")
+    private TextLogic textLogic;
 
     @Inject
     @Named("viewLogic")
@@ -87,6 +93,9 @@ public class SetupListener implements InitializingBean {
             mock.setOrder(0);
             environmentLogic.createOrUpdate(mock);
 
+            LOG.info("Adding default texts...");
+            addText("go-selfdiagnose 1.0.2", "xpath xPathStateResolver", "substring-before(substring-after(string(/selfdiagnose/results/result[@task='build information']/@message),': '),',')");
+            
             LOG.info("No instances found, creating some default instances...");
             addTestInstance("google", "GOOG", "PROD", createHttpConfiguration("http://www.google.nl"), "http://www.google.nl", "httpStateResolver");
             addTestInstance("google", "GOOG", "MOCK", createMockConfiguration(60000), "http://www.yahoo.com", "mockStateResolver");
@@ -163,5 +172,15 @@ public class SetupListener implements InitializingBean {
         project.setName(name);
         projectLogic.createOrUpdateProject(project);
     }
+    
+    private void addText(String name, String tags, String text){
+        TextDto textDto = new TextDto();
+        textDto.setName(name);
+        textDto.setTags(tags);
+        textDto.setText(text);
+        textLogic.createOrUpdateText(textDto);
+    }
+    
+    
 
 }

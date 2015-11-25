@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<selfdiagnose run="2015-11-25 10:26:39.966420864 +0100 CET" version="go-selfdiagnose 1.0.2" completedIn="83.466µs">
+	<results passedCount="1" failedCount="0">		
+		<result task="build information" status="true" message="version: 90.0.3.73, date: 2015:11:18.12:51:21" />
+	</results>
+</selfdiagnose>
