@@ -24,8 +24,12 @@
 		<priority value="INFO" />
 	</category>
 
-	<category name="nl.unionsoft">
+	<category name="org.springframework.security">
 		<priority value="DEBUG" />
+	</category>
+	
+	<category name="nl.unionsoft">
+		<priority value="WARN" />
 	</category>
 
 </log4j:configuration>

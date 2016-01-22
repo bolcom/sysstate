@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -30,24 +31,24 @@ public class MessageLogicImpl implements MessageLogic {
 
     public List<MessageDto> getMessages() {
         final List<MessageDto> results = new ArrayList<MessageDto>();
-        final UserDto currentUser = userLogic.getCurrentUser();
-        if (currentUser != null) {
-            final List<MessageDto> messages = userMessages.get(currentUser.getId());
+        final Optional<UserDto> currentUser = userLogic.getCurrentUser();
+        if (currentUser.isPresent()){
+            final List<MessageDto> messages = userMessages.get(currentUser.get().getId());
             if (messages != null) {
                 results.addAll(messages);
                 messages.clear();
-            }
+            }    
         }
         return results;
     }
 
     public void addUserMessage(MessageDto messageDto) {
-        final UserDto currentUser = userLogic.getCurrentUser();
-        if (currentUser != null) {
-            List<MessageDto> messages = userMessages.get(currentUser.getId());
+        final Optional<UserDto> currentUser = userLogic.getCurrentUser();
+        if (currentUser.isPresent()){
+            List<MessageDto> messages = userMessages.get(currentUser.get().getId());
             if (messages == null) {
                 messages = new ArrayList<MessageDto>();
-                userMessages.put(currentUser.getId(), messages);
+                userMessages.put(currentUser.get().getId(), messages);
             }
             messages.add(messageDto);
         }

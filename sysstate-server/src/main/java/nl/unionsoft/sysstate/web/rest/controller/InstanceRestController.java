@@ -1,31 +1,29 @@
 package nl.unionsoft.sysstate.web.rest.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import nl.unionsoft.common.converter.Converter;
+import nl.unionsoft.common.converter.ListConverter;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
-import nl.unionsoft.sysstate.common.dto.StateDto;
-import nl.unionsoft.sysstate.common.dto.ViewResultDto;
-import nl.unionsoft.sysstate.common.enums.StateType;
+import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
+import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.logic.PushStateLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
-import nl.unionsoft.sysstate.sysstate_1_0.EcoSystem;
 import nl.unionsoft.sysstate.sysstate_1_0.Instance;
-import nl.unionsoft.sysstate.sysstate_1_0.State;
+import nl.unionsoft.sysstate.sysstate_1_0.InstanceList;
+import nl.unionsoft.sysstate.sysstate_1_0.Property;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller()
 public class InstanceRestController {
@@ -41,17 +39,72 @@ public class InstanceRestController {
     private StateLogic stateLogic;
 
     @Inject
+    @Named("projectEnvironmentLogic")
+    private ProjectEnvironmentLogic projectEnvironmentLogic;
+
+    @Inject
     @Named("pushStateLogic")
     private PushStateLogic pushStateLogic;
 
     @Inject
     @Named("restInstanceConverter")
-    private  Converter<Instance, InstanceDto> instanceConverter;
-    
+    private Converter<Instance, InstanceDto> instanceConverter;
+
+    @RequestMapping(value = "/instance", method = RequestMethod.GET)
+    public InstanceList getInstances() {
+        List<Instance> instances = ListConverter.convert(instanceConverter, instanceLogic.getInstances());
+        InstanceList instanceList = new InstanceList();
+        instanceList.getInstances().addAll(instances);
+        return instanceList;
+    }
+
     @RequestMapping(value = "/instance/{instanceId}", method = RequestMethod.GET)
     public Instance getInstance(@PathVariable("instanceId") final Long instanceId) {
         return instanceConverter.convert(instanceLogic.getInstance(instanceId, false));
     }
-    
+
+    @RequestMapping(value = "/instance", method = RequestMethod.POST)
+    public void create(Instance instance) {
+
+        if (instance.getId() != null) {
+            throw new IllegalStateException("Instance id should be null for create");
+        }
+        InstanceDto instanceDto = convert(instance);
+        instanceLogic.createOrUpdateInstance(instanceDto);
+    }
+
+    @RequestMapping(value = "/instance/{instanceId}", method = RequestMethod.PUT)
+    public void update(@PathVariable("instanceId") final Long instanceId, Instance instance) {
+
+        if (!instance.getId().equals(instanceId)) {
+            throw new IllegalStateException("instanceId in url and instanceId in instance do not match.");
+        }
+        InstanceDto instanceDto = convert(instance);
+        instanceLogic.createOrUpdateInstance(instanceDto);
+
+    }
+
+    public InstanceDto convert(Instance instance) {
+        InstanceDto instanceDto = new InstanceDto();
+        instanceDto.setEnabled(instance.isEnabled());
+        instanceDto.setHomepageUrl(instance.getHomepageUrl());
+        instanceDto.setId(instance.getId());
+        instanceDto.setName(instance.getName());
+        instanceDto.setPluginClass(instance.getPlugin());
+        instanceDto.setProjectEnvironment(getProjectEnvironment(instance));
+        instanceDto.setConfiguration(instance.getProperties().stream().collect(Collectors.toMap(Property::getKey, Property::getValue)));
+        return instanceDto;
+    }
+
+    @RequestMapping(value = "/instance/{instanceId}", method = RequestMethod.DELETE)
+    public void delete(@PathVariable("instanceId") final Long instanceId) {
+        instanceLogic.delete(instanceId);
+    }
+
+    private ProjectEnvironmentDto getProjectEnvironment(Instance instance) {
+        String projectName = instance.getProjectEnvironment().getProject().getName();
+        String environmentName = instance.getProjectEnvironment().getEnvironment().getName();
+        return projectEnvironmentLogic.getProjectEnvironment(projectName, environmentName);
+    }
 
 }

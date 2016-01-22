@@ -2,6 +2,7 @@ package nl.unionsoft.sysstate.logic.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -12,6 +13,7 @@ import nl.unionsoft.sysstate.logic.UserLogic;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -22,13 +24,18 @@ public class UserLogicImpl implements UserLogic, InitializingBean {
     @Named("userDao")
     private UserDao userDao;
 
-    public UserDto getCurrentUser() {
-        UserDto user = null;
-        final String login = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (StringUtils.isNotBlank(login)) {
-            user = userDao.getUser(login);
+    public Optional<UserDto> getCurrentUser() {
+        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null){
+            return Optional.empty();
         }
-        return user;
+        
+        final String login = authentication.getName();
+        if (StringUtils.isBlank(login)) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable( userDao.getUser(login));
     }
 
     public List<UserDto> getUsers() {
@@ -45,9 +52,9 @@ public class UserLogicImpl implements UserLogic, InitializingBean {
     }
 
     public void delete(final Long userId) {
-        final UserDto currentUser = getCurrentUser();
-        if (currentUser != null) {
-            if (userId.equals(currentUser.getId())) {
+        final Optional<UserDto> currentUser = getCurrentUser();
+        if (currentUser.isPresent()) {
+            if (userId.equals(currentUser.get().getId())) {
                 throw new IllegalStateException("You can't delete yourself!");
             }
         }
@@ -76,6 +83,11 @@ public class UserLogicImpl implements UserLogic, InitializingBean {
         roles.add("ROLE_ADMIN");
         roles.add("ROLE_EDITOR");
         return roles;
+    }
+
+    @Override
+    public UserDto getUserByLogin(String login) {
+        return userDao.getUser(login);
     }
 
 }
