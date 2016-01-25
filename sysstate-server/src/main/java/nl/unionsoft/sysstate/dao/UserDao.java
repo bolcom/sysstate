@@ -15,4 +15,6 @@ public interface UserDao {
     public UserDto getUser(Long userId);
 
     public void delete(Long userId);
+    
+    public boolean isValidPassword(final Long userId, String password) ;
 }

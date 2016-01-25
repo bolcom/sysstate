@@ -1,5 +1,9 @@
 package nl.unionsoft.sysstate.security;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -9,6 +13,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Inject
+    @Named("customAuthenticationProvider")
+    private AuthenticationProvider authenticationProvider;
+
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers("/", "/template/render/**", "/images/**", "/css/**", "/js/**", "/materialize/**", "/scripts/**");
@@ -16,14 +24,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication().withUser("user").password("password").roles("USER");
-        auth.inMemoryAuthentication().withUser("admin").password("password").roles("USER", "ADMIN");
+        System.out.println("---->>>>" + authenticationProvider);
+        auth.authenticationProvider(authenticationProvider);
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().anyRequest().hasRole("USER").and()
-        .formLogin().loginPage("/login.html").permitAll();
+        http.authorizeRequests().anyRequest().hasRole("USER").and().formLogin().loginPage("/login.html").permitAll();
     }
 
     // @Configuration

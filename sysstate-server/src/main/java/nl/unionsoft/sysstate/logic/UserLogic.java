@@ -15,7 +15,9 @@ public interface UserLogic {
 
     public UserDto getUser(Long userId);
     
-    public UserDto getUserByLogin(String userName);
+    public Optional<UserDto> getUserByLogin(String userName);
+    
+    public Optional<UserDto> getAuthenticatedUser(final String login, String password);
 
     public void delete(Long userId);
     

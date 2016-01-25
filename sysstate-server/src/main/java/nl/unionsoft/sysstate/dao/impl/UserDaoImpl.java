@@ -43,7 +43,7 @@ public class UserDaoImpl implements UserDao {
                             .setMaxResults(1)
                             .setParameter("login", login).getSingleResult();
             // @formatter:on
-        } catch(final NoResultException nre) {
+        } catch (final NoResultException nre) {
             // Nothing to see here!
         }
         return userConverter.convert(user);
@@ -90,6 +90,12 @@ public class UserDaoImpl implements UserDao {
 
     private String hash(final String value) {
         return DigestUtils.md5Hex(value);
+
+    }
+
+    public boolean isValidPassword(final Long userId, String password) {
+        User user = entityManager.find(User.class, userId);
+        return StringUtils.equals(user.getPassword(), hash(password));
 
     }
 

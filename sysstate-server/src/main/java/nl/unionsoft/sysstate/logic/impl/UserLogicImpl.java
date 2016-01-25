@@ -25,17 +25,17 @@ public class UserLogicImpl implements UserLogic, InitializingBean {
     private UserDao userDao;
 
     public Optional<UserDto> getCurrentUser() {
-        
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null){
+        if (authentication == null) {
             return Optional.empty();
         }
-        
+
         final String login = authentication.getName();
         if (StringUtils.isBlank(login)) {
             return Optional.empty();
         }
-        return Optional.ofNullable( userDao.getUser(login));
+        return Optional.ofNullable(userDao.getUser(login));
     }
 
     public List<UserDto> getUsers() {
@@ -86,8 +86,26 @@ public class UserLogicImpl implements UserLogic, InitializingBean {
     }
 
     @Override
-    public UserDto getUserByLogin(String login) {
-        return userDao.getUser(login);
+    public Optional<UserDto> getUserByLogin(String login) {
+        return Optional.ofNullable(userDao.getUser(login));
+    }
+
+    @Override
+    public Optional<UserDto> getAuthenticatedUser(String login, String password) {
+        UserDto userDto = userDao.getUser(login);
+        if (userDto == null) {
+            return Optional.empty();
+        }
+
+        if (!userDto.isEnabled()) {
+            return Optional.empty();
+        }
+
+        if (userDao.isValidPassword(userDto.getId(), password)) {
+            return Optional.of(userDto);
+        }
+
+        return Optional.empty();
     }
 
 }

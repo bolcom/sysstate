@@ -1,6 +1,7 @@
 package nl.unionsoft.sysstate.security;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -12,7 +13,9 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
+@Service("userDetailsServiceImpl")
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private UserLogic userLogic;
@@ -25,12 +28,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
 
-        UserDto userDto = userLogic.getUserByLogin(userName);
-        if (userDto == null) {
+        Optional<UserDto> optUserDto = userLogic.getUserByLogin(userName);
+        if (!optUserDto.isPresent())
+        {
             throw new UsernameNotFoundException("Could not find User [" + userName + "] ");
         }
         // TODO Auto-generated method stub
-        return new CustomUserDetails(userDto);
+        return new CustomUserDetails(optUserDto.get());
     }
 
     public static class CustomUserDetails implements UserDetails {
