@@ -82,6 +82,7 @@ public class UserLogicImpl implements UserLogic, InitializingBean {
         final List<String> roles = new ArrayList<String>();
         roles.add("ROLE_ADMIN");
         roles.add("ROLE_EDITOR");
+        roles.add("ROLE_API");
         return roles;
     }
 
@@ -106,6 +107,12 @@ public class UserLogicImpl implements UserLogic, InitializingBean {
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    public Optional<UserDto> getAuthenticatedUser(String token) {
+        // FIXME
+        return Optional.ofNullable(userDao.getUser(token));
     }
 
 }

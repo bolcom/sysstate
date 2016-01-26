@@ -3,70 +3,62 @@ package nl.unionsoft.sysstate.security;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+@Order(2)
+@Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Inject
-    @Named("customAuthenticationProvider")
-    private AuthenticationProvider authenticationProvider;
+    @Named("usernameAndPasswordAuthenticationProvider")
+    private AuthenticationProvider usernameAndPasswordAuthenticationProvider;
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/", "/template/render/**", "/images/**", "/css/**", "/js/**", "/materialize/**", "/scripts/**");
+        //@formatter:off
+        web.ignoring().antMatchers(HttpMethod.GET,
+                "/","/index",
+                "/template/render/**", 
+                "/images/**", 
+                "/css/**", 
+                "/js/**",
+                "/materialize/**", 
+                "/scripts/**"
+                );
+        //@formatter:on
+
     }
+
+    //@formatter:off
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+        .antMatchers(HttpMethod.GET, 
+                "/filter/**",
+                "/dashboard/**",
+                "/view/index*",
+                "/logout*"                
+                )
+        .hasAnyRole("ANONYMOUS","ADMIN","EDITOR").and()
+        .authorizeRequests().anyRequest().hasRole("ADMIN").and()
+        .formLogin().loginPage("/login.html").permitAll().and()
+        .logout().logoutUrl("/logout.html").permitAll();
+    }
+    //@formatter:on
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        System.out.println("---->>>>" + authenticationProvider);
-        auth.authenticationProvider(authenticationProvider);
+        auth.authenticationProvider(usernameAndPasswordAuthenticationProvider);
     }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().anyRequest().hasRole("USER").and().formLogin().loginPage("/login.html").permitAll();
-    }
-
-    // @Configuration
-    // @Order(1)
-    // public static class FormWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
-    // public void configure(WebSecurity web) throws Exception {
-    //
-    // }
-    //
-    // protected void configure(HttpSecurity http) throws Exception {
-    // http.authorizeRequests().anyRequest().hasRole("USER").and().formLogin().loginPage("/login.html").usernameParameter("username")
-    // .passwordParameter("password").permitAll();
-    // }
-    //
-    // protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
-    //
-    //
-    // auth.inMemoryAuthentication().withUser("user").password("password").roles("USER");
-    // auth.inMemoryAuthentication().withUser("admin").password("password").roles("USER", "ADMIN");
-    //
-    // }
-    //
-    // }
-
-    // @Configuration
-    // @Order(2)
-    // public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
-    // protected void configure(HttpSecurity http) throws Exception {
-    // http.antMatcher("/api/**").httpBasic();
-    // }
-    //
-    // protected void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
-    // auth.inMemoryAuthentication()
-    // .withUser("user").password("password").roles("USER").and()
-    // .withUser("admin").password("password").roles("USER", "ADMIN");
-    // }
-    // }
 
 }

@@ -23,4 +23,6 @@ public interface UserLogic {
     
     public List<String> getRoles();
 
+    public  Optional<UserDto> getAuthenticatedUser(String token);
+
 }

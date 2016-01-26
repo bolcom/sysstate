@@ -21,40 +21,35 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.stereotype.Service;
 
-@Service("customAuthenticationProvider")
-public class CustomAuthenticationProvider implements AuthenticationProvider {
+@Service("usernameAndPasswordAuthenticationProvider")
+public class UsernameAndPasswordAuthenticationProvider implements AuthenticationProvider {
 
     private final UserLogic userLogic;
 
     @Inject
-    public CustomAuthenticationProvider(UserLogic userLogic) {
+    public UsernameAndPasswordAuthenticationProvider(UserLogic userLogic) {
         this.userLogic = userLogic;
     }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        if (authentication instanceof UsernamePasswordAuthenticationToken) {
-            UsernamePasswordAuthenticationToken upAuth = (UsernamePasswordAuthenticationToken) authentication;
 
-            String principal = ObjectUtils.toString(upAuth.getPrincipal());
-            String credentials = ObjectUtils.toString(upAuth.getCredentials());
-            Optional<UserDto> optionalUserDto = userLogic.getAuthenticatedUser(principal, credentials);
+        String principal = ObjectUtils.toString(authentication.getPrincipal());
+        String credentials = ObjectUtils.toString(authentication.getCredentials());
+        Optional<UserDto> optionalUserDto = userLogic.getAuthenticatedUser(principal, credentials);
 
-            if (!optionalUserDto.isPresent()) {
-                throw new BadCredentialsException("Bad Credentials");
-            }
-            UserDto userDto = optionalUserDto.get();
-
-            //@formatter:off
-            Collection<? extends GrantedAuthority> authorities = userDto.getRoles().stream()
-                    .map(role -> new SimpleGrantedAuthority(role))
-                    .collect(Collectors.toList());
-            //@formatter:on
-
-            return new UsernamePasswordAuthenticationToken(userDto, null, authorities);
-
+        if (!optionalUserDto.isPresent()) {
+            throw new BadCredentialsException("Bad Credentials");
         }
-        return null;
+        UserDto userDto = optionalUserDto.get();
+
+        //@formatter:off
+        Collection<? extends GrantedAuthority> authorities = userDto.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role))
+                .collect(Collectors.toList());
+        //@formatter:on
+
+        return new UsernamePasswordAuthenticationToken(userDto, null, authorities);
     }
 
     @Override
