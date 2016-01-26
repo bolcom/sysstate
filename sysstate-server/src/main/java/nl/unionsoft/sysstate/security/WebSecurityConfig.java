@@ -42,14 +42,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     //@formatter:off
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-        .antMatchers(HttpMethod.GET, 
+        http
+        .authorizeRequests()
+            .antMatchers(HttpMethod.GET, 
                 "/filter/**",
                 "/dashboard/**",
                 "/view/index*",
                 "/logout*"                
                 )
-        .hasAnyRole("ANONYMOUS","ADMIN","EDITOR").and()
+            .hasAnyRole("ANONYMOUS","ADMIN","EDITOR").and()
+        .authorizeRequests()
+            .antMatchers(HttpMethod.POST,
+                "/manager/search*",
+                "/filter/index*"
+                    
+                )
+            .hasAnyRole("ANONYMOUS","ADMIN","EDITOR").and()
         .authorizeRequests().anyRequest().hasRole("ADMIN").and()
         .formLogin().loginPage("/login.html").permitAll().and()
         .logout().logoutUrl("/logout.html").permitAll();
