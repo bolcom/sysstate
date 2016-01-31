@@ -13,6 +13,7 @@ import nl.unionsoft.sysstate.dao.UserDao;
 import nl.unionsoft.sysstate.domain.User;
 import nl.unionsoft.sysstate.domain.UserRole;
 import nl.unionsoft.sysstate.dto.UserDto;
+import nl.unionsoft.sysstate.dto.UserDto.Role;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
@@ -75,12 +76,12 @@ public class UserDaoImpl implements UserDao {
         }
 
         entityManager.createQuery("DELETE FROM UserRole WHERE user = :user").setParameter("user", user).executeUpdate();
-        final List<String> roles = dto.getRoles();
+        final List<Role> roles = dto.getRoles();
         if (roles != null) {
-            for (final String role : roles) {
+            for (final Role role : roles) {
                 final UserRole userRole = new UserRole();
                 userRole.setUser(user);
-                userRole.setAuthority(role);
+                userRole.setAuthority(role.name());
                 entityManager.persist(userRole);
             }
 

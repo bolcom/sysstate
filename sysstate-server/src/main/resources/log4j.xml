@@ -19,17 +19,18 @@
 				value="%d{yyyy/MM/dd HH\:mm s} [%5p] [%t] %C.%M\:%L - %m%n " />
 		</layout>
 	</appender>
-
-	<category name="org.springframework">
-		<priority value="INFO" />
-	</category>
-
+	<!-- 
 	<category name="org.springframework.security">
 		<priority value="DEBUG" />
 	</category>
+	 -->
+
+	<category name="org.springframework">
+		<priority value="ERROR" />
+	</category>
 	
 	<category name="nl.unionsoft">
-		<priority value="WARN" />
+		<priority value="INFO" />
 	</category>
 
 </log4j:configuration>

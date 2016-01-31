@@ -1,24 +1,24 @@
 package nl.unionsoft.sysstate.logic.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import nl.unionsoft.sysstate.dao.UserDao;
 import nl.unionsoft.sysstate.dto.UserDto;
+import nl.unionsoft.sysstate.dto.UserDto.Role;
 import nl.unionsoft.sysstate.logic.UserLogic;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service("userLogic")
-public class UserLogicImpl implements UserLogic, InitializingBean {
+public class UserLogicImpl implements UserLogic {
 
     @Inject
     @Named("userDao")
@@ -62,7 +62,8 @@ public class UserLogicImpl implements UserLogic, InitializingBean {
 
     }
 
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void addSystemUser() throws Exception {
         List<UserDto> users = userDao.getUsers();
         if (users == null || users.size() == 0) {
             UserDto defaultUser = new UserDto();
@@ -70,7 +71,7 @@ public class UserLogicImpl implements UserLogic, InitializingBean {
             defaultUser.setLastName("Administrator");
             defaultUser.setLogin("admin");
             defaultUser.setPassword("password");
-            defaultUser.getRoles().add("ROLE_ADMIN");
+            defaultUser.getRoles().add(Role.ADMIN);
             defaultUser.setEnabled(true);
             userDao.createOrUpdate(defaultUser);
 
@@ -78,13 +79,6 @@ public class UserLogicImpl implements UserLogic, InitializingBean {
 
     }
 
-    public List<String> getRoles() {
-        final List<String> roles = new ArrayList<String>();
-        roles.add("ROLE_ADMIN");
-        roles.add("ROLE_EDITOR");
-        roles.add("ROLE_API");
-        return roles;
-    }
 
     @Override
     public Optional<UserDto> getUserByLogin(String login) {

@@ -45,7 +45,7 @@ public class UsernameAndPasswordAuthenticationProvider implements Authentication
 
         //@formatter:off
         Collection<? extends GrantedAuthority> authorities = userDto.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
                 .collect(Collectors.toList());
         //@formatter:on
 

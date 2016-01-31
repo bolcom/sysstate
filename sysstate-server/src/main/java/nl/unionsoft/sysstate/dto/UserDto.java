@@ -3,6 +3,8 @@ package nl.unionsoft.sysstate.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 public class UserDto {
 
     private Long id;
@@ -12,10 +14,10 @@ public class UserDto {
     private String password;
     private boolean enabled;
     private String configuration;
-    private List<String> roles;
+    private List<Role> roles;
 
-    public UserDto () {
-        roles = new ArrayList<String>();
+    public UserDto() {
+        roles = new ArrayList<Role>();
     }
 
     public Long getId() {
@@ -74,12 +76,31 @@ public class UserDto {
         this.configuration = configuration;
     }
 
-    public List<String> getRoles() {
+    public List<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<String> roles) {
+    public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    @Override
+    public String toString() {
+        return "UserDto [id=" + id + ", login=" + login + ", firstName=" + firstName + ", lastName=" + lastName + ", enabled=" + enabled + ", roles=" + roles
+                + "]";
+    }
+
+    public enum Role {
+        ADMIN, EDITOR;
+
+        public static boolean isExistingRole(String roleName) {
+            for (Role role : Role.values()) {
+                if (StringUtils.equals(role.name(), roleName)) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
 }

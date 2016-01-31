@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import nl.unionsoft.sysstate.domain.User;
 import nl.unionsoft.sysstate.dto.MessageDto;
 import nl.unionsoft.sysstate.dto.UserDto;
+import nl.unionsoft.sysstate.dto.UserDto.Role;
 import nl.unionsoft.sysstate.logic.MessageLogic;
 import nl.unionsoft.sysstate.logic.UserLogic;
 
@@ -54,7 +55,7 @@ public class UserController {
 
     private void addCommonObjects(final ModelAndView modelAndView) {
     
-        modelAndView.addObject("roles", userLogic.getRoles());
+        modelAndView.addObject("roles", Role.values());
     }
 
     @RequestMapping(value = "/user/create", method = RequestMethod.POST)

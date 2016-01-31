@@ -14,15 +14,13 @@ public interface UserLogic {
     public void createOrUpdate(UserDto user);
 
     public UserDto getUser(Long userId);
-    
+
     public Optional<UserDto> getUserByLogin(String userName);
-    
+
     public Optional<UserDto> getAuthenticatedUser(final String login, String password);
 
     public void delete(Long userId);
-    
-    public List<String> getRoles();
 
-    public  Optional<UserDto> getAuthenticatedUser(String token);
+    public Optional<UserDto> getAuthenticatedUser(String token);
 
 }
