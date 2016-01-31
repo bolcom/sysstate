@@ -20,7 +20,7 @@ public interface InstanceLogic {
 
     public InstanceDto getInstance(Long instanceId, boolean states);
 
-    public void createOrUpdateInstance(InstanceDto instance);
+    public Long createOrUpdateInstance(InstanceDto instance);
 
     public void delete(Long instanceId);
 

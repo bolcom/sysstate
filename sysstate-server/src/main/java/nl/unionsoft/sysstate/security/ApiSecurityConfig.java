@@ -24,6 +24,7 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
     private AuthenticationProvider usernameAndPasswordAuthenticationProvider;
 
     protected void configure(HttpSecurity http) throws Exception {
+
         //@formatter:off
         http
             .authorizeRequests()
@@ -35,6 +36,7 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
            .authorizeRequests()
                .antMatchers(HttpMethod.GET, "/view/**")
                .hasAnyRole(ANONYMOUS.name(), EDITOR.name(), ADMIN.name() ).and()
+            .csrf().ignoringAntMatchers(toApiPaths("/**")).and()
             .httpBasic();
         //@formatter:on
     }

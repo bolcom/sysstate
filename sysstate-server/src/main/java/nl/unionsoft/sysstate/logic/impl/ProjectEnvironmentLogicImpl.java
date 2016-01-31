@@ -128,4 +128,9 @@ public class ProjectEnvironmentLogicImpl implements ProjectEnvironmentLogic {
         return projectEnvironmentConverter.convert(projectEnvironment, true);
     }
 
+    @Override
+    public ProjectEnvironmentDto getProjectEnvironment(Long projectEnvironmentId) {        
+       return  projectEnvironmentConverter.convert(projectEnvironmentDao.getProjectEnvironment(projectEnvironmentId), true);
+    }
+
 }

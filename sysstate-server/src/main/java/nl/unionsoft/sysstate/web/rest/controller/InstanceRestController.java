@@ -14,21 +14,33 @@ import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.logic.PushStateLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
+import nl.unionsoft.sysstate.sysstate_1_0.Environment;
+import nl.unionsoft.sysstate.sysstate_1_0.ErrorMessage;
 import nl.unionsoft.sysstate.sysstate_1_0.Instance;
 import nl.unionsoft.sysstate.sysstate_1_0.InstanceList;
+import nl.unionsoft.sysstate.sysstate_1_0.Project;
+import nl.unionsoft.sysstate.sysstate_1_0.ProjectEnvironment;
 import nl.unionsoft.sysstate.sysstate_1_0.Property;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Controller()
+@RequestMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 public class InstanceRestController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(InstanceRestController.class);
+    private static final Logger log = LoggerFactory.getLogger(InstanceRestController.class);
 
     @Inject
     @Named("instanceLogic")
@@ -64,17 +76,18 @@ public class InstanceRestController {
     }
 
     @RequestMapping(value = "/instance", method = RequestMethod.POST)
-    public void create(Instance instance) {
-
+    public Instance create(@RequestBody Instance instance) {
         if (instance.getId() != null) {
             throw new IllegalStateException("Instance id should be null for create");
         }
         InstanceDto instanceDto = convert(instance);
-        instanceLogic.createOrUpdateInstance(instanceDto);
+        Long id = instanceLogic.createOrUpdateInstance(instanceDto);
+        return instanceConverter.convert(instanceLogic.getInstance(id));
     }
 
     @RequestMapping(value = "/instance/{instanceId}", method = RequestMethod.PUT)
-    public void update(@PathVariable("instanceId") final Long instanceId, Instance instance) {
+    @ResponseStatus(HttpStatus.NO_CONTENT) 
+    public void update(@PathVariable("instanceId") final Long instanceId, @RequestBody Instance instance) {
 
         if (!instance.getId().equals(instanceId)) {
             throw new IllegalStateException("instanceId in url and instanceId in instance do not match.");
@@ -84,6 +97,14 @@ public class InstanceRestController {
 
     }
 
+    @ExceptionHandler
+    public ResponseEntity<ErrorMessage> handleException(Exception ex){
+       log.error("Handling Exception", ex);
+       ErrorMessage errorMessage = new ErrorMessage();
+       errorMessage.setMessage(ex.getMessage());
+       return new ResponseEntity<ErrorMessage>(errorMessage, HttpStatus.BAD_REQUEST);
+    }
+    
     public InstanceDto convert(Instance instance) {
         InstanceDto instanceDto = new InstanceDto();
         instanceDto.setEnabled(instance.isEnabled());
@@ -102,9 +123,36 @@ public class InstanceRestController {
     }
 
     private ProjectEnvironmentDto getProjectEnvironment(Instance instance) {
-        String projectName = instance.getProjectEnvironment().getProject().getName();
-        String environmentName = instance.getProjectEnvironment().getEnvironment().getName();
-        return projectEnvironmentLogic.getProjectEnvironment(projectName, environmentName);
+
+        ProjectEnvironment projectEnvironment = instance.getProjectEnvironment();
+
+        if (projectEnvironment == null) {
+            throw new IllegalArgumentException("ProjectEnvironment is required!");
+        }
+        if (isIdSet(projectEnvironment.getId())) {
+            return projectEnvironmentLogic.getProjectEnvironment(projectEnvironment.getId());
+        }
+
+        Project project = projectEnvironment.getProject();
+        Environment environment = projectEnvironment.getEnvironment();
+
+        if (project == null || environment == null) {
+            throw new IllegalArgumentException("ProjectEnvironment should have both a project and an environment!");
+        }
+        
+        if (isIdSet(project.getId()) && isIdSet(environment.getId())) {
+            return projectEnvironmentLogic.getProjectEnvironment(project.getId(), environment.getId());
+        }
+
+        if (StringUtils.isNotEmpty(project.getName()) && StringUtils.isNotEmpty(environment.getName())) {
+            return projectEnvironmentLogic.getProjectEnvironment(project.getName(), environment.getName());
+        }
+
+        throw new IllegalArgumentException("Unable to determine projectEnvironment from instance [" + instance + "].");
+    }
+
+    private boolean isIdSet(Long id) {
+        return id != null && id > 0;
     }
 
 }
