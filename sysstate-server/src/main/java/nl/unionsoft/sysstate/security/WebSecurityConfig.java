@@ -1,5 +1,9 @@
 package nl.unionsoft.sysstate.security;
 
+import static nl.unionsoft.sysstate.dto.UserDto.Role.ADMIN;
+import static nl.unionsoft.sysstate.dto.UserDto.Role.ANONYMOUS;
+import static nl.unionsoft.sysstate.dto.UserDto.Role.EDITOR;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -8,13 +12,10 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 @Order(2)
 @Configuration
 @EnableWebSecurity
@@ -50,15 +51,25 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/view/index*",
                 "/logout*"                
                 )
-            .hasAnyRole("ANONYMOUS","ADMIN","EDITOR").and()
+            .hasAnyRole(ANONYMOUS.name(),ADMIN.name(),EDITOR.name()).and()
         .authorizeRequests()
             .antMatchers(HttpMethod.POST,
                 "/manager/search*",
-                "/filter/index*"
-                    
+                "/filter/index*"                    
                 )
-            .hasAnyRole("ANONYMOUS","ADMIN","EDITOR").and()
-        .authorizeRequests().anyRequest().hasRole("ADMIN").and()
+            .hasAnyRole(ANONYMOUS.name(),ADMIN.name(),EDITOR.name()).and()
+        .authorizeRequests()
+            .antMatchers(
+                "/environment/**",
+                "/text/**",
+                "/project/**",
+                "/view/**",  
+                "/template/**",
+                "/filter/**",
+                "/projectenvironment/**"
+                )
+            .hasAnyRole(ADMIN.name(),EDITOR.name()).and()
+        .authorizeRequests().anyRequest().hasRole(ADMIN.name()).and()
         .formLogin().loginPage("/login.html").permitAll().and()
         .logout().logoutUrl("/logout.html").permitAll();
     }

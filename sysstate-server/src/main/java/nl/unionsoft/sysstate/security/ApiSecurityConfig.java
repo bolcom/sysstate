@@ -11,7 +11,9 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-
+import static nl.unionsoft.sysstate.dto.UserDto.Role.ADMIN;
+import static nl.unionsoft.sysstate.dto.UserDto.Role.ANONYMOUS;
+import static nl.unionsoft.sysstate.dto.UserDto.Role.EDITOR;
 @Order(1)
 @Configuration
 @EnableWebSecurity
@@ -26,13 +28,13 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .authorizeRequests()
                 .antMatchers(toApiPaths("/instance/**"))
-                .hasAnyRole("EDITOR", "ADMIN").and()
+                .hasAnyRole(EDITOR.name(), ADMIN.name()).and()
            .authorizeRequests()
                 .antMatchers(toApiPaths("/scheduler/**"))
-                .hasAnyRole("ADMIN").and()
+                .hasAnyRole(ADMIN.name()).and()
            .authorizeRequests()
                .antMatchers(HttpMethod.GET, "/view/**")
-               .hasAnyRole("ANONYMOUS", "EDITOR", "ADMIN" ).and()
+               .hasAnyRole(ANONYMOUS.name(), EDITOR.name(), ADMIN.name() ).and()
             .httpBasic();
         //@formatter:on
     }

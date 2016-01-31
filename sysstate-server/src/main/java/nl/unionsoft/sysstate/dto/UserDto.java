@@ -1,7 +1,9 @@
 package nl.unionsoft.sysstate.dto;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -91,7 +93,7 @@ public class UserDto {
     }
 
     public enum Role {
-        ADMIN, EDITOR;
+        ADMIN, EDITOR, ANONYMOUS;
 
         public static boolean isExistingRole(String roleName) {
             for (Role role : Role.values()) {
@@ -100,6 +102,14 @@ public class UserDto {
                 }
             }
             return false;
+        }
+
+        public static List<Role> getAssignableRoles() {
+            //@formatter:off            
+            return Arrays.stream(values())
+                    .filter(r -> !r.equals(Role.ANONYMOUS))
+                    .collect(Collectors.toList());
+            //@formatter:on
         }
     }
 

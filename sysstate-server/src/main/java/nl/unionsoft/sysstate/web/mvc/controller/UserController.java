@@ -54,8 +54,8 @@ public class UserController {
     }
 
     private void addCommonObjects(final ModelAndView modelAndView) {
-    
-        modelAndView.addObject("roles", Role.values());
+
+        modelAndView.addObject("roles", Role.getAssignableRoles());
     }
 
     @RequestMapping(value = "/user/create", method = RequestMethod.POST)
@@ -90,7 +90,7 @@ public class UserController {
         try {
             userLogic.delete(userId);
             messageLogic.addUserMessage(new MessageDto("Deleted user succesfully!", MessageDto.GREEN));
-        } catch(final RuntimeException e) {
+        } catch (final RuntimeException e) {
             messageLogic.addUserMessage(new MessageDto("Unable to delete user!", MessageDto.RED));
         }
 
