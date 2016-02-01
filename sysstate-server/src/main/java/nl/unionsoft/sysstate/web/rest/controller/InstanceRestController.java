@@ -96,13 +96,15 @@ public class InstanceRestController {
         instanceLogic.createOrUpdateInstance(instanceDto);
 
     }
+    
+    @RequestMapping(value = "/instance/{instanceId}", method = RequestMethod.DELETE)
+    public void delete(@PathVariable("instanceId") final Long instanceId) {
+        instanceLogic.delete(instanceId);
+    }
 
     @ExceptionHandler
     public ResponseEntity<ErrorMessage> handleException(Exception ex){
-       log.error("Handling Exception", ex);
-       ErrorMessage errorMessage = new ErrorMessage();
-       errorMessage.setMessage(ex.getMessage());
-       return new ResponseEntity<ErrorMessage>(errorMessage, HttpStatus.BAD_REQUEST);
+        return ErrorMessageCreator.createMessageFromException(ex);
     }
     
     public InstanceDto convert(Instance instance) {
@@ -114,13 +116,11 @@ public class InstanceRestController {
         instanceDto.setPluginClass(instance.getPlugin());
         instanceDto.setProjectEnvironment(getProjectEnvironment(instance));
         instanceDto.setConfiguration(instance.getProperties().stream().collect(Collectors.toMap(Property::getKey, Property::getValue)));
+        instanceDto.setTags(StringUtils.join(instance.getTags(), " "));
         return instanceDto;
     }
 
-    @RequestMapping(value = "/instance/{instanceId}", method = RequestMethod.DELETE)
-    public void delete(@PathVariable("instanceId") final Long instanceId) {
-        instanceLogic.delete(instanceId);
-    }
+
 
     private ProjectEnvironmentDto getProjectEnvironment(Instance instance) {
 

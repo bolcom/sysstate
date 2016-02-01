@@ -22,6 +22,7 @@ public class ProjectConverter implements Converter<Project, ProjectDto>{
         Project project = new Project();
         project.setId(dto.getId());
         project.setName(dto.getName());
+        project.setOrder(dto.getOrder());
         return project;
     }
 

@@ -77,6 +77,8 @@ targetNamespace="http://sysstate.unionsoft.nl/sysstate-1.0.0" elementFormDefault
 			<xs:sequence>
 				<xs:element name="id" type="xs:long" minOccurs="0" maxOccurs="1" />
 				<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />	
+				<xs:element name="order" type="xs:int" minOccurs="1" maxOccurs="1" />
+				<xs:element name="tags" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
