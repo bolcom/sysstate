@@ -120,23 +120,25 @@ $(function(){
 			</table>
 		</sf:form>
 	</div>
-	<div style="border-top:1px Solid Gray;width:200px;padding-top:10px;">
-		<h3>Save/Update Filter</h3>
-		<sf:form commandName="filter" method="POST" action="${contextPath}/filter/save.html">
-			<table border="0" cellpadding="0" cellspacing="0"  id="id-form">
-				<tr>
-					<th valign="top">FilterName:<br/>
-						<sf:input path="name" cssClass="inp-form"/>
-					</th>
-				</tr>
-				<tr>
-					<td valign="top">
-						<input type="submit" value="" class="form-submit" />
-					</td>
-				</tr>
-			</table>
-		</sf:form>
-	</div>
+	<sc:authorize url="/filter/save" method="POST">			
+		<div style="border-top:1px Solid Gray;width:200px;padding-top:10px;">
+			<h3>Save/Update Filter</h3>
+			<sf:form commandName="filter" method="POST" action="${contextPath}/filter/save.html">
+				<table border="0" cellpadding="0" cellspacing="0"  id="id-form">
+					<tr>
+						<th valign="top">FilterName:<br/>
+							<sf:input path="name" cssClass="inp-form"/>
+						</th>
+					</tr>
+					<tr>
+						<td valign="top">
+							<input type="submit" value="" class="form-submit" />
+						</td>
+					</tr>
+				</table>
+			</sf:form>
+		</div>
+	</sc:authorize>
 </div>
 <div style="float:left; width:900px">
 	<div id="instances">

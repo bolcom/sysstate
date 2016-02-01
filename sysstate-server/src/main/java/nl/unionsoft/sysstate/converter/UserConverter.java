@@ -6,6 +6,7 @@ import nl.unionsoft.common.converter.Converter;
 import nl.unionsoft.sysstate.domain.User;
 import nl.unionsoft.sysstate.domain.UserRole;
 import nl.unionsoft.sysstate.dto.UserDto;
+import nl.unionsoft.sysstate.dto.UserDto.Role;
 
 import org.springframework.stereotype.Service;
 
@@ -22,9 +23,12 @@ public class UserConverter implements Converter<UserDto, User> {
             result.setId(user.getId());
             result.setLastName(user.getLastName());
             result.setLogin(user.getLogin());
-            final List<String> roles = result.getRoles();
+            final List<Role> roles = result.getRoles();
             for (final UserRole userRole : user.getRoles()) {
-                roles.add(userRole.getAuthority());
+                if (Role.isExistingRole(userRole.getAuthority())) {
+                    roles.add(Role.valueOf(userRole.getAuthority()));
+                }
+
             }
         }
         return result;

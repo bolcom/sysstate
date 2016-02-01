@@ -6,7 +6,7 @@
 	<groupId>nl.unionsoft.sysstate</groupId>
 	<packaging>pom</packaging>
 	<artifactId>sysstate</artifactId>
-	<version>1.2.7</version>
+	<version>1.3.0</version>
 
 
 	<modules>
@@ -17,6 +17,7 @@
 		<module>sysstate-jenkins</module>
 		<module>sysstate-http</module>
         <module>sysstate-groovy</module>
+        <module>sysstate-api</module>
 	</modules>
 	<!-- START: META -->
 	<name>System Status - Parent</name>
@@ -51,6 +52,7 @@
 		<springframework.spring-security.version>4.0.0.RELEASE</springframework.spring-security.version>
 		<springframework.ws.version>1.5.9</springframework.ws.version>
 		<jersey.version>1.1.5.1</jersey.version>
+		<feign.version>6.1.1</feign.version>
 		<hibernate.version>4.3.8.Final</hibernate.version>
 		<unionsoft.commons.version>1.3.4</unionsoft.commons.version>
 		<tomcat.url>http://localhost:8082/manager</tomcat.url>
@@ -426,6 +428,27 @@
 				<version>1</version>
 			</dependency>
 			<!-- END: Spring -->
+
+			<!-- START: Feign -->
+	        <dependency>
+	        	<groupId>com.netflix.feign</groupId>
+	        	<artifactId>feign-core</artifactId>
+	        	<version>${feign.version}</version>
+	        </dependency>
+	        <dependency>
+	        	<groupId>com.netflix.feign</groupId>
+	        	<artifactId>feign-jackson</artifactId>
+	        	<version>${feign.version}</version>	        	
+	        </dependency>
+
+	       	<!-- https://github.com/bolcom/feign-client-provider -->
+	        <dependency>
+			    <groupId>com.bol.feign</groupId>
+			    <artifactId>feign-client-provider</artifactId>
+			    <version>1.1.0</version>
+			</dependency>
+			<!-- END: Feign -->
+
 			<!-- START: Jaxb/Json -->
 			<!--
 			<dependency>

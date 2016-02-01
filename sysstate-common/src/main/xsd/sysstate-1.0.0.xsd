@@ -18,6 +18,14 @@ targetNamespace="http://sysstate.unionsoft.nl/sysstate-1.0.0" elementFormDefault
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	
+	<xs:element name="ErrorMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="message" type="xs:string" minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
 	<xs:element name="EcoSystem">
 		<xs:complexType>
@@ -69,6 +77,8 @@ targetNamespace="http://sysstate.unionsoft.nl/sysstate-1.0.0" elementFormDefault
 			<xs:sequence>
 				<xs:element name="id" type="xs:long" minOccurs="0" maxOccurs="1" />
 				<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />	
+				<xs:element name="order" type="xs:int" minOccurs="1" maxOccurs="1" />
+				<xs:element name="tags" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -115,7 +125,11 @@ targetNamespace="http://sysstate.unionsoft.nl/sysstate-1.0.0" elementFormDefault
 			<xs:sequence>
 				<xs:element name="id" type="xs:long" minOccurs="0" maxOccurs="1" />
 				<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1" />
+				<xs:element name="reference" type="xs:string" minOccurs="0" maxOccurs="1" />				
+				<xs:element name="refreshTimeout" type="xs:int" minOccurs="1" maxOccurs="1" />
 				<xs:element name="homepageUrl" type="xs:string" minOccurs="0" maxOccurs="1" />
+				<xs:element name="enabled" type="xs:boolean" minOccurs="1" maxOccurs="1" />
+				<xs:element name="tags" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="State" minOccurs="0" maxOccurs="1" />
 				<xs:element ref="ProjectEnvironment" minOccurs="0" maxOccurs="1" />
 				<xs:element ref="InstanceLink" minOccurs="0" maxOccurs="unbounded">
@@ -125,6 +139,24 @@ targetNamespace="http://sysstate.unionsoft.nl/sysstate-1.0.0" elementFormDefault
 						</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
+				<xs:element name="plugin" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element ref="Property" minOccurs="0" maxOccurs="unbounded" >
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="properties"/>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>								
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	
+	<xs:element name="Property">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="key" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="value" type="xs:string" minOccurs="1" maxOccurs="1" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

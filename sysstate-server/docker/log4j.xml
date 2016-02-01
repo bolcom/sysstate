@@ -8,16 +8,21 @@
 
 	<root>
 		<priority value="WARN" />
+		<!-- STDOUT is disabled by default for Docker since it can flood docker and kill the container -->
+		<!-- 
 		<appender-ref ref="STDOUT" />
+		 -->
 		<appender-ref ref="FILE" />
 	</root>
-
+	<!-- STDOUT is disabled by default for Docker since it can flood docker and kill the container -->
+	<!-- 
 	<appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
 		<param name="Threshold" value="WARN"/>
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{yyyy/MM/dd HH\:mm:ss} [%5p] [%t] %C.%M\:%L - %m%n " />
 		</layout>
 	</appender>
+	 -->
 
 	<appender name="FILE" class="org.apache.log4j.DailyRollingFileAppender">
         <param name="file" value="/usr/local/tomcat/.sysstate/log/sysstate.log" />

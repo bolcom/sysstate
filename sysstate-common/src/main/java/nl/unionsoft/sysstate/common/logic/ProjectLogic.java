@@ -12,7 +12,7 @@ public interface ProjectLogic {
 
     public ProjectDto getProjectByName(String name);
 
-    public void createOrUpdateProject(ProjectDto project);
+    public Long createOrUpdateProject(ProjectDto project);
 
     public void delete(Long projectId);
 

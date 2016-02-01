@@ -216,7 +216,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         }
     }
 
-    public void createOrUpdateInstance(final InstanceDto dto) {
+    public Long createOrUpdateInstance(final InstanceDto dto) {
         final Instance instance = new Instance();
         instance.setId(dto.getId());
         instance.setEnabled(dto.isEnabled());
@@ -244,6 +244,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         }
 
         updateTriggerJob(instance);
+        return instance.getId();
     }
 
     public void delete(final Long instanceId) {

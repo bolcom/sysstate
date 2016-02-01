@@ -55,7 +55,7 @@ public class ProjectLogicImpl implements ProjectLogic {
         return projectConverter.convert(projectDao.getProject(projectId));
     }
 
-    public void createOrUpdateProject(final ProjectDto project) {
+    public Long createOrUpdateProject(final ProjectDto project) {
         Long projectId = project.getId();
         Project theProject = null;
         if (projectId == null || projectId == 0) {
@@ -79,6 +79,7 @@ public class ProjectLogicImpl implements ProjectLogic {
                 projectEnvironmentDao.createOrUpdate(projectEnvironment);
             }
         }
+        return theProject.getId();
     }
 
     public void delete(final Long projectId) {

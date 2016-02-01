@@ -8,7 +8,6 @@
         ">
 	<import resource="classpath:/nl/unionsoft/sysstate/dbcp-datasource-context.xml" />	 
 	<import resource="classpath:/nl/unionsoft/sysstate/jdbc-context.xml" />
-	<import resource="classpath:/nl/unionsoft/sysstate/security-context.xml" />
 	<import resource="classpath:/nl/unionsoft/sysstate/cache-context.xml" />
 	<import resource="classpath:/nl/unionsoft/sysstate/entitymanager-context.xml" />
 	<import resource="classpath:/nl/unionsoft/sysstate/tx-context.xml" />

@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import nl.unionsoft.sysstate.domain.User;
 import nl.unionsoft.sysstate.dto.MessageDto;
 import nl.unionsoft.sysstate.dto.UserDto;
+import nl.unionsoft.sysstate.dto.UserDto.Role;
 import nl.unionsoft.sysstate.logic.MessageLogic;
 import nl.unionsoft.sysstate.logic.UserLogic;
 
@@ -53,8 +54,8 @@ public class UserController {
     }
 
     private void addCommonObjects(final ModelAndView modelAndView) {
-    
-        modelAndView.addObject("roles", userLogic.getRoles());
+
+        modelAndView.addObject("roles", Role.getAssignableRoles());
     }
 
     @RequestMapping(value = "/user/create", method = RequestMethod.POST)
@@ -89,7 +90,7 @@ public class UserController {
         try {
             userLogic.delete(userId);
             messageLogic.addUserMessage(new MessageDto("Deleted user succesfully!", MessageDto.GREEN));
-        } catch(final RuntimeException e) {
+        } catch (final RuntimeException e) {
             messageLogic.addUserMessage(new MessageDto("Unable to delete user!", MessageDto.RED));
         }
 
