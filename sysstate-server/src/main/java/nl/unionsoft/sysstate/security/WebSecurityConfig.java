@@ -29,7 +29,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         //@formatter:off
         web.ignoring().antMatchers(HttpMethod.GET,
-                "/","/index",
+                "/","/index*",
                 "/template/render/**", 
                 "/images/**", 
                 "/css/**", 
@@ -43,9 +43,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     protected void configure(HttpSecurity http) throws Exception {
-        authorizeWeb(http);
         authorizeApi(http);
-
+        authorizeWeb(http);
     }
 
 
@@ -57,8 +56,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/filter/**",
                 "/dashboard/**",
                 "/view/index*",
+                "/view/**/index*",                                  
                 "/logout*", 
-                "/login*"                 
+                "/login*"  
                 )
             .permitAll().and()
         .authorizeRequests()
@@ -66,7 +66,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/manager/search*",
                 "/filter/index*"                    
                 )
-            .hasAnyRole(ANONYMOUS.name(),ADMIN.name(),EDITOR.name()).and()
+            .permitAll().and()
         .authorizeRequests()
             .antMatchers(
                 "/environment/**",
@@ -106,8 +106,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(toApiPaths("/scheduler/**"))
             .hasAnyRole(ADMIN.name()).and()
         .authorizeRequests()
-           .antMatchers(HttpMethod.GET, "/view/**")
-           .hasAnyRole(ANONYMOUS.name(), EDITOR.name(), ADMIN.name() ).and()
+           .antMatchers(HttpMethod.GET, toApiPaths("/view/**"))
+           .permitAll().and()
         .csrf()
             .ignoringAntMatchers(toApiPaths("/**")).and()            
         .httpBasic();
