@@ -15,8 +15,10 @@
 				<c:when test="${type == 'submit' }">
 					<th>&nbsp;</th>
 					<td valign="top">
-						<input type="submit" value="" class="form-submit" /> 
-						<input type="reset" value="" class="form-reset" />
+						<input type="submit" value="" class="form-submit" />
+						<c:if test="${!disabled}">
+							<input type="reset" value="" class="form-reset" />
+						</c:if>
 					</td>
 					<td></td>
 				</c:when>

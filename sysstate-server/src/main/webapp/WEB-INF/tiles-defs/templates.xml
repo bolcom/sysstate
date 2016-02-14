@@ -246,6 +246,10 @@
 	<!-- Authentication -->
 
 	<definition name="login" template="/WEB-INF/jsp/login.jsp" />
+	<definition name="logout" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/logout.jsp" />
+		<put-attribute name="page-heading" value="Confirm Logout" />
+	</definition>
 
 
 	<!-- Queue -->

@@ -41,17 +41,26 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     }
 
-    //@formatter:off
+
     protected void configure(HttpSecurity http) throws Exception {
+        authorizeWeb(http);
+        authorizeApi(http);
+
+    }
+
+
+    public void authorizeWeb(HttpSecurity http) throws Exception {
+        //@formatter:off
         http
         .authorizeRequests()
             .antMatchers(HttpMethod.GET, 
                 "/filter/**",
                 "/dashboard/**",
                 "/view/index*",
-                "/logout*"                
+                "/logout*", 
+                "/login*"                 
                 )
-            .hasAnyRole(ANONYMOUS.name(),ADMIN.name(),EDITOR.name()).and()
+            .permitAll().and()
         .authorizeRequests()
             .antMatchers(HttpMethod.POST,
                 "/manager/search*",
@@ -69,15 +78,50 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/projectenvironment/**"
                 )
             .hasAnyRole(ADMIN.name(),EDITOR.name()).and()
-        .authorizeRequests().anyRequest().hasRole(ADMIN.name()).and()
-        .formLogin().loginPage("/login.html").permitAll().and()
-        .logout().logoutUrl("/logout.html").permitAll();
+        .authorizeRequests()
+            .anyRequest()
+            .hasRole(ADMIN.name()).and()
+        .formLogin()
+            .loginPage("/login.html")
+            .permitAll().and()
+        .logout()
+            .logoutUrl("/logout.html")
+            .logoutSuccessUrl("/dashboard/index.html")
+            .permitAll();
+        //@formatter:on
     }
-    //@formatter:on
+
+
+    public void authorizeApi(HttpSecurity http) throws Exception {
+        //@formatter:off
+
+        http
+        .authorizeRequests()
+            .antMatchers(toApiPaths("/instance/**"))
+            .hasAnyRole(EDITOR.name(), ADMIN.name()).and()
+        .authorizeRequests()
+            .antMatchers(toApiPaths("/project/**"))
+            .hasAnyRole(EDITOR.name(), ADMIN.name()).and()
+        .authorizeRequests()
+            .antMatchers(toApiPaths("/scheduler/**"))
+            .hasAnyRole(ADMIN.name()).and()
+        .authorizeRequests()
+           .antMatchers(HttpMethod.GET, "/view/**")
+           .hasAnyRole(ANONYMOUS.name(), EDITOR.name(), ADMIN.name() ).and()
+        .csrf()
+            .ignoringAntMatchers(toApiPaths("/**")).and()            
+        .httpBasic();
+        //@formatter:on
+    }
+
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(usernameAndPasswordAuthenticationProvider);
     }
 
+    private String[] toApiPaths(String path)
+    {
+        return new String[] {"/api" + path, "/services" + path};
+    }
 }
