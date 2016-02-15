@@ -2,6 +2,7 @@ package nl.unionsoft.sysstate.logic.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -30,12 +31,11 @@ public class UserLogicImpl implements UserLogic {
         if (authentication == null) {
             return Optional.empty();
         }
-
-        final String login = authentication.getName();
-        if (StringUtils.isBlank(login)) {
-            return Optional.empty();
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof UserDto) {
+            return Optional.of((UserDto) principal);
         }
-        return Optional.ofNullable(userDao.getUser(login));
+        return Optional.empty();
     }
 
     public List<UserDto> getUsers() {
@@ -71,6 +71,7 @@ public class UserLogicImpl implements UserLogic {
             defaultUser.setLastName("Administrator");
             defaultUser.setLogin("admin");
             defaultUser.setPassword("password");
+            defaultUser.setToken("some-token");
             defaultUser.getRoles().add(Role.ADMIN);
             defaultUser.setEnabled(true);
             userDao.createOrUpdate(defaultUser);
@@ -78,7 +79,6 @@ public class UserLogicImpl implements UserLogic {
         }
 
     }
-
 
     @Override
     public Optional<UserDto> getUserByLogin(String login) {
@@ -105,8 +105,14 @@ public class UserLogicImpl implements UserLogic {
 
     @Override
     public Optional<UserDto> getAuthenticatedUser(String token) {
-        // FIXME
-        return Optional.ofNullable(userDao.getUser(token));
+        return Optional.ofNullable(userDao.getUserByToken(token));
+    }
+
+    @Override
+    public void resetToken(Long userId) {
+        UserDto userDto = userDao.getUser(userId);
+        userDto.setToken(UUID.randomUUID().toString());
+        userDao.createOrUpdate(userDto);
     }
 
 }

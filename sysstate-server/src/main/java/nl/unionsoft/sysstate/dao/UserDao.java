@@ -7,6 +7,8 @@ import nl.unionsoft.sysstate.dto.UserDto;
 public interface UserDao {
 
     public UserDto getUser(String login);
+    
+    public UserDto getUserByToken(String token);
 
     public List<UserDto> getUsers();
 

@@ -14,6 +14,7 @@ public class UserDto {
     private String firstName;
     private String lastName;
     private String password;
+    private String token;
     private boolean enabled;
     private String configuration;
     private List<Role> roles;
@@ -84,6 +85,14 @@ public class UserDto {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     @Override

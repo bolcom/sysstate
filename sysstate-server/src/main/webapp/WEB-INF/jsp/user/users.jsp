@@ -9,6 +9,7 @@
 		<th class="table-header-repeat line-left"><a href="">firstName</a></th>
 		<th class="table-header-repeat line-left"><a href="">lastName</a></th>
 		<th class="table-header-repeat line-left"><a href="">enabled</a></th>
+		<th class="table-header-repeat line-left"><a href="">token</a></th>
 		<th class="table-header-repeat line-left"><a href="">roles</a></th>
 		<th class="table-header-repeat line-left"><a href="">options</a></th>
 		
@@ -21,6 +22,7 @@
 				<td>${user.firstName}</td>
 				<td>${user.lastName}</td>
 				<td>${user.enabled}</td>
+				<td>${user.token}</td>				
 				<td>
 					<c:forEach items="${user.roles}" var="role">
 						${role}<br/>
@@ -33,6 +35,9 @@
 					<sc:authorize url="/user/${user.id }/delete">
 						| <a href="${user.id}/delete.html">Delete</a>
 					</sc:authorize>
+					<sc:authorize url="/user/${user.id }/token">
+						| <a href="${user.id}/token.html">Reset Token</a>
+					</sc:authorize>					
 				</td>
 			</tr>
 		</c:forEach>

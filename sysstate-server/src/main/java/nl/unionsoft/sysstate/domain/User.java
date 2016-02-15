@@ -37,6 +37,9 @@ public class User {
     @Column(name = "PASSWORD", nullable = false, length = 255)
     private String password;
 
+    @Column(name = "TOKEN", nullable = true, length = 255)
+    private String token;
+
     @Column(name = "ENABLED", nullable = false)
     private boolean enabled;
 
@@ -60,6 +63,14 @@ public class User {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public String getPassword() {

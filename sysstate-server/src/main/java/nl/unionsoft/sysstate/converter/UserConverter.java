@@ -23,6 +23,7 @@ public class UserConverter implements Converter<UserDto, User> {
             result.setId(user.getId());
             result.setLastName(user.getLastName());
             result.setLogin(user.getLogin());
+            result.setToken(user.getToken());
             final List<Role> roles = result.getRoles();
             for (final UserRole userRole : user.getRoles()) {
                 if (Role.isExistingRole(userRole.getAuthority())) {

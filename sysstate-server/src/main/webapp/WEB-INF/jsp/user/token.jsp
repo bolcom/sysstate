@@ -1,7 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="s" uri="http://www.springframework.org/tags" %>
 <%@taglib prefix="sf" uri="http://www.springframework.org/tags/form" %>
-<h3>About to delete the following user:</h3>
+
+<h3>Reset token for the following user:</h3>
 <table>
 	<tr valign="top">
 		<td>
@@ -27,4 +28,3 @@
 		</td>
 	</tr>
 </table>
-

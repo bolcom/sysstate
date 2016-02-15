@@ -1,12 +1,5 @@
 package nl.unionsoft.sysstate;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLClassLoader;
-
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class Constants {
 

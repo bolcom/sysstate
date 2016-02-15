@@ -303,13 +303,11 @@ $('#d').trigger('change');
 						<c:choose>
 							<c:when test="${not empty user && user != 'anonymousUser'}">
 								<a href="${contextPath}/logout.html" id="acc-settings">Logout</a>
+								<div class="clear">&nbsp;</div>
+								<div class="acc-line">&nbsp;</div>
+								<a href="${contextPath}/account/index.html" id="acc-settings">Settings</a>
 								<!-- 
-								<a href="" id="acc-settings">Settings</a>
-								<div class="clear">&nbsp;</div>
-								<div class="acc-line">&nbsp;</div>
 								<a href="" id="acc-details">Personal details </a>
-								<div class="clear">&nbsp;</div>
-								<div class="acc-line">&nbsp;</div>
 								<a href="" id="acc-project">Project details</a>
 								<div class="clear">&nbsp;</div>
 								<div class="acc-line">&nbsp;</div>

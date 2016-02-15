@@ -97,4 +97,26 @@ public class UserController {
         return new ModelAndView("redirect:/user/index.html");
     }
 
+    @RequestMapping(value = "/user/{userId}/token", method = RequestMethod.GET)
+    public ModelAndView getToken(@PathVariable("userId") final Long userId) {
+        final ModelAndView modelAndView = new ModelAndView("token-user-manager");
+        modelAndView.addObject("user", userLogic.getUser(userId));
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/user/{userId}/token", method = RequestMethod.POST)
+    public ModelAndView resetToken(@PathVariable("userId") final Long userId) {
+
+        try {
+            userLogic.resetToken(userId);
+            messageLogic.addUserMessage(new MessageDto("Token has been reset.", MessageDto.GREEN));
+        } catch (final RuntimeException e) {
+            messageLogic.addUserMessage(new MessageDto("Unable to reset token!", MessageDto.RED));
+        }
+
+        return new ModelAndView("redirect:/user/index.html");
+    }
+
+    
+    
 }

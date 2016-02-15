@@ -49,7 +49,7 @@ public class UsernameAndPasswordAuthenticationProvider implements Authentication
                 .collect(Collectors.toList());
         //@formatter:on
 
-        return new UsernamePasswordAuthenticationToken(userDto, null, authorities);
+        return new UsernamePasswordAuthenticationToken(userDto, null, SecurityUtil.getGrantedAuthorities(userDto));
     }
 
     @Override

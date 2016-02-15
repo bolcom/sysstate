@@ -33,7 +33,7 @@
 								<sf:input path="${path}" cssClass="inp-form" disabled="${disabled}"/>
 							</c:when>
 							<c:when test="${type == 'password'}">
-								<sf:password  path="${path}" cssClass="inp-form"/>
+								<sf:password  path="${path}" cssClass="inp-form" disabled="${disabled}"/>
 							</c:when>
 							<c:when test="${type == 'checkbox'}">
 								<sf:checkbox  path="${path}" cssClass="inp-form"/>

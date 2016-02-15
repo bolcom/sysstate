@@ -66,6 +66,9 @@ public class UserDaoImpl implements UserDao {
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setLogin(dto.getLogin());
+        if (StringUtils.isNotEmpty(dto.getToken())) {
+            user.setToken(dto.getToken());
+        }
         if (StringUtils.isNotEmpty(dto.getPassword())) {
             user.setPassword(hash(dto.getPassword()));
         }
@@ -107,6 +110,11 @@ public class UserDaoImpl implements UserDao {
     public void delete(final Long userId) {
         entityManager.remove(entityManager.find(User.class, userId));
 
+    }
+
+    @Override
+    public UserDto getUserByToken(String token) {
+        return userConverter.convert(entityManager.createQuery("FROM User WHERE token = :token", User.class).setParameter("token", token).getSingleResult());
     }
 
 }

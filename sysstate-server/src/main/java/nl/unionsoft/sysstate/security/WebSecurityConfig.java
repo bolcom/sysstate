@@ -1,11 +1,12 @@
 package nl.unionsoft.sysstate.security;
 
 import static nl.unionsoft.sysstate.dto.UserDto.Role.ADMIN;
-import static nl.unionsoft.sysstate.dto.UserDto.Role.ANONYMOUS;
 import static nl.unionsoft.sysstate.dto.UserDto.Role.EDITOR;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import nl.unionsoft.sysstate.logic.UserLogic;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -16,7 +17,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-@Order(2)
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
+
+@Order(30)
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -25,6 +28,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Named("usernameAndPasswordAuthenticationProvider")
     private AuthenticationProvider usernameAndPasswordAuthenticationProvider;
 
+//    @Inject
+//    @Named("tokenAuthenticationFilter")
+//    private TokenAuthenticationFilter tokenAuthenticationFilter;
+//    
+    @Inject
+    @Named("userLogic")
+    private UserLogic userLogic;
+    
     @Override
     public void configure(WebSecurity web) throws Exception {
         //@formatter:off
@@ -38,20 +49,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/scripts/**"
                 );
         //@formatter:on
-
     }
 
-
+    
     protected void configure(HttpSecurity http) throws Exception {
-        authorizeApi(http);
-        authorizeWeb(http);
-    }
 
-
-    public void authorizeWeb(HttpSecurity http) throws Exception {
         //@formatter:off
         http
         .authorizeRequests()
+            .antMatchers(HttpMethod.GET, 
+                "/account/**"
+                ).authenticated()        
             .antMatchers(HttpMethod.GET, 
                 "/filter/**",
                 "/dashboard/**",
@@ -59,15 +67,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/view/**/index*",                                  
                 "/logout*", 
                 "/login*"  
-                )
-            .permitAll().and()
-        .authorizeRequests()
+                ).permitAll()
             .antMatchers(HttpMethod.POST,
                 "/manager/search*",
                 "/filter/index*"                    
-                )
-            .permitAll().and()
-        .authorizeRequests()
+                ).permitAll()
             .antMatchers(
                 "/environment/**",
                 "/text/**",
@@ -76,52 +80,52 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/template/**",
                 "/filter/**",
                 "/projectenvironment/**"
-                )
-            .hasAnyRole(ADMIN.name(),EDITOR.name()).and()
-        .authorizeRequests()
-            .anyRequest()
-            .hasRole(ADMIN.name()).and()
+                ).hasAnyRole(ADMIN.name(),EDITOR.name())
+            .and()
         .formLogin()
             .loginPage("/login.html")
-            .permitAll().and()
+            .permitAll()
+            .and()
         .logout()
             .logoutUrl("/logout.html")
             .logoutSuccessUrl("/dashboard/index.html")
             .permitAll();
+        
         //@formatter:on
+        configureApi(http);
+        //configureAdmin(http);
+
     }
 
 
-    public void authorizeApi(HttpSecurity http) throws Exception {
+    public void configureApi(HttpSecurity http) throws Exception {
         //@formatter:off
-
         http
-        .authorizeRequests()
-            .antMatchers(toApiPaths("/instance/**"))
-            .hasAnyRole(EDITOR.name(), ADMIN.name()).and()
-        .authorizeRequests()
-            .antMatchers(toApiPaths("/project/**"))
-            .hasAnyRole(EDITOR.name(), ADMIN.name()).and()
-        .authorizeRequests()
-            .antMatchers(toApiPaths("/scheduler/**"))
-            .hasAnyRole(ADMIN.name()).and()
-        .authorizeRequests()
-           .antMatchers(HttpMethod.GET, toApiPaths("/view/**"))
-           .permitAll().and()
         .csrf()
-            .ignoringAntMatchers(toApiPaths("/**")).and()            
-        .httpBasic();
+            .ignoringAntMatchers(toApiPaths("/**"))
+            .and()
+        .authorizeRequests()
+            .antMatchers(toApiPaths("/instance/**")).hasAnyRole(EDITOR.name(), ADMIN.name())
+            .antMatchers(toApiPaths("/project/**")).hasAnyRole(EDITOR.name(), ADMIN.name())
+            .antMatchers(toApiPaths("/scheduler")).permitAll()
+            .antMatchers(toApiPaths("/view/**")).permitAll()
+            .and()
+            .addFilterBefore(new TokenAuthenticationFilter(userLogic), AnonymousAuthenticationFilter.class );
         //@formatter:on
     }
-
+    
+    public void configureAdmin(HttpSecurity http) throws Exception {
+        http.authorizeRequests().anyRequest().hasRole(ADMIN.name());
+    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(usernameAndPasswordAuthenticationProvider);
     }
-
+    
     private String[] toApiPaths(String path)
     {
         return new String[] {"/api" + path, "/services" + path};
     }
+
 }

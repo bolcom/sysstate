@@ -22,5 +22,7 @@ public interface UserLogic {
     public void delete(Long userId);
 
     public Optional<UserDto> getAuthenticatedUser(String token);
+    
+    public void resetToken(Long userId);
 
 }

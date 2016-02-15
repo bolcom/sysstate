@@ -226,6 +226,11 @@
         <put-attribute name="page-heading" value="Delete Filter" />
     </definition>
 
+	<!-- Account -->
+	<definition name="account-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/account/account.jsp" />
+		<put-attribute name="page-heading" value="Account Manager" />
+	</definition>
 
 	<!-- Users -->
 	<definition name="list-user-manager" extends="manager">
@@ -241,6 +246,11 @@
 	<definition name="delete-user-manager" extends="manager">
 		<put-attribute name="contents" value="/WEB-INF/jsp/user/delete.jsp" />
 		<put-attribute name="page-heading" value="Delete User" />
+	</definition>
+	
+	<definition name="token-user-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/user/token.jsp" />
+		<put-attribute name="page-heading" value="User Token" />
 	</definition>
 
 	<!-- Authentication -->
