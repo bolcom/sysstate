@@ -54,6 +54,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     
     protected void configure(HttpSecurity http) throws Exception {
 
+        configureWeb(http);
+        configureApi(http);
+
+    }
+
+
+    public void configureWeb(HttpSecurity http) throws Exception {
         //@formatter:off
         http
         .authorizeRequests()
@@ -77,11 +84,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/text/**",
                 "/project/**",
                 "/view/**",  
+                "/settings/**",  
                 "/template/**",
                 "/filter/**",
                 "/projectenvironment/**"
                 ).hasAnyRole(ADMIN.name(),EDITOR.name())
-            .and()
+            .antMatchers(
+                "/configuration/**",
+                "/cache/**",
+                "/user/**",
+                "/plugins/**",  
+                "/script/**",
+                "/scheduler/**"
+                ).hasAnyRole(ADMIN.name())
+            .and()            
         .formLogin()
             .loginPage("/login.html")
             .permitAll()
@@ -90,11 +106,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .logoutUrl("/logout.html")
             .logoutSuccessUrl("/dashboard/index.html")
             .permitAll();
-        
         //@formatter:on
-        configureApi(http);
-        //configureAdmin(http);
-
     }
 
 
@@ -114,10 +126,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         //@formatter:on
     }
     
-    public void configureAdmin(HttpSecurity http) throws Exception {
-        http.authorizeRequests().anyRequest().hasRole(ADMIN.name());
-    }
-
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(usernameAndPasswordAuthenticationProvider);

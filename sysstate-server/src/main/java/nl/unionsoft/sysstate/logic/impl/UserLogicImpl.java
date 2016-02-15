@@ -44,7 +44,6 @@ public class UserLogicImpl implements UserLogic {
 
     public void createOrUpdate(final UserDto user) {
         userDao.createOrUpdate(user);
-
     }
 
     public UserDto getUser(final Long userId) {
