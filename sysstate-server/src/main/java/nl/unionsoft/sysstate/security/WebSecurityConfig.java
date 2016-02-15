@@ -59,7 +59,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     }
 
-
     public void configureWeb(HttpSecurity http) throws Exception {
         //@formatter:off
         http
@@ -68,7 +67,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/account/**"
                 ).authenticated()        
             .antMatchers(HttpMethod.GET, 
-                "/filter/**",
+                "/projectEnvironment/project/*/environment/*/details*",
+                "/filter/**",                
                 "/dashboard/**",
                 "/view/index*",
                 "/view/**/index*",                                  
@@ -87,7 +87,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/settings/**",  
                 "/template/**",
                 "/filter/**",
-                "/projectenvironment/**"
+                "/projectenvironment/**",
+                "/instance/**"  
                 ).hasAnyRole(ADMIN.name(),EDITOR.name())
             .antMatchers(
                 "/configuration/**",
