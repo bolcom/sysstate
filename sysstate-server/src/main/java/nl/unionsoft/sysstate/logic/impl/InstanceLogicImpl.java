@@ -228,11 +228,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         instance.setProjectEnvironment(projectEnvironment);
         instance.setRefreshTimeout(dto.getRefreshTimeout());
         instance.setTags(dto.getTags());
-        String reference = dto.getReference();
-        if (StringUtils.isEmpty(reference)) {
-            UUID uuid = UUID.randomUUID();
-            reference = uuid.toString();
-        }
+        instance.setReference(dto.getReference());
         instanceDao.createOrUpdate(instance);
         dto.setId(instance.getId());
         Map<String, String> configuration = dto.getConfiguration();

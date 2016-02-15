@@ -38,6 +38,7 @@ public class InstanceDaoImpl implements InstanceDao {
             Instance existingInstance = optionalExistingInstance.get();
             existingInstance.setName(instance.getName());
             existingInstance.setHomepageUrl(instance.getHomepageUrl());
+            existingInstance.setReference(instance.getReference());
             existingInstance.setRefreshTimeout(instance.getRefreshTimeout());
             existingInstance.setPluginClass(instance.getPluginClass());
             existingInstance.setProjectEnvironment(entityManager.find(ProjectEnvironment.class, instance.getProjectEnvironment().getId()));
