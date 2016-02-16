@@ -6,16 +6,18 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import nl.unionsoft.common.converter.Converter;
+import nl.unionsoft.common.converter.ConverterWithConfig;
 import nl.unionsoft.common.converter.ListConverter;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
+import nl.unionsoft.sysstate.common.enums.StateBehaviour;
+import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
 import nl.unionsoft.sysstate.sysstate_1_0.Instance;
 import nl.unionsoft.sysstate.sysstate_1_0.ProjectEnvironment;
 
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,7 +36,7 @@ public class ProjectEnvironmentRestController {
 
     @Inject
     @Named("restInstanceConverter")
-    private Converter<Instance, InstanceDto> instanceConverter;
+    private ConverterWithConfig<Instance, InstanceDto, Integer[]> instanceConverter;
 
     @Inject
     @Named("restProjectEnvironmentConverter")
@@ -45,22 +47,41 @@ public class ProjectEnvironmentRestController {
     private InstanceLogic instanceLogic;
 
     @RequestMapping(value = "/projectenvironment", method = RequestMethod.GET)
-    public ProjectEnvironment getProjectEnvironment(@RequestParam("projectName") String projectName, @RequestParam("environmentName") String environmentName,
-            @RequestParam(value = "directState", required = false, defaultValue = "false") boolean directState) {
-        ProjectEnvironment projectEnvironment = projectEnvironmentConverter
-                .convert(projectEnvironmentLogic.getProjectEnvironment(projectName, environmentName));
+    public ProjectEnvironment getProjectEnvironment(
+            @RequestParam("projectName") String projectName, 
+            @RequestParam("environmentName") String environmentName,
+            @RequestParam(value = "state", required = false, defaultValue = "CACHED") StateBehaviour state) {
         
-        if (projectEnvironment == null){
-            throw new IllegalStateException("No projectEnvironment could be found for projectName [" + projectName + "] and environmentName [" + environmentName + "].");
+        ProjectEnvironmentDto projectEnvironmentDto = projectEnvironmentLogic.getProjectEnvironment(projectName, environmentName);
+
+        if (projectEnvironmentDto == null) {
+            return new ProjectEnvironment();
+        }
+
+        List<InstanceDto> instances = instanceLogic.getInstancesForProjectEnvironment(projectEnvironmentDto.getId());
+        switch (state) {
+            case DIRECT:
+                instances.forEach(instance -> {
+                    instance.setState(stateLogic.requestStateForInstance(instance));
+                });
+                break;
+            case CACHED:
+                instances.forEach(instance -> {
+                    instance.setState(stateLogic.getLastStateForInstance(instance.getId()));
+                });
+                break;
+            default:
+                throw new IllegalStateException("Unsupported StateBehaviour [" + state + "]");
+
         }
         
-        List<InstanceDto> instances = instanceLogic.getInstancesForProjectEnvironment(projectEnvironment.getId());
-        if (directState) {
-            instances.forEach(instance -> {
-                instance.setState(stateLogic.requestStateForInstance(instance));
-            });
-        }
-        projectEnvironment.getInstances().addAll(ListConverter.convert(instanceConverter, instances));
+        instances.stream().forEach(instance -> {
+            projectEnvironmentDto.setState(StateType.transfer(projectEnvironmentDto.getState(), instance.getState().getState()));
+        });
+
+        ProjectEnvironment projectEnvironment = projectEnvironmentConverter.convert(projectEnvironmentDto);
+        projectEnvironment.getInstances().addAll(ListConverter.convert(instanceConverter, instances, new Integer[] {}));
         return projectEnvironment;
     }
+
 }

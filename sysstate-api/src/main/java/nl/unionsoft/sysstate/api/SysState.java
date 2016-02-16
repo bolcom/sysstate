@@ -7,9 +7,11 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
+import nl.unionsoft.sysstate.common.enums.StateBehaviour;
 import nl.unionsoft.sysstate.sysstate_1_0.Instance;
 import nl.unionsoft.sysstate.sysstate_1_0.InstanceList;
 import nl.unionsoft.sysstate.sysstate_1_0.Project;
+import nl.unionsoft.sysstate.sysstate_1_0.ProjectEnvironment;
 import nl.unionsoft.sysstate.sysstate_1_0.ProjectList;
 
 public interface SysState {
@@ -45,5 +47,24 @@ public interface SysState {
     @DELETE
     @Path("/api/project/{projectId}")
     void deleteProject(@QueryParam("projectId") Long projectId);
+    
+    
+    @GET
+    @Path("/api/projectenvironment")
+    //@formatter:off
+    ProjectEnvironment getProjectEnvironment(
+            @QueryParam("projectName") String projectName, 
+            @QueryParam("environmentName") String environmentName);
+    //@formatter:on
+    
+    @GET
+    @Path("/api/projectenvironment")
+    //@formatter:off
+    ProjectEnvironment getProjectEnvironment(
+            @QueryParam("projectName") String projectName, 
+            @QueryParam("environmentName") String environmentName,
+            @QueryParam("state") StateBehaviour state);
+    //@formatter:on
+
     
 }
