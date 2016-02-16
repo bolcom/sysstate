@@ -28,6 +28,8 @@ public interface InstanceLogic {
 
     public List<InstanceDto> getInstancesForProjectAndEnvironment(String projectPrefix, String environmentPrefix);
     
+    public List<InstanceDto> getInstancesForProjectEnvironment(Long projectEnvironmentId);
+    
     public List<InstanceDto> getInstancesForEnvironment(Long environmentId);
 
     public ListResponse<InstanceDto> getInstances(ListRequest listRequest);

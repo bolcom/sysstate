@@ -446,4 +446,9 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return ListConverter.convert(instanceConverter, instanceDao.getInstancesForEnvironment(environmentId));
     }
 
+    @Override
+    public List<InstanceDto> getInstancesForProjectEnvironment(Long projectEnvironmentId) {
+        return ListConverter.convert(instanceConverter, instanceDao.getInstancesForProjectEnvironment(projectEnvironmentId));
+    }
+
 }

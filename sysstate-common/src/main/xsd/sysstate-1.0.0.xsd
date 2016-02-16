@@ -101,6 +101,13 @@ targetNamespace="http://sysstate.unionsoft.nl/sysstate-1.0.0" elementFormDefault
 				<xs:element name="state" type="xs:string" minOccurs="0" maxOccurs="1" />
 				<xs:element ref="Project" minOccurs="0" maxOccurs="1" />
 				<xs:element ref="Environment" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="Instance" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="instances" />
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
