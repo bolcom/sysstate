@@ -19,6 +19,8 @@ public interface InstanceDao {
     public List<Instance> getInstances();
 
     public Optional<Instance> getInstance(Long instanceId);
+    
+    public Optional<Instance> getInstanceByReference(String reference);
 
     public void delete(Long instanceId);
 

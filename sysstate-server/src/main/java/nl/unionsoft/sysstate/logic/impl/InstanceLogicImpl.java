@@ -40,6 +40,7 @@ import nl.unionsoft.sysstate.converter.OptionalConverter;
 import nl.unionsoft.sysstate.converter.StateConverter;
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.dao.ListRequestDao;
+import nl.unionsoft.sysstate.dao.ProjectEnvironmentDao;
 import nl.unionsoft.sysstate.dao.PropertyDao;
 import nl.unionsoft.sysstate.domain.Instance;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
@@ -68,7 +69,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
 
-    private static final Logger LOG = LoggerFactory.getLogger(InstanceLogicImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(InstanceLogicImpl.class);
 
     @Inject
     @Named("instanceDao")
@@ -115,6 +116,10 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     private ProjectEnvironmentLogic projectEnvironmentLogic;
 
     @Inject
+    @Named("projectEnvironmentDao")
+    private ProjectEnvironmentDao projectEnvironmentDao;
+
+    @Inject
     @Named("paramContextLogic")
     private ParamContextLogicImpl paramContextLogic;
 
@@ -135,7 +140,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         if (instance == null) {
             throw new IllegalStateException("Instance is required!");
         }
-        LOG.info("Creating or updating queue job for instance with id: {}", instance.getId());
+        logger.info("Creating or updating queue job for instance with id: {}", instance.getId());
         removeTriggerJob(instance.getId());
         addTriggerJob(instance.getId());
     }
@@ -217,30 +222,73 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     }
 
     public Long createOrUpdateInstance(final InstanceDto dto) {
-        final Instance instance = new Instance();
-        instance.setId(dto.getId());
+        Instance instance = getInstanceForDto(dto);
+
         instance.setEnabled(dto.isEnabled());
         instance.setHomepageUrl(dto.getHomepageUrl());
         instance.setName(dto.getName());
         instance.setPluginClass(dto.getPluginClass());
-        final ProjectEnvironment projectEnvironment = new ProjectEnvironment();
-        projectEnvironment.setId(dto.getProjectEnvironment().getId());
-        instance.setProjectEnvironment(projectEnvironment);
-        instance.setRefreshTimeout(dto.getRefreshTimeout());
         instance.setTags(dto.getTags());
         instance.setReference(dto.getReference());
+        instance.setRefreshTimeout(dto.getRefreshTimeout());
+
+        final ProjectEnvironment projectEnvironment = getProjectEnvironmentFromDto(dto.getProjectEnvironment());
+        if (instance.getProjectEnvironment() == null || !instance.getProjectEnvironment().getId().equals(projectEnvironment.getId())) {
+            // ProjectEnvironment changed or null
+            instance.setProjectEnvironment(projectEnvironment);
+        }
+
         instanceDao.createOrUpdate(instance);
-        dto.setId(instance.getId());
+
         Map<String, String> configuration = dto.getConfiguration();
         if (configuration != null) {
             for (Entry<String, String> entry : configuration.entrySet()) {
                 propertyDao.setInstanceProperty(instance, entry.getKey(), entry.getValue());
-
             }
         }
-
         updateTriggerJob(instance);
+
+        dto.setId(instance.getId());
         return instance.getId();
+    }
+
+    private ProjectEnvironment getProjectEnvironmentFromDto(ProjectEnvironmentDto dto) {
+        if (dto.getId() != null) {
+            return projectEnvironmentDao.getProjectEnvironment(dto.getId());
+        }
+        if (dto.getProject().getId() != null && dto.getEnvironment().getId() != null) {
+            return projectEnvironmentDao.getProjectEnvironment(dto.getProject().getId(), dto.getEnvironment().getId());
+        }
+        if (StringUtils.isNotEmpty(dto.getProject().getName()) && StringUtils.isNotEmpty(dto.getEnvironment().getName())) {
+            return projectEnvironmentDao.getProjectEnvironment(dto.getProject().getName(), dto.getEnvironment().getName());
+        }
+        throw new IllegalArgumentException("Unable to determine find existing projectEnvironment for  [" + dto + "]");
+
+    }
+
+    private Instance getInstanceForDto(InstanceDto dto) {
+        Long instanceId = dto.getId();
+        if (instanceId == null) {
+            // Id is not set, try to fetch based on reference.
+            String reference = dto.getReference();
+            if (StringUtils.isNotEmpty(reference)) {
+                logger.info("No ID is set, but reference [{}] is. Trying to resolve instance using reference.", reference);
+                Optional<Instance> optInstance = instanceDao.getInstanceByReference(reference);
+                if (optInstance.isPresent()) {
+                    logger.info("Returning found for reference [{}]", reference);
+                    return optInstance.get();
+                }
+            }
+            logger.info("Returning new instance");
+            return new Instance();
+        } else {
+            logger.info("Instance [{}] has an Id, try to look instance up.", dto);
+            Optional<Instance> optInstance = instanceDao.getInstance(instanceId);
+            if (!optInstance.isPresent()) {
+                throw new IllegalStateException("Instance with id [" + instanceId + "] cannot be found.");
+            }
+            return optInstance.get();
+        }
     }
 
     public void delete(final Long instanceId) {
@@ -420,7 +468,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
             addPropertyMetasFromPropertyFiles(propertyMetas, stackClass);
 
         }
-        
+
         return propertyMetas;
     }
 

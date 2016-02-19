@@ -85,18 +85,19 @@ public class InstanceRestController {
         return instanceConverter.convert(instanceLogic.getInstance(id));
     }
 
-    @RequestMapping(value = "/instance/{instanceId}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/instance", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.NO_CONTENT) 
-    public void update(@PathVariable("instanceId") final Long instanceId, @RequestBody Instance instance) {
+    public void update(@RequestBody Instance instance) {
 
-        if (!instance.getId().equals(instanceId)) {
-            throw new IllegalStateException("instanceId in url and instanceId in instance do not match.");
+        if (instance.getId() == null && StringUtils.isEmpty(instance.getReference())){
+            throw new IllegalArgumentException("Either id or reference should be specified for update.");
         }
+        
         InstanceDto instanceDto = convert(instance);
         instanceLogic.createOrUpdateInstance(instanceDto);
 
     }
-    
+
     @RequestMapping(value = "/instance/{instanceId}", method = RequestMethod.DELETE)
     public void delete(@PathVariable("instanceId") final Long instanceId) {
         instanceLogic.delete(instanceId);
@@ -114,6 +115,7 @@ public class InstanceRestController {
         instanceDto.setId(instance.getId());
         instanceDto.setName(instance.getName());
         instanceDto.setPluginClass(instance.getPlugin());
+        instanceDto.setReference(instance.getReference());
         instanceDto.setProjectEnvironment(getProjectEnvironment(instance));
         instanceDto.setConfiguration(instance.getProperties().stream().collect(Collectors.toMap(Property::getKey, Property::getValue)));
         instanceDto.setTags(StringUtils.join(instance.getTags(), " "));

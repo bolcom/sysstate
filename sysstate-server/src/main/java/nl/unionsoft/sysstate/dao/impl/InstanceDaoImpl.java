@@ -7,6 +7,8 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.domain.Instance;
@@ -25,27 +27,11 @@ public class InstanceDaoImpl implements InstanceDao {
     private EntityManager entityManager;
 
     public void createOrUpdate(final Instance instance) {
-
         if (instance.getId() == null) {
-            instance.setProjectEnvironment(entityManager.find(ProjectEnvironment.class, instance.getProjectEnvironment().getId()));
             instance.setCreationDate(new Date());
             entityManager.persist(instance);
         } else {
-            final Optional<Instance> optionalExistingInstance = getInstance(instance.getId());
-            if (!optionalExistingInstance.isPresent()) {
-                throw new IllegalStateException("The instance with id [{}] could not be found!");
-            }
-            Instance existingInstance = optionalExistingInstance.get();
-            existingInstance.setName(instance.getName());
-            existingInstance.setHomepageUrl(instance.getHomepageUrl());
-            existingInstance.setReference(instance.getReference());
-            existingInstance.setRefreshTimeout(instance.getRefreshTimeout());
-            existingInstance.setPluginClass(instance.getPluginClass());
-            existingInstance.setProjectEnvironment(entityManager.find(ProjectEnvironment.class, instance.getProjectEnvironment().getId()));
-            existingInstance.setEnabled(instance.isEnabled());
-            existingInstance.setTags(instance.getTags());
-            existingInstance.setCreationDate(instance.getCreationDate());
-            entityManager.merge(existingInstance);
+            entityManager.merge(instance);
         }
     }
 
@@ -109,6 +95,25 @@ public class InstanceDaoImpl implements InstanceDao {
                         .setHint("org.hibernate.cacheable", true)
                         .getResultList();
         // @formatter:on;
+    }
+
+    @Override
+    public Optional<Instance> getInstanceByReference(String reference) {
+        try {
+        // @formatter:off
+         return Optional.of(entityManager.createQuery( //
+                        "FROM Instance ice " + 
+                        "WHERE ice.reference = :reference", Instance.class)
+                        .setParameter("reference", reference)
+                        .setHint("org.hibernate.cacheable", true)
+                        .getSingleResult());
+        } catch (NoResultException e){
+            return Optional.empty();
+        } catch (NonUniqueResultException e){
+            throw new IllegalStateException("More then one result found for reference [" + reference + "]", e);
+        }
+        // @formatter:on;
+
     }
 
 }

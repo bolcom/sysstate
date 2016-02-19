@@ -24,9 +24,20 @@ public interface SysState {
     @Path("/api/instance")
     Instance createInstance(Instance instance);
 
+    /**
+     * Update the given instance based on id or reference. If the id specified, the reference will be updated. If only the reference is specified, the instance
+     * with the same reference will be looked up.
+     * 
+     * @param instance
+     *            the instance to be updated.
+     */
     @PUT
-    @Path("/api/instance/{instanceId}")
-    void updateInstance(@QueryParam("instanceId") Long instanceId, Instance instance);
+    @Path("/api/instance/")
+    void updateInstance(Instance instance);
+
+    @PUT
+    @Path("/api/instance/")
+    void update(Instance instance);
 
     @DELETE
     @Path("/api/instance/{instanceId}")
@@ -47,8 +58,7 @@ public interface SysState {
     @DELETE
     @Path("/api/project/{projectId}")
     void deleteProject(@QueryParam("projectId") Long projectId);
-    
-    
+
     @GET
     @Path("/api/projectenvironment")
     //@formatter:off
@@ -56,7 +66,7 @@ public interface SysState {
             @QueryParam("projectName") String projectName, 
             @QueryParam("environmentName") String environmentName);
     //@formatter:on
-    
+
     @GET
     @Path("/api/projectenvironment")
     //@formatter:off
@@ -66,5 +76,4 @@ public interface SysState {
             @QueryParam("state") StateBehaviour state);
     //@formatter:on
 
-    
 }
