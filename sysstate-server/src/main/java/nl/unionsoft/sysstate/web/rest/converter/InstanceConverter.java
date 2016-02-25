@@ -1,5 +1,6 @@
 package nl.unionsoft.sysstate.web.rest.converter;
 
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -16,6 +17,7 @@ import nl.unionsoft.sysstate.sysstate_1_0.Property;
 import nl.unionsoft.sysstate.sysstate_1_0.State;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Service("restInstanceConverter")
@@ -47,6 +49,7 @@ public class InstanceConverter implements Converter<Instance, InstanceDto>, Conv
         instance.setHomepageUrl(dto.getHomepageUrl());
         instance.setEnabled(dto.isEnabled());
         instance.setReference(dto.getReference());
+        instance.getTags().addAll(Arrays.asList(StringUtils.split(dto.getTags(), " ")));
         instance.setPlugin(dto.getPluginClass());
         instance.setRefreshTimeout(dto.getRefreshTimeout());
         instance.setState(stateConverter.convert(dto.getState()));

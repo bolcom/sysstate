@@ -35,10 +35,6 @@ public interface SysState {
     @Path("/api/instance/")
     void updateInstance(Instance instance);
 
-    @PUT
-    @Path("/api/instance/")
-    void update(Instance instance);
-
     @DELETE
     @Path("/api/instance/{instanceId}")
     void deleteInstance(@QueryParam("instanceId") Long instanceId);

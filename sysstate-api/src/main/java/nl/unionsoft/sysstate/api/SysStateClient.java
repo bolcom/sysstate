@@ -1,8 +1,5 @@
 package nl.unionsoft.sysstate.api;
 
-import nl.unionsoft.sysstate.common.Constants;
-import nl.unionsoft.sysstate.sysstate_1_0.Instance;
-
 import org.apache.commons.lang.StringUtils;
 
 import com.bol.feign.ClientProvider;
@@ -12,6 +9,11 @@ import com.bol.feign.provider.StaticUrlProvider;
 import com.bol.feign.provider.UrlProvider;
 
 import feign.Feign.Builder;
+import nl.unionsoft.sysstate.common.Constants;
+import nl.unionsoft.sysstate.sysstate_1_0.Environment;
+import nl.unionsoft.sysstate.sysstate_1_0.Instance;
+import nl.unionsoft.sysstate.sysstate_1_0.Project;
+import nl.unionsoft.sysstate.sysstate_1_0.ProjectEnvironment;
 
 public class SysStateClient {
     public static SysState getSysState(String endpoint) {
@@ -37,10 +39,4 @@ public class SysStateClient {
         }).create(SysState.class);
     }
 
-    public static void main(String[] args) {
-        SysState sysState = getSysState("http://localhost:8680", "some-token");
-        Instance instance = new Instance();
-        instance.setReference("hello");
-        sysState.update(instance);
-    }
 }
