@@ -20,8 +20,8 @@
 
 	function handleData(data){
 		var validIds = [];
-		if (data.ecoSystem.environments.length > 1) {
-			$.each(data.ecoSystem.environments, function() {
+		if (data.environments.length > 1) {
+			$.each(data.environments, function() {
 				var environmentId = "E" + this.id;
 				nodes.update([ {
 					id : environmentId,
@@ -32,7 +32,7 @@
 				validIds.push(environmentId)
 			});				
 		}
-		$.each(data.ecoSystem.instances, function() {
+		$.each(data.instances, function() {
 
 			var instanceId = "I" + this.id;
 			nodes.update([ {

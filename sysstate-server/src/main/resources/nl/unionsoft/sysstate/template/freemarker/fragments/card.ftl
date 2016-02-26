@@ -27,7 +27,7 @@
 	function handleData(data){
 		var cardBox =$('#cardbox') 
 		var validIds = [];
-		$.each(data.ecoSystem.projectEnvironments, function() {
+		$.each(data.projectEnvironments, function() {
 			var projectEnvironmentId ='pe' + this.id;
 			console.log("Checking if cardBox already has an element with id [#" + projectEnvironmentId + "]")
 			var card = $('#' + projectEnvironmentId);   
@@ -35,7 +35,7 @@
 				console.log("No card defined, adding new card...")			
 				card = addCard(cardBox, projectEnvironmentId, this);
 			}
-			setCardContent(card, this, data.ecoSystem.instances);
+			setCardContent(card, this, data.instances);
 			validIds.push(projectEnvironmentId)
 		});
 		var actualIds = [];

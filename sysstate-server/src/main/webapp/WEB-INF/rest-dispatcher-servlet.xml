@@ -13,15 +13,22 @@
 
 	<context:component-scan base-package="nl.unionsoft.sysstate.web.rest" resource-pattern="**/*RestController.class" />
 
-	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
-		<property name="defaultContentType" value="application/json" />
-		<property name="ignoreAcceptHeader" value="true" />
-		<property name="favorPathExtension" value="true" />
+ 	<bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+       	<property name="defaultContentType" value="application/json" />
+		<property name="ignoreAcceptHeader" value="false" />
+		<property name="favorPathExtension" value="false" />
+   		<property name="favorParameter" value="true" />
+    	<property name="parameterName" value="mediaType" />		
 		<property name="mediaTypes">
 			<map>
 				<entry key="xml" value="application/xml" />
+				<entry key="json" value="application/json" />
 			</map>
 		</property>
+  	</bean>
+
+	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+		<property name="contentNegotiationManager" ref="contentNegotiationManager" />
 		<property name="viewResolvers">
 			<list>
 				<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
@@ -32,7 +39,9 @@
 				<bean class="org.springframework.web.servlet.view.xml.MarshallingView">
 					<property name="marshaller" ref="jaxbMarshaller" />
 				</bean>
-				<bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView" />
+				<bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
+					<property name="extractValueFromSingleKeyModel" value="true"/>
+				</bean>
 			</list>
 		</property>
 	</bean>

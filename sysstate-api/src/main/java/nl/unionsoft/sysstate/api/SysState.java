@@ -20,6 +20,10 @@ public interface SysState {
     @Path("/api/instance")
     InstanceList getInstances();
 
+    @GET
+    @Path("/api/instance/{instanceId}")
+    Instance getInstance(@QueryParam("instanceId") Long instanceId);
+    
     @POST
     @Path("/api/instance")
     Instance createInstance(Instance instance);
@@ -43,6 +47,11 @@ public interface SysState {
     @Path("/api/project")
     ProjectList getProjects();
 
+    @GET
+    @Path("/api/project/{projectId}")
+    Project getProject(@QueryParam("projectId") Long projectId);
+
+    
     @POST
     @Path("/api/project")
     Project createProject(Project project);

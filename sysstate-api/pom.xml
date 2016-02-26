@@ -37,6 +37,11 @@
 			    <groupId>com.bol.feign</groupId>
 			    <artifactId>feign-client-provider</artifactId>
 			</dependency>
+			<dependency>
+			  <groupId>com.fasterxml.jackson.module</groupId>
+			  <artifactId>jackson-module-jaxb-annotations</artifactId>
+			  <version>2.4.0</version>
+			</dependency>
 			<!-- END: Feign -->
         
 	</dependencies>
