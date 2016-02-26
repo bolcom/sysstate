@@ -23,7 +23,11 @@ public class ProjectConverter implements Converter<Project, ProjectDto> {
         project.setId(dto.getId());
         project.setName(dto.getName());
         project.setOrder(dto.getOrder());
-        project.getTags().addAll(Arrays.asList(StringUtils.split(dto.getTags(), " ")));
+        
+        if (StringUtils.isNotEmpty(dto.getTags())){
+            project.getTags().addAll(Arrays.asList(StringUtils.split(dto.getTags(), " ")));    
+        }
+        
         return project;
     }
 

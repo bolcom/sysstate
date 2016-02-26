@@ -49,7 +49,9 @@ public class InstanceConverter implements Converter<Instance, InstanceDto>, Conv
         instance.setHomepageUrl(dto.getHomepageUrl());
         instance.setEnabled(dto.isEnabled());
         instance.setReference(dto.getReference());
-        instance.getTags().addAll(Arrays.asList(StringUtils.split(dto.getTags(), " ")));
+        if (StringUtils.isNotEmpty(dto.getTags())){
+            instance.getTags().addAll(Arrays.asList(StringUtils.split(dto.getTags(), " ")));    
+        }
         instance.setPlugin(dto.getPluginClass());
         instance.setRefreshTimeout(dto.getRefreshTimeout());
         instance.setState(stateConverter.convert(dto.getState()));
