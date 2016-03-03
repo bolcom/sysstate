@@ -12,21 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import nl.unionsoft.sysstate.Constants;
-import nl.unionsoft.sysstate.common.dto.FilterDto;
-import nl.unionsoft.sysstate.common.dto.TemplateDto;
-import nl.unionsoft.sysstate.common.dto.ViewDto;
-import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
-import nl.unionsoft.sysstate.common.logic.ProjectLogic;
-import nl.unionsoft.sysstate.domain.View;
-import nl.unionsoft.sysstate.logic.EcoSystemLogic;
-import nl.unionsoft.sysstate.logic.FilterLogic;
-import nl.unionsoft.sysstate.logic.PluginLogic;
-import nl.unionsoft.sysstate.logic.TemplateLogic;
-import nl.unionsoft.sysstate.logic.ViewLogic;
-import nl.unionsoft.sysstate.template.WriterException;
-
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -34,6 +21,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+
+import nl.unionsoft.sysstate.Constants;
+import nl.unionsoft.sysstate.common.dto.FilterDto;
+import nl.unionsoft.sysstate.common.dto.TemplateDto;
+import nl.unionsoft.sysstate.common.dto.ViewDto;
+import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
+import nl.unionsoft.sysstate.common.logic.ProjectLogic;
+import nl.unionsoft.sysstate.logic.EcoSystemLogic;
+import nl.unionsoft.sysstate.logic.FilterLogic;
+import nl.unionsoft.sysstate.logic.PluginLogic;
+import nl.unionsoft.sysstate.logic.TemplateLogic;
+import nl.unionsoft.sysstate.logic.ViewLogic;
+import nl.unionsoft.sysstate.template.WriterException;
 
 @Controller()
 public class ViewController {
@@ -93,7 +93,7 @@ public class ViewController {
     }
 
     @RequestMapping(value = "/view/{viewId}/index.html", method = RequestMethod.GET)
-    public void renderIndexView(@PathVariable("viewId") Long viewId, HttpServletRequest request, HttpServletResponse response) {
+    public void renderIndexView(@PathVariable("viewId") String viewId, HttpServletRequest request, HttpServletResponse response) {
         final Optional<ViewDto> optView = viewLogic.getView(viewId);
         if (optView.isPresent()){
             writeTemplateForView(response, request, optView.get());
@@ -101,6 +101,9 @@ public class ViewController {
             writeTemplateForView(response, request, viewLogic.getBasicView());    
         }
     }
+    
+  
+
 
     private void writeTemplateForView(HttpServletResponse response, HttpServletRequest request, final ViewDto view) {
         TemplateDto template = view.getTemplate();

@@ -18,5 +18,7 @@ public interface ViewLogic {
 
     public Optional<ViewDto> getView(Long viewId);
     
+    public Optional<ViewDto> getView(String viewId);
+    
     public ViewDto getBasicView();
 }

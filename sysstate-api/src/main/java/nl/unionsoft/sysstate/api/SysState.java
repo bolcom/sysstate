@@ -65,10 +65,6 @@ public interface SysState {
     @Path("/api/project/{projectId}")
     void deleteProject(@QueryParam("projectId") Long projectId);
 
-
-
-    
-    
     @GET
     @Path("/api/environment")
     EnvironmentList getEnvironments();

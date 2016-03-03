@@ -21,6 +21,8 @@ import nl.unionsoft.sysstate.domain.View;
 import nl.unionsoft.sysstate.logic.TemplateLogic;
 import nl.unionsoft.sysstate.logic.ViewLogic;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,11 +68,11 @@ public class ViewLogicImpl implements ViewLogic {
         view.setCommonTags(viewDto.getCommonTags());
         view.setName(viewDto.getName());
         Filter filter = null;
-        if (viewDto.getFilter() != null && viewDto.getFilter().getId() != null){
+        if (viewDto.getFilter() != null && viewDto.getFilter().getId() != null) {
             filter = filterDao.getFilter(viewDto.getFilter().getId());
         }
         view.setFilter(filter);
-        
+
         Template template = null;
         if (viewDto.getTemplate() != null) {
             Optional<Template> optTemplate = templateDao.getTemplate(viewDto.getTemplate().getName());
@@ -96,6 +98,23 @@ public class ViewLogicImpl implements ViewLogic {
         ViewDto view = new ViewDto();
         view.setTemplate(templateLogic.getBasicTemplate());
         return view;
+    }
+
+    @Override
+    public Optional<ViewDto> getView(String viewId) {
+        if (NumberUtils.isDigits(viewId)) {
+            return getView(Long.valueOf(viewId));
+        }
+        //@formatter:off
+            return getViews()
+                    .stream()
+                    .filter(v -> StringUtils.equals(normalizeViewId(v.getName()), normalizeViewId(viewId)))
+                    .findFirst();
+        //@formatter:on        
+    }
+
+    private String normalizeViewId(String input) {
+        return StringUtils.lowerCase(StringUtils.replaceEach(input, new String[] { " ", "_" }, new String[] { "-","-"}));
     }
 
 }

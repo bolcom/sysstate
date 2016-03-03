@@ -40,26 +40,12 @@ public class ViewRestController {
     private Converter<EcoSystem, ViewResultDto> ecoSystemConverter;
 
     @RequestMapping(value = "/view/{viewId}/ecosystem", method = RequestMethod.GET)
-    public EcoSystem ecosystemForView(@PathVariable("viewId") Long viewId) {
-        Optional<ViewDto> optView = getView(viewId);
+    public EcoSystem ecosystemForView(@PathVariable("viewId") String viewId) {
+        Optional<ViewDto> optView = viewLogic.getView(viewId);
         if (optView.isPresent()) {
             return ecoSystemConverter.convert(ecoSystemLogic.getEcoSystem(optView.get()));
         } else {
             return ecoSystemConverter.convert(ecoSystemLogic.getEcoSystem(viewLogic.getBasicView()));
-        }
-    }
-
-    private Optional<ViewDto> getView(Long viewId) {
-        if (viewId == 0L) {
-            Properties viewConfiguration = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);
-            String defaultViewProperty = viewConfiguration.getProperty("defaultView");
-            if (StringUtils.isNotEmpty(defaultViewProperty)) {
-                return viewLogic.getView(Long.valueOf(defaultViewProperty));
-            } else {
-                return Optional.empty();
-            }
-        } else {
-            return viewLogic.getView(viewId);
         }
     }
 
