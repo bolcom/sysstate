@@ -14,6 +14,7 @@ import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import feign.jaxrs.JAXRSModule;
 import nl.unionsoft.sysstate.common.Constants;
+import nl.unionsoft.sysstate.sysstate_1_0.Instance;
 
 /**
  * Example usage:
@@ -53,7 +54,8 @@ public class SysStateClient {
                 builder.contract(new JAXRSModule.JAXRSContract())
                 .decoder(new JacksonDecoder(mapper))
                 .encoder(new JacksonEncoder(mapper))
-                .requestInterceptor(new HeaderRequestInterceptor("Accept", "application/json"));
+                .requestInterceptor(new HeaderRequestInterceptor("Accept", "application/json"))
+                .requestInterceptor(new HeaderRequestInterceptor("Content-Type", "application/json"));
                 //@formatter:on
                 if (StringUtils.isNotEmpty(token)) {
                     builder.requestInterceptor(new HeaderRequestInterceptor(Constants.SECURITY_TOKEN_HEADER, token));
@@ -62,5 +64,6 @@ public class SysStateClient {
             }
         }).create(SysState.class);
     }
+
 
 }

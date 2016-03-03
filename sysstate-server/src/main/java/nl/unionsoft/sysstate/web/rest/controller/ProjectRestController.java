@@ -56,6 +56,11 @@ public class ProjectRestController {
     public Project getProject(@PathVariable("projectId") final Long projectId) {
         return projectConverter.convert(projectLogic.getProject(projectId));
     }
+    
+    @RequestMapping(value = "/project/{projectId}", method = RequestMethod.DELETE)
+    public void deleteProject(@PathVariable("projectId") final Long projectId) {
+        projectLogic.delete(projectId);
+    }
 
     @RequestMapping(value = "/project", method = RequestMethod.POST)
     public Project create(@RequestBody Project project) {
