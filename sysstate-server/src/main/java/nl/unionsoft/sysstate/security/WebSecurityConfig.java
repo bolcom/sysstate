@@ -70,6 +70,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/projectEnvironment/project/*/environment/*/details*",
                 "/filter/**",                
                 "/dashboard/**",
+                "/project/index*",                
+                "/environment/index*",                                
                 "/view/index*",
                 "/view/**/index*",                                  
                 "/logout*", 
@@ -120,6 +122,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .authorizeRequests()
             .antMatchers(toApiPaths("/instance/**")).hasAnyRole(EDITOR.name(), ADMIN.name())
             .antMatchers(toApiPaths("/project/**")).hasAnyRole(EDITOR.name(), ADMIN.name())
+            .antMatchers(toApiPaths("/environment/**")).hasAnyRole(EDITOR.name(), ADMIN.name())
             .antMatchers(toApiPaths("/scheduler")).permitAll()
             .antMatchers(toApiPaths("/view/**")).permitAll()
             .and()

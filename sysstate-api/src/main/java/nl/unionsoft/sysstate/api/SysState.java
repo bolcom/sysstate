@@ -8,6 +8,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
 import nl.unionsoft.sysstate.common.enums.StateBehaviour;
+import nl.unionsoft.sysstate.sysstate_1_0.Environment;
+import nl.unionsoft.sysstate.sysstate_1_0.EnvironmentList;
 import nl.unionsoft.sysstate.sysstate_1_0.Instance;
 import nl.unionsoft.sysstate.sysstate_1_0.InstanceList;
 import nl.unionsoft.sysstate.sysstate_1_0.Project;
@@ -50,7 +52,6 @@ public interface SysState {
     @GET
     @Path("/api/project/{projectId}")
     Project getProject(@QueryParam("projectId") Long projectId);
-
     
     @POST
     @Path("/api/project")
@@ -64,6 +65,31 @@ public interface SysState {
     @Path("/api/project/{projectId}")
     void deleteProject(@QueryParam("projectId") Long projectId);
 
+
+
+    
+    
+    @GET
+    @Path("/api/environment")
+    EnvironmentList getEnvironments();
+
+    @GET
+    @Path("/api/environment/{environmentId}")
+    Environment getEnvironment(@QueryParam("environmentId") Long environmentId);
+    
+    @POST
+    @Path("/api/environment")
+    Environment createEnvironment(Environment environment);
+
+    @PUT
+    @Path("/api/environment/{environmentId}")
+    void updateEnvironment(@QueryParam("environmentId") Long environmentId, Environment environment);
+
+    @DELETE
+    @Path("/api/environment/{environmentId}")
+    void deleteEnvironment(@QueryParam("environmentId") Long environmentId);
+    
+    
     @GET
     @Path("/api/projectenvironment")
     //@formatter:off

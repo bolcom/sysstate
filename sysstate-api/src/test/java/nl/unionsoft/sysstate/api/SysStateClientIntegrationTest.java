@@ -11,10 +11,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import jdk.nashorn.internal.ir.annotations.Ignore;
+import nl.unionsoft.sysstate.sysstate_1_0.Environment;
+import nl.unionsoft.sysstate.sysstate_1_0.EnvironmentList;
 import nl.unionsoft.sysstate.sysstate_1_0.Instance;
 import nl.unionsoft.sysstate.sysstate_1_0.InstanceList;
 import nl.unionsoft.sysstate.sysstate_1_0.Project;
 import nl.unionsoft.sysstate.sysstate_1_0.ProjectList;
+
 @Ignore
 public class SysStateClientIntegrationTest {
 
@@ -33,16 +36,16 @@ public class SysStateClientIntegrationTest {
         assertProjectExists("BING");
         assertProjectExists("GOOG");
 
-        Project project = createProject(randomProjectName,"Hello");
+        Project project = createProject(randomProjectName, "Hello");
         Assert.assertNotNull(project.getId());
         Assert.assertEquals(project.getName(), randomProjectName);
-        Assert.assertArrayEquals(project.getTags().toArray(), new String[] {"Hello"});
+        Assert.assertArrayEquals(project.getTags().toArray(), new String[] { "Hello" });
         assertProjectExists(randomProjectName);
 
         Project fetchedProject = sysState.getProject(project.getId());
         Assert.assertEquals(fetchedProject.getId(), project.getId());
         Assert.assertEquals(fetchedProject.getName(), project.getName());
-        Assert.assertArrayEquals(fetchedProject.getTags().toArray(), new String[] {"Hello"});
+        Assert.assertArrayEquals(fetchedProject.getTags().toArray(), new String[] { "Hello" });
 
         String secondRandomProjectName = StringUtils.upperCase(StringUtils.substring(UUID.randomUUID().toString(), 0, 6));
         fetchedProject.setName(secondRandomProjectName);
@@ -63,7 +66,7 @@ public class SysStateClientIntegrationTest {
         InstanceList instanceList = sysState.getInstances();
         Assert.assertNotNull(instanceList);
         Assert.assertNotNull(instanceList.getInstances());
-        
+
         Instance instance = createInstance(randomInstanceName, randomReference);
         Instance createdInstance = sysState.createInstance(instance);
 
@@ -86,7 +89,36 @@ public class SysStateClientIntegrationTest {
         Assert.assertArrayEquals(fetchedInstance.getTags().toArray(), new String[] { "test" });
 
         sysState.deleteInstance(fetchedInstance.getId());
-        
+
+    }
+
+    @Test
+    public void testCreateUpdateDeleteEnvironments() {
+        String randomEnvironmentName = StringUtils.upperCase(StringUtils.substring(UUID.randomUUID().toString(), 0, 6));
+        assertEnvironmentExists("MOCK");
+        assertEnvironmentExists("PROD");
+
+        Environment environment = createEnvironment(randomEnvironmentName, "Hello");
+        Assert.assertNotNull(environment.getId());
+        Assert.assertEquals(environment.getName(), randomEnvironmentName);
+        Assert.assertArrayEquals(environment.getTags().toArray(), new String[] { "Hello" });
+        assertEnvironmentExists(randomEnvironmentName);
+
+        Environment fetchedEnvironment = sysState.getEnvironment(environment.getId());
+        Assert.assertEquals(fetchedEnvironment.getId(), environment.getId());
+        Assert.assertEquals(fetchedEnvironment.getName(), environment.getName());
+        Assert.assertArrayEquals(fetchedEnvironment.getTags().toArray(), new String[] { "Hello" });
+
+        String secondRandomEnvironmentName = StringUtils.upperCase(StringUtils.substring(UUID.randomUUID().toString(), 0, 6));
+        fetchedEnvironment.setName(secondRandomEnvironmentName);
+        sysState.updateEnvironment(fetchedEnvironment.getId(), fetchedEnvironment);
+        assertEnvironmentDoesNotExists(randomEnvironmentName);
+        assertEnvironmentExists(secondRandomEnvironmentName);
+
+        sysState.deleteEnvironment(environment.getId());
+
+        assertEnvironmentDoesNotExists(randomEnvironmentName);
+        assertEnvironmentDoesNotExists(secondRandomEnvironmentName);
     }
 
     public Instance createInstance(String instanceName, String reference) {
@@ -138,4 +170,42 @@ public class SysStateClientIntegrationTest {
         Optional<Project> optProject = projects.stream().filter(p -> p.getName().equals(name)).findFirst();
         Assert.assertTrue(optProject.isPresent());
     }
+
+    public void assertEnvironmentDoesNotExists(String name) {
+        EnvironmentList environmentList = sysState.getEnvironments();
+        Assert.assertNotNull(environmentList);
+        List<Environment> environments = environmentList.getEnvironments();
+        Assert.assertNotNull(environments);
+        assertEnvironmentDoesNotExists(environments, name);
+    }
+
+    private void assertEnvironmentDoesNotExists(List<Environment> environments, String name) {
+        Optional<Environment> optEnvironment = environments.stream().filter(p -> p.getName().equals(name)).findFirst();
+        Assert.assertFalse(optEnvironment.isPresent());
+
+    }
+
+    public void assertEnvironmentExists(String name) {
+        EnvironmentList environmentList = sysState.getEnvironments();
+        Assert.assertNotNull(environmentList);
+        List<Environment> environments = environmentList.getEnvironments();
+        Assert.assertNotNull(environments);
+        assertEnvironmentExists(environments, name);
+    }
+
+    public Environment createEnvironment(String name, String... tags) {
+        Environment environment = new Environment();
+        environment.setName(name);
+        if (tags != null) {
+            environment.getTags().addAll(Arrays.asList(tags));
+        }
+
+        return sysState.createEnvironment(environment);
+    }
+
+    private void assertEnvironmentExists(List<Environment> environments, String name) {
+        Optional<Environment> optEnvironment = environments.stream().filter(p -> p.getName().equals(name)).findFirst();
+        Assert.assertTrue(optEnvironment.isPresent());
+    }
+
 }

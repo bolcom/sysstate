@@ -10,7 +10,7 @@ public interface EnvironmentLogic {
 
     public EnvironmentDto getEnvironment(Long environmentId);
 
-    public void createOrUpdate(EnvironmentDto environment);
+    public Long createOrUpdate(EnvironmentDto environment);
 
     public void delete(Long environmentId);
 

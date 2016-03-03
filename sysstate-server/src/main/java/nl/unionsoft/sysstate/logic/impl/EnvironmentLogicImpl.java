@@ -74,7 +74,7 @@ public class EnvironmentLogicImpl implements EnvironmentLogic {
         return environmentConverter.convert(environmentDao.getEnvironment(environmentId));
     }
 
-    public void createOrUpdate(final EnvironmentDto environmentDto) {
+    public Long createOrUpdate(final EnvironmentDto environmentDto) {
 
         Environment environment = null;
         Long givenId = environmentDto.getId();
@@ -99,6 +99,7 @@ public class EnvironmentLogicImpl implements EnvironmentLogic {
                 projectEnvironmentDao.createOrUpdate(projectEnvironment);
             }
         }
+        return environment.getId();
 
     }
 
