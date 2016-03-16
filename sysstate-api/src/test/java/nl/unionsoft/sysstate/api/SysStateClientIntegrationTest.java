@@ -8,9 +8,9 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import nl.unionsoft.sysstate.sysstate_1_0.Environment;
 import nl.unionsoft.sysstate.sysstate_1_0.EnvironmentList;
 import nl.unionsoft.sysstate.sysstate_1_0.Instance;
