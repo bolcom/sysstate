@@ -3,7 +3,6 @@ package nl.unionsoft.sysstate.web.mvc.controller;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -11,20 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import nl.unionsoft.sysstate.Constants;
-import nl.unionsoft.sysstate.common.dto.TemplateDto;
-import nl.unionsoft.sysstate.common.dto.ViewDto;
-import nl.unionsoft.sysstate.common.dto.ViewResultDto;
-import nl.unionsoft.sysstate.dto.MessageDto;
-import nl.unionsoft.sysstate.logic.EcoSystemLogic;
-import nl.unionsoft.sysstate.logic.MessageLogic;
-import nl.unionsoft.sysstate.logic.PluginLogic;
-import nl.unionsoft.sysstate.logic.TemplateLogic;
-import nl.unionsoft.sysstate.logic.ViewLogic;
-import nl.unionsoft.sysstate.template.WriterException;
-import nl.unionsoft.sysstate.web.lov.TemplateWriterLovResolver;
-
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -32,6 +17,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+
+import nl.unionsoft.sysstate.common.dto.TemplateDto;
+import nl.unionsoft.sysstate.common.dto.ViewDto;
+import nl.unionsoft.sysstate.common.dto.ViewResultDto;
+import nl.unionsoft.sysstate.dto.MessageDto;
+import nl.unionsoft.sysstate.logic.MessageLogic;
+import nl.unionsoft.sysstate.logic.PluginLogic;
+import nl.unionsoft.sysstate.logic.TemplateLogic;
+import nl.unionsoft.sysstate.logic.ViewLogic;
+import nl.unionsoft.sysstate.template.WriterException;
+import nl.unionsoft.sysstate.web.lov.TemplateWriterLovResolver;
 
 @Controller()
 public class TemplateController {
@@ -51,10 +47,6 @@ public class TemplateController {
     @Inject
     @Named("viewLogic")
     private ViewLogic viewLogic;
-
-    @Inject
-    @Named("ecoSystemLogic")
-    private EcoSystemLogic ecoSystemLogic;
     
     @Inject
     private TemplateWriterLovResolver templateWriterLovResolver;
@@ -75,7 +67,7 @@ public class TemplateController {
             TemplateDto template = templateLogic.getTemplate(name);
             response.addHeader("Content-Type", template.getContentType());
             Map<String, Object> context = new HashMap<String, Object>();
-            ViewResultDto viewResult =  ecoSystemLogic.getEcoSystem(view);
+            ViewResultDto viewResult =  viewLogic.getViewResults(view);
             context.put("viewResult",viewResult);
             context.put("view", view);
             context.put("contextPath", request.getContextPath());

@@ -301,9 +301,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     }
 
     public ListResponse<InstanceDto> getInstances(final ListRequest listRequest) {
-        final ListResponse<InstanceDto> listResponse = listRequestDao.getResults(Instance.class, listRequest, instanceConverter);
-        listResponse.getResults().parallelStream().forEach(instance -> instance.setState(stateLogic.getLastStateForInstance(instance.getId())));
-        return listResponse;
+        return listRequestDao.getResults(Instance.class, listRequest, instanceConverter);
     }
 
     public ListResponse<InstanceDto> getInstances(final FilterDto filter) {

@@ -45,7 +45,7 @@ public class ProjectEnvironmentRestController {
     @Inject
     @Named("instanceLogic")
     private InstanceLogic instanceLogic;
-
+    
     @RequestMapping(value = "/projectenvironment", method = RequestMethod.GET)
     public ProjectEnvironment getProjectEnvironment(
             @RequestParam("projectName") String projectName, 
@@ -59,21 +59,7 @@ public class ProjectEnvironmentRestController {
         }
 
         List<InstanceDto> instances = instanceLogic.getInstancesForProjectEnvironment(projectEnvironmentDto.getId());
-        switch (state) {
-            case DIRECT:
-                instances.forEach(instance -> {
-                    instance.setState(stateLogic.requestStateForInstance(instance));
-                });
-                break;
-            case CACHED:
-                instances.forEach(instance -> {
-                    instance.setState(stateLogic.getLastStateForInstance(instance.getId()));
-                });
-                break;
-            default:
-                throw new IllegalStateException("Unsupported StateBehaviour [" + state + "]");
-
-        }
+        stateLogic.addStates(instances, state);
         
         instances.stream().forEach(instance -> {
             projectEnvironmentDto.setState(StateType.transfer(projectEnvironmentDto.getState(), instance.getState().getState()));

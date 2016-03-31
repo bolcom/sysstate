@@ -1,25 +1,21 @@
 package nl.unionsoft.sysstate.web.rest.controller;
 
 import java.util.Optional;
-import java.util.Properties;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import nl.unionsoft.common.converter.Converter;
-import nl.unionsoft.sysstate.Constants;
-import nl.unionsoft.sysstate.common.dto.ViewDto;
-import nl.unionsoft.sysstate.common.dto.ViewResultDto;
-import nl.unionsoft.sysstate.logic.EcoSystemLogic;
-import nl.unionsoft.sysstate.logic.PluginLogic;
-import nl.unionsoft.sysstate.logic.ViewLogic;
-import nl.unionsoft.sysstate.sysstate_1_0.EcoSystem;
-
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import nl.unionsoft.common.converter.Converter;
+import nl.unionsoft.sysstate.common.dto.ViewDto;
+import nl.unionsoft.sysstate.common.dto.ViewResultDto;
+import nl.unionsoft.sysstate.logic.PluginLogic;
+import nl.unionsoft.sysstate.logic.ViewLogic;
+import nl.unionsoft.sysstate.sysstate_1_0.EcoSystem;
 
 @Controller()
 public class ViewRestController {
@@ -32,10 +28,6 @@ public class ViewRestController {
     private ViewLogic viewLogic;
 
     @Inject
-    @Named("ecoSystemLogic")
-    private EcoSystemLogic ecoSystemLogic;
-
-    @Inject
     @Named("restEcoSystemConverter")
     private Converter<EcoSystem, ViewResultDto> ecoSystemConverter;
 
@@ -43,9 +35,9 @@ public class ViewRestController {
     public EcoSystem ecosystemForView(@PathVariable("viewId") String viewId) {
         Optional<ViewDto> optView = viewLogic.getView(viewId);
         if (optView.isPresent()) {
-            return ecoSystemConverter.convert(ecoSystemLogic.getEcoSystem(optView.get()));
+            return ecoSystemConverter.convert( viewLogic.getViewResults(optView.get()));
         } else {
-            return ecoSystemConverter.convert(ecoSystemLogic.getEcoSystem(viewLogic.getBasicView()));
+            return ecoSystemConverter.convert( viewLogic.getViewResults(viewLogic.getBasicView()));
         }
     }
 

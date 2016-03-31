@@ -1,6 +1,7 @@
 package nl.unionsoft.sysstate.logic.impl;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -16,6 +17,7 @@ import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
+import nl.unionsoft.sysstate.common.enums.StateBehaviour;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.extending.StateResolver;
 import nl.unionsoft.sysstate.common.util.StateUtil;
@@ -227,6 +229,24 @@ public class StateLogicImpl implements StateLogic {
     @Override
     public StateDto getLastStateForInstance(Long instanceId, StateType stateType) {
         return OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instanceId, stateType), stateConverter, false, StateDto.PENDING);
+    }
+
+    @Override
+    public void addStates(List<InstanceDto> instances, StateBehaviour state) {
+        switch (state) {
+            case DIRECT:
+                instances.forEach(instance -> {
+                    instance.setState(requestStateForInstance(instance));
+                });
+                break;
+            case CACHED:
+                instances.forEach(instance -> {
+                    instance.setState(getLastStateForInstance(instance.getId()));
+                });
+                break;
+            default:
+                throw new IllegalStateException("Unsupported StateBehaviour [" + state + "]");
+        }
     }
 
 }
