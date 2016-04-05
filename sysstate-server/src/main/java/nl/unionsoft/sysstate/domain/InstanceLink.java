@@ -34,11 +34,11 @@ public class InstanceLink {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "FROM_ICE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_FROM_INSTANCE"))
+    @JoinColumn(name = "FROM_ICE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_INSTANCE_LINK_FROM"))
     private Instance from;
 
     @ManyToOne
-    @JoinColumn(name = "TO_ICE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_TO_INSTANCE"))
+    @JoinColumn(name = "TO_ICE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_INSTANCE_LINK_TO"))
     private Instance to;
 
     public Long getId() {

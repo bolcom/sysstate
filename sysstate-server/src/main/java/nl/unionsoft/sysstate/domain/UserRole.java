@@ -27,7 +27,7 @@ public class UserRole {
     private String authority;
 
     @OneToOne()
-    @JoinColumn(name = "USR_ID", foreignKey = @ForeignKey(name = "FK_USER"))
+    @JoinColumn(name = "USR_ID", foreignKey = @ForeignKey(name = "FK_USER_ROLE"))
     private User user;
 
     public Long getId() {

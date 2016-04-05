@@ -37,11 +37,11 @@ public class ProjectEnvironment {
     private String homepageUrl;
 
     @ManyToOne
-    @JoinColumn(name = "PJT_ID", foreignKey = @ForeignKey(name = "FK_PROJECT"))
+    @JoinColumn(name = "PJT_ID", foreignKey = @ForeignKey(name = "FK_PROJECT_PROJECT_ENVIRONMENT"))
     private Project project;
 
     @ManyToOne
-    @JoinColumn(name = "EVT_ID", foreignKey = @ForeignKey(name = "FK_ENVIRONMENT"))
+    @JoinColumn(name = "EVT_ID", foreignKey = @ForeignKey(name = "FK_ENVIRONMENT_PROJECT_ENVIRONMENT"))
     private Environment environment;
 
     @OneToMany(mappedBy = "projectEnvironment", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

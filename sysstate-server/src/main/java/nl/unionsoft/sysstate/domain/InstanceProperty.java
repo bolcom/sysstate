@@ -11,7 +11,7 @@ import javax.persistence.ManyToOne;
 public class InstanceProperty extends Property {
 
     @ManyToOne
-    @JoinColumn(name = "ICE_ID", foreignKey = @ForeignKey(name = "FK_INSTANCE"))
+    @JoinColumn(name = "ICE_ID", foreignKey = @ForeignKey(name = "FK_INSTANCE_PROPERTY"))
     private Instance instance;
 
     /**

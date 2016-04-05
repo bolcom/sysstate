@@ -80,7 +80,7 @@ public class Instance {
     private List<InstanceLink> outgoingInstanceLinks;
 
     @ManyToOne
-    @JoinColumn(name = "PET_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_PROJECT_ENV"))
+    @JoinColumn(name = "PET_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_PROJECT_ENVIRONMENT_INSTANCE"))
     private ProjectEnvironment projectEnvironment;
 
     public Instance() {

@@ -31,14 +31,14 @@ public class View {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "TPE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_TEMPLATE"))
+    @JoinColumn(name = "TPE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_TEMPLATE_VIEW"))
     private Template template;
 
     @Column(name = "COMMON_TAGS", nullable = true, length = 512)
     private String commonTags;
 
     @ManyToOne
-    @JoinColumn(name = "FTR_ID", nullable = true, foreignKey = @ForeignKey(name = "FK_FILTER"))
+    @JoinColumn(name = "FTR_ID", nullable = true, foreignKey = @ForeignKey(name = "FK_FILTER_VIEW"))
     private Filter filter;
 
     public String getName() {

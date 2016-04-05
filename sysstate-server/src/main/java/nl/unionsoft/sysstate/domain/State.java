@@ -71,7 +71,7 @@ public class State {
     private int rating;
 
     @ManyToOne
-    @JoinColumn(name = "ICE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_INSTANCE"))
+    @JoinColumn(name = "ICE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_INSTANCE_STATE"))
     private Instance instance;
     
     public String getDescription() {
