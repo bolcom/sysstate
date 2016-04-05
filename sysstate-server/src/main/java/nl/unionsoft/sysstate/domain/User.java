@@ -9,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -16,7 +17,7 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
-@Table(name = "SSE_USER")
+@Table(name = "SSE_USER", indexes = { @Index(columnList = "LOGIN") })
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class User {
 

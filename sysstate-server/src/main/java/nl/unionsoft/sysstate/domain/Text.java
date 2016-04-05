@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
@@ -12,7 +13,9 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
-@Table(name = "SSE_TEXT")
+@Table(name = "SSE_TEXT",indexes = { 
+        @Index(columnList = "NAME")
+        })
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Text {
     @Id

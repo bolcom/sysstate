@@ -12,18 +12,24 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import nl.unionsoft.sysstate.common.enums.StateType;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import nl.unionsoft.sysstate.common.enums.StateType;
+
 @Entity
-@Table(name = "SSE_FILTER")
+//@formatter:off
+@Table(name = "SSE_FILTER", indexes = {
+        @Index(columnList = "NAME"),
+        @Index(columnList = "TAGS") 
+})
+//@formatter:on
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Filter {
 
