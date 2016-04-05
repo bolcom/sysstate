@@ -6,6 +6,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -36,11 +37,11 @@ public class ProjectEnvironment {
     private String homepageUrl;
 
     @ManyToOne
-    @JoinColumn(name = "PJT_ID")
+    @JoinColumn(name = "PJT_ID", foreignKey = @ForeignKey(name = "FK_PROJECT"))
     private Project project;
 
     @ManyToOne
-    @JoinColumn(name = "EVT_ID")
+    @JoinColumn(name = "EVT_ID", foreignKey = @ForeignKey(name = "FK_ENVIRONMENT"))
     private Environment environment;
 
     @OneToMany(mappedBy = "projectEnvironment", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

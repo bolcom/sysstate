@@ -2,6 +2,7 @@ package nl.unionsoft.sysstate.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -30,14 +31,14 @@ public class View {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "TPE_ID", nullable = false)
+    @JoinColumn(name = "TPE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_TEMPLATE"))
     private Template template;
 
     @Column(name = "COMMON_TAGS", nullable = true, length = 512)
     private String commonTags;
 
     @ManyToOne
-    @JoinColumn(name = "FTR_ID", nullable = true)
+    @JoinColumn(name = "FTR_ID", nullable = true, foreignKey = @ForeignKey(name = "FK_FILTER"))
     private Filter filter;
 
     public String getName() {

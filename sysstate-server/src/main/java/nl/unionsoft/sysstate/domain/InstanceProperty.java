@@ -2,6 +2,7 @@ package nl.unionsoft.sysstate.domain;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
@@ -10,7 +11,7 @@ import javax.persistence.ManyToOne;
 public class InstanceProperty extends Property {
 
     @ManyToOne
-    @JoinColumn(name = "ICE_ID")
+    @JoinColumn(name = "ICE_ID", foreignKey = @ForeignKey(name = "FK_INSTANCE"))
     private Instance instance;
 
     /**

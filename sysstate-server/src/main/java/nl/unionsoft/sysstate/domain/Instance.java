@@ -9,6 +9,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -79,7 +80,7 @@ public class Instance {
     private List<InstanceLink> outgoingInstanceLinks;
 
     @ManyToOne
-    @JoinColumn(name = "PET_ID", nullable = false)
+    @JoinColumn(name = "PET_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_PROJECT_ENV"))
     private ProjectEnvironment projectEnvironment;
 
     public Instance() {

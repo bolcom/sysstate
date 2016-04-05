@@ -2,6 +2,7 @@ package nl.unionsoft.sysstate.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,7 +27,7 @@ public class UserRole {
     private String authority;
 
     @OneToOne()
-    @JoinColumn(name = "USR_ID")
+    @JoinColumn(name = "USR_ID", foreignKey = @ForeignKey(name = "FK_USER"))
     private User user;
 
     public Long getId() {
