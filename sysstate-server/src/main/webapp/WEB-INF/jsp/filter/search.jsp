@@ -6,7 +6,6 @@
 <%@taglib prefix="list" uri="http://www.unionsoft.nl/list/"%>
 <%@taglib prefix="sf" uri="http://www.springframework.org/tags/form" %>
 <%@taglib prefix="sc" uri="http://www.springframework.org/security/tags"%>
-<%--<c:set var="projectEnvironments" value="${listResponse.results}"></c:set> --%>
 <script type="text/javascript">
 $(function(){
 	$('#toggle-all').click(function(){
@@ -61,17 +60,13 @@ $(function(){
 <div id="filter" style="float:left;width:220px;" >
 	<div style="width:200px;padding-bottom:20px;">
 		<h3>Presets</h3>
-		
-		<a href="${contextPath}/filter/preset/stable.html">stable</a>, 
-		<a href="${contextPath}/filter/preset/alerts.html">alerts</a>, 
-		<a href="${contextPath}/filter/preset/unknown.html">unknown</a>, 
 		<a href="${contextPath}/filter/preset/new.html">blank</a>
 	</div>
 	<div style="border-top:1px Solid Gray;width:200px;padding-top:10px;">
 		<h3>Search</h3>
 	
 		
-		<sf:form commandName="filter" method="POST" action="">
+		<sf:form commandName="filter" method="GET" action="">
 			<table border="0" cellpadding="0" cellspacing="0"  id="id-form">
 				<c:if test="${filter.id != null}">
 					<tr>
@@ -94,22 +89,17 @@ $(function(){
 				<tr>
 					<th valign="top">Project:<br/>
 						<!-- styledselect_form_1 -->
-						<sf:select onchange="this.form.submit()" path="projects" cssClass="" multiple="true" items="${projects}" itemValue="id" itemLabel="name" size="13" cssStyle="width:100px;"/>
+						<sf:select path="projects" cssClass="" multiple="true" items="${projects}" itemValue="id" itemLabel="name" size="13" cssStyle="width:100px;"/>
 					</th>
 				</tr>
 				<tr>
 					<th valign="top">Environments:<br/>
-						<sf:select onchange="this.form.submit()" path="environments" cssClass="" multiple="true" items="${environments}" itemValue="id" itemLabel="name" size="7" cssStyle="width:100px;"/>
+						<sf:select path="environments" cssClass="" multiple="true" items="${environments}" itemValue="id" itemLabel="name" size="7" cssStyle="width:100px;"/>
 					</th>
 				</tr>
 				<tr>
 					<th valign="top">Type:<br/>
 						<sf:select onchange="this.form.submit()" path="stateResolvers" cssClass="" multiple="true" items="${stateResolvers}" size="5" cssStyle="width:100px;"/>
-					</th>
-				</tr>
-				<tr>
-					<th valign="top">State:<br/>
-						<sf:select onchange="this.form.submit()" path="states" cssClass="" multiple="true" items="${states}" size="5" cssStyle="width:100px;"/>
 					</th>
 				</tr>
 				<tr>
@@ -150,9 +140,8 @@ $(function(){
 				</a>
 			</sc:authorize>
 		</h2>
-		
 		<c:choose>
-			<c:when test="${fn:length(listResponse.results) == 0 }">
+			<c:when test="${fn:length(instances) == 0 }">
 				No results found for Search. Use the search to define your filter<sc:authorize url="/instance/create">, create a <a href="${contextPath}/instance/create.html?projectId=${project.id}&environmentId=${environment.id}">new instance</a></sc:authorize>
 				 or start with a <a href="${contextPath}/filter/preset/new.html">blank</a> filter.
 			</c:when>
@@ -170,7 +159,7 @@ $(function(){
 							<th class="table-header-options line-left "><a href="">Options</a></th>
 						</tr>
 						<c:set var="index" value="0"/>
-							<c:forEach var="instance" items="${listResponse.results}" varStatus="varStatInstance" >
+							<c:forEach var="instance" items="${instances}" varStatus="varStatInstance" >
 								<c:set var="instance" value="${instance }" scope="request"/>
 								
 								<jsp:include page="/WEB-INF/jsp/common/instance.jsp">

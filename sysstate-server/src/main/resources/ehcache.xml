@@ -11,5 +11,6 @@ name="ehcache-application">
     <cache name="propertyMetaTypeCache" maxElementsInMemory="50" eternal="false" timeToLiveSeconds="1800" overflowToDisk="false" statistics="true" diskPersistent="false"/>
     
     <cache name="lastStateForInstanceCache" maxElementsInMemory="1500" eternal="false" timeToLiveSeconds="1800" overflowToDisk="true" statistics="true" diskPersistent="true"/>
+	<cache name="filterInstanceCache" maxElementsInMemory="1500" eternal="false" timeToLiveSeconds="1800" overflowToDisk="true" statistics="true" diskPersistent="true"/>
     
 </ehcache>

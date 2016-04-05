@@ -18,18 +18,14 @@ public class FilterDto implements Serializable {
     private String name;
     private List<Long> projects;
     private List<Long> environments;
-    private List<StateType> states;
     private List<String> stateResolvers;
-    private List<ViewDto> views;
     private String tags;
     private String search;
 
     public FilterDto() {
         projects = new ArrayList<Long>();
         environments = new ArrayList<Long>();
-        states = new ArrayList<StateType>();
         stateResolvers = new ArrayList<String>();
-        views = new ArrayList<ViewDto>();
 
     }
 
@@ -65,14 +61,6 @@ public class FilterDto implements Serializable {
         this.environments = environments;
     }
 
-    public List<StateType> getStates() {
-        return states;
-    }
-
-    public void setStates(final List<StateType> states) {
-        this.states = states;
-    }
-
     public List<String> getStateResolvers() {
         return stateResolvers;
     }
@@ -105,26 +93,15 @@ public class FilterDto implements Serializable {
         this.id = id;
     }
 
-    public List<ViewDto> getViews() {
-        return views;
-    }
-
-    public void setViews(List<ViewDto> views) {
-        this.views = views;
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((environments == null) ? 0 : environments.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((projects == null) ? 0 : projects.hashCode());
         result = prime * result + ((search == null) ? 0 : search.hashCode());
         result = prime * result + ((stateResolvers == null) ? 0 : stateResolvers.hashCode());
-        result = prime * result + ((states == null) ? 0 : states.hashCode());
         result = prime * result + ((tags == null) ? 0 : tags.hashCode());
-        result = prime * result + ((views == null) ? 0 : views.hashCode());
         return result;
     }
 
@@ -142,11 +119,6 @@ public class FilterDto implements Serializable {
                 return false;
         } else if (!environments.equals(other.environments))
             return false;
-        if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
         if (projects == null) {
             if (other.projects != null)
                 return false;
@@ -162,23 +134,14 @@ public class FilterDto implements Serializable {
                 return false;
         } else if (!stateResolvers.equals(other.stateResolvers))
             return false;
-        if (states == null) {
-            if (other.states != null)
-                return false;
-        } else if (!states.equals(other.states))
-            return false;
         if (tags == null) {
             if (other.tags != null)
                 return false;
         } else if (!tags.equals(other.tags))
             return false;
-        if (views == null) {
-            if (other.views != null)
-                return false;
-        } else if (!views.equals(other.views))
-            return false;
         return true;
     }
+
     
     
 

@@ -58,6 +58,7 @@ import org.quartz.SimpleTrigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
@@ -304,38 +305,11 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return listRequestDao.getResults(Instance.class, listRequest, instanceConverter);
     }
 
-    public ListResponse<InstanceDto> getInstances(final FilterDto filter) {
-        final ListResponse<InstanceDto> listResponse = handleFilterData(filter);
-        handleInstancesFilter(filter, listResponse);
-        return listResponse;
+    @Cacheable(value = "filterInstanceCache")
+    public List<InstanceDto> getInstances(final FilterDto filter) {
+        return handleFilterData(filter).getResults();
     }
 
-    private void handleInstancesFilter(final FilterDto filter, final ListResponse<InstanceDto> listResponse) {
-        final List<?> results = listResponse.getResults();
-        final BeanListRequestWorkerImpl beanListRequestWorkerImpl = new BeanListRequestWorkerImpl() {
-            @Override
-            @SuppressWarnings({ "unchecked", "hiding" })
-            public <Object> List<Object> fetchData(final Class<Object> dtoClass, final ListRequest listRequest) {
-                return (List<Object>) results;
-            }
-        };
-
-        final List<Restriction> restrictions = new ArrayList<Restriction>();
-        {
-            final List<StateType> states = filter.getStates();
-            if (states != null && states.size() > 0) {
-                final GroupRestriction groupRestriction = new GroupRestriction(Rule.OR);
-                final List<Restriction> orReestrictions = groupRestriction.getRestrictions();
-                for (final StateType state : states) {
-                    orReestrictions.add(new ObjectRestriction(Rule.EQ, "state.state", state));
-                }
-                restrictions.add(groupRestriction);
-            }
-        }
-        if (restrictions.size() > 0) {
-            beanListRequestWorkerImpl.restrictions(listResponse.getResults(), restrictions);
-        }
-    }
 
     private ListResponse<InstanceDto> handleFilterData(final FilterDto filter) {
         final ListRequest listRequest = new ListRequest();

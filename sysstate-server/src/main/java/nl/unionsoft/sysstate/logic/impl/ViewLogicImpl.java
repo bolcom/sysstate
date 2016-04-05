@@ -157,9 +157,7 @@ public class ViewLogicImpl implements ViewLogic {
         }
         final ViewResultDto viewResult = new ViewResultDto(view);
         
-        final ListResponse<InstanceDto> instanceListResponse = instanceLogic.getInstances(filter);
-
-        final List<InstanceDto> instances = instanceListResponse.getResults();
+        final List<InstanceDto> instances =  instanceLogic.getInstances(filter);
         stateLogic.addStates(instances, StateBehaviour.CACHED);
         
         Set<ProjectEnvironmentDto> projectEnvironments = getAllProjectEnvironmentsFromInstances(instances);

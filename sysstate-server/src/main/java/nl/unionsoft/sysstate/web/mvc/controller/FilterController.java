@@ -1,5 +1,7 @@
 package nl.unionsoft.sysstate.web.mvc.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -7,17 +9,9 @@ import javax.inject.Named;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-import nl.unionsoft.sysstate.common.dto.FilterDto;
-import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
-import nl.unionsoft.sysstate.common.logic.InstanceLogic;
-import nl.unionsoft.sysstate.common.logic.ProjectLogic;
-import nl.unionsoft.sysstate.dto.MessageDto;
-import nl.unionsoft.sysstate.logic.FilterLogic;
-import nl.unionsoft.sysstate.logic.MessageLogic;
-import nl.unionsoft.sysstate.logic.StateResolverLogic;
-
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -26,6 +20,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
+
+import com.mchange.v1.util.ArrayUtils;
+
+import nl.unionsoft.sysstate.common.dto.FilterDto;
+import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
+import nl.unionsoft.sysstate.common.logic.InstanceLogic;
+import nl.unionsoft.sysstate.common.logic.ProjectLogic;
+import nl.unionsoft.sysstate.dto.MessageDto;
+import nl.unionsoft.sysstate.logic.FilterLogic;
+import nl.unionsoft.sysstate.logic.MessageLogic;
+import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
 @Controller()
 public class FilterController {
@@ -48,7 +54,7 @@ public class FilterController {
     @Inject
     @Named("messageLogic")
     private MessageLogic messageLogic;
-    
+
     @Inject
     @Named("projectLogic")
     private ProjectLogic projectLogic;
@@ -57,54 +63,43 @@ public class FilterController {
     @Named("environmentLogic")
     private EnvironmentLogic environmentLogic;
 
-    
     @RequestMapping(value = "/filter/index", method = RequestMethod.GET)
-    public ModelAndView index(final HttpSession session) {
-        final ModelAndView modelAndView = new ModelAndView("search-filter-manager");
-        final FilterDto filter = getFilter(session);
-        modelAndView.addObject("listResponse", instanceLogic.getInstances(filter));
+    //@formatter:off
+    public ModelAndView index(
+            @Valid @ModelAttribute("filter") final FilterDto filter
+            ) {
+        //@formatter:on        
+        ModelAndView modelAndView = new ModelAndView("search-filter-manager");
+
+
+
+        modelAndView.addObject("instances", instanceLogic.getInstances(filter));
         modelAndView.addObject("filter", filter);
-        modelAndView.addObject("states", StateType.values());
         modelAndView.addObject("stateResolvers", stateResolverLogic.getStateResolverNames());
         modelAndView.addObject("environments", environmentLogic.getEnvironments());
         modelAndView.addObject("projects", projectLogic.getProjects());
-        
         return modelAndView;
     }
 
-    @RequestMapping(value = "/filter/project/{projectId}/index", method = RequestMethod.GET)
-    public ModelAndView filterProject(final HttpSession session, @PathVariable("projectId") final Long projectId) {
-        final FilterDto filter = getFilter(session);
-        filterProjectEnvironment(filter, projectId, null);
-        return new ModelAndView(REDIRECT_FILTER_INDEX_HTML);
-    }
+    @SafeVarargs
+    public static <T> List<T> safeAsList(T... a) {
+        if (a == null) {
+            return new ArrayList<T>();
+        }
+        return Arrays.asList(a);
 
-    @RequestMapping(value = "/filter/environment/{environmentId}/index", method = RequestMethod.GET)
-    public ModelAndView filterEnvironment(final HttpSession session, @PathVariable("environmentId") final Long environmentId) {
-        final FilterDto filter = getFilter(session);
-        filterProjectEnvironment(filter, null, environmentId);
-        return new ModelAndView(REDIRECT_FILTER_INDEX_HTML);
-    }
-
-    @RequestMapping(value = "/filter/project/{projectId}/environment/{environmentId}/index", method = RequestMethod.GET)
-    public ModelAndView filterProjectEnvironment(final HttpSession session, @PathVariable("projectId") final Long projectId,
-            @PathVariable("environmentId") final Long environmentId) {
-        final FilterDto filter = getFilter(session);
-
-        filterProjectEnvironment(filter, projectId, environmentId);
-        return new ModelAndView(REDIRECT_FILTER_INDEX_HTML);
     }
 
     @RequestMapping(value = "/filter/index", method = RequestMethod.POST)
-    public ModelAndView filter(@Valid @ModelAttribute("filter") final FilterDto filter, final HttpSession session, final BindingResult bindingResult) {
-        final FilterDto sessionFilterDto = getFilter(session);
-        mergeEnvironments(filter, sessionFilterDto);
-        mergeProjects(filter, sessionFilterDto);
-        mergeInstanceStates(filter, sessionFilterDto);
-        mergeStateResolvers(filter, sessionFilterDto);
-        sessionFilterDto.setSearch(filter.getSearch());
-        sessionFilterDto.setTags(filter.getTags());
-        return new ModelAndView(REDIRECT_FILTER_INDEX_HTML);
+    public ModelAndView filter(@Valid @ModelAttribute("filter") final FilterDto filter, final BindingResult bindingResult) {
+        ModelAndView mav = new ModelAndView(new RedirectView("/filter/index.html", true));
+        mav.addObject("project", filter.getProjects());
+        mav.addObject("environment", filter.getEnvironments());
+        mav.addObject("stateResolver", filter.getStateResolvers());
+        mav.addObject("tags", filter.getStateResolvers());
+        mav.addObject("search", filter.getSearch());
+        
+        return mav;
     }
 
     @RequestMapping(value = "/filter/load/{filterId}/index.html", method = RequestMethod.GET)
@@ -118,7 +113,7 @@ public class FilterController {
     public ModelAndView saveFilter(@Valid @ModelAttribute("filter") final FilterDto saveFilter, final HttpSession session, final BindingResult bindingResult) {
         ModelAndView modelAndView = null;
         if (bindingResult.hasErrors()) {
-            //TODO
+            // TODO
             modelAndView = new ModelAndView(REDIRECT_FILTER_INDEX_HTML);
         } else {
             final FilterDto filter = getFilter(session);
@@ -143,26 +138,11 @@ public class FilterController {
         filterLogic.delete(filterId);
         return new ModelAndView("redirect:/filter/index.html");
     }
-    
+
     @RequestMapping(value = "/filter/preset/{preset}.html", method = RequestMethod.GET)
     public ModelAndView filterPresset(@PathVariable("preset") final String preset, final HttpSession session) {
 
         final FilterDto filter = new FilterDto();
-        if (StringUtils.equalsIgnoreCase(preset, "alerts")) {
-            final List<StateType> prjEnvStates = filter.getStates();
-            prjEnvStates.clear();
-            prjEnvStates.add(StateType.UNSTABLE);
-            prjEnvStates.add(StateType.ERROR);
-        } else if (StringUtils.equalsIgnoreCase(preset, "stable")) {
-            final List<StateType> instanceStates = filter.getStates();
-            instanceStates.clear();
-            instanceStates.add(StateType.STABLE);
-        } else if (StringUtils.equalsIgnoreCase(preset, "unknown")) {
-            final List<StateType> instanceStates = filter.getStates();
-            instanceStates.clear();
-            instanceStates.add(StateType.PENDING);
-            instanceStates.add(StateType.DISABLED);
-        }
         setFilter(session, filter);
         return new ModelAndView(REDIRECT_FILTER_INDEX_HTML);
     }
@@ -212,15 +192,6 @@ public class FilterController {
         sessionProjects.clear();
         if (newProjects != null) {
             sessionProjects.addAll(newProjects);
-        }
-    }
-
-    private void mergeInstanceStates(final FilterDto filter, final FilterDto sessionFilter) {
-        final List<StateType> newStates = filter.getStates();
-        final List<StateType> sessionStateType = sessionFilter.getStates();
-        sessionStateType.clear();
-        if (newStates != null) {
-            sessionStateType.addAll(newStates);
         }
     }
 

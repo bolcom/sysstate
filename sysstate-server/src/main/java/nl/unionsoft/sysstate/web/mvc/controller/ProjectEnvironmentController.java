@@ -55,7 +55,7 @@ public class ProjectEnvironmentController {
         final FilterDto filter = new FilterDto();
         filter.getEnvironments().add(environmentId);
         filter.getProjects().add(projectId);
-        modelAndView.addObject("instances", instanceLogic.getInstances(filter).getResults());
+        modelAndView.addObject("instances", instanceLogic.getInstances(filter));
         return modelAndView;
     }
 
