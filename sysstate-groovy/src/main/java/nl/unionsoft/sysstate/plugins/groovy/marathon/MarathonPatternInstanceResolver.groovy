@@ -24,6 +24,8 @@ import org.apache.commons.lang.text.StrSubstitutor;
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+import com.sun.org.apache.xpath.internal.FoundIndex;
+
 @Named("marathonPatternInstanceResolver")
 class MarathonPatternInstanceResolver implements StateResolver{
 
@@ -63,6 +65,10 @@ class MarathonPatternInstanceResolver implements StateResolver{
         def result = new JsonSlurper().parseText(text)
         
         def validInstanceIds = []
+		
+		
+		def childInstances = parent.getOutgoingInstanceLinks().collect{ InstanceLinkDto instanceLink ->instanceLogic.getInstance(instanceLink.instanceToId) }
+		
         result['apps'].each { app ->
             
             def appId = app['id']
@@ -75,22 +81,22 @@ class MarathonPatternInstanceResolver implements StateResolver{
             def environmentName = strsub.replace(environmentTemplate)
             def applicationName = idMatcher[0][applicationIndex].toString().toUpperCase();
             if (environmentName && applicationName){
-                log.info("Found app [${app['id']} with environment [${environmentName}] and application [${applicationName}]")
+                log.debug("Found app [${app['id']} with environment [${environmentName}] and application [${applicationName}]")
                 def project = findOrCreateProject(applicationName);
                 def environment = findOrCreateEnvironment(environmentName)
+				def reference = app['id']
                 def component = app['id'].toString().tokenize('/')[-1]
-                log.info("Searching for instance with component [${component}] for applicationName [${applicationName}] and environmentName [${environmentName}]")
-                def projectEnvironmentInstances = instanceLogic.getInstancesForProjectAndEnvironment(applicationName, environmentName)
-                def componentInstances = projectEnvironmentInstances.findAll{InstanceDto i -> i.tags.contains(component)} 
-                if (componentInstances){
-                    log.info("Instance with component [${component}], applicationName [${applicationName}] and environmentName [${environmentName}] is already configured.")
-                    validInstanceIds += componentInstances.collect{InstanceDto i -> i.id}
-                } else {
-                    log.info("No instances found for application [${applicationName}], environment [${environmentName}] and component [${component}]! Creating one...")
-                    def childInstanceId = createInstance(component, serverUrl, ['applicationPath':app['id'],'ignoreHealthStatus':'false','serverUrl':serverUrl], tags, project, environment)
-                    instanceLinkLogic.link(parent.id,childInstanceId, "child")
-                    validInstanceIds << childInstanceId
-                }
+                log.info("Searching for child instance with reference [${reference}]")
+				InstanceDto foundChild = childInstances.find{ InstanceDto child -> child.reference == reference} 
+				if (foundChild){
+					log.debug("Child [${foundChild}] has been found for reference [${reference}]")
+					validInstanceIds += foundChild.id
+				} else {
+					log.debug("No child [${foundChild}] has been found for reference [${reference}], creating new...")
+					def childInstanceId = createInstance(reference, component, serverUrl, ['applicationPath':app['id'],'ignoreHealthStatus':'false','serverUrl':serverUrl], tags, project, environment)
+					instanceLinkLogic.link(parent.id,childInstanceId, "child")
+					validInstanceIds << childInstanceId
+				}
             }
         }
         
@@ -100,9 +106,10 @@ class MarathonPatternInstanceResolver implements StateResolver{
         
     }
     
-    long createInstance(def component, def serverUrl, def configuration, def tags, ProjectDto project, EnvironmentDto environment) {
+    long createInstance(def reference, def component, def serverUrl, def configuration, def tags, ProjectDto project, EnvironmentDto environment) {
         InstanceDto childInstance = instanceLogic.generateInstanceDto("marathonAppStateResolver", project.id, environment.id)
         childInstance.name = component
+		childInstance.reference = reference
         childInstance.homepageUrl= serverUrl
         childInstance.configuration = configuration
         childInstance.tags = [tags, component].join(" ");

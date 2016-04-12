@@ -7,10 +7,7 @@
 
 FROM tomcat:8-jre8
 
-
 ENV SYSSTATE_HOME /usr/local/tomcat/.sysstate
-
-
 
 ADD docker/log4j.xml /usr/local/tomcat/.sysstate/log4j.xml
 ADD docker/ehcache.xml /usr/local/tomcat/.sysstate/ehcache.xml
