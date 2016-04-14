@@ -60,13 +60,14 @@ $(function(){
 <div id="filter" style="float:left;width:220px;" >
 	<div style="width:200px;padding-bottom:20px;">
 		<h3>Presets</h3>
-		<a href="${contextPath}/filter/preset/new.html">blank</a>
+		<a href="${contextPath}/filter/index.html">Clear Filter</a>
 	</div>
 	<div style="border-top:1px Solid Gray;width:200px;padding-top:10px;">
 		<h3>Search</h3>
 	
 		
 		<sf:form commandName="filter" method="GET" action="">
+			<sf:hidden path="id"/>
 			<table border="0" cellpadding="0" cellspacing="0"  id="id-form">
 				<c:if test="${filter.id != null}">
 					<tr>
@@ -78,12 +79,12 @@ $(function(){
 			
 				<tr>
 					<th valign="top">SearchTerm:<br/>
-						<sf:input path="search" onchange="this.form.submit()" cssClass="inp-form"/>
+						<sf:input path="search"  cssClass="inp-form"/>
 					</th>
 				</tr>
 				<tr>
 					<th valign="top">Tags:<br/>
-						<sf:input path="tags" onchange="this.form.submit()" cssClass="inp-form"/>
+						<sf:input path="tags"  cssClass="inp-form"/>
 					</th>
 				</tr>
 				<tr>
@@ -99,32 +100,36 @@ $(function(){
 				</tr>
 				<tr>
 					<th valign="top">Type:<br/>
-						<sf:select onchange="this.form.submit()" path="stateResolvers" cssClass="" multiple="true" items="${stateResolvers}" size="5" cssStyle="width:100px;"/>
+						<sf:select  path="stateResolvers" cssClass="" multiple="true" items="${stateResolvers}" size="5" cssStyle="width:100px;"/>
 					</th>
 				</tr>
 				<tr>
 					<td valign="top">
-						<input type="submit" value="" class="form-submit" />
+						<input type="submit" name="action" value="search" class="form-submit" />
 					</td>
 				</tr>
+				<tr>
+					<td><h3>${filter.id != null ? 'Update' : 'Save' } Filter ${filter.name}</h3></td>
+				</tr>
+				<tr>
+					<th valign="top">FilterName:<br/>
+						<sf:input path="name" cssClass="inp-form"/>
+					</th>
+				</tr>
+				<tr>
+					<td valign="top">
+						<input type="submit" name="action" value="save" class="form-submit" />
+					</td>
+				</tr>
+				
 			</table>
 		</sf:form>
 	</div>
 	<sc:authorize url="/filter/save" method="POST">			
 		<div style="border-top:1px Solid Gray;width:200px;padding-top:10px;">
-			<h3>Save/Update Filter</h3>
+
 			<sf:form commandName="filter" method="POST" action="${contextPath}/filter/save.html">
 				<table border="0" cellpadding="0" cellspacing="0"  id="id-form">
-					<tr>
-						<th valign="top">FilterName:<br/>
-							<sf:input path="name" cssClass="inp-form"/>
-						</th>
-					</tr>
-					<tr>
-						<td valign="top">
-							<input type="submit" value="" class="form-submit" />
-						</td>
-					</tr>
 				</table>
 			</sf:form>
 		</div>

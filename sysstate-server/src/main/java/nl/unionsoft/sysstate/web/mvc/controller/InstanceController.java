@@ -61,8 +61,7 @@ public class InstanceController {
     @RequestMapping(value = "/instance/{type}/create", method = RequestMethod.GET)
     public ModelAndView selectType(@PathVariable("type") final String type, final HttpSession session) {
         final ModelAndView modelAndView = new ModelAndView("create-update-instance-manager");
-        final FilterDto filter = FilterController.getFilter(session);
-        InstanceDto instance = instanceLogic.generateInstanceDto(type, filter.getFirstProject(), filter.getFirstEnvironment());
+        InstanceDto instance = instanceLogic.generateInstanceDto(type);
         modelAndView.addObject("instance", instance);
         modelAndView.addObject("propertyMetas", instanceLogic.getPropertyMeta(type));
         addCommons(modelAndView);
