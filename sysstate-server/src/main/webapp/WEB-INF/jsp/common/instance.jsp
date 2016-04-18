@@ -9,7 +9,6 @@
 <c:set var="projectEnvironment" value="${instance.projectEnvironment}"/>
 <c:set var="project" value="${projectEnvironment.project}"/>
 <c:set var="environment" value="${projectEnvironment.environment}"/>
-<c:set var="state" value="${instance.state}"/>
 
 <tr class="${param.alternateRow ? '' : 'alternate-row' }">
 	<c:if test="${param.id == 'checkBox'}">
@@ -75,7 +74,7 @@
 			
 			Rating: 
 			<jsp:include page="/WEB-INF/jsp/common/rating.jsp">
-				<jsp:param name="rating" value="${instance.state.rating}"/>
+				<jsp:param name="rating" value="${state.rating}"/>
 			</jsp:include>
 			<br/>
 		</td>

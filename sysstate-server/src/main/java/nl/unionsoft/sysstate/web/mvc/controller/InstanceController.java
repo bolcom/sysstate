@@ -13,6 +13,7 @@ import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
+import nl.unionsoft.sysstate.logic.StateLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
 import org.springframework.stereotype.Controller;
@@ -29,6 +30,10 @@ public class InstanceController {
     @Inject
     @Named("instanceLogic")
     private InstanceLogic instanceLogic;
+    
+    @Inject
+    @Named("stateLogic")
+    private StateLogic stateLogic;
 
     @Inject
     @Named("environmentLogic")
@@ -95,7 +100,8 @@ public class InstanceController {
     @RequestMapping(value = "/instance/{instanceId}/details", method = RequestMethod.GET)
     public ModelAndView details(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("details-instance-clear");
-        modelAndView.addObject("instance", instanceLogic.getInstance(instanceId, true));
+        modelAndView.addObject("instance", instanceLogic.getInstance(instanceId));
+        modelAndView.addObject("state", stateLogic.getLastStateForInstance(instanceLogic.getInstance(instanceId)));
         return modelAndView;
     }
 

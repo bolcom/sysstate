@@ -37,6 +37,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -91,7 +92,6 @@ public class StateLogicImpl implements StateLogic {
         return stateDao.getStates(listRequest);
     }
 
-    @CachePut(value = "lastStateForInstanceCache", key = "#dto.instance.id")
     public StateDto createOrUpdate(final StateDto dto) {
         if (dto.getInstance() == null) {
             throw new IllegalStateException("State must have an instance!");
@@ -99,7 +99,7 @@ public class StateLogicImpl implements StateLogic {
 
         final Long instanceId = dto.getInstance().getId();
         Optional<Instance> optionalInstance = instanceDao.getInstance(instanceId);
-        if (!optionalInstance.isPresent()){
+        if (!optionalInstance.isPresent()) {
             throw new IllegalStateException("No instance for instanceId [" + instanceId + "] could not be found.");
         }
         Instance instance = optionalInstance.get();
@@ -110,13 +110,12 @@ public class StateLogicImpl implements StateLogic {
         }
         final Date stateDate = dto.getCreationDate().toDate();
         if (!match(dto, state)) {
-            //@formatter:off
-                LOG.info("State '{}' for instance '{}' changed! old='{}', new='{}'", new Object[] {
-                        state, instanceId,dto, state });
-                //@formatter:on
+            // @formatter:off
+            LOG.info("State '{}' for instance '{}' changed! old='{}', new='{}'", new Object[] { state, instanceId, dto, state });
+            // @formatter:on
             state = new State();
             state.setDescription(dto.getDescription());
-            
+
             state.setInstance(instance);
             state.setCreationDate(stateDate);
             state.setState(dto.getState());
@@ -221,32 +220,29 @@ public class StateLogicImpl implements StateLogic {
 
     }
 
-    @Cacheable(value = "lastStateForInstanceCache", key = "#instanceId")
-    public StateDto getLastStateForInstance(final Long instanceId) {
-        return OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instanceId), stateConverter, false, StateDto.PENDING);
+    public StateDto getLastStateForInstance(InstanceDto instance) {
+        return getLastStateForInstance(instance, StateBehaviour.CACHED);
     }
 
     @Override
-    public StateDto getLastStateForInstance(Long instanceId, StateType stateType) {
-        return OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instanceId, stateType), stateConverter, false, StateDto.PENDING);
-    }
-
-    @Override
-    public void addStates(List<InstanceDto> instances, StateBehaviour state) {
-        switch (state) {
+    public StateDto getLastStateForInstance(InstanceDto instance, StateBehaviour stateBehaviour) {
+        switch (stateBehaviour) {
             case DIRECT:
-                instances.forEach(instance -> {
-                    instance.setState(requestStateForInstance(instance));
-                });
-                break;
+                return requestStateForInstance(instance);
             case CACHED:
-                instances.forEach(instance -> {
-                    instance.setState(getLastStateForInstance(instance.getId()));
-                });
-                break;
+                Optional<State> optStateDto = stateDao.getLastStateForInstance(instance.getId());
+                if (!optStateDto.isPresent()) {
+                    return StateDto.PENDING;
+                }
+                return OptionalConverter.fromOptional(optStateDto, stateConverter, false, StateDto.PENDING);
             default:
-                throw new IllegalStateException("Unsupported StateBehaviour [" + state + "]");
+                throw new IllegalStateException("Unsupported StateBehaviour [" + stateBehaviour + "]");
         }
+    }
+
+    @Override
+    public StateDto getLastStateForInstance(InstanceDto instance, StateType stateType) {
+        return OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instance.getId(), stateType), stateConverter);
     }
 
 }

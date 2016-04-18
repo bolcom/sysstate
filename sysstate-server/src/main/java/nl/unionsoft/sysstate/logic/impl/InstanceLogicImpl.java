@@ -197,31 +197,10 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     }
 
     public InstanceDto getInstance(final Long instanceId) {
-        return getInstance(instanceId, false);
+        return  OptionalConverter.fromOptional(instanceDao.getInstance(instanceId), instanceConverter);
     }
 
-    public InstanceDto getInstance(final Long instanceId, final boolean states) {
-
-        final InstanceDto result = OptionalConverter.fromOptional(instanceDao.getInstance(instanceId), instanceConverter);
-        if (states) {
-            setLastStatesForInstance(result);
-        }
-        return result;
-
-    }
-
-    private void setLastStatesForInstance(final InstanceDto instance) {
-        if (instance != null && instance.getId() != null) {
-            final Long instanceId = instance.getId();
-            instance.setState(stateLogic.getLastStateForInstance(instanceId));
-            instance.setLastStable(stateLogic.getLastStateForInstance(instanceId, StateType.STABLE));
-            instance.setLastUnstable(stateLogic.getLastStateForInstance(instanceId, StateType.UNSTABLE));
-            instance.setLastError(stateLogic.getLastStateForInstance(instanceId, StateType.ERROR));
-            instance.setLastPending(stateLogic.getLastStateForInstance(instanceId, StateType.PENDING));
-            instance.setLastDisabled(stateLogic.getLastStateForInstance(instanceId, StateType.DISABLED));
-        }
-    }
-
+  
     public Long createOrUpdateInstance(final InstanceDto dto) {
         Instance instance = getInstanceForDto(dto);
 
@@ -313,12 +292,8 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
 
     private ListResponse<InstanceDto> handleFilterData(final FilterDto filter) {
         final ListRequest listRequest = new ListRequest();
-        // listRequest.addSort(new Sort("last.state", Direction.ASC));
         listRequest.setFirstResult(0);
         listRequest.setMaxResults(ListRequest.ALL_RESULTS);
-        // if (StringUtils.isNotEmpty(sort)) {
-        // listRequest.addSort(new Sort(sort));
-        // }
 
         final String search = filter.getSearch();
         if (StringUtils.isNotEmpty(search)) {

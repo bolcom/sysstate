@@ -19,10 +19,10 @@ public interface StateLogic {
 
     public StateDto requestState(String pluginClass, Map<String, String> configuration);
 
-    public StateDto getLastStateForInstance(Long instanceId);
-
-    public StateDto getLastStateForInstance(Long instanceId, StateType stable);
+    public StateDto getLastStateForInstance(InstanceDto instance);
     
-    public void addStates( List<InstanceDto> instances, StateBehaviour state);
+    public StateDto getLastStateForInstance(InstanceDto instance, StateBehaviour stateBehaviour);
 
+    public StateDto getLastStateForInstance(InstanceDto instance, StateType stable);
+    
 }

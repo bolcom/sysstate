@@ -21,9 +21,7 @@ import org.springframework.stereotype.Service;
 @Service("restEcoSystemConverter")
 public class EcoSystemConverter implements Converter<EcoSystem, ViewResultDto> {
 
-    @Inject
-    @Named("restInstanceConverter")
-    private Converter<Instance, InstanceDto> instanceConverter;
+
 
     
     @Inject
@@ -38,6 +36,10 @@ public class EcoSystemConverter implements Converter<EcoSystem, ViewResultDto> {
     @Named("restProjectEnvironmentConverter")
     private ProjectEnvironmentConverter projectEnvironmentConverter;
     
+    @Inject
+    @Named("instanceStateConverter")
+    private InstanceStateConverter instanceStateConverter;
+    
     
     @Override
     public EcoSystem convert(ViewResultDto dto) {
@@ -47,7 +49,7 @@ public class EcoSystemConverter implements Converter<EcoSystem, ViewResultDto> {
         EcoSystem ecoSystem = new EcoSystem();
         ecoSystem.getEnvironments().addAll(ListConverter.convert(environmentConverter, dto.getEnvironments()));
         ecoSystem.getProjects().addAll(ListConverter.convert(projectConverter, dto.getProjects()));
-        ecoSystem.getInstances().addAll(ListConverter.convert(instanceConverter, dto.getInstances()));
+        ecoSystem.getInstances().addAll(ListConverter.convert(instanceStateConverter, dto.getInstanceStates()));
         ecoSystem.getProjectEnvironments().addAll(ListConverter.convert(projectEnvironmentConverter, dto.getProjectEnvironments()));
         return ecoSystem;
     }
