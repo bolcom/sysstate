@@ -38,6 +38,7 @@ import nl.unionsoft.sysstate.common.dto.ViewResultDto;
 import nl.unionsoft.sysstate.common.enums.StateBehaviour;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
+import nl.unionsoft.sysstate.common.logic.InstanceStateLogic;
 import nl.unionsoft.sysstate.common.util.SysStateStringUtils;
 import nl.unionsoft.sysstate.converter.OptionalConverter;
 import nl.unionsoft.sysstate.dao.FilterDao;
@@ -70,10 +71,11 @@ public class ViewLogicImpl implements ViewLogic {
     private TemplateLogic templateLogic;
 
     @Inject
-    private StateLogic stateLogic;
+    private InstanceStateLogic instanceStateLogic; 
     
     @Inject
-    private InstanceLogic instanceLogic;
+    private StateLogic stateLogic;
+    
 
     @Inject
     private TemplateDao templateDao;
@@ -157,27 +159,25 @@ public class ViewLogicImpl implements ViewLogic {
             filter = new FilterDto();
         }
         final ViewResultDto viewResult = new ViewResultDto(view);
-        
-        
-        
-        final List<InstanceDto> instances =  instanceLogic.getInstances(filter);
-        
-        final List<InstanceStateDto> instanceStates = instances.stream().map( instance -> {
-            return new InstanceStateDto(instance,stateLogic.getLastStateForInstance(instance, StateBehaviour.CACHED));
-        }).collect(Collectors.toList());
-        
-
-        
-        Set<ProjectEnvironmentDto> projectEnvironments = getAllProjectEnvironmentsFromInstances(instances);
-        enrichProjectEnvironments(projectEnvironments, instances, view.getCommonTags());
+        Long now = System.currentTimeMillis();
+        final List<InstanceStateDto> instanceStates = instanceStateLogic.getInstanceStates(filter);
+        System.out.println("1:" + (System.currentTimeMillis() - now));
+        Set<ProjectEnvironmentDto> projectEnvironments = getAllProjectEnvironmentsFromInstances(instanceStates);
+        System.out.println("2:" + (System.currentTimeMillis() - now));
+        enrichProjectEnvironments(projectEnvironments, instanceStates, view.getCommonTags());
+        System.out.println("3:" + (System.currentTimeMillis() - now));
         viewResult.getProjectEnvironments().addAll(projectEnvironments);
-        
+        System.out.println("4:" + (System.currentTimeMillis() - now));
         viewResult.getEnvironments().addAll(getEnvironmentsFromProjectEnvironments(projectEnvironments));
+        System.out.println("5:" + (System.currentTimeMillis() - now));
         viewResult.getProjects().addAll(getProjectsFromProjectEnvironments(projectEnvironments));
+        System.out.println("6:" + (System.currentTimeMillis() - now));
         viewResult.getInstanceStates().addAll(instanceStates);
-        countInstances(instances, viewResult.getInstanceCount());
-        
+        System.out.println("7:" + (System.currentTimeMillis() - now));
+        countInstances(instanceStates, viewResult.getInstanceCount());
+        System.out.println("8:" + (System.currentTimeMillis() - now));
         sortViewResult(viewResult);
+        System.out.println("9:" + (System.currentTimeMillis() - now));
 
         return viewResult;
     }
@@ -189,12 +189,16 @@ public class ViewLogicImpl implements ViewLogic {
         Collections.sort(viewResult.getEnvironments(), orderComparator);
     }
 
-    private void enrichProjectEnvironments(Set<ProjectEnvironmentDto> projectEnvironments, List<InstanceDto> instances, String commonDescriptionTags) {
+    private void enrichProjectEnvironments(Set<ProjectEnvironmentDto> projectEnvironments, List<InstanceStateDto> instanceStates, String commonDescriptionTags) {
         projectEnvironments.parallelStream().forEach(projectEnvironment -> {
             LOG.debug("Enriching projectEnvironment [{}]...", projectEnvironment);
             CountDto count = projectEnvironment.getCount();
             
-            List<InstanceDto> projectEnvironmentInstances = instances.stream().filter(i -> i.getProjectEnvironment().equals(projectEnvironment)).collect(Collectors.toList());
+            List<InstanceDto> projectEnvironmentInstances = instanceStates
+                    .stream()
+                    .filter(i -> i.getInstance().getProjectEnvironment().equals(projectEnvironment))
+                    .map(InstanceStateDto::getInstance)
+                    .collect(Collectors.toList());
             if (projectEnvironmentInstances.size() == 1){
                 InstanceDto instance = projectEnvironmentInstances.get(0);
                 StateDto state = stateLogic.getLastStateForInstance(instance);
@@ -222,8 +226,8 @@ public class ViewLogicImpl implements ViewLogic {
         });
     }
 
-    private void countInstances(List<InstanceDto> instances, CountDto count) {
-        instances.stream().forEach(instance -> CountUtil.add(count, stateLogic.getLastStateForInstance(instance).getState()));
+    private void countInstances(List<InstanceStateDto> instancesStates, CountDto count) {
+        instancesStates.parallelStream().forEach(instancesState -> CountUtil.add(count, stateLogic.getLastStateForInstance(instancesState.getInstance()).getState()));
     }
 
     private Set<EnvironmentDto> getEnvironmentsFromProjectEnvironments(Set<ProjectEnvironmentDto> projectEnvironments) {
@@ -248,8 +252,8 @@ public class ViewLogicImpl implements ViewLogic {
     }
 
     
-    private Set<ProjectEnvironmentDto> getAllProjectEnvironmentsFromInstances(List<InstanceDto> instances){
-        return instances.stream().map(InstanceDto::getProjectEnvironment).distinct().collect(Collectors.toSet());
+    private Set<ProjectEnvironmentDto> getAllProjectEnvironmentsFromInstances(List<InstanceStateDto> instanceStates){
+        return instanceStates.stream().map(instanceState -> instanceState.getInstance().getProjectEnvironment()).distinct().collect(Collectors.toSet());
     }
   
 

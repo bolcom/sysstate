@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Stack;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -196,8 +197,8 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return ListConverter.convert(instanceConverter, instanceDao.getInstances());
     }
 
-    public InstanceDto getInstance(final Long instanceId) {
-        return  OptionalConverter.fromOptional(instanceDao.getInstance(instanceId), instanceConverter);
+    public Optional<InstanceDto> getInstance(final Long instanceId) {
+        return OptionalConverter.convert(instanceDao.getInstance(instanceId), instanceConverter);
     }
 
   
@@ -285,8 +286,8 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     }
 
     @Cacheable(value = "filterInstanceCache")
-    public List<InstanceDto> getInstances(final FilterDto filter) {
-        return handleFilterData(filter).getResults();
+    public List<Long> getInstancesKeys(FilterDto filter) {
+        return handleFilterData(filter).getResults().stream().map(InstanceDto::getId).collect(Collectors.toList());
     }
 
 

@@ -10,7 +10,7 @@
 			</#if>
 			
 			<#list viewResult.environments as environment>
-				<th id="col_env_${environment.id}" class="col_env <#if !environment_has_next>top_right</#if>"><a href="${contextPath}/filter/environment/${environment.id?c}/index.html" >${environment.name}</a></th>
+				<th id="col_env_${environment.id}" class="col_env <#if !environment_has_next>top_right</#if>"><a href="${contextPath}/filter/index.html?environments=${environment.id?c}" >${environment.name}</a></th>
 			</#list>
 		</tr>
 	</thead>
@@ -19,7 +19,7 @@
 			<tr id="row_prj_${project.id}" class="row_prj <#if project_index % 2 == 0>row_prj_odd<#else>row_prj_even</#if>">
 				<#if showProjectColumn!true>
 					<th class="row_prj_name">
-						<a href="${contextPath}/filter/project/${project.id?c}/index.html" >
+						<a href="${contextPath}/filter/index.html?projects=${project.id?c}/index.html" >
 							${project.name}
 						</a>
 					</th>

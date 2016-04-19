@@ -67,8 +67,10 @@ public class TemplateController {
             TemplateDto template = templateLogic.getTemplate(name);
             response.addHeader("Content-Type", template.getContentType());
             Map<String, Object> context = new HashMap<String, Object>();
-            ViewResultDto viewResult =  viewLogic.getViewResults(view);
-            context.put("viewResult",viewResult);
+            if (template.getIncludeViewResults()){
+                ViewResultDto viewResult =  viewLogic.getViewResults(view);
+                context.put("viewResult",viewResult);
+            }
             context.put("view", view);
             context.put("contextPath", request.getContextPath());
             templateLogic.writeTemplate(template, context, response.getWriter());

@@ -54,8 +54,7 @@ public class InstanceDaoImpl implements InstanceDao {
     }
 
     public Optional<Instance> getInstance(final Long instanceId) {
-        Instance result = entityManager.find(Instance.class, instanceId);
-        return Optional.ofNullable(result);
+        return Optional.ofNullable(entityManager.find(Instance.class, instanceId));
 
     }
 

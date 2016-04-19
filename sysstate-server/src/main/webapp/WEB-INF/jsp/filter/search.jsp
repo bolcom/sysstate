@@ -146,7 +146,7 @@ $(function(){
 			</sc:authorize>
 		</h2>
 		<c:choose>
-			<c:when test="${fn:length(instances) == 0 }">
+			<c:when test="${fn:length(instanceStates) == 0 }">
 				No results found for Search. Use the search to define your filter<sc:authorize url="/instance/create">, create a <a href="${contextPath}/instance/create.html?projectId=${project.id}&environmentId=${environment.id}">new instance</a></sc:authorize>
 				 or start with a <a href="${contextPath}/filter/preset/new.html">blank</a> filter.
 			</c:when>
@@ -164,9 +164,9 @@ $(function(){
 							<th class="table-header-options line-left "><a href="">Options</a></th>
 						</tr>
 						<c:set var="index" value="0"/>
-							<c:forEach var="instance" items="${instances}" varStatus="varStatInstance" >
-								<c:set var="instance" value="${instance }" scope="request"/>
-								
+							<c:forEach var="instanceState" items="${instanceStates}" varStatus="varStatInstance" >
+								<c:set var="instance" value="${instanceState.instance }" scope="request"/>
+								<c:set var="state" value="${instanceState.state }" scope="request"/>
 								<jsp:include page="/WEB-INF/jsp/common/instance.jsp">
 									<jsp:param name="alternateRow" value="${(varStatInstance.index)%2 eq 0 }"/>
 									<jsp:param name="id" value="checkBox"/>

@@ -1,6 +1,7 @@
 package nl.unionsoft.sysstate.web.rest.controller;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -86,7 +87,12 @@ public class InstanceRestController {
     @RequestMapping(value = "/instance/{instanceId}", method = RequestMethod.GET)
     public Instance getInstance(@PathVariable("instanceId") final Long instanceId) {
 
-        InstanceDto dto = instanceLogic.getInstance(instanceId);
+        
+        Optional<InstanceDto> optInstance = instanceLogic.getInstance(instanceId);
+        if (!optInstance.isPresent()){
+            throw new IllegalStateException("No instance could be found for id [" + instanceId + "]");
+        }
+        InstanceDto dto = optInstance.get();
         Instance instance = instanceConverter.convert(dto);
         instance.setState(stateConverter.convert(stateLogic.getLastStateForInstance(dto)));
         return instance;
@@ -99,7 +105,12 @@ public class InstanceRestController {
         }
         InstanceDto instanceDto = convert(instance);
         Long id = instanceLogic.createOrUpdateInstance(instanceDto);
-        return instanceConverter.convert(instanceLogic.getInstance(id));
+        
+        Optional<InstanceDto> optInstance = instanceLogic.getInstance(id);
+        if (!optInstance.isPresent()){
+            throw new IllegalStateException("Unable to fetch just created instance with id [" + id +"]");
+        }
+        return instanceConverter.convert(optInstance.get());
     }
 
     @RequestMapping(value = "/instance", method = RequestMethod.PUT)

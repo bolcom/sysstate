@@ -2,14 +2,10 @@ package nl.unionsoft.sysstate.web.mvc.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import nl.unionsoft.sysstate.common.dto.InstanceDto;
-import nl.unionsoft.sysstate.common.logic.InstanceLogic;
-import nl.unionsoft.sysstate.dto.MessageDto;
-import nl.unionsoft.sysstate.logic.MessageLogic;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -18,6 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
+import nl.unionsoft.sysstate.common.dto.InstanceDto;
+import nl.unionsoft.sysstate.common.logic.InstanceLogic;
+import nl.unionsoft.sysstate.dto.MessageDto;
+import nl.unionsoft.sysstate.logic.MessageLogic;
 
 @Controller()
 public class InstanceMultiController {
@@ -34,16 +35,20 @@ public class InstanceMultiController {
 
         if (instanceIds != null) {
             for (final Long instanceId : instanceIds) {
-                final InstanceDto instance = instanceLogic.getInstance(instanceId);
-                if (StringUtils.equalsIgnoreCase("disable", action)) {
-                    instance.setEnabled(false);
-                    messageLogic.addUserMessage(new MessageDto("Instance with id '" + instanceId + "' disabled!", MessageDto.GREEN));
-                } else if (StringUtils.equalsIgnoreCase("enable", action)) {
-                    instance.setEnabled(true);
-                    messageLogic.addUserMessage(new MessageDto("Instance with id '" + instanceId + "' enabled!", MessageDto.GREEN));
+
+                Optional<InstanceDto> optInstance = instanceLogic.getInstance(instanceId);
+                if (optInstance.isPresent()) {
+                    final InstanceDto instance = optInstance.get();
+                    if (StringUtils.equalsIgnoreCase("disable", action)) {
+                        instance.setEnabled(false);
+                        messageLogic.addUserMessage(new MessageDto("Instance with id '" + instanceId + "' disabled!", MessageDto.GREEN));
+                    } else if (StringUtils.equalsIgnoreCase("enable", action)) {
+                        instance.setEnabled(true);
+                        messageLogic.addUserMessage(new MessageDto("Instance with id '" + instanceId + "' enabled!", MessageDto.GREEN));
+                    }
+                    instanceLogic.createOrUpdateInstance(instance);
+                    instanceLogic.queueForUpdate(instanceId);
                 }
-                instanceLogic.createOrUpdateInstance(instance);
-                instanceLogic.queueForUpdate(instanceId);
             }
         }
 
@@ -68,7 +73,12 @@ public class InstanceMultiController {
         final ModelAndView modelAndView = new ModelAndView("multi-delete-instance-manager");
         if (instanceIds != null) {
             for (final Long instanceId : instanceIds) {
-                instancesToDelete.add(instanceLogic.getInstance(instanceId));
+                Optional<InstanceDto> optInstance = instanceLogic.getInstance(instanceId);
+                if (optInstance.isPresent()) {
+                    final InstanceDto instance = optInstance.get();
+                    instancesToDelete.add(instance);
+                }
+                
             }
         }
         modelAndView.addObject("instances", instancesToDelete);

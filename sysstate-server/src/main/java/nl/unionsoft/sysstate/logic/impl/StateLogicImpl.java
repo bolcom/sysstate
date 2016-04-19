@@ -1,10 +1,12 @@
 package nl.unionsoft.sysstate.logic.impl;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -243,6 +245,14 @@ public class StateLogicImpl implements StateLogic {
     @Override
     public StateDto getLastStateForInstance(InstanceDto instance, StateType stateType) {
         return OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instance.getId(), stateType), stateConverter);
+    }
+
+    @Override
+    public Map<StateType, StateDto> getLastStateForInstancePerType(InstanceDto instance) {
+        Arrays.stream(StateType.values()).parallel().collect( st -> Collectors.toMap(StateType::name, getLastStateForInstance(instance, st)));
+        
+        
+
     }
 
 }

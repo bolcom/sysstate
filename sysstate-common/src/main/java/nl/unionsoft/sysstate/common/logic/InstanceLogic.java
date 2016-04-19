@@ -1,6 +1,7 @@
 package nl.unionsoft.sysstate.common.logic;
 
 import java.util.List;
+import java.util.Optional;
 
 import nl.unionsoft.common.list.model.ListRequest;
 import nl.unionsoft.common.list.model.ListResponse;
@@ -16,7 +17,7 @@ public interface InstanceLogic {
 
     public List<InstanceDto> getInstances();
 
-    public InstanceDto getInstance(Long instanceId);
+    public Optional<InstanceDto> getInstance(Long instanceId);
 
     public Long createOrUpdateInstance(InstanceDto instance);
 
@@ -32,7 +33,7 @@ public interface InstanceLogic {
 
     public ListResponse<InstanceDto> getInstances(ListRequest listRequest);
 
-    public List<InstanceDto> getInstances(FilterDto filter);
+    public List<Long> getInstancesKeys(FilterDto filter);
 
     public void addTriggerJob(final long instanceId);
     

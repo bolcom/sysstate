@@ -53,7 +53,7 @@ public class ProjectEnvironmentRestController {
 
     @RequestMapping(value = "/projectenvironment", method = RequestMethod.GET)
     public ProjectEnvironment getProjectEnvironment(@RequestParam("projectName") String projectName, @RequestParam("environmentName") String environmentName,
-            @RequestParam(value = "state", required = false, defaultValue = "CACHED") StateBehaviour state) {
+            @RequestParam(value = "state", required = false, defaultValue = "CACHED") StateBehaviour stateBehaviour) {
 
         ProjectEnvironmentDto projectEnvironmentDto = projectEnvironmentLogic.getProjectEnvironment(projectName, environmentName);
 
@@ -63,16 +63,14 @@ public class ProjectEnvironmentRestController {
 
         // @formatter:off
         List<Instance> instances = instanceLogic.getInstancesForProjectEnvironment(projectEnvironmentDto.getId()).stream().map(dto -> {
-            Instance instance = instanceConverter.convert(dto);
-            StateDto instanceState = stateLogic.getLastStateForInstance(dto);
+            Instance instance = instanceConverter.convert(dto, new Integer[] {});
+            StateDto instanceState = stateLogic.getLastStateForInstance(dto, stateBehaviour);
             instance.setState(stateConverter.convert(instanceState));
+            //FIXME: Don't modify projectEnvironment here... 
+            projectEnvironmentDto.setState(StateType.transfer(projectEnvironmentDto.getState(), instanceState.getState()));
             return instance;
         }).collect(Collectors.toList());
-
-        instances.stream().forEach(instance -> {
-            // FIXME: Missing data here...
-            // projectEnvironmentDto.setState(StateType.transfer(projectEnvironmentDto.getState(),instanceState.getState()));
-        });
+        // @formatter:on
 
         ProjectEnvironment projectEnvironment = projectEnvironmentConverter.convert(projectEnvironmentDto);
 

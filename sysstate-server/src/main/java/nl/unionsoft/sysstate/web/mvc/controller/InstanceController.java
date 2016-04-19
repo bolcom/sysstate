@@ -1,5 +1,7 @@
 package nl.unionsoft.sysstate.web.mvc.controller;
 
+import java.util.Optional;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -100,15 +102,25 @@ public class InstanceController {
     @RequestMapping(value = "/instance/{instanceId}/details", method = RequestMethod.GET)
     public ModelAndView details(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("details-instance-clear");
-        modelAndView.addObject("instance", instanceLogic.getInstance(instanceId));
-        modelAndView.addObject("state", stateLogic.getLastStateForInstance(instanceLogic.getInstance(instanceId)));
+        
+        Optional<InstanceDto> optInstance =  instanceLogic.getInstance(instanceId);
+        if (!optInstance.isPresent()){
+            throw new IllegalStateException("No instance could be found for instanceId [" + instanceId + "]");
+        }
+        InstanceDto instance = optInstance.get();
+        modelAndView.addObject("instance", instance);
+        modelAndView.addObject("state", stateLogic.getLastStateForInstance(instance));
         return modelAndView;
     }
 
     @RequestMapping(value = "/instance/{instanceId}/copy", method = RequestMethod.GET)
     public ModelAndView copy(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("copy-update-instance-manager");
-        final InstanceDto source = instanceLogic.getInstance(instanceId);
+        Optional<InstanceDto> optInstance =  instanceLogic.getInstance(instanceId);
+        if (!optInstance.isPresent()){
+            throw new IllegalStateException("No instance could be found for instanceId [" + instanceId + "]");
+        }
+        InstanceDto source = optInstance.get();
         source.setId(null);
         modelAndView.addObject("propertyMetas", instanceLogic.getPropertyMeta(source.getPluginClass()));
         modelAndView.addObject("instance", source);
@@ -124,7 +136,11 @@ public class InstanceController {
     @RequestMapping(value = "/instance/{instanceId}/update", method = RequestMethod.GET)
     public ModelAndView getUpdate(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("create-update-instance-manager");
-        InstanceDto instance = instanceLogic.getInstance(instanceId);
+        Optional<InstanceDto> optInstance =  instanceLogic.getInstance(instanceId);
+        if (!optInstance.isPresent()){
+            throw new IllegalStateException("No instance could be found for instanceId [" + instanceId + "]");
+        }
+        InstanceDto instance = optInstance.get();        
         modelAndView.addObject("instance", instance);
         modelAndView.addObject("propertyMetas", instanceLogic.getPropertyMeta(instance.getPluginClass()));
         addCommons(modelAndView);
@@ -139,7 +155,11 @@ public class InstanceController {
 
     @RequestMapping(value = "/instance/{instanceId}/toggle/enabled", method = RequestMethod.GET)
     public ModelAndView toggleEnabled(@PathVariable(value = "instanceId") final Long instanceId) {
-        final InstanceDto instance = instanceLogic.getInstance(instanceId);
+        Optional<InstanceDto> optInstance =  instanceLogic.getInstance(instanceId);
+        if (!optInstance.isPresent()){
+            throw new IllegalStateException("No instance could be found for instanceId [" + instanceId + "]");
+        }
+        InstanceDto instance = optInstance.get();
         instance.setEnabled(!instance.isEnabled());
         instanceLogic.createOrUpdateInstance(instance);
         instanceLogic.queueForUpdate(instanceId);

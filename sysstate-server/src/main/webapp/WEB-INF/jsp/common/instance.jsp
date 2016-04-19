@@ -9,7 +9,6 @@
 <c:set var="projectEnvironment" value="${instance.projectEnvironment}"/>
 <c:set var="project" value="${projectEnvironment.project}"/>
 <c:set var="environment" value="${projectEnvironment.environment}"/>
-
 <tr class="${param.alternateRow ? '' : 'alternate-row' }">
 	<c:if test="${param.id == 'checkBox'}">
 		<td><input type="checkbox" name="instanceId" value="${instance.id}"/></td>
