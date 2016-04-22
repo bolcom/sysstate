@@ -9,7 +9,6 @@ import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.common.dto.ViewResultDto;
 
 public interface ViewLogic {
-    public ListResponse<ViewDto> getViews(ListRequest listRequest);
 
     public List<ViewDto> getViews();
 

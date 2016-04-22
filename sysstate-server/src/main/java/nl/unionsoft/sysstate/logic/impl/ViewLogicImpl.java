@@ -87,10 +87,6 @@ public class ViewLogicImpl implements ViewLogic {
     @Named("viewConverter")
     private Converter<ViewDto, View> viewConverter;
 
-    public ListResponse<ViewDto> getViews(ListRequest listRequest) {
-        return listRequestDao.getResults(View.class, listRequest, viewConverter);
-    }
-
     public List<ViewDto> getViews() {
         final ListRequest listRequest = new ListRequest();
         return listRequestDao.getResults(View.class, listRequest, viewConverter).getResults();
@@ -161,23 +157,23 @@ public class ViewLogicImpl implements ViewLogic {
         final ViewResultDto viewResult = new ViewResultDto(view);
         Long now = System.currentTimeMillis();
         final List<InstanceStateDto> instanceStates = instanceStateLogic.getInstanceStates(filter);
-        System.out.println("1:" + (System.currentTimeMillis() - now));
+        //System.out.println("1:" + (System.currentTimeMillis() - now));
         Set<ProjectEnvironmentDto> projectEnvironments = getAllProjectEnvironmentsFromInstances(instanceStates);
-        System.out.println("2:" + (System.currentTimeMillis() - now));
+        //System.out.println("2:" + (System.currentTimeMillis() - now));
         enrichProjectEnvironments(projectEnvironments, instanceStates, view.getCommonTags());
-        System.out.println("3:" + (System.currentTimeMillis() - now));
+        //System.out.println("3:" + (System.currentTimeMillis() - now));
         viewResult.getProjectEnvironments().addAll(projectEnvironments);
-        System.out.println("4:" + (System.currentTimeMillis() - now));
+        //System.out.println("4:" + (System.currentTimeMillis() - now));
         viewResult.getEnvironments().addAll(getEnvironmentsFromProjectEnvironments(projectEnvironments));
-        System.out.println("5:" + (System.currentTimeMillis() - now));
+        //System.out.println("5:" + (System.currentTimeMillis() - now));
         viewResult.getProjects().addAll(getProjectsFromProjectEnvironments(projectEnvironments));
-        System.out.println("6:" + (System.currentTimeMillis() - now));
+        //System.out.println("6:" + (System.currentTimeMillis() - now));
         viewResult.getInstanceStates().addAll(instanceStates);
-        System.out.println("7:" + (System.currentTimeMillis() - now));
+        //System.out.println("7:" + (System.currentTimeMillis() - now));
         countInstances(instanceStates, viewResult.getInstanceCount());
-        System.out.println("8:" + (System.currentTimeMillis() - now));
+        //System.out.println("8:" + (System.currentTimeMillis() - now));
         sortViewResult(viewResult);
-        System.out.println("9:" + (System.currentTimeMillis() - now));
+        //System.out.println("9:" + (System.currentTimeMillis() - now));
 
         return viewResult;
     }

@@ -31,8 +31,6 @@ public interface InstanceLogic {
     
     public List<InstanceDto> getInstancesForEnvironment(Long environmentId);
 
-    public ListResponse<InstanceDto> getInstances(ListRequest listRequest);
-
     public List<Long> getInstancesKeys(FilterDto filter);
 
     public void addTriggerJob(final long instanceId);

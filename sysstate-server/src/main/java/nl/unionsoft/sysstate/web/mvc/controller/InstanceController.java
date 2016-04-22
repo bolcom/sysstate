@@ -110,6 +110,7 @@ public class InstanceController {
         InstanceDto instance = optInstance.get();
         modelAndView.addObject("instance", instance);
         modelAndView.addObject("state", stateLogic.getLastStateForInstance(instance));
+        modelAndView.addObject("statePerType", stateLogic.getLastStateForInstancePerType(instance));
         return modelAndView;
     }
 

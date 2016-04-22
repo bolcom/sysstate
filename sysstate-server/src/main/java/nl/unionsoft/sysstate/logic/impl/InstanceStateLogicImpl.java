@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import org.springframework.stereotype.Service;
 
 import nl.unionsoft.sysstate.common.dto.FilterDto;
+import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.InstanceStateDto;
 import nl.unionsoft.sysstate.common.enums.StateBehaviour;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
@@ -27,6 +28,7 @@ public class InstanceStateLogicImpl implements InstanceStateLogic {
     
     @Override
     public List<InstanceStateDto> getInstanceStates(FilterDto filter) {
+        
         final List<Long> instanceKeys =  instanceLogic.getInstancesKeys(filter);
         //@formatter:off
         return instanceKeys.parallelStream()

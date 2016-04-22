@@ -249,10 +249,7 @@ public class StateLogicImpl implements StateLogic {
 
     @Override
     public Map<StateType, StateDto> getLastStateForInstancePerType(InstanceDto instance) {
-        Arrays.stream(StateType.values()).parallel().collect( st -> Collectors.toMap(StateType::name, getLastStateForInstance(instance, st)));
-        
-        
-
+        return Arrays.stream(StateType.values()).parallel().collect(Collectors.toMap( st -> st, st -> getLastStateForInstance(instance)));
     }
 
 }

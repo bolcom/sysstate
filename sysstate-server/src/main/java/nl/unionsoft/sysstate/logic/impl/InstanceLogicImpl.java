@@ -287,80 +287,9 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
 
     @Cacheable(value = "filterInstanceCache")
     public List<Long> getInstancesKeys(FilterDto filter) {
-        return handleFilterData(filter).getResults().stream().map(InstanceDto::getId).collect(Collectors.toList());
+        return instanceDao.getInstanceKeys(filter);
     }
-
-
-    private ListResponse<InstanceDto> handleFilterData(final FilterDto filter) {
-        final ListRequest listRequest = new ListRequest();
-        listRequest.setFirstResult(0);
-        listRequest.setMaxResults(ListRequest.ALL_RESULTS);
-
-        final String search = filter.getSearch();
-        if (StringUtils.isNotEmpty(search)) {
-            final GroupRestriction groupRestriction = new GroupRestriction(Rule.OR);
-            final List<Restriction> restrictions = groupRestriction.getRestrictions();
-            for (final String element : StringUtils.split(search, ' ')) {
-                restrictions.add(new ObjectRestriction(Rule.LIKE, "tags", element));
-                restrictions.add(new ObjectRestriction(Rule.LIKE, "name", element));
-                restrictions.add(new ObjectRestriction(Rule.LIKE, "homepageUrl", element));
-                restrictions.add(new ObjectRestriction(Rule.LIKE, "pluginClass", element));
-                restrictions.add(new ObjectRestriction(Rule.LIKE, "projectEnvironment.project.name", element));
-                restrictions.add(new ObjectRestriction(Rule.LIKE, "projectEnvironment.environment.name", element));
-                restrictions.add(new ObjectRestriction(Rule.LIKE, "projectEnvironment.homepageUrl", element));
-            }
-            listRequest.addRestriction(groupRestriction);
-        }
-
-        final String tags = filter.getTags();
-        if (StringUtils.isNotEmpty(tags)) {
-            final GroupRestriction groupRestriction = new GroupRestriction(Rule.OR);
-            final List<Restriction> restrictions = groupRestriction.getRestrictions();
-            for (final String element : StringUtils.split(tags, ' ')) {
-                restrictions.add(new ObjectRestriction(Rule.LIKE, "tags", element));
-                restrictions.add(new ObjectRestriction(Rule.LIKE, "projectEnvironment.project.tags", element));
-                restrictions.add(new ObjectRestriction(Rule.LIKE, "projectEnvironment.environment.tags", element));
-            }
-            listRequest.addRestriction(groupRestriction);
-        }
-
-        final List<Long> projects = filter.getProjects();
-        if (projects != null && projects.size() > 0) {
-            final GroupRestriction groupRestriction = new GroupRestriction(Rule.OR);
-            final List<Restriction> restrictions = groupRestriction.getRestrictions();
-            for (final Long project : projects) {
-                restrictions.add(new ObjectRestriction(Rule.EQ, "projectEnvironment.project.id", project));
-            }
-
-            listRequest.addRestriction(groupRestriction);
-
-        }
-
-        final List<Long> environments = filter.getEnvironments();
-        if (environments != null && environments.size() > 0) {
-
-            final GroupRestriction groupRestriction = new GroupRestriction(Rule.OR);
-            final List<Restriction> restrictions = groupRestriction.getRestrictions();
-            for (final Long environment : environments) {
-                restrictions.add(new ObjectRestriction(Rule.EQ, "projectEnvironment.environment.id", environment));
-            }
-            listRequest.addRestriction(groupRestriction);
-
-        }
-
-        final List<String> stateResolvers = filter.getStateResolvers();
-        if (stateResolvers != null && stateResolvers.size() > 0) {
-            final GroupRestriction groupRestriction = new GroupRestriction(Rule.OR);
-            final List<Restriction> restrictions = groupRestriction.getRestrictions();
-            for (final String stateResolver : stateResolvers) {
-                restrictions.add(new ObjectRestriction(Rule.EQ, "pluginClass", stateResolver));
-            }
-            listRequest.addRestriction(groupRestriction);
-        }
-
-        return getInstances(listRequest);
-    }
-
+    
     public void afterPropertiesSet() throws Exception {
         List<Instance> instances = instanceDao.getInstances();
         for (Instance instance : instances) {
