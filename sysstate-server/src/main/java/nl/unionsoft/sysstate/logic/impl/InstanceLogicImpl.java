@@ -9,46 +9,9 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Stack;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import nl.unionsoft.common.converter.Converter;
-import nl.unionsoft.common.converter.ListConverter;
-import nl.unionsoft.common.list.model.GroupRestriction;
-import nl.unionsoft.common.list.model.ListRequest;
-import nl.unionsoft.common.list.model.ListResponse;
-import nl.unionsoft.common.list.model.ObjectRestriction;
-import nl.unionsoft.common.list.model.Restriction;
-import nl.unionsoft.common.list.model.Restriction.Rule;
-import nl.unionsoft.common.list.worker.impl.BeanListRequestWorkerImpl;
-import nl.unionsoft.common.param.ParamContextLogicImpl;
-import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
-import nl.unionsoft.sysstate.common.dto.FilterDto;
-import nl.unionsoft.sysstate.common.dto.InstanceDto;
-import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
-import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
-import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.extending.ListOfValueResolver;
-import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
-import nl.unionsoft.sysstate.common.logic.InstanceLogic;
-import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
-import nl.unionsoft.sysstate.common.util.PropertyGroupUtil;
-import nl.unionsoft.sysstate.converter.InstancePropertiesConverter;
-import nl.unionsoft.sysstate.converter.OptionalConverter;
-import nl.unionsoft.sysstate.converter.StateConverter;
-import nl.unionsoft.sysstate.dao.InstanceDao;
-import nl.unionsoft.sysstate.dao.ListRequestDao;
-import nl.unionsoft.sysstate.dao.ProjectEnvironmentDao;
-import nl.unionsoft.sysstate.dao.PropertyDao;
-import nl.unionsoft.sysstate.domain.Instance;
-import nl.unionsoft.sysstate.domain.ProjectEnvironment;
-import nl.unionsoft.sysstate.job.UpdateInstanceJob;
-import nl.unionsoft.sysstate.logic.PluginLogic;
-import nl.unionsoft.sysstate.logic.StateLogic;
-import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
 import org.apache.commons.lang.StringUtils;
 import org.quartz.JobDetail;
@@ -59,13 +22,38 @@ import org.quartz.SimpleTrigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import nl.unionsoft.common.converter.Converter;
+import nl.unionsoft.common.converter.ListConverter;
+import nl.unionsoft.common.param.ParamContextLogicImpl;
+import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
+import nl.unionsoft.sysstate.common.dto.FilterDto;
+import nl.unionsoft.sysstate.common.dto.InstanceDto;
+import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
+import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
+import nl.unionsoft.sysstate.common.extending.ListOfValueResolver;
+import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
+import nl.unionsoft.sysstate.common.logic.InstanceLogic;
+import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
+import nl.unionsoft.sysstate.common.util.PropertyGroupUtil;
+import nl.unionsoft.sysstate.converter.InstancePropertiesConverter;
+import nl.unionsoft.sysstate.converter.OptionalConverter;
+import nl.unionsoft.sysstate.converter.StateConverter;
+import nl.unionsoft.sysstate.dao.InstanceDao;
+import nl.unionsoft.sysstate.dao.ProjectEnvironmentDao;
+import nl.unionsoft.sysstate.dao.PropertyDao;
+import nl.unionsoft.sysstate.domain.Instance;
+import nl.unionsoft.sysstate.domain.ProjectEnvironment;
+import nl.unionsoft.sysstate.job.UpdateInstanceJob;
+import nl.unionsoft.sysstate.logic.PluginLogic;
+import nl.unionsoft.sysstate.logic.StateLogic;
+import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
 @Service("instanceLogic")
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -80,10 +68,6 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     @Inject
     @Named("pluginLogic")
     private PluginLogic pluginLogic;
-
-    @Inject
-    @Named("listRequestDao")
-    private ListRequestDao listRequestDao;
 
     @Inject
     @Named("propertyDao")
@@ -281,11 +265,6 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return ListConverter.convert(instanceConverter, instanceDao.getInstancesForProjectAndEnvironment(projectPrefix, environmentPrefix));
     }
 
-    public ListResponse<InstanceDto> getInstances(final ListRequest listRequest) {
-        return listRequestDao.getResults(Instance.class, listRequest, instanceConverter);
-    }
-
-    @Cacheable(value = "filterInstanceCache")
     public List<Long> getInstancesKeys(FilterDto filter) {
         return instanceDao.getInstanceKeys(filter);
     }

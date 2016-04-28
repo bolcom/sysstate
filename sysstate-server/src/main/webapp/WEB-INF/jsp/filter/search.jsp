@@ -104,6 +104,11 @@ $(function(){
 					</th>
 				</tr>
 				<tr>
+					<th valign="top">State:<br/>
+						<sf:select path="states" cssClass="" multiple="true" items="${states}" size="5" cssStyle="width:100px;"/>
+					</th>
+				</tr>				
+				<tr>
 					<td valign="top">
 						<input type="submit" name="action" value="search" class="form-submit" />
 					</td>

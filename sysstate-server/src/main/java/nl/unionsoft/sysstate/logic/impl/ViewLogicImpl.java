@@ -23,8 +23,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import nl.unionsoft.common.converter.Converter;
-import nl.unionsoft.common.list.model.ListRequest;
-import nl.unionsoft.common.list.model.ListResponse;
+import nl.unionsoft.common.converter.ListConverter;
 import nl.unionsoft.sysstate.common.dto.CountDto;
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
@@ -35,14 +34,11 @@ import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.common.dto.ViewResultDto;
-import nl.unionsoft.sysstate.common.enums.StateBehaviour;
 import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceStateLogic;
 import nl.unionsoft.sysstate.common.util.SysStateStringUtils;
 import nl.unionsoft.sysstate.converter.OptionalConverter;
 import nl.unionsoft.sysstate.dao.FilterDao;
-import nl.unionsoft.sysstate.dao.ListRequestDao;
 import nl.unionsoft.sysstate.dao.TemplateDao;
 import nl.unionsoft.sysstate.dao.ViewDao;
 import nl.unionsoft.sysstate.domain.Filter;
@@ -59,10 +55,6 @@ public class ViewLogicImpl implements ViewLogic {
 
     private static final Logger LOG = LoggerFactory.getLogger(ViewLogicImpl.class);
     
-    @Inject
-    @Named("listRequestDao")
-    private ListRequestDao listRequestDao;
-
     @Inject
     @Named("viewDao")
     private ViewDao viewDao;
@@ -88,8 +80,7 @@ public class ViewLogicImpl implements ViewLogic {
     private Converter<ViewDto, View> viewConverter;
 
     public List<ViewDto> getViews() {
-        final ListRequest listRequest = new ListRequest();
-        return listRequestDao.getResults(View.class, listRequest, viewConverter).getResults();
+        return ListConverter.convert(viewConverter,  viewDao.getViews());
     }
 
     public void createOrUpdateView(ViewDto viewDto) {

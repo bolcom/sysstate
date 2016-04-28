@@ -36,6 +36,7 @@ public class InstanceStateLogicImpl implements InstanceStateLogic {
          .filter(Optional::isPresent)
          .map(Optional::get)
          .map( instance -> new InstanceStateDto(instance, stateLogic.getLastStateForInstance(instance, StateBehaviour.CACHED)))
+         .filter(instanceState -> filter.getStates() == null || filter.getStates().isEmpty() || filter.getStates().contains(instanceState.getState().getState()))
          .collect(Collectors.toList());
         //@formatter:on     
     }

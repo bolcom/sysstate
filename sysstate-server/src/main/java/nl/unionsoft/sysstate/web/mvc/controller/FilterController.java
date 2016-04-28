@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import nl.unionsoft.sysstate.common.dto.FilterDto;
+import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceStateLogic;
@@ -31,8 +32,7 @@ import nl.unionsoft.sysstate.logic.StateResolverLogic;
 public class FilterController {
 
     public static final String REDIR_PATH = "/filter/index.html";
-    private static final String REDIRECT_FILTER_INDEX_HTML = "redirect:/filter/index.html";
-    private static final String FILTER = "searchFilter";
+
     @Inject
     @Named("instanceLogic")
     private InstanceLogic instanceLogic;
@@ -67,6 +67,7 @@ public class FilterController {
         modelAndView.addObject("instanceStates", instanceStateLogic.getInstanceStates(filter));
         modelAndView.addObject("filter", filter);
         modelAndView.addObject("stateResolvers", stateResolverLogic.getStateResolverNames());
+        modelAndView.addObject("states", StateType.values());
         modelAndView.addObject("environments", environmentLogic.getEnvironments());
         modelAndView.addObject("projects", projectLogic.getProjects());
         if (StringUtils.equals("save", action)) {

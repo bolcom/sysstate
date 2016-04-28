@@ -1,5 +1,6 @@
 package nl.unionsoft.sysstate.dao.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -11,6 +12,7 @@ import nl.unionsoft.common.converter.Converter;
 import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.dao.ViewDao;
 import nl.unionsoft.sysstate.domain.Filter;
+import nl.unionsoft.sysstate.domain.Instance;
 import nl.unionsoft.sysstate.domain.Template;
 import nl.unionsoft.sysstate.domain.View;
 
@@ -41,5 +43,10 @@ public class ViewDaoImpl implements ViewDao {
 
     public Optional<View> getView(Long viewId) {
         return Optional.ofNullable(entityManager.find(View.class, viewId));
+    }
+
+    @Override
+    public List<View> getViews() {
+        return entityManager.createQuery("FROM View", View.class).setHint("org.hibernate.cacheable", true).getResultList();
     }
 }

@@ -3,8 +3,6 @@ package nl.unionsoft.sysstate.common.logic;
 import java.util.List;
 import java.util.Optional;
 
-import nl.unionsoft.common.list.model.ListRequest;
-import nl.unionsoft.common.list.model.ListResponse;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
