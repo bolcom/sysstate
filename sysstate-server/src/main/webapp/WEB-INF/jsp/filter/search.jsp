@@ -60,7 +60,9 @@ $(function(){
 <div id="filter" style="float:left;width:220px;" >
 	<div style="width:200px;padding-bottom:20px;">
 		<h3>Presets</h3>
-		<a href="${contextPath}/filter/index.html">Clear Filter</a>
+		<a href="${contextPath}/filter/index.html">Clear Filter</a> |
+		<a href="${contextPath}/filter/index.html?states=UNSTABLE&states=ERROR">Alerts</a> | 
+		<a href="${contextPath}/filter/index.html?states=STABLE">Stable</a>
 	</div>
 	<div style="border-top:1px Solid Gray;width:200px;padding-top:10px;">
 		<h3>Search</h3>
@@ -113,6 +115,7 @@ $(function(){
 						<input type="submit" name="action" value="search" class="form-submit" />
 					</td>
 				</tr>
+				<sc:authorize access="hasAnyRole('ADMIN','EDITOR')">	
 				<tr>
 					<td><h3>${filter.id != null ? 'Update' : 'Save' } Filter ${filter.name}</h3></td>
 				</tr>
@@ -126,19 +129,11 @@ $(function(){
 						<input type="submit" name="action" value="save" class="form-submit" />
 					</td>
 				</tr>
+				</sc:authorize>
 				
 			</table>
 		</sf:form>
 	</div>
-	<sc:authorize url="/filter/save" method="POST">			
-		<div style="border-top:1px Solid Gray;width:200px;padding-top:10px;">
-
-			<sf:form commandName="filter" method="POST" action="${contextPath}/filter/save.html">
-				<table border="0" cellpadding="0" cellspacing="0"  id="id-form">
-				</table>
-			</sf:form>
-		</div>
-	</sc:authorize>
 </div>
 <div style="float:left; width:900px">
 	<div id="instances">
@@ -153,7 +148,7 @@ $(function(){
 		<c:choose>
 			<c:when test="${fn:length(instanceStates) == 0 }">
 				No results found for Search. Use the search to define your filter<sc:authorize url="/instance/create">, create a <a href="${contextPath}/instance/create.html?projectId=${project.id}&environmentId=${environment.id}">new instance</a></sc:authorize>
-				 or start with a <a href="${contextPath}/filter/preset/new.html">blank</a> filter.
+				 or start with a <a href="${contextPath}/filter/index.html">blank</a> filter.
 			</c:when>
 			<c:otherwise>
 				<form name="instancesForm" action="${contextPath}/instance/multi.html" id="instancesForm" method="POST">

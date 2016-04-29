@@ -11,6 +11,15 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import nl.unionsoft.common.list.model.ListRequest;
 import nl.unionsoft.common.list.model.ListResponse;
 import nl.unionsoft.sysstate.Constants;
@@ -33,18 +42,6 @@ import nl.unionsoft.sysstate.domain.State;
 import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
-
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service("stateLogic")
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -243,13 +240,17 @@ public class StateLogicImpl implements StateLogic {
     }
 
     @Override
-    public StateDto getLastStateForInstance(InstanceDto instance, StateType stateType) {
-        return OptionalConverter.fromOptional(stateDao.getLastStateForInstance(instance.getId(), stateType), stateConverter);
+    public Optional<StateDto> getLastStateForInstance(InstanceDto instance, StateType stateType) {
+        return OptionalConverter.convert(stateDao.getLastStateForInstance(instance.getId(), stateType), stateConverter);
     }
 
     @Override
-    public Map<StateType, StateDto> getLastStateForInstancePerType(InstanceDto instance) {
-        return Arrays.stream(StateType.values()).parallel().collect(Collectors.toMap( st -> st, st -> getLastStateForInstance(instance)));
+    public List<StateDto> getLastStateForInstanceForEachType(InstanceDto instance) {
+        return Arrays.stream(StateType.values()).parallel()
+                .map(st -> getLastStateForInstance(instance, st))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
     }
 
 }

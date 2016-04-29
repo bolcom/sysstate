@@ -16,7 +16,7 @@
 			<td>
 				<a href="${project.id}/update.html?rUrl=${contextPath}/project/index.html">Update</a> |
 				<a href="${project.id}/delete.html?rUrl=${contextPath}/project/index.html">Delete</a> |
-				<a href="${contextPath}/filter/project/${project.id}/index.html">Instances</a>
+				<a href="${contextPath}/filter/index.html?projects=${project.id}">Instances</a>
 			</td>
 		</tr>
 	</c:forEach>

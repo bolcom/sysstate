@@ -91,14 +91,6 @@ public class InstanceController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/instance/{instanceId}/configuration", method = RequestMethod.GET)
-    public ModelAndView configuration(@PathVariable("instanceId") final Long instanceId) {
-        final ModelAndView modelAndView = new ModelAndView("message-clear");
-        // final InstanceDto instance = instanceLogic.getInstance(instanceId);
-        // modelAndView.addObject("message", instance.getConfiguration());
-        return modelAndView;
-    }
-
     @RequestMapping(value = "/instance/{instanceId}/details", method = RequestMethod.GET)
     public ModelAndView details(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("details-instance-clear");
@@ -110,7 +102,7 @@ public class InstanceController {
         InstanceDto instance = optInstance.get();
         modelAndView.addObject("instance", instance);
         modelAndView.addObject("state", stateLogic.getLastStateForInstance(instance));
-        modelAndView.addObject("statePerType", stateLogic.getLastStateForInstancePerType(instance));
+        modelAndView.addObject("statesPerType", stateLogic.getLastStateForInstanceForEachType(instance));
         return modelAndView;
     }
 

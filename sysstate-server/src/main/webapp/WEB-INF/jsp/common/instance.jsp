@@ -25,7 +25,7 @@
 		</c:if>
 		<c:choose>
 			<c:when test="${param.options }">
-				<a href="${contextPath}/filter/project/${project.id}/index.html"><c:out value="${project.name}"/></a>-<a href="${contextPath}/filter/environment/${environment.id}/index.html"><c:out value="${environment.name}"/></a>
+				<a href="${contextPath}/filter/index.html?projects=${project.id}"><c:out value="${project.name}"/></a>-<a href="${contextPath}/filter/index.html?environments=${environment.id}"><c:out value="${environment.name}"/></a>
 				<sc:authorize url="/projectEnvironment/project/${project.id}/environment/${environment.id}/update">
 					<a href="${contextPath}/projectEnvironment/project/${project.id}/environment/${environment.id}/update.html"><img src="${contextPath}/images/edit.gif" /></a>
 				</sc:authorize>
@@ -71,10 +71,6 @@
 			</span><a href="${instance.homepageUrl}" target="_BLANK" title=""> ${state.state}</a><br/>
 			<a href="${instance.homepageUrl}" target="_BLANK">${state.description}</a><br/>
 			
-			Rating: 
-			<jsp:include page="/WEB-INF/jsp/common/rating.jsp">
-				<jsp:param name="rating" value="${state.rating}"/>
-			</jsp:include>
 			<br/>
 		</td>
 	</c:if>
@@ -86,9 +82,6 @@
 	</td>
 	<c:if test="${param.options}">
 		<td>
-			<sc:authorize url="/instance/${instance.id}/configuration">
-				<a class="inline" href="${contextPath}/instance/${instance.id}/configuration.html" title="Configuration"><img src="${contextPath}/images/gear.gif" /></a>
-			</sc:authorize> 
 			 <sc:authorize url="/instance/${instance.id}/refresh">
 				<a href="${contextPath}/instance/${instance.id}/refresh.html#${instance.id}" title="Refresh Instance"><img src="${contextPath}/images/refresh.gif" /></a>
 			</sc:authorize>

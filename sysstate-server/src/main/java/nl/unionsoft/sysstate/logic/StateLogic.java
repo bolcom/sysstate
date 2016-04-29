@@ -1,6 +1,8 @@
 package nl.unionsoft.sysstate.logic;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
@@ -21,8 +23,8 @@ public interface StateLogic {
     
     public StateDto getLastStateForInstance(InstanceDto instance, StateBehaviour stateBehaviour);
 
-    public StateDto getLastStateForInstance(InstanceDto instance, StateType stable);
+    public Optional<StateDto> getLastStateForInstance(InstanceDto instance, StateType stable);
     
-    public Map<StateType, StateDto> getLastStateForInstancePerType(InstanceDto instance);
+    public List<StateDto> getLastStateForInstanceForEachType(InstanceDto instance);
     
 }

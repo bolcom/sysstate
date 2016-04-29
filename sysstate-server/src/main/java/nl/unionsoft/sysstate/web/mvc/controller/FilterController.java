@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.commons.lang.StringUtils;
@@ -24,6 +25,8 @@ import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceStateLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
 import nl.unionsoft.sysstate.dto.MessageDto;
+import nl.unionsoft.sysstate.dto.UserDto;
+import nl.unionsoft.sysstate.dto.UserDto.Role;
 import nl.unionsoft.sysstate.logic.FilterLogic;
 import nl.unionsoft.sysstate.logic.MessageLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
@@ -61,20 +64,29 @@ public class FilterController {
     private InstanceStateLogic instanceStateLogic;
 
     @RequestMapping(value = "/filter/index", method = RequestMethod.GET)
-    public ModelAndView index(@Valid @ModelAttribute("filter") final FilterDto filter, @RequestParam(required = false, value = "action") String action) {
-
-        ModelAndView modelAndView = new ModelAndView("search-filter-manager");
-        modelAndView.addObject("instanceStates", instanceStateLogic.getInstanceStates(filter));
-        modelAndView.addObject("filter", filter);
-        modelAndView.addObject("stateResolvers", stateResolverLogic.getStateResolverNames());
-        modelAndView.addObject("states", StateType.values());
-        modelAndView.addObject("environments", environmentLogic.getEnvironments());
-        modelAndView.addObject("projects", projectLogic.getProjects());
-        if (StringUtils.equals("save", action)) {
+    public ModelAndView index(@Valid @ModelAttribute("filter") final FilterDto filter, 
+            @RequestParam(required = false, value = "action") String action,
+            HttpServletRequest httpServletRequest) {
+       
+        if (StringUtils.equals("save", action) && saveAllowed(httpServletRequest)) {
             filterLogic.createOrUpdate(filter);
-            messageLogic.addUserMessage(new MessageDto("FilterDto saved as '" + filter.getName() + "'.", MessageDto.GREEN));
+            messageLogic.addUserMessage(new MessageDto("Filter saved as '" + filter.getName() + "'.", MessageDto.GREEN));
+            return filterRedirectModelAndView(filter);
+        } else {
+            ModelAndView modelAndView = new ModelAndView("search-filter-manager");
+            modelAndView.addObject("instanceStates", instanceStateLogic.getInstanceStates(filter));
+            modelAndView.addObject("filter", filter);
+            modelAndView.addObject("stateResolvers", stateResolverLogic.getStateResolverNames());
+            modelAndView.addObject("states", StateType.values());
+            modelAndView.addObject("environments", environmentLogic.getEnvironments());
+            modelAndView.addObject("projects", projectLogic.getProjects());
+            return modelAndView;            
         }
-        return modelAndView;
+
+    }
+    
+    private boolean saveAllowed(HttpServletRequest httpServletRequest){
+        return httpServletRequest.isUserInRole(Role.ADMIN.prefixedRole()) ||  httpServletRequest.isUserInRole(Role.EDITOR.prefixedRole());
     }
 
     @RequestMapping(value = "/filter/load/{filterId}/index.html", method = RequestMethod.GET)

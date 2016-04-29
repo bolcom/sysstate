@@ -249,15 +249,11 @@ $('#d').trigger('change');
 			
 			<!--  start top-search--> 
 			<div id="top-search">
-				<form action="${contextPath}/manager/search.html" method="post" id="search-all-form">
+				<form action="${contextPath}/filter/index.html" method="get" id="search-all-form">
+					<sc:csrfInput/>
 					<table border="0" cellpadding="0" cellspacing="0">
 						<tr>
 							<td><input type="text" name="search" value="Search" onblur="if (this.value=='') { this.value='Search'; }" onfocus="if (this.value=='Search') { this.value=''; }" class="top-search-inp" /></td>
-							<td>
-								<select  class="styledselect" name="where">
-									<option value="instances">Instances</option>
-								</select> 
-							</td>
 							<td>
 								<input type="image" src="${contextPath}/images/shared/top_search_btn.gif" id="search-all-form-submit" />
 							</td>

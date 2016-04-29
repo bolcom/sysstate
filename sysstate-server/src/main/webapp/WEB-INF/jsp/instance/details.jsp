@@ -3,7 +3,6 @@
 <%@taglib prefix="sf" uri="http://www.springframework.org/tags/form" %>
 <h1>Instance</h1>
 <h3>Details</h3>
-
 <table id="instances-table">
 	<tr>
 		<th class="table-header-repeat line-left">&nbsp;</th>
@@ -20,7 +19,22 @@
 		<jsp:param name="state" value="true"/>
 	</jsp:include>
 </table>
-<h3>Last States</h3>
+
+<h3>Configuration</h3>
+<table id="instances-configuration-table">
+	<tr>
+		<th class="table-header-repeat line-left"><a href="">Property</a></th>
+		<th class="table-header-repeat line-left"><a href="">Value</a></th>
+	</tr>
+	
+	<c:forEach var="conf" items="${instance.configuration}">
+		<tr class="${param.alternateRow ? '' : 'alternate-row' }">
+			<td><c:out value="${conf.key}" escapeXml="true"/></td>
+			<td><c:out value="${conf.value}" escapeXml="true"/></td>
+		</tr>
+	</c:forEach>
+</table>
+<h3>Last States Per Type</h3>
 <table id="states-table">
 	<tr>
 		<th class="table-header-repeat line-left">&nbsp;</th>
@@ -29,34 +43,13 @@
 		<th class="table-header-repeat line-left"><a href="">responseTime</a></th>
 		<th class="table-header-repeat line-left"><a href="">creationDate</a></th>
 		<th class="table-header-repeat line-left"><a href="">lastUpdate</a></th>
-		<th class="table-header-repeat line-left"><a href="">rating</a></th>
 	</tr>
-	<c:set var="state" value="${instance.lastStable}" scope="request"/>
-	<jsp:include page="/WEB-INF/jsp/common/state.jsp">
-		<jsp:param name="alternateRow" value="false"/>
-	</jsp:include>
-	<c:set var="state" value="${instance.lastUnstable}" scope="request"/>
-	<jsp:include page="/WEB-INF/jsp/common/state.jsp">
-		<jsp:param name="alternateRow" value="false"/>
-	</jsp:include>
-	<c:set var="state" value="${instance.lastError}" scope="request"/>
-	<jsp:include page="/WEB-INF/jsp/common/state.jsp">
-		<jsp:param name="alternateRow" value="false"/>
-	</jsp:include>
-	<c:set var="state" value="${instance.lastPending}" scope="request"/>
-	<jsp:include page="/WEB-INF/jsp/common/state.jsp">
-		<jsp:param name="alternateRow" value="false"/>
-	</jsp:include>
-
-	<c:set var="state" value="${instance.lastDisabled}" scope="request"/>
-	<jsp:include page="/WEB-INF/jsp/common/state.jsp">
-		<jsp:param name="alternateRow" value="false"/>
-	</jsp:include>
-
-
-
-
-
+	<c:forEach var="statePerType" items="${statesPerType}" >
+		<c:set var="state" value="${statePerType}" scope="request"/>
+		<jsp:include page="/WEB-INF/jsp/common/state.jsp">
+			<jsp:param name="alternateRow" value="false"/>
+		</jsp:include>
+	</c:forEach>
 </table>
 
 <h3>Instance Links</h3>

@@ -266,6 +266,63 @@ td.state_NOCONFIG {
 }
 
 /*******************************************
+ * Instances Table                         *
+ *******************************************/
+#instances-configuration-table {
+	margin-bottom: 20px;
+	width: 900px;
+}
+
+#instances-configuration-table	td a {
+	color: #393939;
+}
+
+#instances-configuration-table	td a:hover {
+	text-decoration: underline;
+}
+
+#instances-configuration-table	th {
+	height: 50px;
+	text-align: left;
+}
+
+#instances-configuration-table td {
+	border: 1px solid #d2d2d2;
+	padding: 4px 2px 4px 8px;
+	font-size: 10px;
+	line-height: 12px;
+}
+
+#instances-configuration-table tr.alternate-row {
+	background: #ececec;
+}
+
+#instances-configuration-table td.state_PENDING {
+	background-color: rgb(176, 192, 222);
+}
+
+#instances-configuration-table td.state {
+	width: 12px;
+	padding: 0px 0px 0px 0px;
+}
+
+#instances-configuration-table td.state_STABLE {
+	background-color: rgb(60, 179, 113);
+}
+
+#instances-configuration-table td.state_DISABLED {
+	background-color: rgb(211, 211, 211);
+}
+
+#instances-configuration-table td.state_ERROR {
+	background-color: rgb(205, 92, 92);
+}
+
+#instances-configuration-table td.state_UNSTABLE {
+	background-color: rgb(255, 200, 100);
+}
+
+/*******************************************
  * Text Table               *
  *******************************************/
 #text-table {
