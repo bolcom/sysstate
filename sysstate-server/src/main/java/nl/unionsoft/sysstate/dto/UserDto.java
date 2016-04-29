@@ -120,6 +120,11 @@ public class UserDto {
                     .collect(Collectors.toList());
             //@formatter:on
         }
+        
+        public  String prefixedRole()
+        {
+            return "ROLE_" + name(); 
+        }
     }
 
 }

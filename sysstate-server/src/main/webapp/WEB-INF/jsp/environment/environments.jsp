@@ -19,7 +19,7 @@
 			<td>
 				<a href="${environment.id}/update.html">Update</a> | 
 				<a href="${environment.id}/delete.html">Delete</a> |
-				<a href="${contextPath}/filter/environment/${environment.id}/index.html">Instances</a>
+				<a href="${contextPath}/filter/index.html?environments=${environment.id}">Instances</a>
 			</td>
 		</tr>
 	</c:forEach>

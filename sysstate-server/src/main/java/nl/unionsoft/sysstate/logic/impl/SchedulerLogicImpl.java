@@ -14,6 +14,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.InstanceTaskDto;
 import nl.unionsoft.sysstate.common.dto.TaskDto;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
@@ -133,7 +134,12 @@ public class SchedulerLogicImpl implements SchedulerLogic {
             Long instanceId = jobDataMap.getLong("instanceId");
             InstanceTaskDto instanceTask = new InstanceTaskDto();
             if (instanceId != null && instanceId > 0) {
-                instanceTask.setInstance(instanceLogic.getInstance(instanceId));
+
+                Optional<InstanceDto> optInstance =  instanceLogic.getInstance(instanceId);
+                if (!optInstance.isPresent()){
+                    throw new IllegalStateException("No instance could be found for instanceId [" + instanceId + "]");
+                }
+                instanceTask.setInstance(optInstance.get());
             }
             return instanceTask;
         } else {

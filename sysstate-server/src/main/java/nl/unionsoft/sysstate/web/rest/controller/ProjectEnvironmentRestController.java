@@ -1,15 +1,18 @@
 package nl.unionsoft.sysstate.web.rest.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import nl.unionsoft.common.converter.Converter;
-import nl.unionsoft.common.converter.ConverterWithConfig;
-import nl.unionsoft.common.converter.ListConverter;
-import nl.unionsoft.sysstate.common.dto.InstanceDto;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
+import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateBehaviour;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
@@ -17,11 +20,9 @@ import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
 import nl.unionsoft.sysstate.sysstate_1_0.Instance;
 import nl.unionsoft.sysstate.sysstate_1_0.ProjectEnvironment;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import nl.unionsoft.sysstate.web.rest.converter.InstanceConverter;
+import nl.unionsoft.sysstate.web.rest.converter.ProjectEnvironmentConverter;
+import nl.unionsoft.sysstate.web.rest.converter.StateConverter;
 
 @Controller()
 @RequestMapping()
@@ -36,51 +37,44 @@ public class ProjectEnvironmentRestController {
 
     @Inject
     @Named("restInstanceConverter")
-    private ConverterWithConfig<Instance, InstanceDto, Integer[]> instanceConverter;
+    private InstanceConverter instanceConverter;
+
+    @Inject
+    @Named("restStateConverter")
+    private StateConverter stateConverter;
 
     @Inject
     @Named("restProjectEnvironmentConverter")
-    private Converter<ProjectEnvironment, ProjectEnvironmentDto> projectEnvironmentConverter;
+    private ProjectEnvironmentConverter projectEnvironmentConverter;
 
     @Inject
     @Named("instanceLogic")
     private InstanceLogic instanceLogic;
 
     @RequestMapping(value = "/projectenvironment", method = RequestMethod.GET)
-    public ProjectEnvironment getProjectEnvironment(
-            @RequestParam("projectName") String projectName, 
-            @RequestParam("environmentName") String environmentName,
-            @RequestParam(value = "state", required = false, defaultValue = "CACHED") StateBehaviour state) {
-        
+    public ProjectEnvironment getProjectEnvironment(@RequestParam("projectName") String projectName, @RequestParam("environmentName") String environmentName,
+            @RequestParam(value = "state", required = false, defaultValue = "CACHED") StateBehaviour stateBehaviour) {
+
         ProjectEnvironmentDto projectEnvironmentDto = projectEnvironmentLogic.getProjectEnvironment(projectName, environmentName);
 
         if (projectEnvironmentDto == null) {
             return new ProjectEnvironment();
         }
 
-        List<InstanceDto> instances = instanceLogic.getInstancesForProjectEnvironment(projectEnvironmentDto.getId());
-        switch (state) {
-            case DIRECT:
-                instances.forEach(instance -> {
-                    instance.setState(stateLogic.requestStateForInstance(instance));
-                });
-                break;
-            case CACHED:
-                instances.forEach(instance -> {
-                    instance.setState(stateLogic.getLastStateForInstance(instance.getId()));
-                });
-                break;
-            default:
-                throw new IllegalStateException("Unsupported StateBehaviour [" + state + "]");
-
-        }
-        
-        instances.stream().forEach(instance -> {
-            projectEnvironmentDto.setState(StateType.transfer(projectEnvironmentDto.getState(), instance.getState().getState()));
-        });
+        // @formatter:off
+        List<Instance> instances = instanceLogic.getInstancesForProjectEnvironment(projectEnvironmentDto.getId()).stream().map(dto -> {
+            Instance instance = instanceConverter.convert(dto, new Integer[] {});
+            StateDto instanceState = stateLogic.getLastStateForInstance(dto, stateBehaviour);
+            instance.setState(stateConverter.convert(instanceState));
+            //FIXME: Don't modify projectEnvironment here... 
+            projectEnvironmentDto.setState(StateType.transfer(projectEnvironmentDto.getState(), instanceState.getState()));
+            return instance;
+        }).collect(Collectors.toList());
+        // @formatter:on
 
         ProjectEnvironment projectEnvironment = projectEnvironmentConverter.convert(projectEnvironmentDto);
-        projectEnvironment.getInstances().addAll(ListConverter.convert(instanceConverter, instances, new Integer[] {}));
+
+        projectEnvironment.getInstances().addAll(instances);
         return projectEnvironment;
     }
 

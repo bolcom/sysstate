@@ -1,5 +1,7 @@
 package nl.unionsoft.sysstate.web.mvc.controller;
 
+import java.util.Optional;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +15,7 @@ import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
+import nl.unionsoft.sysstate.logic.StateLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
 import org.springframework.stereotype.Controller;
@@ -29,6 +32,10 @@ public class InstanceController {
     @Inject
     @Named("instanceLogic")
     private InstanceLogic instanceLogic;
+    
+    @Inject
+    @Named("stateLogic")
+    private StateLogic stateLogic;
 
     @Inject
     @Named("environmentLogic")
@@ -61,8 +68,7 @@ public class InstanceController {
     @RequestMapping(value = "/instance/{type}/create", method = RequestMethod.GET)
     public ModelAndView selectType(@PathVariable("type") final String type, final HttpSession session) {
         final ModelAndView modelAndView = new ModelAndView("create-update-instance-manager");
-        final FilterDto filter = FilterController.getFilter(session);
-        InstanceDto instance = instanceLogic.generateInstanceDto(type, filter.getFirstProject(), filter.getFirstEnvironment());
+        InstanceDto instance = instanceLogic.generateInstanceDto(type);
         modelAndView.addObject("instance", instance);
         modelAndView.addObject("propertyMetas", instanceLogic.getPropertyMeta(type));
         addCommons(modelAndView);
@@ -85,25 +91,29 @@ public class InstanceController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/instance/{instanceId}/configuration", method = RequestMethod.GET)
-    public ModelAndView configuration(@PathVariable("instanceId") final Long instanceId) {
-        final ModelAndView modelAndView = new ModelAndView("message-clear");
-        // final InstanceDto instance = instanceLogic.getInstance(instanceId);
-        // modelAndView.addObject("message", instance.getConfiguration());
-        return modelAndView;
-    }
-
     @RequestMapping(value = "/instance/{instanceId}/details", method = RequestMethod.GET)
     public ModelAndView details(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("details-instance-clear");
-        modelAndView.addObject("instance", instanceLogic.getInstance(instanceId, true));
+        
+        Optional<InstanceDto> optInstance =  instanceLogic.getInstance(instanceId);
+        if (!optInstance.isPresent()){
+            throw new IllegalStateException("No instance could be found for instanceId [" + instanceId + "]");
+        }
+        InstanceDto instance = optInstance.get();
+        modelAndView.addObject("instance", instance);
+        modelAndView.addObject("state", stateLogic.getLastStateForInstance(instance));
+        modelAndView.addObject("statesPerType", stateLogic.getLastStateForInstanceForEachType(instance));
         return modelAndView;
     }
 
     @RequestMapping(value = "/instance/{instanceId}/copy", method = RequestMethod.GET)
     public ModelAndView copy(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("copy-update-instance-manager");
-        final InstanceDto source = instanceLogic.getInstance(instanceId);
+        Optional<InstanceDto> optInstance =  instanceLogic.getInstance(instanceId);
+        if (!optInstance.isPresent()){
+            throw new IllegalStateException("No instance could be found for instanceId [" + instanceId + "]");
+        }
+        InstanceDto source = optInstance.get();
         source.setId(null);
         modelAndView.addObject("propertyMetas", instanceLogic.getPropertyMeta(source.getPluginClass()));
         modelAndView.addObject("instance", source);
@@ -119,7 +129,11 @@ public class InstanceController {
     @RequestMapping(value = "/instance/{instanceId}/update", method = RequestMethod.GET)
     public ModelAndView getUpdate(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("create-update-instance-manager");
-        InstanceDto instance = instanceLogic.getInstance(instanceId);
+        Optional<InstanceDto> optInstance =  instanceLogic.getInstance(instanceId);
+        if (!optInstance.isPresent()){
+            throw new IllegalStateException("No instance could be found for instanceId [" + instanceId + "]");
+        }
+        InstanceDto instance = optInstance.get();        
         modelAndView.addObject("instance", instance);
         modelAndView.addObject("propertyMetas", instanceLogic.getPropertyMeta(instance.getPluginClass()));
         addCommons(modelAndView);
@@ -134,7 +148,11 @@ public class InstanceController {
 
     @RequestMapping(value = "/instance/{instanceId}/toggle/enabled", method = RequestMethod.GET)
     public ModelAndView toggleEnabled(@PathVariable(value = "instanceId") final Long instanceId) {
-        final InstanceDto instance = instanceLogic.getInstance(instanceId);
+        Optional<InstanceDto> optInstance =  instanceLogic.getInstance(instanceId);
+        if (!optInstance.isPresent()){
+            throw new IllegalStateException("No instance could be found for instanceId [" + instanceId + "]");
+        }
+        InstanceDto instance = optInstance.get();
         instance.setEnabled(!instance.isEnabled());
         instanceLogic.createOrUpdateInstance(instance);
         instanceLogic.queueForUpdate(instanceId);

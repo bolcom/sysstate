@@ -11,7 +11,7 @@
 		<div class="table">
 			<sc:authorize url="/filter/project/${project.id}/environment/${environment.id}/index">
 				<ul class="select">
-					<li><a href="${contextPath}/filter/project/${project.id}/environment/${environment.id}/index.html"  target="_TOP"><b>Show in Filter</b><!--[if IE 7]><!--></a><!--<![endif]-->
+					<li><a href="${contextPath}/filter/index.html?projects=${project.id}&environments=${environment.id}"><b>Show in Filter</b><!--[if IE 7]><!--></a><!--<![endif]-->
 					</li>
 				</ul>
 				<div class="nav-divider">&nbsp;</div>
@@ -57,16 +57,16 @@
 		<th class="table-header-repeat line-left"><a href="">State</a></th>
 		<th class="table-header-repeat line-left"><a href="">Scheduling</a></th>
 	</tr>
-	<c:forEach var="instance" items="${instances}" varStatus="varStatus" >
-		<c:set var="instance" value="${instance}" scope="request"/>
+	<c:forEach var="instanceState" items="${instanceStates}" varStatus="varStatus" >
+		<c:set var="instance" value="${instanceState.instance}" scope="request"/>
+		<c:set var="state" value="${instanceState.state}"  scope="request"/>
 		<jsp:include page="/WEB-INF/jsp/common/instance.jsp">
 			<jsp:param name="alternateRow" value="${(varStatus.index)%2 eq 0 }"/>
 			<jsp:param name="id" value="hidden"/>
 			<jsp:param name="options" value="false"/>
 			<jsp:param name="state" value="true"/>
 		</jsp:include>
-		<c:set var="state" value="${instance.state}"/>
-		<c:if test="${state.state != 'STABLE' || (state.rating < 100 && state.rating >= 0)}">
+		
 			<tr>
 				<td colspan="5">
 					<c:set var="message" value="${instance.configuration}" scope="request"/>
@@ -77,10 +77,9 @@
 			</tr>
 			<tr>
 				<td colspan="5">
-					<c:set var="message" value="${instance.state.message}" scope="request"/>
+					<c:set var="message" value="${state.message}" scope="request"/>
 					<jsp:include page="/WEB-INF/jsp/common/message.jsp"/>
 				</td>
 			</tr>
-		</c:if>
 	</c:forEach>
 </table>

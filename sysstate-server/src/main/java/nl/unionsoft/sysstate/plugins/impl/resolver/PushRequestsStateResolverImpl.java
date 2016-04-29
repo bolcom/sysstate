@@ -36,7 +36,7 @@ public class PushRequestsStateResolverImpl implements StateResolver {
         StateDto fetchedState = pushStateLogic.fetch(instanceId);
         if (fetchedState == null) {
             // Get last one instead and check if still valid...
-            StateDto lastState = stateLogic.getLastStateForInstance(instanceId);
+            StateDto lastState = stateLogic.getLastStateForInstance(instance);
             if (lastState != null) {
                 DateTime creationDate = lastState.getCreationDate();
                 if (creationDate != null) {

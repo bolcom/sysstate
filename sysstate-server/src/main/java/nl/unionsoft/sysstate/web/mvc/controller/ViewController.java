@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -28,7 +27,6 @@ import nl.unionsoft.sysstate.common.dto.TemplateDto;
 import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
-import nl.unionsoft.sysstate.logic.EcoSystemLogic;
 import nl.unionsoft.sysstate.logic.FilterLogic;
 import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.TemplateLogic;
@@ -57,10 +55,6 @@ public class ViewController {
     @Inject
     @Named("templateLogic")
     private TemplateLogic templateLogic;
-
-    @Inject
-    @Named("ecoSystemLogic")
-    private EcoSystemLogic ecoSystemLogic;
 
     @Inject
     @Named("pluginLogic")
@@ -112,7 +106,7 @@ public class ViewController {
             response.addHeader("Content-Type", template.getContentType());
             Map<String, Object> context = new HashMap<String, Object>();
             if (template.getIncludeViewResults()){
-                context.put("viewResult", ecoSystemLogic.getEcoSystem(view));    
+                context.put("viewResult", viewLogic.getViewResults(view));    
             }
             context.put("contextPath", request.getContextPath());
             context.put("view", view);

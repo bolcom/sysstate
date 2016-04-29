@@ -23,18 +23,7 @@ public class FilterConverter implements Converter<FilterDto, Filter> {
             result.setProjects(filter.getProjects());
             result.setSearch(filter.getSearch());
             result.setStateResolvers(filter.getStateResolvers());
-            result.setStates(filter.getStates());
             result.setTags(filter.getTags());
-            List<View> views = filter.getViews();
-            if (views != null){
-                List<ViewDto> viewDtos = result.getViews();
-                for (View view : views){
-                    ViewDto viewDto  =new ViewDto();
-                    viewDto.setName(view.getName());
-                    viewDto.setId(view.getId());
-                    viewDtos.add(viewDto);
-                }
-            }
         }
         return result;
     }

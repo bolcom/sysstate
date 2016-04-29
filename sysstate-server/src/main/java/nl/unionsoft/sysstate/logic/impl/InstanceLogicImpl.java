@@ -9,45 +9,9 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Stack;
-import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import nl.unionsoft.common.converter.Converter;
-import nl.unionsoft.common.converter.ListConverter;
-import nl.unionsoft.common.list.model.GroupRestriction;
-import nl.unionsoft.common.list.model.ListRequest;
-import nl.unionsoft.common.list.model.ListResponse;
-import nl.unionsoft.common.list.model.ObjectRestriction;
-import nl.unionsoft.common.list.model.Restriction;
-import nl.unionsoft.common.list.model.Restriction.Rule;
-import nl.unionsoft.common.list.worker.impl.BeanListRequestWorkerImpl;
-import nl.unionsoft.common.param.ParamContextLogicImpl;
-import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
-import nl.unionsoft.sysstate.common.dto.FilterDto;
-import nl.unionsoft.sysstate.common.dto.InstanceDto;
-import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
-import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
-import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.extending.ListOfValueResolver;
-import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
-import nl.unionsoft.sysstate.common.logic.InstanceLogic;
-import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
-import nl.unionsoft.sysstate.common.util.PropertyGroupUtil;
-import nl.unionsoft.sysstate.converter.InstancePropertiesConverter;
-import nl.unionsoft.sysstate.converter.OptionalConverter;
-import nl.unionsoft.sysstate.converter.StateConverter;
-import nl.unionsoft.sysstate.dao.InstanceDao;
-import nl.unionsoft.sysstate.dao.ListRequestDao;
-import nl.unionsoft.sysstate.dao.ProjectEnvironmentDao;
-import nl.unionsoft.sysstate.dao.PropertyDao;
-import nl.unionsoft.sysstate.domain.Instance;
-import nl.unionsoft.sysstate.domain.ProjectEnvironment;
-import nl.unionsoft.sysstate.job.UpdateInstanceJob;
-import nl.unionsoft.sysstate.logic.PluginLogic;
-import nl.unionsoft.sysstate.logic.StateLogic;
-import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
 import org.apache.commons.lang.StringUtils;
 import org.quartz.JobDetail;
@@ -65,6 +29,32 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import nl.unionsoft.common.converter.Converter;
+import nl.unionsoft.common.converter.ListConverter;
+import nl.unionsoft.common.param.ParamContextLogicImpl;
+import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
+import nl.unionsoft.sysstate.common.dto.FilterDto;
+import nl.unionsoft.sysstate.common.dto.InstanceDto;
+import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
+import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
+import nl.unionsoft.sysstate.common.extending.ListOfValueResolver;
+import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
+import nl.unionsoft.sysstate.common.logic.InstanceLogic;
+import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
+import nl.unionsoft.sysstate.common.util.PropertyGroupUtil;
+import nl.unionsoft.sysstate.converter.InstancePropertiesConverter;
+import nl.unionsoft.sysstate.converter.OptionalConverter;
+import nl.unionsoft.sysstate.converter.StateConverter;
+import nl.unionsoft.sysstate.dao.InstanceDao;
+import nl.unionsoft.sysstate.dao.ProjectEnvironmentDao;
+import nl.unionsoft.sysstate.dao.PropertyDao;
+import nl.unionsoft.sysstate.domain.Instance;
+import nl.unionsoft.sysstate.domain.ProjectEnvironment;
+import nl.unionsoft.sysstate.job.UpdateInstanceJob;
+import nl.unionsoft.sysstate.logic.PluginLogic;
+import nl.unionsoft.sysstate.logic.StateLogic;
+import nl.unionsoft.sysstate.logic.StateResolverLogic;
+
 @Service("instanceLogic")
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
@@ -78,10 +68,6 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     @Inject
     @Named("pluginLogic")
     private PluginLogic pluginLogic;
-
-    @Inject
-    @Named("listRequestDao")
-    private ListRequestDao listRequestDao;
 
     @Inject
     @Named("propertyDao")
@@ -195,32 +181,11 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return ListConverter.convert(instanceConverter, instanceDao.getInstances());
     }
 
-    public InstanceDto getInstance(final Long instanceId) {
-        return getInstance(instanceId, false);
+    public Optional<InstanceDto> getInstance(final Long instanceId) {
+        return OptionalConverter.convert(instanceDao.getInstance(instanceId), instanceConverter);
     }
 
-    public InstanceDto getInstance(final Long instanceId, final boolean states) {
-
-        final InstanceDto result = OptionalConverter.fromOptional(instanceDao.getInstance(instanceId), instanceConverter);
-        if (states) {
-            setLastStatesForInstance(result);
-        }
-        return result;
-
-    }
-
-    private void setLastStatesForInstance(final InstanceDto instance) {
-        if (instance != null && instance.getId() != null) {
-            final Long instanceId = instance.getId();
-            instance.setState(stateLogic.getLastStateForInstance(instanceId));
-            instance.setLastStable(stateLogic.getLastStateForInstance(instanceId, StateType.STABLE));
-            instance.setLastUnstable(stateLogic.getLastStateForInstance(instanceId, StateType.UNSTABLE));
-            instance.setLastError(stateLogic.getLastStateForInstance(instanceId, StateType.ERROR));
-            instance.setLastPending(stateLogic.getLastStateForInstance(instanceId, StateType.PENDING));
-            instance.setLastDisabled(stateLogic.getLastStateForInstance(instanceId, StateType.DISABLED));
-        }
-    }
-
+  
     public Long createOrUpdateInstance(final InstanceDto dto) {
         Instance instance = getInstanceForDto(dto);
 
@@ -300,119 +265,10 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return ListConverter.convert(instanceConverter, instanceDao.getInstancesForProjectAndEnvironment(projectPrefix, environmentPrefix));
     }
 
-    public ListResponse<InstanceDto> getInstances(final ListRequest listRequest) {
-        final ListResponse<InstanceDto> listResponse = listRequestDao.getResults(Instance.class, listRequest, instanceConverter);
-        listResponse.getResults().parallelStream().forEach(instance -> instance.setState(stateLogic.getLastStateForInstance(instance.getId())));
-        return listResponse;
+    public List<Long> getInstancesKeys(FilterDto filter) {
+        return instanceDao.getInstanceKeys(filter);
     }
-
-    public ListResponse<InstanceDto> getInstances(final FilterDto filter) {
-        final ListResponse<InstanceDto> listResponse = handleFilterData(filter);
-        handleInstancesFilter(filter, listResponse);
-        return listResponse;
-    }
-
-    private void handleInstancesFilter(final FilterDto filter, final ListResponse<InstanceDto> listResponse) {
-        final List<?> results = listResponse.getResults();
-        final BeanListRequestWorkerImpl beanListRequestWorkerImpl = new BeanListRequestWorkerImpl() {
-            @Override
-            @SuppressWarnings({ "unchecked", "hiding" })
-            public <Object> List<Object> fetchData(final Class<Object> dtoClass, final ListRequest listRequest) {
-                return (List<Object>) results;
-            }
-        };
-
-        final List<Restriction> restrictions = new ArrayList<Restriction>();
-        {
-            final List<StateType> states = filter.getStates();
-            if (states != null && states.size() > 0) {
-                final GroupRestriction groupRestriction = new GroupRestriction(Rule.OR);
-                final List<Restriction> orReestrictions = groupRestriction.getRestrictions();
-                for (final StateType state : states) {
-                    orReestrictions.add(new ObjectRestriction(Rule.EQ, "state.state", state));
-                }
-                restrictions.add(groupRestriction);
-            }
-        }
-        if (restrictions.size() > 0) {
-            beanListRequestWorkerImpl.restrictions(listResponse.getResults(), restrictions);
-        }
-    }
-
-    private ListResponse<InstanceDto> handleFilterData(final FilterDto filter) {
-        final ListRequest listRequest = new ListRequest();
-        // listRequest.addSort(new Sort("last.state", Direction.ASC));
-        listRequest.setFirstResult(0);
-        listRequest.setMaxResults(ListRequest.ALL_RESULTS);
-        // if (StringUtils.isNotEmpty(sort)) {
-        // listRequest.addSort(new Sort(sort));
-        // }
-
-        final String search = filter.getSearch();
-        if (StringUtils.isNotEmpty(search)) {
-            final GroupRestriction groupRestriction = new GroupRestriction(Rule.OR);
-            final List<Restriction> restrictions = groupRestriction.getRestrictions();
-            for (final String element : StringUtils.split(search, ' ')) {
-                restrictions.add(new ObjectRestriction(Rule.LIKE, "tags", element));
-                restrictions.add(new ObjectRestriction(Rule.LIKE, "name", element));
-                restrictions.add(new ObjectRestriction(Rule.LIKE, "homepageUrl", element));
-                restrictions.add(new ObjectRestriction(Rule.LIKE, "pluginClass", element));
-                restrictions.add(new ObjectRestriction(Rule.LIKE, "projectEnvironment.project.name", element));
-                restrictions.add(new ObjectRestriction(Rule.LIKE, "projectEnvironment.environment.name", element));
-                restrictions.add(new ObjectRestriction(Rule.LIKE, "projectEnvironment.homepageUrl", element));
-            }
-            listRequest.addRestriction(groupRestriction);
-        }
-
-        final String tags = filter.getTags();
-        if (StringUtils.isNotEmpty(tags)) {
-            final GroupRestriction groupRestriction = new GroupRestriction(Rule.OR);
-            final List<Restriction> restrictions = groupRestriction.getRestrictions();
-            for (final String element : StringUtils.split(tags, ' ')) {
-                restrictions.add(new ObjectRestriction(Rule.LIKE, "tags", element));
-                restrictions.add(new ObjectRestriction(Rule.LIKE, "projectEnvironment.project.tags", element));
-                restrictions.add(new ObjectRestriction(Rule.LIKE, "projectEnvironment.environment.tags", element));
-            }
-            listRequest.addRestriction(groupRestriction);
-        }
-
-        final List<Long> projects = filter.getProjects();
-        if (projects != null && projects.size() > 0) {
-            final GroupRestriction groupRestriction = new GroupRestriction(Rule.OR);
-            final List<Restriction> restrictions = groupRestriction.getRestrictions();
-            for (final Long project : projects) {
-                restrictions.add(new ObjectRestriction(Rule.EQ, "projectEnvironment.project.id", project));
-            }
-
-            listRequest.addRestriction(groupRestriction);
-
-        }
-
-        final List<Long> environments = filter.getEnvironments();
-        if (environments != null && environments.size() > 0) {
-
-            final GroupRestriction groupRestriction = new GroupRestriction(Rule.OR);
-            final List<Restriction> restrictions = groupRestriction.getRestrictions();
-            for (final Long environment : environments) {
-                restrictions.add(new ObjectRestriction(Rule.EQ, "projectEnvironment.environment.id", environment));
-            }
-            listRequest.addRestriction(groupRestriction);
-
-        }
-
-        final List<String> stateResolvers = filter.getStateResolvers();
-        if (stateResolvers != null && stateResolvers.size() > 0) {
-            final GroupRestriction groupRestriction = new GroupRestriction(Rule.OR);
-            final List<Restriction> restrictions = groupRestriction.getRestrictions();
-            for (final String stateResolver : stateResolvers) {
-                restrictions.add(new ObjectRestriction(Rule.EQ, "pluginClass", stateResolver));
-            }
-            listRequest.addRestriction(groupRestriction);
-        }
-
-        return getInstances(listRequest);
-    }
-
+    
     public void afterPropertiesSet() throws Exception {
         List<Instance> instances = instanceDao.getInstances();
         for (Instance instance : instances) {

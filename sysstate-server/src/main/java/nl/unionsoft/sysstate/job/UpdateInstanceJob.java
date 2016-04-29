@@ -1,5 +1,7 @@
 package nl.unionsoft.sysstate.job;
 
+import java.util.Optional;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -40,11 +42,13 @@ public class UpdateInstanceJob extends AutowiringJob {
         JobDataMap jobDataMap = jobDetail.getJobDataMap();
         long instanceId = jobDataMap.getLong("instanceId");
 
-        InstanceDto instance = instanceLogic.getInstance(instanceId);
-        if (instance == null) {
+        Optional<InstanceDto> optInstance =  instanceLogic.getInstance(instanceId);
+        if (!optInstance.isPresent()){
             LOG.error("Instance with instanceId [{}] (no longer) exists!", instanceId);
             return;
         }
+
+        InstanceDto instance = optInstance.get();
         LOG.info("Starting job with instance '{}'", instance);
         try {
             final StateDto state = stateLogic.requestStateForInstance(instance);

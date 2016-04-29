@@ -54,7 +54,6 @@ public class InstanceConverter implements Converter<Instance, InstanceDto>, Conv
         }
         instance.setPlugin(dto.getPluginClass());
         instance.setRefreshTimeout(dto.getRefreshTimeout());
-        instance.setState(stateConverter.convert(dto.getState()));
         
         if (isSet(INSTANCE_LINKS, options)) {
             instance.getInstanceLinks().addAll(ListConverter.convert(instanceLinkConverter, dto.getIncommingInstanceLinks(), InstanceLinkDirection.INCOMMING));

@@ -44,7 +44,6 @@ public class FilterLogicImpl implements FilterLogic {
         filter.setProjects(dto.getProjects());
         filter.setSearch(dto.getSearch());
         filter.setStateResolvers(dto.getStateResolvers());
-        filter.setStates(dto.getStates());
         filter.setTags(dto.getTags());
         filterDao.createOrUpdate(filter);
         dto.setId(filter.getId());

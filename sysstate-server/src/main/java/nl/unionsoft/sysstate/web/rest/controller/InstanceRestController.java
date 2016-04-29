@@ -1,6 +1,7 @@
 package nl.unionsoft.sysstate.web.rest.controller;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -10,6 +11,7 @@ import nl.unionsoft.common.converter.Converter;
 import nl.unionsoft.common.converter.ListConverter;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
+import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.logic.PushStateLogic;
@@ -21,6 +23,7 @@ import nl.unionsoft.sysstate.sysstate_1_0.InstanceList;
 import nl.unionsoft.sysstate.sysstate_1_0.Project;
 import nl.unionsoft.sysstate.sysstate_1_0.ProjectEnvironment;
 import nl.unionsoft.sysstate.sysstate_1_0.Property;
+import nl.unionsoft.sysstate.sysstate_1_0.State;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -61,9 +64,21 @@ public class InstanceRestController {
     @Named("restInstanceConverter")
     private Converter<Instance, InstanceDto> instanceConverter;
 
+    @Inject
+    @Named("restStateConverter")
+    private Converter<State, StateDto> stateConverter;
+
     @RequestMapping(value = "/instance", method = RequestMethod.GET)
     public InstanceList getInstances() {
-        List<Instance> instances = ListConverter.convert(instanceConverter, instanceLogic.getInstances());
+
+        // @formatter:off
+        List<Instance> instances = instanceLogic.getInstances().stream().map(dto -> {
+            Instance instance = instanceConverter.convert(dto);
+            StateDto instanceState = stateLogic.getLastStateForInstance(dto);
+            instance.setState(stateConverter.convert(instanceState));
+            return instance;
+        }).collect(Collectors.toList());
+
         InstanceList instanceList = new InstanceList();
         instanceList.getInstances().addAll(instances);
         return instanceList;
@@ -71,7 +86,16 @@ public class InstanceRestController {
 
     @RequestMapping(value = "/instance/{instanceId}", method = RequestMethod.GET)
     public Instance getInstance(@PathVariable("instanceId") final Long instanceId) {
-        return instanceConverter.convert(instanceLogic.getInstance(instanceId, false));
+
+        
+        Optional<InstanceDto> optInstance = instanceLogic.getInstance(instanceId);
+        if (!optInstance.isPresent()){
+            throw new IllegalStateException("No instance could be found for id [" + instanceId + "]");
+        }
+        InstanceDto dto = optInstance.get();
+        Instance instance = instanceConverter.convert(dto);
+        instance.setState(stateConverter.convert(stateLogic.getLastStateForInstance(dto)));
+        return instance;
     }
 
     @RequestMapping(value = "/instance", method = RequestMethod.POST)
@@ -81,17 +105,22 @@ public class InstanceRestController {
         }
         InstanceDto instanceDto = convert(instance);
         Long id = instanceLogic.createOrUpdateInstance(instanceDto);
-        return instanceConverter.convert(instanceLogic.getInstance(id));
+        
+        Optional<InstanceDto> optInstance = instanceLogic.getInstance(id);
+        if (!optInstance.isPresent()){
+            throw new IllegalStateException("Unable to fetch just created instance with id [" + id +"]");
+        }
+        return instanceConverter.convert(optInstance.get());
     }
 
     @RequestMapping(value = "/instance", method = RequestMethod.PUT)
-    @ResponseStatus(HttpStatus.NO_CONTENT) 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@RequestBody Instance instance) {
 
-        if (instance.getId() == null && StringUtils.isEmpty(instance.getReference())){
+        if (instance.getId() == null && StringUtils.isEmpty(instance.getReference())) {
             throw new IllegalArgumentException("Either id or reference should be specified for update.");
         }
-        
+
         InstanceDto instanceDto = convert(instance);
         instanceLogic.createOrUpdateInstance(instanceDto);
 
@@ -103,10 +132,10 @@ public class InstanceRestController {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorMessage> handleException(Exception ex){
+    public ResponseEntity<ErrorMessage> handleException(Exception ex) {
         return ErrorMessageCreator.createMessageFromException(ex);
     }
-    
+
     public InstanceDto convert(Instance instance) {
         InstanceDto instanceDto = new InstanceDto();
         instanceDto.setEnabled(instance.isEnabled());
@@ -120,8 +149,6 @@ public class InstanceRestController {
         instanceDto.setTags(StringUtils.join(instance.getTags(), " "));
         return instanceDto;
     }
-
-
 
     private ProjectEnvironmentDto getProjectEnvironment(Instance instance) {
 
@@ -140,7 +167,7 @@ public class InstanceRestController {
         if (project == null || environment == null) {
             throw new IllegalArgumentException("ProjectEnvironment should have both a project and an environment!");
         }
-        
+
         if (isIdSet(project.getId()) && isIdSet(environment.getId())) {
             return projectEnvironmentLogic.getProjectEnvironment(project.getId(), environment.getId());
         }

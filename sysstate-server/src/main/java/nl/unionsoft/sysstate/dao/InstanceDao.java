@@ -1,9 +1,9 @@
 package nl.unionsoft.sysstate.dao;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.domain.Instance;
 
 public interface InstanceDao {
@@ -17,6 +17,8 @@ public interface InstanceDao {
     public List<Instance> getInstancesForProjectEnvironment(Long projectEnvironmentId);
 
     public List<Instance> getInstances();
+    
+    public List<Long> getInstanceKeys(FilterDto filter);
 
     public Optional<Instance> getInstance(Long instanceId);
     
