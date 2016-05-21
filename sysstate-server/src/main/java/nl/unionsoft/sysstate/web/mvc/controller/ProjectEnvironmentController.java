@@ -19,6 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
+import nl.unionsoft.sysstate.common.enums.FilterBehaviour;
 import nl.unionsoft.sysstate.common.logic.InstanceStateLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 
@@ -59,7 +60,7 @@ public class ProjectEnvironmentController {
         final FilterDto filter = new FilterDto();
         filter.getEnvironments().add(environmentId);
         filter.getProjects().add(projectId);
-        modelAndView.addObject("instanceStates", instanceStateLogic.getInstanceStates(filter));
+        modelAndView.addObject("instanceStates", instanceStateLogic.getInstanceStates(filter,FilterBehaviour.DIRECT));
         return modelAndView;
     }
 

@@ -25,14 +25,9 @@ public class InstanceConverter implements Converter<Instance, InstanceDto>, Conv
 
     public static final Integer PROJECT_ENVIRONMENT = 0;
     public static final Integer PROPERTIES = 1;
-    public static final Integer INSTANCE_LINKS = 2;
     @Inject
     @Named("restStateConverter")
     private Converter<State, StateDto> stateConverter;
-
-    @Inject
-    @Named("restInstanceLinkConverter")
-    private InstanceLinkConverter instanceLinkConverter;
 
     @Inject
     @Named("restProjectEnvironmentConverter")
@@ -54,11 +49,7 @@ public class InstanceConverter implements Converter<Instance, InstanceDto>, Conv
         }
         instance.setPlugin(dto.getPluginClass());
         instance.setRefreshTimeout(dto.getRefreshTimeout());
-        
-        if (isSet(INSTANCE_LINKS, options)) {
-            instance.getInstanceLinks().addAll(ListConverter.convert(instanceLinkConverter, dto.getIncommingInstanceLinks(), InstanceLinkDirection.INCOMMING));
-            instance.getInstanceLinks().addAll(ListConverter.convert(instanceLinkConverter, dto.getOutgoingInstanceLinks(), InstanceLinkDirection.OUTGOING));
-        }
+
         if (isSet(PROJECT_ENVIRONMENT, options)) {
             instance.setProjectEnvironment(projectEnvironmentConverter.convert(dto.getProjectEnvironment()));
         }
@@ -78,7 +69,7 @@ public class InstanceConverter implements Converter<Instance, InstanceDto>, Conv
 
     @Override
     public Instance convert(InstanceDto dto) {
-        return convert(dto, new Integer[] { PROPERTIES, INSTANCE_LINKS, PROJECT_ENVIRONMENT });
+        return convert(dto, new Integer[] { PROPERTIES, PROJECT_ENVIRONMENT });
     }
 
     private boolean isSet(Integer option, Integer[] options) {

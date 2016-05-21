@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Stack;
@@ -37,6 +38,7 @@ import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
+import nl.unionsoft.sysstate.common.enums.FilterBehaviour;
 import nl.unionsoft.sysstate.common.extending.ListOfValueResolver;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
@@ -45,6 +47,7 @@ import nl.unionsoft.sysstate.common.util.PropertyGroupUtil;
 import nl.unionsoft.sysstate.converter.InstancePropertiesConverter;
 import nl.unionsoft.sysstate.converter.OptionalConverter;
 import nl.unionsoft.sysstate.converter.StateConverter;
+import nl.unionsoft.sysstate.dao.FilterDao;
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.dao.ProjectEnvironmentDao;
 import nl.unionsoft.sysstate.dao.PropertyDao;
@@ -72,6 +75,10 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     @Inject
     @Named("propertyDao")
     private PropertyDao propertyDao;
+
+    @Inject
+    @Named("filterDao")
+    private FilterDao filterDao;
 
     @Inject
     @Named("stateLogic")
@@ -185,7 +192,6 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return OptionalConverter.convert(instanceDao.getInstance(instanceId), instanceConverter);
     }
 
-  
     public Long createOrUpdateInstance(final InstanceDto dto) {
         Instance instance = getInstanceForDto(dto);
 
@@ -265,18 +271,19 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return ListConverter.convert(instanceConverter, instanceDao.getInstancesForProjectAndEnvironment(projectPrefix, environmentPrefix));
     }
 
-    public List<Long> getInstancesKeys(FilterDto filter) {
-        return instanceDao.getInstanceKeys(filter);
+    public List<InstanceDto> getInstances(FilterDto filter, FilterBehaviour filterBehaviour) {
+
+        if (filter.getId() != null) {
+            filterDao.notifyFilterQueried(filter.getId());
+        }
+        return instanceDao.getInstances(filter, filterBehaviour).parallelStream().map(i -> instanceConverter.convert(i)).collect(Collectors.toList());
     }
-    
+
     public void afterPropertiesSet() throws Exception {
         List<Instance> instances = instanceDao.getInstances();
         for (Instance instance : instances) {
-
-            // Add trigger
             addTriggerJob(instance.getId());
         }
-
     }
 
     public InstanceDto generateInstanceDto(String type) {

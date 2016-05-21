@@ -11,6 +11,10 @@ public interface InstanceLinkDao {
     
     public void delete(Long instanceFromId, Long instanceToId, String name);
     
-    public List<InstanceLink> retrieve(Long instanceFromId, String name);
+    public List<InstanceLink> getOutgoingInstanceLinks(Long instanceFromId, String name);
+    
+    public List<InstanceLink> getOutgoingInstanceLinks(Long instanceFromId);
+    
+    public List<InstanceLink> getIncommingInstanceLinks(Long instanceFromId);
 
 }

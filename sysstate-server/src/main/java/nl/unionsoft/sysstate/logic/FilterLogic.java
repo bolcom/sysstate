@@ -1,6 +1,7 @@
 package nl.unionsoft.sysstate.logic;
 
 import java.util.List;
+import java.util.Optional;
 
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 
@@ -12,5 +13,9 @@ public interface FilterLogic {
 
     public List<FilterDto> getFilters();
 
-    public FilterDto getFilter(Long filterId);
+    public Optional<FilterDto> getFilter(Long filterId);
+    
+    public void addInstanceToFilter(Long filterId, Long instanceId);
+    
+    public void removeInstanceFromFilter(Long filterId, Long instanceId);
 }

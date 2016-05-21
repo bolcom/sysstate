@@ -1,6 +1,6 @@
 package nl.unionsoft.sysstate.web.mvc.controller;
 
-import java.util.Arrays;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -19,13 +19,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import nl.unionsoft.sysstate.common.dto.FilterDto;
+import nl.unionsoft.sysstate.common.enums.FilterBehaviour;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceStateLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
 import nl.unionsoft.sysstate.dto.MessageDto;
-import nl.unionsoft.sysstate.dto.UserDto;
 import nl.unionsoft.sysstate.dto.UserDto.Role;
 import nl.unionsoft.sysstate.logic.FilterLogic;
 import nl.unionsoft.sysstate.logic.MessageLogic;
@@ -74,7 +74,7 @@ public class FilterController {
             return filterRedirectModelAndView(filter);
         } else {
             ModelAndView modelAndView = new ModelAndView("search-filter-manager");
-            modelAndView.addObject("instanceStates", instanceStateLogic.getInstanceStates(filter));
+            modelAndView.addObject("instanceStates", instanceStateLogic.getInstanceStates(filter, FilterBehaviour.DIRECT));
             modelAndView.addObject("filter", filter);
             modelAndView.addObject("stateResolvers", stateResolverLogic.getStateResolverNames());
             modelAndView.addObject("states", StateType.values());
@@ -91,9 +91,11 @@ public class FilterController {
 
     @RequestMapping(value = "/filter/load/{filterId}/index.html", method = RequestMethod.GET)
     public ModelAndView userFilter(@PathVariable("filterId") final Long filterId, RedirectAttributes redirectAttrs) {
-        final FilterDto filter = filterLogic.getFilter(filterId);
-
-        return filterRedirectModelAndView(filter);
+        Optional<FilterDto> optFilter =filterLogic.getFilter(filterId);
+        if (!optFilter.isPresent()){
+            throw new IllegalStateException("Requested filter with id [" + filterId + "] cannot be found!");
+        }
+        return filterRedirectModelAndView(optFilter.get());
     }
 
     private ModelAndView filterRedirectModelAndView(final FilterDto filter) {
@@ -112,14 +114,20 @@ public class FilterController {
     @RequestMapping(value = "/filter/{filterId}/delete", method = RequestMethod.GET)
     public ModelAndView getDelete(@PathVariable("filterId") final Long filterId) {
         final ModelAndView modelAndView = new ModelAndView("delete-filter-manager");
-        modelAndView.addObject("filter", filterLogic.getFilter(filterId));
+        
+        Optional<FilterDto> optFilter = filterLogic.getFilter(filterId);
+        if (!optFilter.isPresent()){
+            messageLogic.addUserMessage(new MessageDto("Filter was already deleted.", MessageDto.GREEN));
+            return new ModelAndView("redirect:/filter/list.html");    
+        }
+        modelAndView.addObject("filter", optFilter.get());
         return modelAndView;
     }
     
     @RequestMapping(value = "/filter/{filterId}/delete", method = RequestMethod.POST)
     public ModelAndView handleDelete(@PathVariable("filterId") final Long filterId) {
         filterLogic.delete(filterId);
-        return new ModelAndView("redirect:/filter/index.html");
+        return new ModelAndView("redirect:/filter/list.html");
     }
 
     @RequestMapping(value = "/filter/list", method = RequestMethod.GET)

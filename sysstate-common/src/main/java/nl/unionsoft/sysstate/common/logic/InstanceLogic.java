@@ -6,6 +6,7 @@ import java.util.Optional;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
+import nl.unionsoft.sysstate.common.enums.FilterBehaviour;
 
 public interface InstanceLogic {
 
@@ -29,7 +30,7 @@ public interface InstanceLogic {
     
     public List<InstanceDto> getInstancesForEnvironment(Long environmentId);
 
-    public List<Long> getInstancesKeys(FilterDto filter);
+    public List<InstanceDto> getInstances(FilterDto filter, FilterBehaviour filterBehaviour);
 
     public void addTriggerJob(final long instanceId);
     

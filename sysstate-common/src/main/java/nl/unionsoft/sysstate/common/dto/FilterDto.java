@@ -2,10 +2,10 @@ package nl.unionsoft.sysstate.common.dto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import org.apache.commons.lang.StringUtils;
 
 import nl.unionsoft.sysstate.common.enums.StateType;
 
@@ -22,13 +22,16 @@ public class FilterDto implements Serializable {
 	private List<String> stateResolvers;
 	private String tags;
 	private String search;
+	
+	private Date lastQueryDate;
 
 	public FilterDto() {
 		projects = new ArrayList<Long>();
 		environments = new ArrayList<Long>();
 		stateResolvers = new ArrayList<String>();
 		states = new ArrayList<StateType>();
-
+		tags = "";
+		search = "";
 	}
 
 	public String getName() {
@@ -103,4 +106,29 @@ public class FilterDto implements Serializable {
 		this.states = states;
 	}
 
+	public Date getLastQueryDate() {
+		return lastQueryDate;
+	}
+
+	public void setLastQueryDate(Date lastQueryDate) {
+		this.lastQueryDate = lastQueryDate;
+	}
+
+	public boolean isEmpty()
+	{
+		return StringUtils.isEmpty(name) && StringUtils.isEmpty(tags) && StringUtils.isEmpty(search) && CollectionUtils
+	}
+	
+	
+/**
+ * private String name;
+	private List<Long> projects;
+	private List<Long> environments;
+	private List<StateType> states;
+	private List<String> stateResolvers;
+	private String tags;
+	private String search;
+ */
+	
+	
 }

@@ -6,6 +6,7 @@ import javax.inject.Named;
 import org.springframework.stereotype.Service;
 
 import nl.unionsoft.common.converter.Converter;
+import nl.unionsoft.common.converter.ListConverter;
 import nl.unionsoft.sysstate.common.dto.InstanceStateDto;
 import nl.unionsoft.sysstate.sysstate_1_0.Instance;
 
@@ -15,6 +16,10 @@ public class InstanceStateConverter implements Converter<Instance, InstanceState
     @Inject
     @Named("restInstanceConverter")
     private InstanceConverter instanceConverter;
+
+    @Inject
+    @Named("restInstanceLinkConverter")
+    private InstanceLinkConverter instanceLinkConverter;
 
     @Inject
     @Named("restStateConverter")
@@ -29,6 +34,7 @@ public class InstanceStateConverter implements Converter<Instance, InstanceState
         if (instance != null) {
             instance.setState(stateConverter.convert(instanceState.getState()));
         }
+        instance.getInstanceLinks().addAll(ListConverter.convert(instanceLinkConverter, instanceState.getInstanceLinks()));
         return instance;
     }
 

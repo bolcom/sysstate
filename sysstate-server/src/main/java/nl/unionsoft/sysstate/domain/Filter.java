@@ -1,6 +1,7 @@
 package nl.unionsoft.sysstate.domain;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -15,6 +16,8 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -40,6 +43,10 @@ public class Filter {
 
     @Column(name = "NAME", nullable = true, length = 255)
     private String name;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "LAST_QUERY_DATE", nullable = true)
+    private Date lastQueryDate;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "SSE_FILTER_PROJECT")
@@ -73,6 +80,10 @@ public class Filter {
 
     @OneToMany(mappedBy = "filter", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<View> views;
+    
+    @OneToMany(mappedBy = "filter", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<FilterInstance> filterInstances;
+    
 
     public Filter () {
         projects = new ArrayList<Long>();
@@ -154,4 +165,14 @@ public class Filter {
         this.views = views;
     }
 
+    public Date getLastQueryDate() {
+        return lastQueryDate;
+    }
+
+    public void setLastQueryDate(Date lastQueryDate) {
+        this.lastQueryDate = lastQueryDate;
+    }
+
+    
+    
 }
