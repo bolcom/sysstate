@@ -6,10 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -38,7 +38,6 @@ import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
-import nl.unionsoft.sysstate.common.enums.FilterBehaviour;
 import nl.unionsoft.sysstate.common.extending.ListOfValueResolver;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
@@ -271,14 +270,6 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return ListConverter.convert(instanceConverter, instanceDao.getInstancesForProjectAndEnvironment(projectPrefix, environmentPrefix));
     }
 
-    public List<InstanceDto> getInstances(FilterDto filter, FilterBehaviour filterBehaviour) {
-
-        if (filter.getId() != null) {
-            filterDao.notifyFilterQueried(filter.getId());
-        }
-        return instanceDao.getInstances(filter, filterBehaviour).parallelStream().map(i -> instanceConverter.convert(i)).collect(Collectors.toList());
-    }
-
     public void afterPropertiesSet() throws Exception {
         List<Instance> instances = instanceDao.getInstances();
         for (Instance instance : instances) {
@@ -360,6 +351,19 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     @Override
     public List<InstanceDto> getInstancesForProjectEnvironment(Long projectEnvironmentId) {
         return ListConverter.convert(instanceConverter, instanceDao.getInstancesForProjectEnvironment(projectEnvironmentId));
+    }
+
+    @Override
+    public List<InstanceDto> getInstances(FilterDto filter) {
+        return instanceDao.getInstances(filter).parallelStream().map(i -> instanceConverter.convert(i)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<InstanceDto> getInstances(Long filterId) {
+        Long now = System.currentTimeMillis();
+        List<Instance> instances = instanceDao.getInstances(filterId);
+        filterDao.notifyFilterQueried(filterId, System.currentTimeMillis() - now);
+        return instances.parallelStream().map(i -> instanceConverter.convert(i)).collect(Collectors.toList());
     }
 
 }

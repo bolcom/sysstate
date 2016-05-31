@@ -34,7 +34,6 @@ import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.common.dto.ViewResultDto;
-import nl.unionsoft.sysstate.common.enums.FilterBehaviour;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.logic.InstanceStateLogic;
 import nl.unionsoft.sysstate.common.util.SysStateStringUtils;
@@ -54,7 +53,7 @@ import nl.unionsoft.sysstate.util.CountUtil;
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class ViewLogicImpl implements ViewLogic {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ViewLogicImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(ViewLogicImpl.class);
 
     @Inject
     @Named("viewDao")
@@ -145,15 +144,10 @@ public class ViewLogicImpl implements ViewLogic {
 
     @Override
     public ViewResultDto getViewResults(ViewDto view) {
-        FilterDto filter = view.getFilter();
-        FilterBehaviour filterBehaviour = FilterBehaviour.SUBSCRIBED;
-        if (filter == null) {
-            filter = new FilterDto();
-            filterBehaviour = FilterBehaviour.DIRECT;
-        }
+
         final ViewResultDto viewResult = new ViewResultDto(view);
         Long now = System.currentTimeMillis();
-        final List<InstanceStateDto> instanceStates = instanceStateLogic.getInstanceStates(filter, filterBehaviour);
+        final List<InstanceStateDto> instanceStates = getInstanceStatesForView(view);
         // System.out.println("1:" + (System.currentTimeMillis() - now));
         Set<ProjectEnvironmentDto> projectEnvironments = getAllProjectEnvironmentsFromInstances(instanceStates);
         // System.out.println("2:" + (System.currentTimeMillis() - now));
@@ -175,6 +169,22 @@ public class ViewLogicImpl implements ViewLogic {
         return viewResult;
     }
 
+    private List<InstanceStateDto> getInstanceStatesForView(ViewDto view) {
+        FilterDto filter = view.getFilter();
+        if (filter == null) {
+            log.debug("No filter defined, returning results for new Filter");
+            return instanceStateLogic.getInstanceStates(new FilterDto());
+        }
+
+        if (filter.getId() == null || filter.getId() == 0) {
+            log.debug("Filter is defined, but has no id. Returning results for given filter");
+            return instanceStateLogic.getInstanceStates(filter);
+        }
+
+        log.debug("Returning results based on subscribed instances to filter.");
+        return instanceStateLogic.getInstanceStates(filter.getId());
+    }
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private void sortViewResult(final ViewResultDto viewResult) {
         final Comparator orderComparator = new BeanComparator("order", new NullComparator(ComparableComparator.getInstance()));
@@ -185,7 +195,7 @@ public class ViewLogicImpl implements ViewLogic {
     private void enrichProjectEnvironments(Set<ProjectEnvironmentDto> projectEnvironments, List<InstanceStateDto> instanceStates,
             String commonDescriptionTags) {
         projectEnvironments.parallelStream().forEach(projectEnvironment -> {
-            LOG.debug("Enriching projectEnvironment [{}]...", projectEnvironment);
+            log.debug("Enriching projectEnvironment [{}]...", projectEnvironment);
             CountDto count = projectEnvironment.getCount();
 
             List<InstanceDto> projectEnvironmentInstances = instanceStates
@@ -208,7 +218,7 @@ public class ViewLogicImpl implements ViewLogic {
                     if (StringUtils.isNotEmpty(state.getDescription()) && SysStateStringUtils.isTagMatch(instance.getTags(), commonDescriptionTags)) {
                         descriptions.add(state.getDescription());
                     }
-                    LOG.debug("Adding instance [{}] to projectEnvironment [{}]", instance, projectEnvironment);
+                    log.debug("Adding instance [{}] to projectEnvironment [{}]", instance, projectEnvironment);
                     projectEnvironment.getInstances().add(instance);
                     projectEnvironment.setState(StateType.transfer(projectEnvironment.getState(), state.getState()));
                     CountUtil.add(count, state.getState());

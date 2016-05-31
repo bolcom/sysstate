@@ -70,6 +70,13 @@ public class FilterLogicImpl implements FilterLogic {
         filter.setSearch(dto.getSearch());
         filter.setStateResolvers(dto.getStateResolvers());
         filter.setTags(dto.getTags());
+        
+        //Reset counters
+        filter.setLastQueryDate(null);
+        filter.setLastQueryTime(0L);
+        filter.setAverageQueryTime(0L);
+        filter.setQueryCount(0L);
+        
         filterDao.createOrUpdate(filter);
         dto.setId(filter.getId());
         updateTriggerJob(filter.getId());
@@ -83,12 +90,14 @@ public class FilterLogicImpl implements FilterLogic {
 
     @Override
     public void addInstanceToFilter(Long filterId, Long instanceId) {
+        logger.debug("Adding instance with id [{}] from filter with id [{}]", instanceId, filterId);
         filterDao.addInstanceToFilter(filterId, instanceId);
 
     }
 
     @Override
     public void removeInstanceFromFilter(Long filterId, Long instanceId) {
+        logger.debug("Removing instance with id [{}] from filter with id [{}]", instanceId, filterId);
         filterDao.removeInstanceFromFilter(filterId, instanceId);
     }
 

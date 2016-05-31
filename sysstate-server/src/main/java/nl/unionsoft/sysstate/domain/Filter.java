@@ -47,7 +47,16 @@ public class Filter {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "LAST_QUERY_DATE", nullable = true)
     private Date lastQueryDate;
+    
+    @Column(name = "QUERY_COUNT", nullable = true)
+    private long queryCount;
 
+    @Column(name = "AVG_QUERY_TIME", nullable = true)
+    private long averageQueryTime;
+
+    @Column(name = "LAST_QUERY_TIME", nullable = true)
+    private long lastQueryTime;
+    
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "SSE_FILTER_PROJECT")
     @Column(name = "PROJECTS", nullable = true)
@@ -172,6 +181,31 @@ public class Filter {
     public void setLastQueryDate(Date lastQueryDate) {
         this.lastQueryDate = lastQueryDate;
     }
+
+    public long getQueryCount() {
+        return queryCount;
+    }
+
+    public void setQueryCount(long queryCount) {
+        this.queryCount = queryCount;
+    }
+
+    public long getAverageQueryTime() {
+        return averageQueryTime;
+    }
+
+    public void setAverageQueryTime(long averageQueryTime) {
+        this.averageQueryTime = averageQueryTime;
+    }
+
+    public long getLastQueryTime() {
+        return lastQueryTime;
+    }
+
+    public void setLastQueryTime(long lastQueryTime) {
+        this.lastQueryTime = lastQueryTime;
+    }
+
 
     
     

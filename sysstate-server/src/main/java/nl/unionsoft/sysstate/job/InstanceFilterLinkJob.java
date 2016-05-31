@@ -1,15 +1,12 @@
 package nl.unionsoft.sysstate.job;
 
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -19,11 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
-import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
-import nl.unionsoft.sysstate.common.dto.InstanceDto;
-import nl.unionsoft.sysstate.common.dto.ProjectDto;
-import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.logic.FilterLogic;
 
@@ -56,51 +49,14 @@ public class InstanceFilterLinkJob extends AutowiringJob {
             return;
         }
 
-        List<InstanceDto> instances = instanceLogic.getInstances();
-        instances.forEach(instance -> {
-            if (instanceIsApplicableForFilter(instance, filter)) {
-                filterLogic.addInstanceToFilter(filter.getId(), instance.getId());
-            } else {
-                filterLogic.removeInstanceFromFilter(filter.getId(), instance.getId());
-            }
-        });
+        List<Long> actualInstanceIds = instanceLogic.getInstances(filter).stream().map(i -> i.getId()).collect(Collectors.toList());
+        List<Long> currentIstanceIds = instanceLogic.getInstances(filter.getId()).stream().map(i -> i.getId()).collect(Collectors.toList());
 
-    }
+        // Remove all instances that cannot be found in the list of actualInstanceIds (no longer present)
+        currentIstanceIds.stream().filter(id -> !actualInstanceIds.contains(id)).forEach(id -> filterLogic.removeInstanceFromFilter(filter.getId(), id));
 
-    private boolean instanceIsApplicableForFilter(InstanceDto instance, FilterDto filter) {
-
-        ProjectEnvironmentDto projectEnvironment = instance.getProjectEnvironment();
-        ProjectDto project = projectEnvironment.getProject();
-        EnvironmentDto environment = projectEnvironment.getEnvironment();
-        if (filter.getProjects().contains(projectEnvironment.getProject().getId())
-                || filter.getEnvironments().contains(projectEnvironment.getEnvironment().getId())) {
-            return true;
-        }
-
-        String search = filter.getSearch();
-        if (StringUtils.containsIgnoreCase(instance.getName(), search) || StringUtils.containsIgnoreCase(instance.getHomepageUrl(), search)
-                || StringUtils.containsIgnoreCase(instance.getHomepageUrl(), search) || StringUtils.containsIgnoreCase(instance.getPluginClass(), search)
-                || StringUtils.containsIgnoreCase(project.getName(), search) || StringUtils.containsIgnoreCase(environment.getName(), search)
-                || StringUtils.containsIgnoreCase(projectEnvironment.getHomepageUrl(), search)) {
-            return true;
-        }
-
-        Set<String> allTags = new HashSet<>();
-        allTags.addAll(Arrays.asList(StringUtils.split(StringUtils.defaultString(instance.getTags()), ' ')));
-        allTags.addAll(Arrays.asList(StringUtils.split(StringUtils.defaultString(project.getTags()), ' ')));
-        allTags.addAll(Arrays.asList(StringUtils.split(StringUtils.defaultString(environment.getTags()), ' ')));
-
-        for (String tag : StringUtils.split(StringUtils.defaultString(filter.getTags()), ' ')) {
-            if (allTags.contains(tag)) {
-                return true;
-            }
-        }
-
-        if (filter.getStateResolvers().contains(instance.getPluginClass())) {
-            return true;
-        }
-
-        return false;
+        // Add all instances that cannot be found in the list of currentInstanceIds (new)
+        actualInstanceIds.stream().filter(id -> !currentIstanceIds.contains(id)).forEach(id -> filterLogic.addInstanceToFilter(filter.getId(), id));
     }
 
 }

@@ -6,36 +6,49 @@ import java.util.Optional;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
-import nl.unionsoft.sysstate.common.enums.FilterBehaviour;
 
 public interface InstanceLogic {
 
-    public InstanceDto generateInstanceDto(String type);
-    
-    public InstanceDto generateInstanceDto(String type, Long projectId, Long environmentId);
+	public InstanceDto generateInstanceDto(String type);
 
-    public List<InstanceDto> getInstances();
+	public InstanceDto generateInstanceDto(String type, Long projectId, Long environmentId);
 
-    public Optional<InstanceDto> getInstance(Long instanceId);
+	public List<InstanceDto> getInstances();
 
-    public Long createOrUpdateInstance(InstanceDto instance);
+	public Optional<InstanceDto> getInstance(Long instanceId);
 
-    public void delete(Long instanceId);
+	public Long createOrUpdateInstance(InstanceDto instance);
 
-    public void queueForUpdate(final Long instanceId);
+	public void delete(Long instanceId);
 
-    public List<InstanceDto> getInstancesForProjectAndEnvironment(String projectPrefix, String environmentPrefix);
-    
-    public List<InstanceDto> getInstancesForProjectEnvironment(Long projectEnvironmentId);
-    
-    public List<InstanceDto> getInstancesForEnvironment(Long environmentId);
+	public void queueForUpdate(final Long instanceId);
 
-    public List<InstanceDto> getInstances(FilterDto filter, FilterBehaviour filterBehaviour);
+	public List<InstanceDto> getInstancesForProjectAndEnvironment(String projectPrefix, String environmentPrefix);
 
-    public void addTriggerJob(final long instanceId);
-    
-    public void removeTriggerJob(final long instanceId);
+	public List<InstanceDto> getInstancesForProjectEnvironment(Long projectEnvironmentId);
 
-    public List<PropertyMetaValue> getPropertyMeta(String type);
+	public List<InstanceDto> getInstancesForEnvironment(Long environmentId);
+
+	/**
+	 * Gets instances for a custom filter
+	 * 
+	 * @param filter
+	 * @return
+	 */
+	public List<InstanceDto> getInstances(FilterDto filter);
+
+	/**
+	 * Gets instances for a predefined filter.
+	 * 
+	 * @param filterId
+	 * @return
+	 */
+	public List<InstanceDto> getInstances(Long filterId);
+
+	public void addTriggerJob(final long instanceId);
+
+	public void removeTriggerJob(final long instanceId);
+
+	public List<PropertyMetaValue> getPropertyMeta(String type);
 
 }

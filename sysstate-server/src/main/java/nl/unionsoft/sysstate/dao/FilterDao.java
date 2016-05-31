@@ -18,6 +18,6 @@ public interface FilterDao {
     
     public void removeInstanceFromFilter(Long filterId, Long instanceId);
 
-    public void notifyFilterQueried(Long filterId);
+    public void notifyFilterQueried(Long filterId, Long queryTime);
     
 }

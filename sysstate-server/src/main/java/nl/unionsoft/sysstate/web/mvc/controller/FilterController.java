@@ -19,7 +19,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 import nl.unionsoft.sysstate.common.dto.FilterDto;
-import nl.unionsoft.sysstate.common.enums.FilterBehaviour;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
@@ -74,7 +73,7 @@ public class FilterController {
             return filterRedirectModelAndView(filter);
         } else {
             ModelAndView modelAndView = new ModelAndView("search-filter-manager");
-            modelAndView.addObject("instanceStates", instanceStateLogic.getInstanceStates(filter, FilterBehaviour.DIRECT));
+            modelAndView.addObject("instanceStates", instanceStateLogic.getInstanceStates(filter));
             modelAndView.addObject("filter", filter);
             modelAndView.addObject("stateResolvers", stateResolverLogic.getStateResolverNames());
             modelAndView.addObject("states", StateType.values());

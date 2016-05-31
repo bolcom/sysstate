@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
 import nl.unionsoft.sysstate.common.enums.StateType;
 
 public class FilterDto implements Serializable {
@@ -22,8 +20,11 @@ public class FilterDto implements Serializable {
 	private List<String> stateResolvers;
 	private String tags;
 	private String search;
-	
+
 	private Date lastQueryDate;
+	private Long queryCount;
+	private Long averageQueryTime;
+	private long lastQueryTime;
 
 	public FilterDto() {
 		projects = new ArrayList<Long>();
@@ -114,21 +115,28 @@ public class FilterDto implements Serializable {
 		this.lastQueryDate = lastQueryDate;
 	}
 
-	public boolean isEmpty()
-	{
-		return StringUtils.isEmpty(name) && StringUtils.isEmpty(tags) && StringUtils.isEmpty(search) && CollectionUtils
+	public Long getQueryCount() {
+		return queryCount;
 	}
-	
-	
-/**
- * private String name;
-	private List<Long> projects;
-	private List<Long> environments;
-	private List<StateType> states;
-	private List<String> stateResolvers;
-	private String tags;
-	private String search;
- */
-	
-	
+
+	public void setQueryCount(Long queryCount) {
+		this.queryCount = queryCount;
+	}
+
+	public Long getAverageQueryTime() {
+		return averageQueryTime;
+	}
+
+	public void setAverageQueryTime(Long averageQueryTime) {
+		this.averageQueryTime = averageQueryTime;
+	}
+
+	public long getLastQueryTime() {
+		return lastQueryTime;
+	}
+
+	public void setLastQueryTime(long lastQueryTime) {
+		this.lastQueryTime = lastQueryTime;
+	}
+
 }
