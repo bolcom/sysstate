@@ -50,7 +50,7 @@ public class HttpClientLogicImpl implements HttpClientLogic, InitializingBean {
 
     public void afterPropertiesSet() throws Exception {
         Map<String, Properties> httpClientGroupProps = PropertyGroupUtil.getGroupProperties(properties, "httpClient");
-        for (Entry<String, Properties> entry : httpClientGroupProps.entrySet() ){
+        for (Entry<String, Properties> entry : httpClientGroupProps.entrySet()) {
             String id = entry.getKey();
             LOG.info("Configuring HttpClient for id '{}'", id);
             Properties groupProps = entry.getValue();
@@ -58,8 +58,10 @@ public class HttpClientLogicImpl implements HttpClientLogic, InitializingBean {
             int socketTimeoutMillis = Integer.valueOf(groupProps.getProperty("socketTimeoutMillis", "45000"));
             int proxyPort = Integer.valueOf(groupProps.getProperty("proxyPort", "0"));
             String proxyHost = groupProps.getProperty("proxyHost");
-            LOG.info("HttpClient settings are: connectionTimeoutMillis={},socketTimeoutMillis={}, proxyPort={}, proxyHost={}", new Object[] {connectionTimeoutMillis,socketTimeoutMillis, proxyPort, proxyHost });
-            HttpClientFactoryBean httpClientFactoryBean = new HttpClientFactoryBean(connectionTimeoutMillis, socketTimeoutMillis);
+            LOG.info("HttpClient settings are: connectionTimeoutMillis={},socketTimeoutMillis={}, proxyPort={}, proxyHost={}", new Object[] {
+                    connectionTimeoutMillis, socketTimeoutMillis, proxyPort, proxyHost });
+            HttpClientFactoryBean httpClientFactoryBean = new HttpClientFactoryBean(connectionTimeoutMillis,
+                    socketTimeoutMillis);
             httpClientFactoryBean.setProxyHost(proxyHost);
             httpClientFactoryBean.setProxyPort(proxyPort);
             httpClients.put(id, httpClientFactoryBean.getObject());
@@ -67,7 +69,11 @@ public class HttpClientLogicImpl implements HttpClientLogic, InitializingBean {
     }
 
     public HttpClient getHttpClient(String id) {
-        return httpClients.get(id);
+        HttpClient httpClient = httpClients.get(id);
+        if (httpClient == null) {
+            throw new IllegalArgumentException("No httpClient could be found for id [" + id + "]");
+        }
+        return httpClient;
     }
 
     public Set<String> getHttpClientIds() {

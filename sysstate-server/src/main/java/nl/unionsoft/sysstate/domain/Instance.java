@@ -78,6 +78,9 @@ public class Instance {
 
     @OneToMany(mappedBy = "from", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<InstanceLink> outgoingInstanceLinks;
+    
+    @OneToMany(mappedBy = "instance", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<FilterInstance> filterInstances;
 
     @ManyToOne
     @JoinColumn(name = "PET_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_PROJECT_ENVIRONMENT_INSTANCE"))
@@ -210,5 +213,15 @@ public class Instance {
     public void setOutgoingInstanceLinks(List<InstanceLink> outgoingInstanceLinks) {
         this.outgoingInstanceLinks = outgoingInstanceLinks;
     }
+
+    public List<FilterInstance> getFilterInstances() {
+        return filterInstances;
+    }
+
+    public void setFilterInstances(List<FilterInstance> filterInstances) {
+        this.filterInstances = filterInstances;
+    }
+    
+    
 
 }

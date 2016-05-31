@@ -1,11 +1,6 @@
 package nl.unionsoft.sysstate.web.mvc.controller;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.validation.Valid;
 
 import org.springframework.stereotype.Controller;
@@ -17,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import nl.unionsoft.sysstate.common.dto.FilterDto;
-import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.logic.InstanceStateLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;

@@ -49,13 +49,13 @@ public class UpdateInstanceJob extends AutowiringJob {
         }
 
         InstanceDto instance = optInstance.get();
-        LOG.info("Starting job with instance '{}'", instance);
+        LOG.trace("Starting job with instance '{}'", instance);
         try {
             final StateDto state = stateLogic.requestStateForInstance(instance);
             finalizeState(instance, state);
-            LOG.info("job for instance '{}' completed, state: {}", instance, state);
+            LOG.trace("job for instance '{}' completed, state: {}", instance, state);
         } catch (final Exception e) {
-            LOG.error("job for instance '{}' failed, caught Exception!", e);
+            LOG.warn("job for instance '{}' failed, caught Exception!", e);
         }
 
     }

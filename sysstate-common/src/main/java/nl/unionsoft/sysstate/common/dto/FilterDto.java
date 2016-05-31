@@ -2,10 +2,8 @@ package nl.unionsoft.sysstate.common.dto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import nl.unionsoft.sysstate.common.enums.StateType;
 
@@ -23,12 +21,18 @@ public class FilterDto implements Serializable {
 	private String tags;
 	private String search;
 
+	private Date lastQueryDate;
+	private Long queryCount;
+	private Long averageQueryTime;
+	private long lastQueryTime;
+
 	public FilterDto() {
 		projects = new ArrayList<Long>();
 		environments = new ArrayList<Long>();
 		stateResolvers = new ArrayList<String>();
 		states = new ArrayList<StateType>();
-
+		tags = "";
+		search = "";
 	}
 
 	public String getName() {
@@ -101,6 +105,38 @@ public class FilterDto implements Serializable {
 
 	public void setStates(final List<StateType> states) {
 		this.states = states;
+	}
+
+	public Date getLastQueryDate() {
+		return lastQueryDate;
+	}
+
+	public void setLastQueryDate(Date lastQueryDate) {
+		this.lastQueryDate = lastQueryDate;
+	}
+
+	public Long getQueryCount() {
+		return queryCount;
+	}
+
+	public void setQueryCount(Long queryCount) {
+		this.queryCount = queryCount;
+	}
+
+	public Long getAverageQueryTime() {
+		return averageQueryTime;
+	}
+
+	public void setAverageQueryTime(Long averageQueryTime) {
+		this.averageQueryTime = averageQueryTime;
+	}
+
+	public long getLastQueryTime() {
+		return lastQueryTime;
+	}
+
+	public void setLastQueryTime(long lastQueryTime) {
+		this.lastQueryTime = lastQueryTime;
 	}
 
 }

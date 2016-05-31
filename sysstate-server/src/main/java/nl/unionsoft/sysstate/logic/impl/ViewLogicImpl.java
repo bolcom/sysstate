@@ -53,8 +53,8 @@ import nl.unionsoft.sysstate.util.CountUtil;
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class ViewLogicImpl implements ViewLogic {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ViewLogicImpl.class);
-    
+    private static final Logger log = LoggerFactory.getLogger(ViewLogicImpl.class);
+
     @Inject
     @Named("viewDao")
     private ViewDao viewDao;
@@ -63,24 +63,23 @@ public class ViewLogicImpl implements ViewLogic {
     private TemplateLogic templateLogic;
 
     @Inject
-    private InstanceStateLogic instanceStateLogic; 
-    
+    private InstanceStateLogic instanceStateLogic;
+
     @Inject
     private StateLogic stateLogic;
-    
 
     @Inject
     private TemplateDao templateDao;
 
     @Inject
     private FilterDao filterDao;
-    
+
     @Inject
     @Named("viewConverter")
     private Converter<ViewDto, View> viewConverter;
 
     public List<ViewDto> getViews() {
-        return ListConverter.convert(viewConverter,  viewDao.getViews());
+        return ListConverter.convert(viewConverter, viewDao.getViews());
     }
 
     public void createOrUpdateView(ViewDto viewDto) {
@@ -91,10 +90,14 @@ public class ViewLogicImpl implements ViewLogic {
         view.setName(viewDto.getName());
         Filter filter = null;
         if (viewDto.getFilter() != null && viewDto.getFilter().getId() != null) {
-            filter = filterDao.getFilter(viewDto.getFilter().getId());
+            Optional<Filter> optFilter = filterDao.getFilter(viewDto.getFilter().getId());
+            if (!optFilter.isPresent()) {
+                throw new IllegalStateException("Filter cannot be found.");
+            }
+            filter = optFilter.get();
+
         }
         view.setFilter(filter);
-
         Template template = null;
         if (viewDto.getTemplate() != null) {
             Optional<Template> optTemplate = templateDao.getTemplate(viewDto.getTemplate().getName());
@@ -136,37 +139,50 @@ public class ViewLogicImpl implements ViewLogic {
     }
 
     private String normalizeViewId(String input) {
-        return StringUtils.lowerCase(StringUtils.replaceEach(input, new String[] { " ", "_" }, new String[] { "-","-"}));
+        return StringUtils.lowerCase(StringUtils.replaceEach(input, new String[] { " ", "_" }, new String[] { "-", "-" }));
     }
 
     @Override
     public ViewResultDto getViewResults(ViewDto view) {
-        FilterDto filter = view.getFilter();
-        if (filter == null) {
-            filter = new FilterDto();
-        }
+
         final ViewResultDto viewResult = new ViewResultDto(view);
         Long now = System.currentTimeMillis();
-        final List<InstanceStateDto> instanceStates = instanceStateLogic.getInstanceStates(filter);
-        //System.out.println("1:" + (System.currentTimeMillis() - now));
+        final List<InstanceStateDto> instanceStates = getInstanceStatesForView(view);
+        // System.out.println("1:" + (System.currentTimeMillis() - now));
         Set<ProjectEnvironmentDto> projectEnvironments = getAllProjectEnvironmentsFromInstances(instanceStates);
-        //System.out.println("2:" + (System.currentTimeMillis() - now));
+        // System.out.println("2:" + (System.currentTimeMillis() - now));
         enrichProjectEnvironments(projectEnvironments, instanceStates, view.getCommonTags());
-        //System.out.println("3:" + (System.currentTimeMillis() - now));
+        // System.out.println("3:" + (System.currentTimeMillis() - now));
         viewResult.getProjectEnvironments().addAll(projectEnvironments);
-        //System.out.println("4:" + (System.currentTimeMillis() - now));
+        // System.out.println("4:" + (System.currentTimeMillis() - now));
         viewResult.getEnvironments().addAll(getEnvironmentsFromProjectEnvironments(projectEnvironments));
-        //System.out.println("5:" + (System.currentTimeMillis() - now));
+        // System.out.println("5:" + (System.currentTimeMillis() - now));
         viewResult.getProjects().addAll(getProjectsFromProjectEnvironments(projectEnvironments));
-        //System.out.println("6:" + (System.currentTimeMillis() - now));
+        // System.out.println("6:" + (System.currentTimeMillis() - now));
         viewResult.getInstanceStates().addAll(instanceStates);
-        //System.out.println("7:" + (System.currentTimeMillis() - now));
+        // System.out.println("7:" + (System.currentTimeMillis() - now));
         countInstances(instanceStates, viewResult.getInstanceCount());
-        //System.out.println("8:" + (System.currentTimeMillis() - now));
+        // System.out.println("8:" + (System.currentTimeMillis() - now));
         sortViewResult(viewResult);
-        //System.out.println("9:" + (System.currentTimeMillis() - now));
+        // System.out.println("9:" + (System.currentTimeMillis() - now));
 
         return viewResult;
+    }
+
+    private List<InstanceStateDto> getInstanceStatesForView(ViewDto view) {
+        FilterDto filter = view.getFilter();
+        if (filter == null) {
+            log.debug("No filter defined, returning results for new Filter");
+            return instanceStateLogic.getInstanceStates(new FilterDto());
+        }
+
+        if (filter.getId() == null || filter.getId() == 0) {
+            log.debug("Filter is defined, but has no id. Returning results for given filter");
+            return instanceStateLogic.getInstanceStates(filter);
+        }
+
+        log.debug("Returning results based on subscribed instances to filter.");
+        return instanceStateLogic.getInstanceStates(filter.getId());
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -176,20 +192,21 @@ public class ViewLogicImpl implements ViewLogic {
         Collections.sort(viewResult.getEnvironments(), orderComparator);
     }
 
-    private void enrichProjectEnvironments(Set<ProjectEnvironmentDto> projectEnvironments, List<InstanceStateDto> instanceStates, String commonDescriptionTags) {
+    private void enrichProjectEnvironments(Set<ProjectEnvironmentDto> projectEnvironments, List<InstanceStateDto> instanceStates,
+            String commonDescriptionTags) {
         projectEnvironments.parallelStream().forEach(projectEnvironment -> {
-            LOG.debug("Enriching projectEnvironment [{}]...", projectEnvironment);
+            log.debug("Enriching projectEnvironment [{}]...", projectEnvironment);
             CountDto count = projectEnvironment.getCount();
-            
+
             List<InstanceDto> projectEnvironmentInstances = instanceStates
                     .stream()
                     .filter(i -> i.getInstance().getProjectEnvironment().equals(projectEnvironment))
                     .map(InstanceStateDto::getInstance)
                     .collect(Collectors.toList());
-            if (projectEnvironmentInstances.size() == 1){
+            if (projectEnvironmentInstances.size() == 1) {
                 InstanceDto instance = projectEnvironmentInstances.get(0);
                 StateDto state = stateLogic.getLastStateForInstance(instance);
-                
+
                 CountUtil.add(count, state.getState());
                 projectEnvironment.setDescription(state.getDescription());
                 projectEnvironment.setState(state.getState());
@@ -197,16 +214,16 @@ public class ViewLogicImpl implements ViewLogic {
             } else {
                 TreeSet<String> descriptions = new TreeSet<String>();
                 projectEnvironmentInstances.forEach(instance -> {
-                	StateDto state = stateLogic.getLastStateForInstance(instance);
-                    if (StringUtils.isNotEmpty(state.getDescription()) && SysStateStringUtils.isTagMatch(instance.getTags(), commonDescriptionTags)){
-                        descriptions.add(state.getDescription());    
+                    StateDto state = stateLogic.getLastStateForInstance(instance);
+                    if (StringUtils.isNotEmpty(state.getDescription()) && SysStateStringUtils.isTagMatch(instance.getTags(), commonDescriptionTags)) {
+                        descriptions.add(state.getDescription());
                     }
-                    LOG.debug("Adding instance [{}] to projectEnvironment [{}]", instance, projectEnvironment);
+                    log.debug("Adding instance [{}] to projectEnvironment [{}]", instance, projectEnvironment);
                     projectEnvironment.getInstances().add(instance);
                     projectEnvironment.setState(StateType.transfer(projectEnvironment.getState(), state.getState()));
                     CountUtil.add(count, state.getState());
                 });
-                if (descriptions.size() == 1){
+                if (descriptions.size() == 1) {
                     projectEnvironment.setDescription(descriptions.first());
                 }
             }
@@ -214,7 +231,8 @@ public class ViewLogicImpl implements ViewLogic {
     }
 
     private void countInstances(List<InstanceStateDto> instancesStates, CountDto count) {
-        instancesStates.parallelStream().forEach(instancesState -> CountUtil.add(count, stateLogic.getLastStateForInstance(instancesState.getInstance()).getState()));
+        instancesStates.parallelStream()
+                .forEach(instancesState -> CountUtil.add(count, stateLogic.getLastStateForInstance(instancesState.getInstance()).getState()));
     }
 
     private Set<EnvironmentDto> getEnvironmentsFromProjectEnvironments(Set<ProjectEnvironmentDto> projectEnvironments) {
@@ -227,7 +245,6 @@ public class ViewLogicImpl implements ViewLogic {
         //@formatter:on
     }
 
-    
     private Set<ProjectDto> getProjectsFromProjectEnvironments(Set<ProjectEnvironmentDto> projectEnvironments) {
         //@formatter:off
         return projectEnvironments.parallelStream()
@@ -238,10 +255,8 @@ public class ViewLogicImpl implements ViewLogic {
         //@formatter:on
     }
 
-    
-    private Set<ProjectEnvironmentDto> getAllProjectEnvironmentsFromInstances(List<InstanceStateDto> instanceStates){
+    private Set<ProjectEnvironmentDto> getAllProjectEnvironmentsFromInstances(List<InstanceStateDto> instanceStates) {
         return instanceStates.stream().map(instanceState -> instanceState.getInstance().getProjectEnvironment()).distinct().collect(Collectors.toSet());
     }
-  
 
 }

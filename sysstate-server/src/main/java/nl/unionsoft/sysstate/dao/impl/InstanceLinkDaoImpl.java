@@ -57,13 +57,31 @@ public class InstanceLinkDaoImpl implements InstanceLinkDao{
     }
 
     @Override
-    public List<InstanceLink> retrieve(Long instanceFromId, String name) {
+    public List<InstanceLink> getOutgoingInstanceLinks(Long instanceFromId, String name) {
         return entityManager.createQuery(
                 "FROM InstanceLink ilk " +
                 "WHERE ilk.from.id = :instanceFromId " +
                 "AND ilk.name = :name", InstanceLink.class)
                 .setParameter("instanceFromId", instanceFromId)
                 .setParameter("name", name)
+                .getResultList();
+    }
+
+    @Override
+    public List<InstanceLink> getOutgoingInstanceLinks(Long instanceFromId) {
+        return entityManager.createQuery(
+                "FROM InstanceLink ilk " +
+                "WHERE ilk.from.id = :instanceFromId ", InstanceLink.class)
+                .setParameter("instanceFromId", instanceFromId)
+                .getResultList();
+    }
+
+    @Override
+    public List<InstanceLink> getIncommingInstanceLinks(Long instanceToId) {
+        return entityManager.createQuery(
+                "FROM InstanceLink ilk " +
+                "WHERE ilk.to.id = :instanceToId ", InstanceLink.class)
+                .setParameter("instanceToId", instanceToId)
                 .getResultList();
     }
     

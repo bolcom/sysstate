@@ -110,7 +110,7 @@ public class StateLogicImpl implements StateLogic {
         final Date stateDate = dto.getCreationDate().toDate();
         if (!match(dto, state)) {
             // @formatter:off
-            LOG.info("State '{}' for instance '{}' changed! old='{}', new='{}'", new Object[] { state, instanceId, dto, state });
+            LOG.debug("State '{}' for instance '{}' changed! old='{}', new='{}'", new Object[] { state, instanceId, dto, state });
             // @formatter:on
             state = new State();
             state.setDescription(dto.getDescription());
@@ -119,7 +119,7 @@ public class StateLogicImpl implements StateLogic {
             state.setCreationDate(stateDate);
             state.setState(dto.getState());
         } else {
-            LOG.info("State '{}' for instanceId '{}' hasn't changed, updating timestamps, rating & messages only...", state, instanceId);
+            LOG.debug("State '{}' for instanceId '{}' hasn't changed, updating timestamps, rating & messages only...", state, instanceId);
         }
         state.setMessage(SysStateStringUtils.stripHtml(dto.getMessage()));
         state.setResponseTime(dto.getResponseTime());

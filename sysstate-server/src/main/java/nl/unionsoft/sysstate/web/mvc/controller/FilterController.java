@@ -1,6 +1,6 @@
 package nl.unionsoft.sysstate.web.mvc.controller;
 
-import java.util.Arrays;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -25,7 +25,6 @@ import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceStateLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
 import nl.unionsoft.sysstate.dto.MessageDto;
-import nl.unionsoft.sysstate.dto.UserDto;
 import nl.unionsoft.sysstate.dto.UserDto.Role;
 import nl.unionsoft.sysstate.logic.FilterLogic;
 import nl.unionsoft.sysstate.logic.MessageLogic;
@@ -91,9 +90,11 @@ public class FilterController {
 
     @RequestMapping(value = "/filter/load/{filterId}/index.html", method = RequestMethod.GET)
     public ModelAndView userFilter(@PathVariable("filterId") final Long filterId, RedirectAttributes redirectAttrs) {
-        final FilterDto filter = filterLogic.getFilter(filterId);
-
-        return filterRedirectModelAndView(filter);
+        Optional<FilterDto> optFilter =filterLogic.getFilter(filterId);
+        if (!optFilter.isPresent()){
+            throw new IllegalStateException("Requested filter with id [" + filterId + "] cannot be found!");
+        }
+        return filterRedirectModelAndView(optFilter.get());
     }
 
     private ModelAndView filterRedirectModelAndView(final FilterDto filter) {
@@ -112,14 +113,20 @@ public class FilterController {
     @RequestMapping(value = "/filter/{filterId}/delete", method = RequestMethod.GET)
     public ModelAndView getDelete(@PathVariable("filterId") final Long filterId) {
         final ModelAndView modelAndView = new ModelAndView("delete-filter-manager");
-        modelAndView.addObject("filter", filterLogic.getFilter(filterId));
+        
+        Optional<FilterDto> optFilter = filterLogic.getFilter(filterId);
+        if (!optFilter.isPresent()){
+            messageLogic.addUserMessage(new MessageDto("Filter was already deleted.", MessageDto.GREEN));
+            return new ModelAndView("redirect:/filter/list.html");    
+        }
+        modelAndView.addObject("filter", optFilter.get());
         return modelAndView;
     }
     
     @RequestMapping(value = "/filter/{filterId}/delete", method = RequestMethod.POST)
     public ModelAndView handleDelete(@PathVariable("filterId") final Long filterId) {
         filterLogic.delete(filterId);
-        return new ModelAndView("redirect:/filter/index.html");
+        return new ModelAndView("redirect:/filter/list.html");
     }
 
     @RequestMapping(value = "/filter/list", method = RequestMethod.GET)

@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -45,6 +46,7 @@ import nl.unionsoft.sysstate.common.util.PropertyGroupUtil;
 import nl.unionsoft.sysstate.converter.InstancePropertiesConverter;
 import nl.unionsoft.sysstate.converter.OptionalConverter;
 import nl.unionsoft.sysstate.converter.StateConverter;
+import nl.unionsoft.sysstate.dao.FilterDao;
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.dao.ProjectEnvironmentDao;
 import nl.unionsoft.sysstate.dao.PropertyDao;
@@ -72,6 +74,10 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     @Inject
     @Named("propertyDao")
     private PropertyDao propertyDao;
+
+    @Inject
+    @Named("filterDao")
+    private FilterDao filterDao;
 
     @Inject
     @Named("stateLogic")
@@ -185,7 +191,6 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return OptionalConverter.convert(instanceDao.getInstance(instanceId), instanceConverter);
     }
 
-  
     public Long createOrUpdateInstance(final InstanceDto dto) {
         Instance instance = getInstanceForDto(dto);
 
@@ -265,18 +270,11 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return ListConverter.convert(instanceConverter, instanceDao.getInstancesForProjectAndEnvironment(projectPrefix, environmentPrefix));
     }
 
-    public List<Long> getInstancesKeys(FilterDto filter) {
-        return instanceDao.getInstanceKeys(filter);
-    }
-    
     public void afterPropertiesSet() throws Exception {
         List<Instance> instances = instanceDao.getInstances();
         for (Instance instance : instances) {
-
-            // Add trigger
             addTriggerJob(instance.getId());
         }
-
     }
 
     public InstanceDto generateInstanceDto(String type) {
@@ -353,6 +351,19 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     @Override
     public List<InstanceDto> getInstancesForProjectEnvironment(Long projectEnvironmentId) {
         return ListConverter.convert(instanceConverter, instanceDao.getInstancesForProjectEnvironment(projectEnvironmentId));
+    }
+
+    @Override
+    public List<InstanceDto> getInstances(FilterDto filter) {
+        return instanceDao.getInstances(filter).parallelStream().map(i -> instanceConverter.convert(i)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<InstanceDto> getInstances(Long filterId) {
+        Long now = System.currentTimeMillis();
+        List<Instance> instances = instanceDao.getInstances(filterId);
+        filterDao.notifyFilterQueried(filterId, System.currentTimeMillis() - now);
+        return instances.parallelStream().map(i -> instanceConverter.convert(i)).collect(Collectors.toList());
     }
 
 }

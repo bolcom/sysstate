@@ -111,13 +111,13 @@ public class SetupListener implements InitializingBean {
             if (filterLogic.getFilters().isEmpty()) {
                 LOG.info("No filters found, creating a default filter...");
                 FilterDto filterDto = new FilterDto();
-                filterDto.getEnvironments().add(prd.getId());
-                filterDto.setName("Production");
+                filterDto.setName("All");
                 filterLogic.createOrUpdate(filterDto);
-
-            }
-            if (viewLogic.getViews().isEmpty()) {
-                createView("complete card", "card.html");
+                if (viewLogic.getViews().isEmpty()) {
+                    createView("Network", "network.html", filterDto);
+                    createView("Card", "card.html", filterDto);
+                    createView("Table", "base.html", filterDto);
+                }
             }
         }
     }
@@ -140,10 +140,11 @@ public class SetupListener implements InitializingBean {
         return configuration;
     }
 
-    private void createView(String name, String template) {
+    private void createView(String name, String template, FilterDto filter) {
         ViewDto view = new ViewDto();
         view.setName(name);
         view.setTemplate(templateLogic.getTemplate(template));
+        view.setFilter(filter);
         viewLogic.createOrUpdateView(view);
     }
 

@@ -9,4 +9,6 @@ public interface InstanceStateLogic {
 
 	
 	List<InstanceStateDto> getInstanceStates(FilterDto filterDto);
+	
+	List<InstanceStateDto> getInstanceStates(Long filterId);
 }
