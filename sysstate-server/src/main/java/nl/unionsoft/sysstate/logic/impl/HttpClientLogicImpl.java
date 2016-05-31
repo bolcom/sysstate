@@ -25,60 +25,59 @@ import org.springframework.stereotype.Service;
 @Service("httpClientLogic")
 public class HttpClientLogicImpl implements HttpClientLogic, InitializingBean {
 
-	private static final Logger LOG = LoggerFactory.getLogger(HttpClientLogicImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HttpClientLogicImpl.class);
 
-	private Map<String, HttpClient> httpClients;
+    private Map<String, HttpClient> httpClients;
 
-	@Inject
-	@Named("properties")
-	private Properties properties;
+    @Inject
+    @Named("properties")
+    private Properties properties;
 
-	public HttpClientLogicImpl() {
-		httpClients = new HashMap<String, HttpClient>();
-	}
+    public HttpClientLogicImpl() {
+        httpClients = new HashMap<String, HttpClient>();
+    }
 
-	public void closeIdleConnections() {
-		for (Entry<String, HttpClient> entry : httpClients.entrySet()) {
-			LOG.debug("Closing idle httpClient Connections for client '{}'", entry.getKey());
-			HttpClient httpClient = entry.getValue();
-			ClientConnectionManager clientConnectionManager = httpClient.getConnectionManager();
-			clientConnectionManager.closeExpiredConnections();
-			clientConnectionManager.closeIdleConnections(120, TimeUnit.SECONDS);
+    public void closeIdleConnections() {
+        for (Entry<String, HttpClient> entry : httpClients.entrySet()) {
+            LOG.debug("Closing idle httpClient Connections for client '{}'", entry.getKey());
+            HttpClient httpClient = entry.getValue();
+            ClientConnectionManager clientConnectionManager = httpClient.getConnectionManager();
+            clientConnectionManager.closeExpiredConnections();
+            clientConnectionManager.closeIdleConnections(120, TimeUnit.SECONDS);
 
-		}
-	}
+        }
+    }
 
-	public void afterPropertiesSet() throws Exception {
-		Map<String, Properties> httpClientGroupProps = PropertyGroupUtil.getGroupProperties(properties, "httpClient");
-		for (Entry<String, Properties> entry : httpClientGroupProps.entrySet()) {
-			String id = entry.getKey();
-			LOG.info("Configuring HttpClient for id '{}'", id);
-			Properties groupProps = entry.getValue();
-			int connectionTimeoutMillis = Integer.valueOf(groupProps.getProperty("connectionTimeoutMillis", "45000"));
-			int socketTimeoutMillis = Integer.valueOf(groupProps.getProperty("socketTimeoutMillis", "45000"));
-			int proxyPort = Integer.valueOf(groupProps.getProperty("proxyPort", "0"));
-			String proxyHost = groupProps.getProperty("proxyHost");
-			LOG.info(
-					"HttpClient settings are: connectionTimeoutMillis={},socketTimeoutMillis={}, proxyPort={}, proxyHost={}",
-					new Object[] { connectionTimeoutMillis, socketTimeoutMillis, proxyPort, proxyHost });
-			HttpClientFactoryBean httpClientFactoryBean = new HttpClientFactoryBean(connectionTimeoutMillis,
-					socketTimeoutMillis);
-			httpClientFactoryBean.setProxyHost(proxyHost);
-			httpClientFactoryBean.setProxyPort(proxyPort);
-			httpClients.put(id, httpClientFactoryBean.getObject());
-		}
-	}
+    public void afterPropertiesSet() throws Exception {
+        Map<String, Properties> httpClientGroupProps = PropertyGroupUtil.getGroupProperties(properties, "httpClient");
+        for (Entry<String, Properties> entry : httpClientGroupProps.entrySet()) {
+            String id = entry.getKey();
+            LOG.info("Configuring HttpClient for id '{}'", id);
+            Properties groupProps = entry.getValue();
+            int connectionTimeoutMillis = Integer.valueOf(groupProps.getProperty("connectionTimeoutMillis", "45000"));
+            int socketTimeoutMillis = Integer.valueOf(groupProps.getProperty("socketTimeoutMillis", "45000"));
+            int proxyPort = Integer.valueOf(groupProps.getProperty("proxyPort", "0"));
+            String proxyHost = groupProps.getProperty("proxyHost");
+            LOG.info("HttpClient settings are: connectionTimeoutMillis={},socketTimeoutMillis={}, proxyPort={}, proxyHost={}", new Object[] {
+                    connectionTimeoutMillis, socketTimeoutMillis, proxyPort, proxyHost });
+            HttpClientFactoryBean httpClientFactoryBean = new HttpClientFactoryBean(connectionTimeoutMillis,
+                    socketTimeoutMillis);
+            httpClientFactoryBean.setProxyHost(proxyHost);
+            httpClientFactoryBean.setProxyPort(proxyPort);
+            httpClients.put(id, httpClientFactoryBean.getObject());
+        }
+    }
 
-	public HttpClient getHttpClient(String id) {
-		HttpClient httpClient = httpClients.get(id);
-		if (httpClient == null) {
-			throw new IllegalArgumentException("No httpClient could be found for id [" + id + "]");
-		}
-		return httpClient;
-	}
+    public HttpClient getHttpClient(String id) {
+        HttpClient httpClient = httpClients.get(id);
+        if (httpClient == null) {
+            throw new IllegalArgumentException("No httpClient could be found for id [" + id + "]");
+        }
+        return httpClient;
+    }
 
-	public Set<String> getHttpClientIds() {
-		return httpClients.keySet();
-	}
+    public Set<String> getHttpClientIds() {
+        return httpClients.keySet();
+    }
 
 }
