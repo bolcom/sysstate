@@ -84,10 +84,11 @@ public class FilterDaoImpl implements FilterDao {
         long averageQueryTime = ((filter.getAverageQueryTime() * filter.getQueryCount()) + queryTime) / (filter.getQueryCount() + 1);
         long queryCount = filter.getQueryCount() + 1;
         //@formatter:off
-        entityManager.createQuery("UPDATE Filter SET lastQueryDate = :lastQueryDate, queryCount = :queryCount, averageQueryTime = :averageQueryTime WHERE id = :id")
+        entityManager.createQuery("UPDATE Filter SET lastQueryDate = :lastQueryDate, queryCount = :queryCount, averageQueryTime = :averageQueryTime, lastQueryTime = :lastQueryTime WHERE id = :id")
         .setParameter("lastQueryDate", new Date())
         .setParameter("queryCount", queryCount)
         .setParameter("averageQueryTime", averageQueryTime)
+        .setParameter("lastQueryTime", queryTime)
         .setParameter("id", filterId)
         .executeUpdate();
         //@formatter:on

@@ -105,6 +105,7 @@ public class InstanceDaoImpl implements InstanceDao {
                         "	FROM FilterInstance fi " + 
                         "	WHERE fi.filter.id = :filterId" + 
                         ")", Instance.class)
+                .setHint("org.hibernate.cacheable", true)
                 .setParameter("filterId", filterId).getResultList();
         //@formatter:on
     }
@@ -168,14 +169,17 @@ public class InstanceDaoImpl implements InstanceDao {
 
     public List<Instance> getInstancesForProjectAndEnvironment(final String projectName, final String environmentName) {
 
+        //@formatter:off
         return entityManager
                 .createQuery( //
-                "FROM Instance ice " + "WHERE ice.projectEnvironment.environment.name = :environmentName "
-                        + "AND ice.projectEnvironment.project.name = :projectName", Instance.class)
+                        "FROM Instance ice " + 
+                        "WHERE ice.projectEnvironment.environment.name = :environmentName " + 
+                        "AND ice.projectEnvironment.project.name = :projectName", Instance.class)
                 .setParameter("projectName", StringUtils.upperCase(projectName))
                 .setParameter("environmentName", StringUtils.upperCase(environmentName))
-                .setHint("org.hibernate.cacheable", true).getResultList();
-
+                .setHint("org.hibernate.cacheable", true)
+                .getResultList();
+        //@formatter:off
     }
 
     public List<Instance> getInstancesForProjectEnvironment(final Long projectEnvironmentId) {
@@ -204,8 +208,10 @@ public class InstanceDaoImpl implements InstanceDao {
 
             return Optional.of(entityManager
                     .createQuery( //
-                    "FROM Instance ice " + "WHERE ice.reference = :reference", Instance.class)
-                    .setParameter("reference", reference).setHint("org.hibernate.cacheable", true).getSingleResult());
+                    "FROM Instance ice WHERE ice.reference = :reference", Instance.class)
+                    .setParameter("reference", reference)
+                    .setHint("org.hibernate.cacheable", true)
+                    .getSingleResult());
         } catch (NoResultException e) {
             return Optional.empty();
         } catch (NonUniqueResultException e) {

@@ -18,4 +18,6 @@ public interface FilterLogic {
     public void addInstanceToFilter(Long filterId, Long instanceId);
     
     public void removeInstanceFromFilter(Long filterId, Long instanceId);
+    
+    public void updateFilterSubscriptions(Long filterId);
 }

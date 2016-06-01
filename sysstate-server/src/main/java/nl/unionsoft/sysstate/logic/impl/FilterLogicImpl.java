@@ -5,12 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.joda.time.DateTime;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
@@ -29,10 +31,9 @@ import nl.unionsoft.common.converter.ListConverter;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.converter.OptionalConverter;
 import nl.unionsoft.sysstate.dao.FilterDao;
+import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.domain.Filter;
-import nl.unionsoft.sysstate.domain.Instance;
 import nl.unionsoft.sysstate.job.InstanceFilterLinkJob;
-import nl.unionsoft.sysstate.job.UpdateInstanceJob;
 import nl.unionsoft.sysstate.logic.FilterLogic;
 
 @Service("filterLogic")
@@ -49,6 +50,9 @@ public class FilterLogicImpl implements FilterLogic {
     @Named("filterDao")
     private FilterDao filterDao;
 
+    @Inject
+    private InstanceDao instanceDao;
+    
     @Inject
     @Named("scheduler")
     private Scheduler scheduler;
@@ -153,6 +157,33 @@ public class FilterLogicImpl implements FilterLogic {
     @PreDestroy
     public void preDestroy() throws Exception {
         filterDao.getFilters().parallelStream().forEach( f -> removeTriggerJob(f.getId()));
+    }
+
+    @Override
+    public void updateFilterSubscriptions(Long filterId) {
+        logger.debug("Updating FilterInstances for filter with id [{}]", filterId);
+        Optional<FilterDto> optFilter = getFilter(filterId);
+        if (!optFilter.isPresent()) {
+            logger.warn("Filter with id [{}] is no longer present.", filterId);
+            return;
+        }
+
+        FilterDto filter = optFilter.get();
+        DateTime tenMinutesAgo = new DateTime(new Date()).minusMinutes(10);
+        if (filter.getLastQueryDate() == null || new DateTime(filter.getLastQueryDate()).isBefore(tenMinutesAgo)) {
+            logger.debug("Not updating filter with id [{}] as it hasn't been queried for more then 10 minutes.", filterId);
+            return;
+        }
+
+        List<Long> actualInstanceIds = instanceDao.getInstances(filter).stream().map(i -> i.getId()).collect(Collectors.toList());
+        List<Long> currentIstanceIds = instanceDao.getInstances(filter.getId()).stream().map(i -> i.getId()).collect(Collectors.toList());
+
+        // Remove all instances that cannot be found in the list of actualInstanceIds (no longer present)
+        currentIstanceIds.stream().filter(id -> !actualInstanceIds.contains(id)).forEach(id -> removeInstanceFromFilter(filter.getId(), id));
+
+        // Add all instances that cannot be found in the list of currentInstanceIds (new)
+        actualInstanceIds.stream().filter(id -> !currentIstanceIds.contains(id)).forEach(id -> addInstanceToFilter(filter.getId(), id));
+        
     }
 
 
