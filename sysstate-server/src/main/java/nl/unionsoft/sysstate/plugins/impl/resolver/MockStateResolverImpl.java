@@ -40,9 +40,6 @@ public class MockStateResolverImpl implements StateResolver {
         } catch (final InterruptedException e) {
             e.printStackTrace();
         }
-        if (StringUtils.equalsIgnoreCase("exception", StringUtils.defaultIfEmpty(configuration.get("mode"), ""))) {
-            throw new IllegalStateException("Exception exception!");
-        }
 
     }
 

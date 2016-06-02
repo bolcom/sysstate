@@ -3,7 +3,9 @@ package nl.unionsoft.sysstate.logic.impl;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
@@ -47,7 +49,6 @@ import nl.unionsoft.sysstate.domain.Filter;
 import nl.unionsoft.sysstate.domain.Template;
 import nl.unionsoft.sysstate.domain.View;
 import nl.unionsoft.sysstate.logic.FilterLogic;
-import nl.unionsoft.sysstate.logic.StateLogic;
 import nl.unionsoft.sysstate.logic.TemplateLogic;
 import nl.unionsoft.sysstate.logic.ViewLogic;
 import nl.unionsoft.sysstate.util.CountUtil;
@@ -69,14 +70,11 @@ public class ViewLogicImpl implements ViewLogic {
     private InstanceStateLogic instanceStateLogic;
 
     @Inject
-    private StateLogic stateLogic;
-
-    @Inject
     private TemplateDao templateDao;
 
     @Inject
     private FilterDao filterDao;
-    
+
     @Inject
     private FilterLogic filterLogic;
 
@@ -117,7 +115,7 @@ public class ViewLogicImpl implements ViewLogic {
         view.setLastRequestTime(0L);
         view.setAverageRequestTime(0L);
         view.setRequestCount(0L);
-        
+
         viewDao.createOrUpdateView(view);
     }
 
@@ -157,19 +155,31 @@ public class ViewLogicImpl implements ViewLogic {
     @Override
     public ViewResultDto getViewResults(ViewDto view) {
         Long now = System.currentTimeMillis();
+        Map<Long, Long> timings = new LinkedHashMap<>();
         final ViewResultDto viewResult = new ViewResultDto(view);
         final List<InstanceStateDto> instanceStates = getInstanceStatesForView(view);
+        timings.put(1L, System.currentTimeMillis() - now);
         Set<ProjectEnvironmentDto> projectEnvironments = getAllProjectEnvironmentsFromInstances(instanceStates);
+        timings.put(2L, System.currentTimeMillis() - now);
         enrichProjectEnvironments(projectEnvironments, instanceStates, view.getCommonTags());
+        timings.put(3L, System.currentTimeMillis() - now);
         viewResult.getProjectEnvironments().addAll(projectEnvironments);
+        timings.put(4L, System.currentTimeMillis() - now);
         viewResult.getEnvironments().addAll(getEnvironmentsFromProjectEnvironments(projectEnvironments));
+        timings.put(5L, System.currentTimeMillis() - now);
         viewResult.getProjects().addAll(getProjectsFromProjectEnvironments(projectEnvironments));
+        timings.put(6L, System.currentTimeMillis() - now);
         viewResult.getInstanceStates().addAll(instanceStates);
+        timings.put(7L, System.currentTimeMillis() - now);
         countInstances(instanceStates, viewResult.getInstanceCount());
+        timings.put(8L, System.currentTimeMillis() - now);
         sortViewResult(viewResult);
-        if (view.getId() != null && view.getId() > 0){
-            viewDao.notifyRequested(view.getId(), System.currentTimeMillis() - now);    
-        }        
+        timings.put(9L, System.currentTimeMillis() - now);
+        if (view.getId() != null && view.getId() > 0) {
+            viewDao.notifyRequested(view.getId(), System.currentTimeMillis() - now);
+        }
+        timings.put(10L, System.currentTimeMillis() - now);
+        log.debug("Timings for view [{}] are [{}]", view, timings);
         return viewResult;
     }
 
@@ -189,7 +199,7 @@ public class ViewLogicImpl implements ViewLogic {
             log.debug("FilterDate needs to be updated, scheduling update...");
             filterLogic.scheduleUpdate(filter.getId());
         }
-        
+
         log.debug("Returning results based on subscribed instances to filter.");
         return instanceStateLogic.getInstanceStates(filter.getId());
     }
@@ -204,44 +214,32 @@ public class ViewLogicImpl implements ViewLogic {
     private void enrichProjectEnvironments(Set<ProjectEnvironmentDto> projectEnvironments, List<InstanceStateDto> instanceStates,
             String commonDescriptionTags) {
         projectEnvironments.parallelStream().forEach(projectEnvironment -> {
-            log.debug("Enriching projectEnvironment [{}]...", projectEnvironment);
+            log.trace("Enriching projectEnvironment [{}]...", projectEnvironment);
             CountDto count = projectEnvironment.getCount();
+            TreeSet<String> descriptions = new TreeSet<String>();
 
-            List<InstanceDto> projectEnvironmentInstances = instanceStates
-                    .stream()
+            instanceStates.stream()
                     .filter(i -> i.getInstance().getProjectEnvironment().equals(projectEnvironment))
-                    .map(InstanceStateDto::getInstance)
-                    .collect(Collectors.toList());
-            if (projectEnvironmentInstances.size() == 1) {
-                InstanceDto instance = projectEnvironmentInstances.get(0);
-                StateDto state = stateLogic.getLastStateForInstance(instance);
-
-                CountUtil.add(count, state.getState());
-                projectEnvironment.setDescription(state.getDescription());
-                projectEnvironment.setState(state.getState());
-                projectEnvironment.getInstances().add(instance);
-            } else {
-                TreeSet<String> descriptions = new TreeSet<String>();
-                projectEnvironmentInstances.forEach(instance -> {
-                    StateDto state = stateLogic.getLastStateForInstance(instance);
-                    if (StringUtils.isNotEmpty(state.getDescription()) && SysStateStringUtils.isTagMatch(instance.getTags(), commonDescriptionTags)) {
-                        descriptions.add(state.getDescription());
-                    }
-                    log.debug("Adding instance [{}] to projectEnvironment [{}]", instance, projectEnvironment);
-                    projectEnvironment.getInstances().add(instance);
-                    projectEnvironment.setState(StateType.transfer(projectEnvironment.getState(), state.getState()));
-                    CountUtil.add(count, state.getState());
-                });
-                if (descriptions.size() == 1) {
-                    projectEnvironment.setDescription(descriptions.first());
+                    .forEach(instanceState -> {
+                InstanceDto instance = instanceState.getInstance();
+                StateDto state = instanceState.getState();
+                if (StringUtils.isNotEmpty(state.getDescription()) && (SysStateStringUtils.isTagMatch(instance.getTags(), commonDescriptionTags) || StringUtils.isEmpty(commonDescriptionTags))) {
+                    descriptions.add(state.getDescription());
                 }
+                log.trace("Adding instance [{}] to projectEnvironment [{}]", instance, projectEnvironment);
+                projectEnvironment.getInstances().add(instance);
+                projectEnvironment.setState(StateType.transfer(projectEnvironment.getState(), state.getState()));
+                CountUtil.add(count, state.getState());
+            });
+            if (descriptions.size() == 1) {
+                projectEnvironment.setDescription(descriptions.first());
             }
         });
     }
 
     private void countInstances(List<InstanceStateDto> instancesStates, CountDto count) {
         instancesStates.parallelStream()
-                .forEach(instancesState -> CountUtil.add(count, stateLogic.getLastStateForInstance(instancesState.getInstance()).getState()));
+                .forEach(instanceState -> CountUtil.add(count, instanceState.getState().getState()));
     }
 
     private Set<EnvironmentDto> getEnvironmentsFromProjectEnvironments(Set<ProjectEnvironmentDto> projectEnvironments) {
@@ -267,10 +265,10 @@ public class ViewLogicImpl implements ViewLogic {
     private Set<ProjectEnvironmentDto> getAllProjectEnvironmentsFromInstances(List<InstanceStateDto> instanceStates) {
         return instanceStates.stream().map(instanceState -> instanceState.getInstance().getProjectEnvironment()).distinct().collect(Collectors.toSet());
     }
-    
+
     private boolean isFilterDataExpired(FilterDto filter) {
         DateTime threeMinutesAgo = new DateTime(new Date()).minusMinutes(3);
-        //Filter has never been synced, or has been synced more then 3 minutes ago.
+        // Filter has never been synced, or has been synced more then 3 minutes ago.
         return filter.getLastSyncDate() == null || new DateTime(filter.getLastSyncDate()).isBefore(threeMinutesAgo);
     }
 

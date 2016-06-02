@@ -146,4 +146,11 @@ public class ViewDto {
         return true;
     }
 
+	@Override
+	public String toString() {
+		return "ViewDto [id=" + id + ", name=" + name + "]";
+	}
+    
+    
+
 }

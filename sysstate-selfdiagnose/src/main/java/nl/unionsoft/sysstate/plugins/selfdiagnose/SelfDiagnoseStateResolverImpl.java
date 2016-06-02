@@ -151,15 +151,15 @@ public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
     }
 
     private void link(final InstanceDto parent, String projectName, String environmentName) {
-        logger.info("Linking this instance to project [{}] and environment [{}]", projectName, environmentName);
+        logger.debug("Linking instance [{}] to project [{}] and environment [{}]", new Object[]{ parent, projectName, environmentName});
         List<InstanceDto> instances = instanceLogic.getInstancesForProjectAndEnvironment(projectName, environmentName);
         if (instances == null || instances.isEmpty()){
-            logger.info("The projectEnvironment for project [{}] and environment [{}] could not be found.", projectName, environmentName);
+            logger.debug("The projectEnvironment for project [{}] and environment [{}] could not be found.", projectName, environmentName);
         } else {
             
             List<Long> linkedInstances = new ArrayList<Long>();
             for (InstanceDto instance : instances){
-                logger.info("Linking this instance to: [{}]", instance);
+                logger.debug("Linking instance [{}] to: [{}]",parent,  instance);
                 linkedInstances.add(instance.getId());
                 
             }

@@ -23,7 +23,6 @@ import nl.unionsoft.sysstate.logic.StateLogic;
 @Service("instanceStateLogic")
 public class InstanceStateLogicImpl implements InstanceStateLogic {
 
-    private static final Logger logger = LoggerFactory.getLogger(InstanceStateLogicImpl.class);
 
     @Inject
     private InstanceLogic instanceLogic;

@@ -13,6 +13,7 @@ import nl.unionsoft.sysstate.common.dto.ProjectDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.TextDto;
 import nl.unionsoft.sysstate.common.dto.ViewDto;
+import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
@@ -98,13 +99,13 @@ public class SetupListener implements InitializingBean {
             
             LOG.info("No instances found, creating some default instances...");
             addTestInstance("google", "GOOG", "PROD", createHttpConfiguration("http://www.google.nl"), "http://www.google.nl", "httpStateResolver");
-            addTestInstance("google", "GOOG", "MOCK", createMockConfiguration(60000), "http://www.yahoo.com", "mockStateResolver");
+            addTestInstance("google", "GOOG", "MOCK", createMockConfiguration(18000,StateType.STABLE.name()), "http://www.yahoo.com", "mockStateResolver");
             addTestInstance("yahoo", "YAHO", "PROD", createHttpConfiguration("http://www.yahoo.com"), "http://www.yahoo.com", "httpStateResolver");
-            addTestInstance("yahoo", "YAHO", "MOCK", createMockConfiguration(30000), "http://www.yahoo.com", "mockStateResolver");
+            addTestInstance("yahoo", "YAHO", "MOCK", createMockConfiguration(12000, StateType.UNSTABLE.name()), "http://www.yahoo.com", "mockStateResolver");
             addTestInstance("bing", "BING", "PROD", createHttpConfiguration("http://www.bing.com"), "http://www.bing.com", "httpStateResolver");
-            addTestInstance("bing", "BING", "MOCK", createMockConfiguration(15000), "http://www.bing.com", "mockStateResolver");
+            addTestInstance("bing", "BING", "MOCK", createMockConfiguration(6000,StateType.ERROR.name()), "http://www.bing.com", "mockStateResolver");
             addTestInstance("ilse", "ILSE", "PROD", createHttpConfiguration("http://www.ilse.nl"), "http://www.ilse.nl", "httpStateResolver");
-            addTestInstance("ilse", "ILSE", "MOCK", createMockConfiguration(7500), "http://www.ilse.nl", "mockStateResolver");
+            addTestInstance("ilse", "ILSE", "MOCK", createMockConfiguration(3000,StateType.DISABLED.name()), "http://www.ilse.nl", "mockStateResolver");
             //addTestInstance("marathon", "ILSE", "MOCK", createMarathonPatternResolverConfiguration("http://path.to.marathon"), "http://path.to.marathon", "marathonPatternInstanceResolver");    
             
 
@@ -122,9 +123,10 @@ public class SetupListener implements InitializingBean {
         }
     }
 
-    private Map<String, String> createMockConfiguration(int sleep) {
+    private Map<String, String> createMockConfiguration(int sleep, String state) {
         Map<String, String> configuration = new HashMap<String, String>();
         configuration.put("sleep", String.valueOf(sleep));
+        configuration.put("state", state);
         return configuration;
     }
     
