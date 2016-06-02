@@ -1,5 +1,6 @@
 package nl.unionsoft.sysstate.dao.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,5 +49,21 @@ public class ViewDaoImpl implements ViewDao {
     @Override
     public List<View> getViews() {
         return entityManager.createQuery("FROM View", View.class).setHint("org.hibernate.cacheable", true).getResultList();
+    }
+
+    @Override
+    public void notifyRequested(Long viewId, Long requestTime) {
+        View view = entityManager.find(View.class, viewId);
+        
+        long averageRequestTime = ((view.getAverageRequestTime() * view.getRequestCount()) + requestTime) / (view.getRequestCount() + 1);
+        long queryCount = view.getRequestCount() + 1;
+        
+        view.setLastRequestDate(new Date());
+        view.setRequestCount(queryCount);
+        view.setAverageRequestTime(averageRequestTime);
+        view.setLastRequestTime(requestTime);
+        entityManager.merge(view);
+
+        
     }
 }

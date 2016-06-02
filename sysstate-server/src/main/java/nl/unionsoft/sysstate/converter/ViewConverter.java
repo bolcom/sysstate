@@ -31,6 +31,10 @@ public class ViewConverter implements Converter<ViewDto, View> {
             result.setId(view.getId());
             result.setName(view.getName());
             result.setTemplate(templateConverter.convert(view.getTemplate()));
+            result.setLastRequestDate(view.getLastRequestDate());
+            result.setAverageRequestTime(view.getAverageRequestTime());
+            result.setRequestCount(view.getRequestCount());
+            result.setLastRequestTime(view.getLastRequestTime());
             final Filter filter = view.getFilter();
             if (filter != null) {
                 result.setFilter(filterConverter.convert(filter));

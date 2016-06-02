@@ -26,6 +26,7 @@ public class FilterConverter implements Converter<FilterDto, Filter> {
         result.setAverageQueryTime(filter.getAverageQueryTime());
         result.setQueryCount(filter.getQueryCount());
         result.setLastQueryTime(filter.getLastQueryTime());
+        result.setLastSyncDate(filter.getLastSyncDate());
         return result;
     }
 

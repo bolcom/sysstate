@@ -15,4 +15,6 @@ public interface ViewDao {
 
     public List<View> getViews();
 
+    public void notifyRequested(Long viewId, Long requestTime);
+    
 }

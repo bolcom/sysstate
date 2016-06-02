@@ -201,8 +201,8 @@ $('#d').trigger('change');
 		})();
 
 		function handleData(data){
-			var load = data.scheduler.load;
-			var capacity = data.scheduler.capacity;
+			var load = data.load;
+			var capacity = data.capacity;
 			var percentageLoad = Math.round((load/capacity)*100);
 			$('span#scheduler').css("width",percentageLoad + "%");
 		}

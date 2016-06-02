@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import nl.unionsoft.sysstate.common.dto.FilterDto;
@@ -20,6 +22,8 @@ import nl.unionsoft.sysstate.logic.StateLogic;
 
 @Service("instanceStateLogic")
 public class InstanceStateLogicImpl implements InstanceStateLogic {
+
+    private static final Logger logger = LoggerFactory.getLogger(InstanceStateLogicImpl.class);
 
     @Inject
     private InstanceLogic instanceLogic;
@@ -44,7 +48,9 @@ public class InstanceStateLogicImpl implements InstanceStateLogic {
         if (!optFilter.isPresent()) {
             throw new IllegalStateException("No filter with filterId [" + filterId + "] can be found.");
         }
-        return toInstanceStates(instanceLogic.getInstances(filterId), optFilter.get());
+
+        FilterDto filter = optFilter.get();
+        return toInstanceStates(instanceLogic.getInstances(filterId), filter);
     }
 
     private List<InstanceStateDto> toInstanceStates(List<InstanceDto> instances, FilterDto filter) {

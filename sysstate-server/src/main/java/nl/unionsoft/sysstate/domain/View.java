@@ -1,5 +1,7 @@
 package nl.unionsoft.sysstate.domain;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
@@ -10,15 +12,17 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
-@Table(name = "SSE_VIEW",indexes = { 
+@Table(name = "SSE_VIEW", indexes = {
         @Index(columnList = "NAME"),
-        })
+})
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class View {
 
@@ -31,14 +35,27 @@ public class View {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "TPE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_TEMPLATE_VIEW"))
+    @JoinColumn(name = "TPE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_TEMPLATE_VIEW") )
     private Template template;
 
     @Column(name = "COMMON_TAGS", nullable = true, length = 512)
     private String commonTags;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "LAST_REQUEST_DATE", nullable = true)
+    private Date lastRequestDate;
+
+    @Column(name = "REQUEST_COUNT", nullable = false)
+    private long requestCount;
+
+    @Column(name = "AVG_REQUEST_TIME", nullable = false)
+    private long averageRequestTime;
+
+    @Column(name = "LAST_REQUEST_TIME", nullable = false)
+    private long lastRequestTime;
+
     @ManyToOne
-    @JoinColumn(name = "FTR_ID", nullable = true, foreignKey = @ForeignKey(name = "FK_FILTER_VIEW"))
+    @JoinColumn(name = "FTR_ID", nullable = true, foreignKey = @ForeignKey(name = "FK_FILTER_VIEW") )
     private Filter filter;
 
     public String getName() {
@@ -56,7 +73,6 @@ public class View {
     public void setId(Long id) {
         this.id = id;
     }
-
 
     public String getCommonTags() {
         return commonTags;
@@ -81,7 +97,37 @@ public class View {
     public void setTemplate(Template template) {
         this.template = template;
     }
-    
-    
+
+    public Date getLastRequestDate() {
+        return lastRequestDate;
+    }
+
+    public void setLastRequestDate(Date lastRequestDate) {
+        this.lastRequestDate = lastRequestDate;
+    }
+
+    public long getRequestCount() {
+        return requestCount;
+    }
+
+    public void setRequestCount(long requestCount) {
+        this.requestCount = requestCount;
+    }
+
+    public long getAverageRequestTime() {
+        return averageRequestTime;
+    }
+
+    public void setAverageRequestTime(long averageRequestTime) {
+        this.averageRequestTime = averageRequestTime;
+    }
+
+    public long getLastRequestTime() {
+        return lastRequestTime;
+    }
+
+    public void setLastRequestTime(long lastRequestTime) {
+        this.lastRequestTime = lastRequestTime;
+    }
 
 }

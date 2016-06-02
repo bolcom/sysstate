@@ -9,6 +9,10 @@
 		<th class="table-header-repeat line-left"><a href="">template</a></th>
 		<th class="table-header-repeat line-left"><a href="">commonTags</a></th>
 		<th class="table-header-repeat line-left"><a href="">filter</a></th>
+		<th class="table-header-repeat line-left"><a href="">Last request Date</a></th>
+		<th class="table-header-repeat line-left"><a href="">Total times requested</a></th>
+		<th class="table-header-repeat line-left"><a href="">Average request time</a></th>
+		<th class="table-header-repeat line-left"><a href="">Last request time</a></th>
 		<th class="table-header-repeat line-left"><a href="">options</a></th>
 		
 	</tr>
@@ -24,6 +28,10 @@
 						<a href="${contextPath}/filter/load/${view.filter.id}/index.html">${view.filter.name}</a>
 					</c:if>
 				</td>
+				<td>${view.lastRequestDate}</td>
+				<td>${view.requestCount}</td>
+				<td>${view.averageRequestTime}ms</td>
+				<td>${view.lastRequestTime}ms</td>
 				<td>
 					<sc:authorize url="/view/${view.id}/update">
 						<a href="${view.id}/update.html">Update</a> |

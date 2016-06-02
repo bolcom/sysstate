@@ -1,5 +1,7 @@
 package nl.unionsoft.sysstate.common.dto;
 
+import java.util.Date;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -15,6 +17,15 @@ public class ViewDto {
 
     private String commonTags;
 
+    private Date lastRequestDate;
+
+    private long requestCount;
+
+    private long averageRequestTime;
+
+    private long lastRequestTime;
+
+    
     private FilterDto filter;
 
     public Long getId() {
@@ -58,7 +69,41 @@ public class ViewDto {
         this.template = template;
     }
 
-    @Override
+    
+    
+    public Date getLastRequestDate() {
+		return lastRequestDate;
+	}
+
+	public void setLastRequestDate(Date lastRequestDate) {
+		this.lastRequestDate = lastRequestDate;
+	}
+
+	public long getRequestCount() {
+		return requestCount;
+	}
+
+	public void setRequestCount(long requestCount) {
+		this.requestCount = requestCount;
+	}
+
+	public long getAverageRequestTime() {
+		return averageRequestTime;
+	}
+
+	public void setAverageRequestTime(long averageRequestTime) {
+		this.averageRequestTime = averageRequestTime;
+	}
+
+	public long getLastRequestTime() {
+		return lastRequestTime;
+	}
+
+	public void setLastRequestTime(long lastRequestTime) {
+		this.lastRequestTime = lastRequestTime;
+	}
+
+	@Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;

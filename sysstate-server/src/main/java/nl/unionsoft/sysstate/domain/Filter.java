@@ -47,14 +47,18 @@ public class Filter {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "LAST_QUERY_DATE", nullable = true)
     private Date lastQueryDate;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "LAST_SYNC_DATE", nullable = true)
+    private Date lastSyncDate;
     
-    @Column(name = "QUERY_COUNT", nullable = true)
+    @Column(name = "QUERY_COUNT", nullable = false)
     private long queryCount;
 
-    @Column(name = "AVG_QUERY_TIME", nullable = true)
+    @Column(name = "AVG_QUERY_TIME", nullable = false)
     private long averageQueryTime;
 
-    @Column(name = "LAST_QUERY_TIME", nullable = true)
+    @Column(name = "LAST_QUERY_TIME", nullable = false)
     private long lastQueryTime;
     
     @ElementCollection(fetch = FetchType.EAGER)
@@ -204,6 +208,14 @@ public class Filter {
 
     public void setLastQueryTime(long lastQueryTime) {
         this.lastQueryTime = lastQueryTime;
+    }
+
+    public Date getLastSyncDate() {
+        return lastSyncDate;
+    }
+
+    public void setLastSyncDate(Date lastSyncDate) {
+        this.lastSyncDate = lastSyncDate;
     }
 
 

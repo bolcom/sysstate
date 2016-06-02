@@ -4,6 +4,7 @@
 <table  id="plugin-table">
 	<tr>
 		<th class="table-header-repeat line-left"><a href="">Name</a></th>
+		<th class="table-header-repeat line-left"><a href="">Last sync date</a></th>
 		<th class="table-header-repeat line-left"><a href="">Last Query Date</a></th>
 		<th class="table-header-repeat line-left"><a href="">Total times queried</a></th>
 		<th class="table-header-repeat line-left"><a href="">Average query time</a></th>
@@ -13,6 +14,7 @@
 	<c:forEach items="${filters}" var="filter">
 		<tr>
 			<td><c:out value="${filter.name}" escapeXml="true"/></td>
+			<td>${filter.lastSyncDate}</td>
 			<td>${filter.lastQueryDate}</td>
 			<td>${filter.queryCount}</td>
 			<td>${filter.averageQueryTime}ms</td>

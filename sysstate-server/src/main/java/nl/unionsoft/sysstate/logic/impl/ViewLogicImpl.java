@@ -2,6 +2,7 @@ package nl.unionsoft.sysstate.logic.impl;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -16,6 +17,7 @@ import org.apache.commons.collections.comparators.ComparableComparator;
 import org.apache.commons.collections.comparators.NullComparator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -44,6 +46,7 @@ import nl.unionsoft.sysstate.dao.ViewDao;
 import nl.unionsoft.sysstate.domain.Filter;
 import nl.unionsoft.sysstate.domain.Template;
 import nl.unionsoft.sysstate.domain.View;
+import nl.unionsoft.sysstate.logic.FilterLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
 import nl.unionsoft.sysstate.logic.TemplateLogic;
 import nl.unionsoft.sysstate.logic.ViewLogic;
@@ -73,6 +76,9 @@ public class ViewLogicImpl implements ViewLogic {
 
     @Inject
     private FilterDao filterDao;
+    
+    @Inject
+    private FilterLogic filterLogic;
 
     @Inject
     @Named("viewConverter")
@@ -106,6 +112,12 @@ public class ViewLogicImpl implements ViewLogic {
             }
         }
         view.setTemplate(template);
+        // Reset counters
+        view.setLastRequestDate(null);
+        view.setLastRequestTime(0L);
+        view.setAverageRequestTime(0L);
+        view.setRequestCount(0L);
+        
         viewDao.createOrUpdateView(view);
     }
 
@@ -144,28 +156,20 @@ public class ViewLogicImpl implements ViewLogic {
 
     @Override
     public ViewResultDto getViewResults(ViewDto view) {
-
-        final ViewResultDto viewResult = new ViewResultDto(view);
         Long now = System.currentTimeMillis();
+        final ViewResultDto viewResult = new ViewResultDto(view);
         final List<InstanceStateDto> instanceStates = getInstanceStatesForView(view);
-        // System.out.println("1:" + (System.currentTimeMillis() - now));
         Set<ProjectEnvironmentDto> projectEnvironments = getAllProjectEnvironmentsFromInstances(instanceStates);
-        // System.out.println("2:" + (System.currentTimeMillis() - now));
         enrichProjectEnvironments(projectEnvironments, instanceStates, view.getCommonTags());
-        // System.out.println("3:" + (System.currentTimeMillis() - now));
         viewResult.getProjectEnvironments().addAll(projectEnvironments);
-        // System.out.println("4:" + (System.currentTimeMillis() - now));
         viewResult.getEnvironments().addAll(getEnvironmentsFromProjectEnvironments(projectEnvironments));
-        // System.out.println("5:" + (System.currentTimeMillis() - now));
         viewResult.getProjects().addAll(getProjectsFromProjectEnvironments(projectEnvironments));
-        // System.out.println("6:" + (System.currentTimeMillis() - now));
         viewResult.getInstanceStates().addAll(instanceStates);
-        // System.out.println("7:" + (System.currentTimeMillis() - now));
         countInstances(instanceStates, viewResult.getInstanceCount());
-        // System.out.println("8:" + (System.currentTimeMillis() - now));
         sortViewResult(viewResult);
-        // System.out.println("9:" + (System.currentTimeMillis() - now));
-
+        if (view.getId() != null && view.getId() > 0){
+            viewDao.notifyRequested(view.getId(), System.currentTimeMillis() - now);    
+        }        
         return viewResult;
     }
 
@@ -180,7 +184,12 @@ public class ViewLogicImpl implements ViewLogic {
             log.debug("Filter is defined, but has no id. Returning results for given filter");
             return instanceStateLogic.getInstanceStates(filter);
         }
-
+        log.debug("Validating if filterdata is still up to date");
+        if (isFilterDataExpired(filter)) {
+            log.debug("FilterDate needs to be updated, scheduling update...");
+            filterLogic.scheduleUpdate(filter.getId());
+        }
+        
         log.debug("Returning results based on subscribed instances to filter.");
         return instanceStateLogic.getInstanceStates(filter.getId());
     }
@@ -257,6 +266,12 @@ public class ViewLogicImpl implements ViewLogic {
 
     private Set<ProjectEnvironmentDto> getAllProjectEnvironmentsFromInstances(List<InstanceStateDto> instanceStates) {
         return instanceStates.stream().map(instanceState -> instanceState.getInstance().getProjectEnvironment()).distinct().collect(Collectors.toSet());
+    }
+    
+    private boolean isFilterDataExpired(FilterDto filter) {
+        DateTime threeMinutesAgo = new DateTime(new Date()).minusMinutes(3);
+        //Filter has never been synced, or has been synced more then 3 minutes ago.
+        return filter.getLastSyncDate() == null || new DateTime(filter.getLastSyncDate()).isBefore(threeMinutesAgo);
     }
 
 }

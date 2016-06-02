@@ -1,3 +1,4 @@
+
 package nl.unionsoft.sysstate.common.dto;
 
 import java.io.Serializable;
@@ -26,6 +27,8 @@ public class FilterDto implements Serializable {
 	private Long averageQueryTime;
 	private long lastQueryTime;
 
+	private Date lastSyncDate;
+	
 	public FilterDto() {
 		projects = new ArrayList<Long>();
 		environments = new ArrayList<Long>();
@@ -137,6 +140,14 @@ public class FilterDto implements Serializable {
 
 	public void setLastQueryTime(long lastQueryTime) {
 		this.lastQueryTime = lastQueryTime;
+	}
+
+	public Date getLastSyncDate() {
+		return lastSyncDate;
+	}
+
+	public void setLastSyncDate(Date lastSyncDate) {
+		this.lastSyncDate = lastSyncDate;
 	}
 
 }
