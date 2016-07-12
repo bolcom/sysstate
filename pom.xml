@@ -151,21 +151,6 @@
 				<version>${unionsoft.commons.version}</version>
 			</dependency>
 			<!-- END: UnionSoft Commons -->
-			<!-- START: Quartz -->
-			<dependency>
-				<groupId>org.quartz-scheduler</groupId>
-				<artifactId>quartz</artifactId>
-				<version>2.2.1</version>
-			</dependency>
-
-			<!-- 
-			<dependency>
-				<groupId>org.quartz-scheduler</groupId>
-				<artifactId>quartz-oracle</artifactId>
-				<version>1.8.5</version>
-			</dependency>
-			-->
-			<!-- END: Quartz -->
 			<!-- START: Hibernate -->
 			<dependency>
 				<groupId>org.hibernate</groupId>

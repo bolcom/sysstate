@@ -98,12 +98,6 @@
             <artifactId>commons-various</artifactId>
         </dependency>
         <!-- END: UnionSoft Commons -->
-        <!-- START: Quartz -->
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
-        </dependency>
-        <!-- END: Quartz -->
 		<!-- START: Templating Engines -->
 		<!-- 
 		<dependency>

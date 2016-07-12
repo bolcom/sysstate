@@ -16,6 +16,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,7 +69,8 @@ public class StateLogicImpl implements StateLogic {
     @Inject
     @Named("pluginLogic")
     private PluginLogic pluginLogic;
-
+    
+    @Scheduled(cron="0 */5 * * * ?")
     public void clean() {
         LOG.info("Cleaning States...");
         Properties sysstateProperties = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);

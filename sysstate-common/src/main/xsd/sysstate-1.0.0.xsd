@@ -170,6 +170,22 @@ targetNamespace="http://sysstate.unionsoft.nl/sysstate-1.0.0" elementFormDefault
 		</xs:complexType>
 	</xs:element>
 
+	<xs:element name="Resource">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="manager" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element ref="Property" minOccurs="0" maxOccurs="unbounded" >
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="properties"/>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>				
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
 	<xs:element name="State">
 		<xs:complexType>
 			<xs:sequence>
@@ -220,6 +236,20 @@ targetNamespace="http://sysstate.unionsoft.nl/sysstate-1.0.0" elementFormDefault
 					<xs:annotation>
 						<xs:appinfo>
 							<jaxb:property name="environments" />
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="ResourceList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Resource" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="resources"/>
 						</xs:appinfo>
 					</xs:annotation>
 				</xs:element>

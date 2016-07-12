@@ -1,7 +1,6 @@
 package nl.unionsoft.sysstate.logic.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,23 +8,18 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Stack;
+import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang.StringUtils;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.SimpleTrigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.scheduling.quartz.JobDetailFactoryBean;
-import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,7 +79,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
 
     @Inject
     @Named("scheduler")
-    private Scheduler scheduler;
+    private TaskScheduler scheduler;
 
     @Inject
     @Named("instanceConverter")
@@ -119,6 +113,12 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     @Named("instancePropertiesConverter")
     private InstancePropertiesConverter instancePropertiesConverter;
 
+    private Map<Long, ScheduledFuture<?>> instanceTasks;
+
+    public InstanceLogicImpl() {
+        instanceTasks = new HashMap<>();
+    }
+
     public void queueForUpdate(final Long instanceId) {
 
         Optional<Instance> optionalInstance = instanceDao.getInstance(instanceId);
@@ -144,42 +144,16 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         }
         Instance instance = optionalInstance.get();
 
-        final long id = instance.getId();
-
-        JobDetailFactoryBean jobDetailFactoryBean = new JobDetailFactoryBean();
-        jobDetailFactoryBean.setName("instance-" + id + "-job");
-        jobDetailFactoryBean.setGroup("instances");
-        jobDetailFactoryBean.setJobClass(UpdateInstanceJob.class);
-        Map<String, Object> jobData = new HashMap<String, Object>();
-        jobData.put("instanceId", id);
-        jobDetailFactoryBean.setJobDataAsMap(jobData);
-        jobDetailFactoryBean.afterPropertiesSet();
-        final JobDetail jobDetail = jobDetailFactoryBean.getObject();
-
         final long refreshTimeout = instance.getRefreshTimeout();
-        SimpleTriggerFactoryBean simpleTriggerFactoryBean = new SimpleTriggerFactoryBean();
-        simpleTriggerFactoryBean.setName("instance-" + id + "-trigger");
-        simpleTriggerFactoryBean.setRepeatCount(-1);
-        simpleTriggerFactoryBean.setRepeatInterval(refreshTimeout < 30000 ? 30000 : refreshTimeout);
-        simpleTriggerFactoryBean.setStartTime(new Date(System.currentTimeMillis() + 5000));
-        simpleTriggerFactoryBean.setJobDetail(jobDetail);
-        simpleTriggerFactoryBean.afterPropertiesSet();
-        final SimpleTrigger trigger = simpleTriggerFactoryBean.getObject();
-
-        try {
-            scheduler.scheduleJob(jobDetail, trigger);
-        } catch (final SchedulerException e) {
-            e.printStackTrace();
-        }
+        long period = refreshTimeout < 30000 ? 30000 : refreshTimeout;
+        UpdateInstanceJob updateInstanceJob = new UpdateInstanceJob(this, stateLogic, instanceId);
+        instanceTasks.put(instanceId, scheduler.scheduleAtFixedRate(updateInstanceJob, period));
     }
 
     public void removeTriggerJob(final long instanceId) {
-        try {
-            final String jobName = "instance-" + instanceId + "-job";
-            final String groupName = "instances";
-            scheduler.deleteJob(new JobKey(jobName, groupName));
-        } catch (final SchedulerException e1) {
-            e1.printStackTrace();
+        ScheduledFuture<?> scheduledFuture = instanceTasks.get(instanceId);
+        if (scheduledFuture != null) {
+            scheduledFuture.cancel(true);
         }
     }
 

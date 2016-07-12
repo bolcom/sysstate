@@ -1,28 +1,16 @@
 package nl.unionsoft.sysstate.logic.impl;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.joda.time.DateTime;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
-import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.quartz.JobDetailFactoryBean;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,7 +44,7 @@ public class FilterLogicImpl implements FilterLogic {
 
     @Inject
     @Named("scheduler")
-    private Scheduler scheduler;
+    private TaskScheduler scheduler;
 
     public List<FilterDto> getFilters() {
         return ListConverter.convert(filterConverter, filterDao.getFilters());
@@ -82,12 +70,10 @@ public class FilterLogicImpl implements FilterLogic {
         filter.setAverageQueryTime(0L);
         filter.setQueryCount(0L);
         filterDao.createOrUpdate(filter);
-        addJob(filter.getId());
         dto.setId(filter.getId());
     }
 
     public void delete(Long filterId) {
-        removeJob(filterId);
         filterDao.delete(filterId);
     }
 
@@ -130,52 +116,8 @@ public class FilterLogicImpl implements FilterLogic {
     }
 
     public void scheduleUpdate(final long filterId) {
-        try {
-            scheduler.triggerJob(getJobKey(filterId));
-        } catch (final SchedulerException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @PostConstruct
-    public void postConstruct() throws Exception {
-        filterDao.getFilters().parallelStream().forEach(f -> addJob(f.getId()));
-    }
-
-    private void addJob(Long filterId) {
-        JobDetailFactoryBean jobDetailFactoryBean = new JobDetailFactoryBean();
-        JobKey jobKey = getJobKey(filterId);
-        jobDetailFactoryBean.setName(jobKey.getName());
-        jobDetailFactoryBean.setGroup(jobKey.getGroup());
-        jobDetailFactoryBean.setJobClass(InstanceFilterLinkJob.class);
-        jobDetailFactoryBean.setDurability(true);
-        Map<String, Object> jobData = new HashMap<String, Object>();
-        jobData.put("filterId", filterId);
-        jobDetailFactoryBean.setJobDataAsMap(jobData);
-        jobDetailFactoryBean.afterPropertiesSet();
-        final JobDetail jobDetail = jobDetailFactoryBean.getObject();
-        try {
-            scheduler.addJob(jobDetail, true);
-        } catch (SchedulerException e) {
-            throw new IllegalStateException("Unable to add job", e);
-        }
-    }
-
-    @PreDestroy
-    public void preDestroy() throws Exception {
-        filterDao.getFilters().parallelStream().forEach(f -> removeJob(f.getId()));
-    }
-
-    private void removeJob(Long id) {
-        try {
-            scheduler.deleteJob(getJobKey(id));
-        } catch (SchedulerException e) {
-            logger.error("Could not delete job", e);
-        }
-    }
-
-    private JobKey getJobKey(Long filterId) {
-        return new JobKey("filter-" + filterId + "-job", "filters");
+        InstanceFilterLinkJob instanceFilterLinkJob = new InstanceFilterLinkJob(this, filterId);
+        scheduler.schedule(instanceFilterLinkJob, new Date());
     }
 
 }

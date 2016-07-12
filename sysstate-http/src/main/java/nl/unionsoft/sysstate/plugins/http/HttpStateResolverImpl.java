@@ -7,13 +7,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import nl.unionsoft.sysstate.common.dto.InstanceDto;
-import nl.unionsoft.sysstate.common.dto.StateDto;
-import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.extending.StateResolver;
-import nl.unionsoft.sysstate.common.logic.HttpClientLogic;
-import nl.unionsoft.sysstate.common.util.StateUtil;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -26,6 +19,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import nl.unionsoft.sysstate.common.dto.InstanceDto;
+import nl.unionsoft.sysstate.common.dto.StateDto;
+import nl.unionsoft.sysstate.common.enums.StateType;
+import nl.unionsoft.sysstate.common.extending.StateResolver;
+import nl.unionsoft.sysstate.common.logic.ResourceLogic;
+import nl.unionsoft.sysstate.common.util.StateUtil;
+
 @Service("httpStateResolver")
 public class HttpStateResolverImpl implements StateResolver {
 
@@ -34,13 +34,12 @@ public class HttpStateResolverImpl implements StateResolver {
     private static final Logger LOG = LoggerFactory.getLogger(HttpStateResolverImpl.class);
 
     @Inject
-    @Named("httpClientLogic")
-    private HttpClientLogic httpClientLogic;
+    @Named("resourceLogic")
+    private ResourceLogic resourceLogic;
 
     public void setState(final InstanceDto instance, final StateDto state) {
         Map<String, String> properties = instance.getConfiguration();
-
-        HttpClient httpClient = httpClientLogic.getHttpClient(StringUtils.defaultIfEmpty(properties.get("httpClientId"), "default"));
+        HttpClient httpClient = resourceLogic.getResourceInstance(HttpConstants.RESOURCE_MANAGER_NAME, StringUtils.defaultIfEmpty(properties.get("httpClientId"), HttpConstants.DEFAULT_RESOURCE));
         state.setState(StateType.STABLE);
         LOG.debug("Preparing httpRequest...");
 
@@ -124,15 +123,6 @@ public class HttpStateResolverImpl implements StateResolver {
         return StringUtils.substringBefore(homePageUrl, "//") + "//" + StringUtils.substringBetween(homePageUrl, "//", "/");
     }
 
-    public HttpClientLogic getHttpClientLogic() {
-        return httpClientLogic;
-    }
-
-    public void setHttpClientLogic(HttpClientLogic httpClientLogic) {
-        this.httpClientLogic = httpClientLogic;
-    }
-    
-    
     
 
 }
