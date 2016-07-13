@@ -2,18 +2,13 @@ package nl.unionsoft.sysstate.job;
 
 import java.util.Optional;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
-import nl.unionsoft.sysstate.logic.StateResolverLogic;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 
 public class UpdateInstanceJob implements Runnable {
 

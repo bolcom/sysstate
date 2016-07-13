@@ -38,7 +38,7 @@ public class ResourceRestController {
         return resourceList;
     }
 
-    @RequestMapping(value = "/resource/", method = RequestMethod.PUT)
+    @RequestMapping(value = "/resource", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@RequestBody Resource resource) {
         ResourceDto dto = new ResourceDto();
@@ -47,7 +47,7 @@ public class ResourceRestController {
         dto.setConfiguration(resource.getProperties().stream().collect(Collectors.toMap(Property::getKey, Property::getValue)));
         resourceLogic.createOrUpdate(dto);
     }
-    
+
     @RequestMapping(value = "/resource/{resourceManager}/{name}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("resourceManager") final String resourceManager, @PathVariable("name") final String name) {

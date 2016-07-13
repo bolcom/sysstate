@@ -1,5 +1,6 @@
 package nl.unionsoft.sysstate.dao.impl;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,6 +65,10 @@ public class ResourceDao {
 
     public void delete(final Long resource) {
         entityManager.remove(entityManager.find(Resource.class, resource));
+    }
+
+    public List<Resource> getResources() {
+        return entityManager.createQuery("FROM Resource", Resource.class).getResultList();
     }
 
 }

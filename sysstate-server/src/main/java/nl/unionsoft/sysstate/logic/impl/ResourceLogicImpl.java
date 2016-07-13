@@ -66,7 +66,6 @@ public class ResourceLogicImpl implements ResourceLogic {
             resource.setManager(resourceDto.getManager());
             resource.setName(resourceDto.getName());
         }
-
         resource.setConfiguration(resourceDto.getConfiguration());
         resourceDao.createOrUpdate(resource);
 
@@ -84,6 +83,11 @@ public class ResourceLogicImpl implements ResourceLogic {
     @Override
     public Optional<ResourceDto> getResource(String resourceManager, String name) {
         return OptionalConverter.convert(resourceDao.getResourceByNameAndManager(name, resourceManager), resourceConverter);
+    }
+
+    @Override
+    public List<ResourceDto> getResources() {
+        return ListConverter.convert(resourceConverter, resourceDao.getResources());
     }
 
 }

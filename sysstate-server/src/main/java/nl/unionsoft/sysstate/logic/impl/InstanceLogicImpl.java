@@ -1,6 +1,9 @@
 package nl.unionsoft.sysstate.logic.impl;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -147,7 +150,8 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         final long refreshTimeout = instance.getRefreshTimeout();
         long period = refreshTimeout < 30000 ? 30000 : refreshTimeout;
         UpdateInstanceJob updateInstanceJob = new UpdateInstanceJob(this, stateLogic, instanceId);
-        instanceTasks.put(instanceId, scheduler.scheduleAtFixedRate(updateInstanceJob, period));
+          Date bitInTheFuture = Date.from(LocalDateTime.now().plusSeconds(10).atZone(ZoneId.systemDefault()).toInstant());
+          instanceTasks.put(instanceId, scheduler.scheduleAtFixedRate(updateInstanceJob, bitInTheFuture, period));
     }
 
     public void removeTriggerJob(final long instanceId) {

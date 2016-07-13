@@ -5,6 +5,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 import nl.unionsoft.sysstate.common.enums.StateBehaviour;
@@ -15,6 +16,8 @@ import nl.unionsoft.sysstate.sysstate_1_0.InstanceList;
 import nl.unionsoft.sysstate.sysstate_1_0.Project;
 import nl.unionsoft.sysstate.sysstate_1_0.ProjectEnvironment;
 import nl.unionsoft.sysstate.sysstate_1_0.ProjectList;
+import nl.unionsoft.sysstate.sysstate_1_0.Resource;
+import nl.unionsoft.sysstate.sysstate_1_0.ResourceList;
 
 public interface SysState {
 
@@ -102,5 +105,17 @@ public interface SysState {
             @QueryParam("environmentName") String environmentName,
             @QueryParam("state") StateBehaviour state);
     //@formatter:on
+    
+    @GET
+    @Path("/api/resource")
+    ResourceList getResources();
+    
+    @PUT
+    @Path("/api/resource")    
+    void createOrUpdateResource(Resource resource);
 
+    @DELETE
+    @Path("/api/resource/{resourceManager}/{name}")
+    void deleteResource(@PathParam("resourceManager") String resourceManager, @PathParam("name") String name);
+    
 }

@@ -14,7 +14,8 @@ import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import feign.jaxrs.JAXRSModule;
 import nl.unionsoft.sysstate.common.Constants;
-import nl.unionsoft.sysstate.sysstate_1_0.Instance;
+import nl.unionsoft.sysstate.sysstate_1_0.Property;
+import nl.unionsoft.sysstate.sysstate_1_0.Resource;
 
 /**
  * Example usage:
@@ -64,6 +65,4 @@ public class SysStateClient {
             }
         }).create(SysState.class);
     }
-
-
 }
