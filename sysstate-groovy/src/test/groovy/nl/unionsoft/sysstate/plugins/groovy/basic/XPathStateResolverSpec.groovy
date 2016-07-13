@@ -4,8 +4,9 @@ import nl.unionsoft.sysstate.common.dto.InstanceDto
 import nl.unionsoft.sysstate.common.dto.StateDto
 import nl.unionsoft.sysstate.common.dto.TextDto;
 import nl.unionsoft.sysstate.common.enums.StateType
-import nl.unionsoft.sysstate.common.logic.HttpClientLogic
+import nl.unionsoft.sysstate.common.logic.ResourceLogic;
 import nl.unionsoft.sysstate.common.logic.TextLogic
+import nl.unionsoft.sysstate.plugins.http.HttpConstants;
 
 import org.apache.http.HttpEntity
 import org.apache.http.HttpResponse
@@ -20,7 +21,7 @@ class XPathStateResolverSpec extends Specification{
 
     TextLogic textLogic = Mock(TextLogic)
     
-    HttpClientLogic httpClientLogic = Mock(HttpClientLogic)
+    ResourceLogic resourceLogic = Mock(ResourceLogic)
     HttpClient httpClient = Mock(HttpClient)
     HttpResponse httpResponse = Mock(HttpResponse)
     StatusLine statusLine = Mock(StatusLine)
@@ -29,7 +30,7 @@ class XPathStateResolverSpec extends Specification{
 
     void setup() {
         xPathStateResolver = new XPathStateResolver(textLogic)
-        xPathStateResolver.setHttpClientLogic(httpClientLogic);
+        xPathStateResolver.setResourceLogic(resourceLogic)
     }
 
     def 'SelfDiagnose can be parsed to valid version with a given xpath'() {
@@ -47,7 +48,7 @@ class XPathStateResolverSpec extends Specification{
         xPathStateResolver.setState(instance, state)
 
         then:
-        1 * httpClientLogic.getHttpClient("test") >> httpClient
+        1 * resourceLogic.getResourceInstance(HttpConstants.RESOURCE_MANAGER_NAME, "test") >> httpClient
         1 * httpClient.execute(_) >> httpResponse
         1 * httpResponse.getStatusLine() >> statusLine
         1 * statusLine.getStatusCode() >> 200
@@ -73,7 +74,7 @@ class XPathStateResolverSpec extends Specification{
         xPathStateResolver.setState(instance, state)
 
         then:
-        1 * httpClientLogic.getHttpClient("test") >> httpClient
+        1 * resourceLogic.getResourceInstance(HttpConstants.RESOURCE_MANAGER_NAME, "test") >> httpClient
         1 * httpClient.execute(_) >> httpResponse
         1 * httpResponse.getStatusLine() >> statusLine
         1 * statusLine.getStatusCode() >> 200

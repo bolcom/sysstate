@@ -123,6 +123,14 @@ public class HttpStateResolverImpl implements StateResolver {
         return StringUtils.substringBefore(homePageUrl, "//") + "//" + StringUtils.substringBetween(homePageUrl, "//", "/");
     }
 
+    public ResourceLogic getResourceLogic() {
+        return resourceLogic;
+    }
+
+    public void setResourceLogic(ResourceLogic resourceLogic) {
+        this.resourceLogic = resourceLogic;
+    }
+
     
 
 }
