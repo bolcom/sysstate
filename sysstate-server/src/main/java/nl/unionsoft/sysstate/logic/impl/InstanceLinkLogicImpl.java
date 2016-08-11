@@ -2,15 +2,12 @@ package nl.unionsoft.sysstate.logic.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import nl.unionsoft.sysstate.common.dto.InstanceLinkDto;
 import nl.unionsoft.sysstate.common.dto.InstanceLinkDto.Direction;
@@ -18,11 +15,9 @@ import nl.unionsoft.sysstate.common.logic.InstanceLinkLogic;
 import nl.unionsoft.sysstate.converter.InstanceLinkConverter;
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.dao.InstanceLinkDao;
-import nl.unionsoft.sysstate.domain.Instance;
 import nl.unionsoft.sysstate.domain.InstanceLink;
 
 @Service("instanceLinkLogic")
-@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class InstanceLinkLogicImpl implements InstanceLinkLogic {
 
     @Inject
@@ -47,9 +42,7 @@ public class InstanceLinkLogicImpl implements InstanceLinkLogic {
     }
 
     @Override
-    @Transactional
     public void link(Long fromInstanceId, List<Long> toInstanceIds, String name) {
-
         for (Long toInstanceId : toInstanceIds) {
             link(fromInstanceId, toInstanceId, name);
         }
@@ -60,7 +53,6 @@ public class InstanceLinkLogicImpl implements InstanceLinkLogic {
                 unlink(fromInstanceId, toId, name);
             }
         }
-
     }
 
     @Override

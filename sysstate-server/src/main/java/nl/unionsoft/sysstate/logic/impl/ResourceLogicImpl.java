@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -17,6 +18,7 @@ import nl.unionsoft.sysstate.converter.OptionalConverter;
 import nl.unionsoft.sysstate.converter.ResourceConverter;
 import nl.unionsoft.sysstate.dao.impl.ResourceDao;
 import nl.unionsoft.sysstate.domain.Resource;
+import nl.unionsoft.sysstate.plugins.http.HttpConstants;
 
 @Named("resourceLogic")
 public class ResourceLogicImpl implements ResourceLogic {
@@ -33,18 +35,17 @@ public class ResourceLogicImpl implements ResourceLogic {
         this.resourceConverter = resourceConverter;
     }
 
+
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getResourceInstance(String resourceManager, String name) {
 
         Optional<Resource> optResource = resourceDao.getResourceByNameAndManager(name, resourceManager);
         if (!optResource.isPresent()) {
             throw new IllegalStateException("No resource is defined for name [" + name + "] and manager [" + resourceManager + "]");
         }
-        
-        @SuppressWarnings("unchecked")
-        ResourceManager<T> resourceFactory = (ResourceManager<T>) applicationContext.getBean(resourceManager, ResourceManager.class);// applicationContext.getBean(resourceManager, ResourceManager.class);
-        return resourceFactory.getResource(resourceConverter.convert(optResource.get()));
-        
+        return (T) getResourceManager(resourceManager).getResource(resourceConverter.convert(optResource.get()));
+
     }
 
     @Override
@@ -67,8 +68,32 @@ public class ResourceLogicImpl implements ResourceLogic {
             resource.setName(resourceDto.getName());
         }
         resource.setConfiguration(resourceDto.getConfiguration());
+        getResourceManager(resource.getManager()).update(resourceDto);
         resourceDao.createOrUpdate(resource);
 
+    }
+
+    private ResourceManager<?> getResourceManager(String resourceManager) {
+        return (ResourceManager<?>) applicationContext.getBean(resourceManager, ResourceManager.class);
+    }
+
+    @PostConstruct
+    public void addDefaultResources() {
+        applicationContext.getBeansOfType(ResourceManager.class).values().stream().forEach(rm -> {
+
+            @SuppressWarnings("unchecked")
+            List<ResourceDto> defaultResources = rm.getDefaultResources();
+            defaultResources.stream().forEach(r -> {
+                Optional<Resource> optResource = resourceDao.getResourceByNameAndManager(r.getName(), r.getManager());
+                if (!optResource.isPresent()) {
+                    Resource resource = new Resource();
+                    resource.setManager(r.getManager());
+                    resource.setName(r.getName());
+                    resource.setConfiguration(r.getConfiguration());
+                    resourceDao.createOrUpdate(resource);
+                }
+            });
+        });
     }
 
     @Override
@@ -78,6 +103,7 @@ public class ResourceLogicImpl implements ResourceLogic {
         if (optResource.isPresent()) {
             resourceDao.delete(optResource.get().getId());
         }
+        getResourceManager(resourceManager).remove(name);
     }
 
     @Override

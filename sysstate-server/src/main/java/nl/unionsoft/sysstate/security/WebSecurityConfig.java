@@ -99,7 +99,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/configuration/**",
                 "/cache/**",
                 "/user/**",
-                "/plugins/**",  
+                "/plugins/**",
+                "/resources/**",
                 "/script/**",
                 "/scheduler/**"
                 ).hasAnyRole(ADMIN.name())

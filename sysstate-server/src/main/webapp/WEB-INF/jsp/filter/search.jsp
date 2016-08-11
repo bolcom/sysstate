@@ -175,7 +175,7 @@ $(function(){
 								</jsp:include>
 							</c:forEach>
 							
-						<%--</c:forEach> --%>				
+
 					</table>
 					<div id="actions-box">
 						<a href="" class="action-slider"></a>

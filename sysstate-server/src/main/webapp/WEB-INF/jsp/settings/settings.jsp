@@ -30,6 +30,13 @@
 	<div class="clear"></div>
 </sc:authorize>
 
+<sc:authorize url="/resources/index">
+	<a href="${contextPath}/resources/index.html" class="icon-1 info-tooltip"></a> Resources<br/>
+	<i>List available resources</i>					
+	<div class="clear"></div>
+</sc:authorize>
+
+
 <sc:authorize url="/text/index">
 	<a href="${contextPath}/text/index.html"  class="icon-1 info-tooltip"></a> Texts<br/>
 	<i>Create, update and delete Texts</i>					

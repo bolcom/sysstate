@@ -136,6 +136,12 @@
 		<put-attribute name="contents" value="/WEB-INF/jsp/plugin/plugins.jsp" />
 		<put-attribute name="page-heading" value="Plugins" />
 	</definition>
+	
+	<!-- Resources -->
+	<definition name="list-resource-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/resource/resources.jsp" />
+		<put-attribute name="page-heading" value="Resources" />
+	</definition>
 
 	<!-- Script -->
 	<definition name="script-manager" extends="manager">

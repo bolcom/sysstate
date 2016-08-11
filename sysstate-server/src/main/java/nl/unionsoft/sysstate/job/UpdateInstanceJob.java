@@ -42,7 +42,7 @@ public class UpdateInstanceJob implements Runnable {
             stateLogic.createOrUpdate(state);
             LOG.trace("job for instance '{}' completed, state: {}", instance, state);
         } catch (final Exception e) {
-            LOG.warn("job for instance '{}' failed, caught Exception!", e);
+            LOG.warn("job for instance '{}' failed, caught Exception!", instance, e);
         }
 
     }

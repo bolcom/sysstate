@@ -4,14 +4,13 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -36,7 +35,6 @@ import org.springframework.stereotype.Service;
 
 import nl.unionsoft.sysstate.common.dto.ResourceDto;
 import nl.unionsoft.sysstate.common.extending.ResourceManager;
-import nl.unionsoft.sysstate.common.logic.ResourceLogic;
 
 @Service(HttpConstants.RESOURCE_MANAGER_NAME)
 public class HttpClientResourceManager implements ResourceManager<HttpClient> {
@@ -47,12 +45,8 @@ public class HttpClientResourceManager implements ResourceManager<HttpClient> {
 
     private Map<String, HttpClient> httpClients;
 
-    private final ResourceLogic resourceLogic;
-
-    @Inject
-    public HttpClientResourceManager(ResourceLogic resourceLogic) {
+    public HttpClientResourceManager() {
         httpClients = new ConcurrentHashMap<String, HttpClient>();
-        this.resourceLogic = resourceLogic;
     }
 
     @Override
@@ -72,8 +66,8 @@ public class HttpClientResourceManager implements ResourceManager<HttpClient> {
 
         return result;
     }
-    
-    @Scheduled(cron="* */1 * * * ?")
+
+    @Scheduled(cron = "* */1 * * * ?")
     public void closeIdleConnections() {
         for (Entry<String, HttpClient> entry : httpClients.entrySet()) {
             LOG.debug("Closing idle httpClient Connections for client '{}'", entry.getKey());
@@ -164,15 +158,14 @@ public class HttpClientResourceManager implements ResourceManager<HttpClient> {
         httpClients.remove(name);
     }
 
-    @PostConstruct
-    public void addDefaultResource() {
-        Optional<ResourceDto> optResource = resourceLogic.getResource(HttpConstants.RESOURCE_MANAGER_NAME, HttpConstants.DEFAULT_RESOURCE);
-        if (!optResource.isPresent()) {
-            ResourceDto resource = new ResourceDto();
-            resource.setManager(HttpConstants.RESOURCE_MANAGER_NAME);
-            resource.setName(HttpConstants.DEFAULT_RESOURCE);
-            resourceLogic.createOrUpdate(resource);
-        }
+    @Override
+    public List<ResourceDto> getDefaultResources() {
+        List<ResourceDto> defaultResources = new ArrayList<>();
+        ResourceDto resource = new ResourceDto();
+        resource.setManager(HttpConstants.RESOURCE_MANAGER_NAME);
+        resource.setName(HttpConstants.DEFAULT_RESOURCE);
+        defaultResources.add(resource);
+        return defaultResources;
     }
 
 }

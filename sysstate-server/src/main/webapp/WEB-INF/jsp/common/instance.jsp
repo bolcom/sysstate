@@ -54,9 +54,7 @@
 			<c:otherwise>
 				<c:out value="${instance.pluginClass}" escapeXml="true" />
 			</c:otherwise>
-		</c:choose></br>
-		enabled: ${instance.enabled} |
-		refresh: ${instance.refreshTimeout}ms <br/>
+		</c:choose><br/>
 		<c:if test="${not empty instance.tags }">
 			tags: '<c:out value="${instance.tags}" escapeXml="true" />'
 		</c:if>
@@ -70,8 +68,6 @@
 				</a>
 			</span><a href="${instance.homepageUrl}" target="_BLANK" title=""> ${state.state}</a><br/>
 			<a href="${instance.homepageUrl}" target="_BLANK">${state.description}</a><br/>
-			
-			<br/>
 		</td>
 	</c:if>
 	<td>
