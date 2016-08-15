@@ -8,30 +8,33 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-import nl.unionsoft.common.param.ParamContextLogicImpl;
-import nl.unionsoft.sysstate.common.dto.FilterDto;
-import nl.unionsoft.sysstate.common.dto.InstanceDto;
-import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
-import nl.unionsoft.sysstate.common.logic.InstanceLogic;
-import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
-import nl.unionsoft.sysstate.common.logic.ProjectLogic;
-import nl.unionsoft.sysstate.logic.StateLogic;
-import nl.unionsoft.sysstate.logic.StateResolverLogic;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
+import nl.unionsoft.common.param.ParamContextLogicImpl;
+import nl.unionsoft.sysstate.common.dto.InstanceDto;
+import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
+import nl.unionsoft.sysstate.common.logic.InstanceLinkLogic;
+import nl.unionsoft.sysstate.common.logic.InstanceLogic;
+import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
+import nl.unionsoft.sysstate.common.logic.ProjectLogic;
+import nl.unionsoft.sysstate.logic.StateLogic;
+import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
 @Controller()
 public class InstanceController {
     @Inject
     @Named("instanceLogic")
     private InstanceLogic instanceLogic;
+
+    @Inject
+    private InstanceLinkLogic instanceLinkLogic;
+
     
     @Inject
     @Named("stateLogic")
@@ -101,6 +104,7 @@ public class InstanceController {
         }
         InstanceDto instance = optInstance.get();
         modelAndView.addObject("instance", instance);
+        modelAndView.addObject("instanceLinks", instanceLinkLogic.getInstanceLinks(instance.getId()));
         modelAndView.addObject("state", stateLogic.getLastStateForInstance(instance));
         modelAndView.addObject("statesPerType", stateLogic.getLastStateForInstanceForEachType(instance));
         return modelAndView;

@@ -96,6 +96,7 @@ public class SetupListener implements InitializingBean {
 
             LOG.info("Adding default texts...");
             addText("go-selfdiagnose 1.0.2", "xpath xPathStateResolver", "substring-before(substring-after(string(/selfdiagnose/results/result[@task='build information']/@message),': '),',')");
+            addText("selfdiagnose-version 1.0", "xpath xPathStateResolver", "normalize-space(string(/selfdiagnose/@version))");
             
             LOG.info("No instances found, creating some default instances...");
             addTestInstance("google", "GOOG", "PROD", createHttpConfiguration("http://www.google.nl"), "http://www.google.nl", "httpStateResolver");

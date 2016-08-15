@@ -8,6 +8,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import nl.unionsoft.sysstate.common.dto.InstanceLinkDto;
 import nl.unionsoft.sysstate.common.dto.InstanceLinkDto.Direction;
@@ -18,6 +20,7 @@ import nl.unionsoft.sysstate.dao.InstanceLinkDao;
 import nl.unionsoft.sysstate.domain.InstanceLink;
 
 @Service("instanceLinkLogic")
+@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class InstanceLinkLogicImpl implements InstanceLinkLogic {
 
     @Inject

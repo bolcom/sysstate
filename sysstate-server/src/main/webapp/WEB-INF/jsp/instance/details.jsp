@@ -55,23 +55,17 @@
 <h3>Instance Links</h3>
 <table id="instancelink-table">
 	<tr>
-		<th class="table-header-repeat line-left"><a href="">Direction</a></th>
 		<th class="table-header-repeat line-left"><a href="">Name</a></th>
-		<th class="table-header-repeat line-left"><a href="">InstanceId</a></th>
+		<th class="table-header-repeat line-left"><a href="">Direction</a></th>
+		<th class="table-header-repeat line-left"><a href="">From</a></th>
+		<th class="table-header-repeat line-left"><a href="">To</a></th>
 	</tr>
-
-	<c:forEach var="instanceLink" items="${instance.outgoingInstanceLinks }" >
+	<c:forEach var="instanceLink" items="${instanceLinks}" >
 		<tr>
-			<td>Outgoing</td>
-			<td>${instanceLink.name}</td>
-			<td><a href="${contextPath}/instance/${instanceLink.instanceToId}/details.html">${instanceLink.instanceToId}</a></td>
-		</tr>	
-	</c:forEach>
-	<c:forEach var="instanceLink" items="${instance.incommingInstanceLinks }">
-		<tr>
-			<td>Incoming</td>
-			<td>${instanceLink.name}</td>
+			<td><c:out value="${instanceLink.name}" escapeXml="true"/></td>
+			<td><c:out value="${instanceLink.direction}" escapeXml="true"/></td>
 			<td><a href="${contextPath}/instance/${instanceLink.instanceFromId}/details.html">${instanceLink.instanceFromId}</a></td>
+			<td><a href="${contextPath}/instance/${instanceLink.instanceToId}/details.html">${instanceLink.instanceToId}</a></td>
 		</tr>	
 	</c:forEach>
 </table>
