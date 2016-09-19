@@ -1,6 +1,8 @@
 package nl.unionsoft.sysstate.plugins.http;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Map;
 
@@ -59,24 +61,24 @@ public class HttpStateResolverImpl implements StateResolver {
         try {
             LOG.debug("Executing httpRequest...");
             final HttpResponse httpResponse = httpClient.execute(httpGet);
+            handleHttpResponse(state, properties, httpResponse, instance);
+        } catch (ConnectTimeoutException | SocketTimeoutException e){
+            handleStateForException(state, e, "HTTP TIMEOUT");
+        } catch (UnknownHostException e){
+            handleStateForException(state, e, "UNKNOWN HOST");
+        } catch (final Exception e) {
+            handleStateForException(state, e, "EXCEPTION");
+        } finally {
             final long responseTime = System.currentTimeMillis() - startTime;
             LOG.debug("HttpRequest complete, execution took {} ms", responseTime);
-            state.setResponseTime(responseTime);
-            // FIXME
-            handleHttpResponse(state, properties, httpResponse, instance);
-
-        } catch (ConnectTimeoutException e){
-            state.setState(StateType.ERROR);
-            state.appendMessage(StateUtil.exceptionAsMessage(e));
-            state.setDescription("HTTP TIMEOUT");
-        } catch (UnknownHostException e){
-            state.setState(StateType.ERROR);
-            state.appendMessage(StateUtil.exceptionAsMessage(e));
-            state.setDescription("HTTP HOST");
-        } catch (final Exception e) {
-            LOG.warn("Caught Exception while performing request: {}", e.getMessage(), e);
-            handleStateForException(state, e, startTime);
+            state.setResponseTime(responseTime);            
         }
+    }
+
+    private void handleStateForException(final StateDto state, Exception e, String description) {
+        state.setState(StateType.ERROR);
+        state.appendMessage(StateUtil.exceptionAsMessage(e));
+        state.setDescription(description);
     }
 
     public String processUri(final String uri) {
@@ -106,12 +108,6 @@ public class HttpStateResolverImpl implements StateResolver {
         }
     }
 
-    private void handleStateForException(final StateDto state, final Exception exception, final Long startTime) {
-        state.setState(StateType.ERROR);
-        state.setDescription(exception.getMessage());
-        state.setResponseTime(System.currentTimeMillis() - startTime);
-        state.appendMessage(StateUtil.exceptionAsMessage(exception));
-    }
 
     public void handleEntity(final HttpEntity httpEntity, final Map<String, String> configuration, final StateDto state, final InstanceDto instance) throws IOException {
 

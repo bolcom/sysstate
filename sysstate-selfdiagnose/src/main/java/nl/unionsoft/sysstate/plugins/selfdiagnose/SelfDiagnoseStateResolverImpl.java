@@ -163,7 +163,7 @@ public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
                 linkedInstances.add(instance.getId());
                 
             }
-            instanceLinkLogic.link(parent.getId(), linkedInstances, "dependency");
+            //instanceLinkLogic.link(parent.getId(), linkedInstances, "dependency");
         }
     }
 
