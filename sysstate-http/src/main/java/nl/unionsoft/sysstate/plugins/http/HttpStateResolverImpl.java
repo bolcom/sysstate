@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.net.ssl.SSLException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
@@ -66,6 +67,8 @@ public class HttpStateResolverImpl implements StateResolver {
             handleStateForException(state, e, "HTTP TIMEOUT");
         } catch (UnknownHostException e){
             handleStateForException(state, e, "UNKNOWN HOST");
+        } catch (SSLException e){
+            handleStateForException(state, e, "SSL EXCEPTION");
         } catch (final Exception e) {
             handleStateForException(state, e, "EXCEPTION");
         } finally {

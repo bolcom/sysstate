@@ -33,7 +33,7 @@ class XPathStateResolver extends HttpStateResolverImpl {
         InputStream contentStream = null;
         try {
             contentStream = httpEntity.getContent();
-            def xpath = configuration.get("xpath") ?: textLogic.getText(configuration.get("predefinedXpath") as long).text
+            def xpath = configuration.get("xpath") ?: textLogic.getText(configuration.get("predefinedXpath")).text
             def builder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
             def doc = builder.parse(contentStream)
             def expr = XPathFactory.newInstance().newXPath().compile(xpath)

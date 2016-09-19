@@ -27,7 +27,7 @@ public class PredefinedXpathsLovResolver implements ListOfValueResolver {
     public Map<String, String> getListOfValues(PropertyMetaValue propertyMetaValue) {
         //@formatter:off
         return textLogic.getTexts("xpath", "xPathStateResolver").stream()
-                .collect(Collectors.toMap((t) -> String.valueOf(t.getId()), TextDto::getName));
+                .collect(Collectors.toMap((t) -> t.getName(), TextDto::getName));
         //@formatter:off
     }
 

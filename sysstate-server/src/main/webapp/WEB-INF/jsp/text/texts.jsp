@@ -12,8 +12,8 @@
 			<td>${text.name}</td>
 			<td>${text.tags}</td>
 			<td>
-				<a href="${text.id}/update.html?rUrl=${contextPath}/text/index.html">Update</a> |
-				<a href="${text.id}/delete.html?rUrl=${contextPath}/text/index.html">Delete</a> |
+				<a href="${text.name}/update.html?rUrl=${contextPath}/text/index.html">Update</a> |
+				<a href="${text.name}/delete.html?rUrl=${contextPath}/text/index.html">Delete</a> |
 			</td>
 		</tr>
 	</c:forEach>

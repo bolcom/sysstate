@@ -125,6 +125,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
         .authorizeRequests()
             .antMatchers(toApiPaths("/instance/**")).hasAnyRole(EDITOR.name(), ADMIN.name())
+            .antMatchers(toApiPaths("/resource/**")).hasAnyRole(EDITOR.name(), ADMIN.name())
+            .antMatchers(toApiPaths("/text/**")).hasAnyRole(EDITOR.name(), ADMIN.name())
             .antMatchers(toApiPaths("/project/**")).hasAnyRole(EDITOR.name(), ADMIN.name())
             .antMatchers(toApiPaths("/environment/**")).hasAnyRole(EDITOR.name(), ADMIN.name())
             .antMatchers(toApiPaths("/scheduler")).permitAll()
@@ -139,8 +141,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         auth.authenticationProvider(usernameAndPasswordAuthenticationProvider);
     }
     
-    private String[] toApiPaths(String path)
-    {
+    private String[] toApiPaths(String path){
         return new String[] {"/api" + path, "/services" + path};
     }
 

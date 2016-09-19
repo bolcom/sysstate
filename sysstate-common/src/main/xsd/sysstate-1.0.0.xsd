@@ -186,6 +186,16 @@ targetNamespace="http://sysstate.unionsoft.nl/sysstate-1.0.0" elementFormDefault
 		</xs:complexType>
 	</xs:element>
 
+	<xs:element name="Text">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="tags" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element name="text" type="xs:string" minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
 	<xs:element name="State">
 		<xs:complexType>
 			<xs:sequence>
@@ -256,5 +266,21 @@ targetNamespace="http://sysstate.unionsoft.nl/sysstate-1.0.0" elementFormDefault
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+
+
+	<xs:element name="TextList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Text" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="texts"/>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
 
 </xs:schema>
