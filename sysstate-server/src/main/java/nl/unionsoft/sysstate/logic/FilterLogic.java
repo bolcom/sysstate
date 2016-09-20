@@ -19,7 +19,7 @@ public interface FilterLogic {
     
     public void removeInstanceFromFilter(Long filterId, Long instanceId);
     
+    public void updateFilterSubscriptions();
+    
     public void updateFilterSubscriptions(FilterDto filter);
-
-    public void scheduleUpdate(final long filterId);
 }

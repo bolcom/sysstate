@@ -31,7 +31,7 @@ public class View {
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "NAME", nullable = true)
+    @Column(name = "NAME", nullable = true, unique = true)
     private String name;
 
     @ManyToOne

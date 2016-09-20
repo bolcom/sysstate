@@ -12,9 +12,10 @@ public interface ViewDao {
     public void delete(Long id);
 
     public Optional<View> getView(Long viewId);
+    public Optional<View> getView(String name);
 
     public List<View> getViews();
 
-    public void notifyRequested(Long viewId, Long requestTime);
+    public void notifyRequested(String viewName, Long requestTime);
     
 }

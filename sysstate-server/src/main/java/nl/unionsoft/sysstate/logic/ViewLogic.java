@@ -14,11 +14,9 @@ public interface ViewLogic {
 
     public void createOrUpdateView(ViewDto view);
 
-    public void delete(Long id);
+    public void delete(String name);
 
-    public Optional<ViewDto> getView(Long viewId);
-    
-    public Optional<ViewDto> getView(String viewId);
+    public Optional<ViewDto> getView(String name);
     
     public ViewDto getBasicView();
     

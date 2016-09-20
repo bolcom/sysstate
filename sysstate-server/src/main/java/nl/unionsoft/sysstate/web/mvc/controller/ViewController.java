@@ -75,7 +75,7 @@ public class ViewController {
         String defaultViewProperty = viewConfiguration.getProperty("defaultView");
         ViewDto view = null;
         if (StringUtils.isNotEmpty(defaultViewProperty)) {
-            Optional<ViewDto> optView = viewLogic.getView(Long.valueOf(defaultViewProperty));
+            Optional<ViewDto> optView = viewLogic.getView(defaultViewProperty);
             if (optView.isPresent()){
                 view = optView.get();    
             }
@@ -86,18 +86,15 @@ public class ViewController {
         writeTemplateForView(response, request, view);
     }
 
-    @RequestMapping(value = "/view/{viewId}/index.html", method = RequestMethod.GET)
-    public void renderIndexView(@PathVariable("viewId") String viewId, HttpServletRequest request, HttpServletResponse response) {
-        final Optional<ViewDto> optView = viewLogic.getView(viewId);
+    @RequestMapping(value = "/view/{name}/index.html", method = RequestMethod.GET)
+    public void renderIndexView(@PathVariable("name") String name, HttpServletRequest request, HttpServletResponse response) {
+        final Optional<ViewDto> optView = viewLogic.getView(name);
         if (optView.isPresent()){
             writeTemplateForView(response, request, optView.get());
         } else {
             writeTemplateForView(response, request, viewLogic.getBasicView());    
         }
     }
-    
-  
-
 
     private void writeTemplateForView(HttpServletResponse response, HttpServletRequest request, final ViewDto view) {
         TemplateDto template = view.getTemplate();
@@ -141,24 +138,24 @@ public class ViewController {
         modelAndView.addObject("filters", filterLogic.getFilters());
     }
 
-    @RequestMapping(value = "/view/{viewId}/update", method = RequestMethod.GET)
-    public ModelAndView getUpdate(@PathVariable("viewId") final Long viewId) {
+    @RequestMapping(value = "/view/{name}/update", method = RequestMethod.GET)
+    public ModelAndView getUpdate(@PathVariable("name") final String name) {
         final ModelAndView modelAndView = new ModelAndView("create-update-view-manager");
-        modelAndView.addObject("view", viewLogic.getView(viewId));
+        modelAndView.addObject("view", viewLogic.getView(name));
         addCommons(modelAndView);
         return modelAndView;
     }
 
-    @RequestMapping(value = "/view/{viewId}/delete", method = RequestMethod.GET)
-    public ModelAndView getDelete(@PathVariable("viewId") final Long viewId) {
+    @RequestMapping(value = "/view/{name}/delete", method = RequestMethod.GET)
+    public ModelAndView getDelete(@PathVariable("name") final String name) {
         final ModelAndView modelAndView = new ModelAndView("delete-view-manager");
-        modelAndView.addObject("view", viewLogic.getView(viewId));
+        modelAndView.addObject("view", viewLogic.getView(name));
         return modelAndView;
     }
 
-    @RequestMapping(value = "/view/{viewId}/delete", method = RequestMethod.POST)
-    public ModelAndView handleDelete(@Valid @ModelAttribute("view") final ViewDto view, final BindingResult bindingResult) {
-        viewLogic.delete(view.getId());
+    @RequestMapping(value = "/view/{name}/delete", method = RequestMethod.POST)
+    public ModelAndView handleDelete(@PathVariable("name") final String name) {
+        viewLogic.delete(name);
         return new ModelAndView("redirect:/view/index.html");
     }
 
@@ -170,7 +167,6 @@ public class ViewController {
             modelAndView = new ModelAndView("create-update-view-manager");
             addCommons(modelAndView);
         } else {
-            view.setId(Long.valueOf(0).equals(view.getId()) ? null : view.getId());
             viewLogic.createOrUpdateView(view);
             modelAndView = new ModelAndView("redirect:/view/index.html");
         }

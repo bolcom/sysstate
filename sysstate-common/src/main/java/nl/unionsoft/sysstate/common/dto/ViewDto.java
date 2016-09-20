@@ -7,7 +7,6 @@ import javax.validation.constraints.Size;
 
 public class ViewDto {
 
-    private Long id;
 
     @NotNull()
     @Size(min = 1, max = 128)
@@ -25,17 +24,7 @@ public class ViewDto {
 
     private long lastRequestTime;
 
-    
     private FilterDto filter;
-
-    public Long getId() {
-
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -69,41 +58,39 @@ public class ViewDto {
         this.template = template;
     }
 
-    
-    
     public Date getLastRequestDate() {
-		return lastRequestDate;
-	}
+        return lastRequestDate;
+    }
 
-	public void setLastRequestDate(Date lastRequestDate) {
-		this.lastRequestDate = lastRequestDate;
-	}
+    public void setLastRequestDate(Date lastRequestDate) {
+        this.lastRequestDate = lastRequestDate;
+    }
 
-	public long getRequestCount() {
-		return requestCount;
-	}
+    public long getRequestCount() {
+        return requestCount;
+    }
 
-	public void setRequestCount(long requestCount) {
-		this.requestCount = requestCount;
-	}
+    public void setRequestCount(long requestCount) {
+        this.requestCount = requestCount;
+    }
 
-	public long getAverageRequestTime() {
-		return averageRequestTime;
-	}
+    public long getAverageRequestTime() {
+        return averageRequestTime;
+    }
 
-	public void setAverageRequestTime(long averageRequestTime) {
-		this.averageRequestTime = averageRequestTime;
-	}
+    public void setAverageRequestTime(long averageRequestTime) {
+        this.averageRequestTime = averageRequestTime;
+    }
 
-	public long getLastRequestTime() {
-		return lastRequestTime;
-	}
+    public long getLastRequestTime() {
+        return lastRequestTime;
+    }
 
-	public void setLastRequestTime(long lastRequestTime) {
-		this.lastRequestTime = lastRequestTime;
-	}
+    public void setLastRequestTime(long lastRequestTime) {
+        this.lastRequestTime = lastRequestTime;
+    }
 
-	@Override
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -146,11 +133,9 @@ public class ViewDto {
         return true;
     }
 
-	@Override
-	public String toString() {
-		return "ViewDto [id=" + id + ", name=" + name + "]";
-	}
-    
-    
+    @Override
+    public String toString() {
+        return "ViewDto [name=" + name + "]";
+    }
 
 }
