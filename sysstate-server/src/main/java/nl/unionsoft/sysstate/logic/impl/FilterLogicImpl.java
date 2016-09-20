@@ -8,9 +8,11 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +24,6 @@ import nl.unionsoft.sysstate.converter.OptionalConverter;
 import nl.unionsoft.sysstate.dao.FilterDao;
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.domain.Filter;
-import nl.unionsoft.sysstate.job.InstanceFilterLinkJob;
 import nl.unionsoft.sysstate.logic.FilterLogic;
 
 @Service("filterLogic")
@@ -90,6 +91,24 @@ public class FilterLogicImpl implements FilterLogic {
         filterDao.removeInstanceFromFilter(filterId, instanceId);
     }
 
+    @Scheduled(fixedRate = 30000)
+    public void updateFilterSubscriptions() {
+        logger.info("Updating filter subscriptions...");
+        getFilters().parallelStream().forEach(filter -> {
+            logger.debug("Validating if filterdata for filter [{}] is still up to date", filter);
+            if (filterDataIsExpired(filter) && filterHasBeenQueriedRecently(filter)) {
+                logger.debug("FilterData for filter [{}] needs to be updated, scheduling update...", filter);
+                try {
+                    updateFilterSubscriptions(filter);
+                } catch (Exception e) {
+                    logger.error("Unable to update filter subscriptions for filter [{}], caught Exception", filter, e);
+                }
+            } else {
+                logger.debug("FilterData for filter [{}] is not expired. Skipping scheduled update.", filter);
+            }
+        });
+    }
+
     @Override
     public void updateFilterSubscriptions(FilterDto filter) {
         logger.debug("Updating FilterInstances for filter with id [{}]", filter);
@@ -115,9 +134,20 @@ public class FilterLogicImpl implements FilterLogic {
         }
     }
 
-    public void scheduleUpdate(final long filterId) {
-        InstanceFilterLinkJob instanceFilterLinkJob = new InstanceFilterLinkJob(this, filterId);
-        scheduler.schedule(instanceFilterLinkJob, new Date());
+    private boolean filterDataIsExpired(FilterDto filter) {
+        DateTime threeMinutesAgo = new DateTime(new Date()).minusMinutes(3);
+        Date lastSyncDate = filter.getLastSyncDate();
+        logger.debug("Testing if the filters last sync date [{}]) is either null or before [{}]", lastSyncDate, threeMinutesAgo);
+        // Filter has never been synced, or has been synced more then 3 minutes ago.
+        return lastSyncDate == null || new DateTime(lastSyncDate).isBefore(threeMinutesAgo);
+
+    }
+
+    private boolean filterHasBeenQueriedRecently(FilterDto filter) {
+        DateTime tenMinutesAgo = new DateTime(new Date()).minusMinutes(10);
+        Date lastQueryDate = filter.getLastQueryDate();
+        logger.debug("Testing if the filters last query date [{}]) is not null and after [{}]", lastQueryDate, tenMinutesAgo);
+        return filter.getLastQueryDate() != null && new DateTime(lastQueryDate).isAfter(tenMinutesAgo);
     }
 
 }

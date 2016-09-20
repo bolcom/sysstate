@@ -10,144 +10,151 @@ import nl.unionsoft.sysstate.common.enums.StateType;
 
 public class FilterDto implements Serializable {
 
-	private static final long serialVersionUID = 2063143092239342545L;
+    private static final long serialVersionUID = 2063143092239342545L;
 
-	private Long id;
+    private Long id;
 
-	private String name;
-	private List<Long> projects;
-	private List<Long> environments;
-	private List<StateType> states;
-	private List<String> stateResolvers;
-	private String tags;
-	private String search;
+    private String name;
+    private List<Long> projects;
+    private List<Long> environments;
+    private List<StateType> states;
+    private List<String> stateResolvers;
+    private String tags;
+    private String search;
 
-	private Date lastQueryDate;
-	private Long queryCount;
-	private Long averageQueryTime;
-	private long lastQueryTime;
+    private Date lastQueryDate;
+    private Long queryCount;
+    private Long averageQueryTime;
+    private long lastQueryTime;
 
-	private Date lastSyncDate;
-	
-	public FilterDto() {
-		projects = new ArrayList<Long>();
-		environments = new ArrayList<Long>();
-		stateResolvers = new ArrayList<String>();
-		states = new ArrayList<StateType>();
-		tags = "";
-		search = "";
-	}
+    private Date lastSyncDate;
 
-	public String getName() {
-		return name;
-	}
+    public FilterDto() {
+        projects = new ArrayList<Long>();
+        environments = new ArrayList<Long>();
+        stateResolvers = new ArrayList<String>();
+        states = new ArrayList<StateType>();
+        tags = "";
+        search = "";
+    }
 
-	public void setName(final String name) {
-		this.name = name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public Long getFirstProject() {
-		return projects.size() > 0 ? projects.get(0) : null;
-	}
+    public void setName(final String name) {
+        this.name = name;
+    }
 
-	public List<Long> getProjects() {
-		return projects;
-	}
+    public Long getFirstProject() {
+        return projects.size() > 0 ? projects.get(0) : null;
+    }
 
-	public void setProjects(final List<Long> projects) {
-		this.projects = projects;
-	}
+    public List<Long> getProjects() {
+        return projects;
+    }
 
-	public Long getFirstEnvironment() {
-		return environments.size() > 0 ? environments.get(0) : null;
-	}
+    public void setProjects(final List<Long> projects) {
+        this.projects = projects;
+    }
 
-	public List<Long> getEnvironments() {
-		return environments;
-	}
+    public Long getFirstEnvironment() {
+        return environments.size() > 0 ? environments.get(0) : null;
+    }
 
-	public void setEnvironments(final List<Long> environments) {
-		this.environments = environments;
-	}
+    public List<Long> getEnvironments() {
+        return environments;
+    }
 
-	public List<String> getStateResolvers() {
-		return stateResolvers;
-	}
+    public void setEnvironments(final List<Long> environments) {
+        this.environments = environments;
+    }
 
-	public void setStateResolvers(final List<String> stateResolvers) {
-		this.stateResolvers = stateResolvers;
-	}
+    public List<String> getStateResolvers() {
+        return stateResolvers;
+    }
 
-	public String getTags() {
-		return tags;
-	}
+    public void setStateResolvers(final List<String> stateResolvers) {
+        this.stateResolvers = stateResolvers;
+    }
 
-	public void setTags(final String tags) {
-		this.tags = tags;
-	}
+    public String getTags() {
+        return tags;
+    }
 
-	public String getSearch() {
-		return search;
-	}
+    public void setTags(final String tags) {
+        this.tags = tags;
+    }
 
-	public void setSearch(final String search) {
-		this.search = search;
-	}
+    public String getSearch() {
+        return search;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public void setSearch(final String search) {
+        this.search = search;
+    }
 
-	public void setId(final Long id) {
-		this.id = id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public List<StateType> getStates() {
-		return states;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public void setStates(final List<StateType> states) {
-		this.states = states;
-	}
+    public List<StateType> getStates() {
+        return states;
+    }
 
-	public Date getLastQueryDate() {
-		return lastQueryDate;
-	}
+    public void setStates(final List<StateType> states) {
+        this.states = states;
+    }
 
-	public void setLastQueryDate(Date lastQueryDate) {
-		this.lastQueryDate = lastQueryDate;
-	}
+    public Date getLastQueryDate() {
+        return lastQueryDate;
+    }
 
-	public Long getQueryCount() {
-		return queryCount;
-	}
+    public void setLastQueryDate(Date lastQueryDate) {
+        this.lastQueryDate = lastQueryDate;
+    }
 
-	public void setQueryCount(Long queryCount) {
-		this.queryCount = queryCount;
-	}
+    public Long getQueryCount() {
+        return queryCount;
+    }
 
-	public Long getAverageQueryTime() {
-		return averageQueryTime;
-	}
+    public void setQueryCount(Long queryCount) {
+        this.queryCount = queryCount;
+    }
 
-	public void setAverageQueryTime(Long averageQueryTime) {
-		this.averageQueryTime = averageQueryTime;
-	}
+    public Long getAverageQueryTime() {
+        return averageQueryTime;
+    }
 
-	public long getLastQueryTime() {
-		return lastQueryTime;
-	}
+    public void setAverageQueryTime(Long averageQueryTime) {
+        this.averageQueryTime = averageQueryTime;
+    }
 
-	public void setLastQueryTime(long lastQueryTime) {
-		this.lastQueryTime = lastQueryTime;
-	}
+    public long getLastQueryTime() {
+        return lastQueryTime;
+    }
 
-	public Date getLastSyncDate() {
-		return lastSyncDate;
-	}
+    public void setLastQueryTime(long lastQueryTime) {
+        this.lastQueryTime = lastQueryTime;
+    }
 
-	public void setLastSyncDate(Date lastSyncDate) {
-		this.lastSyncDate = lastSyncDate;
-	}
+    public Date getLastSyncDate() {
+        return lastSyncDate;
+    }
+
+    public void setLastSyncDate(Date lastSyncDate) {
+        this.lastSyncDate = lastSyncDate;
+    }
+
+    @Override
+    public String toString() {
+        return "FilterDto [id=" + id + ", name=" + name + ", tags=" + tags + ", search=" + search + "]";
+    }
+    
+    
 
 }

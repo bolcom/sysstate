@@ -89,7 +89,11 @@ public class ViewLogicImpl implements ViewLogic {
     public void createOrUpdateView(ViewDto viewDto) {
 
         View view = new View();
-        view.setId(viewDto.getId());
+        Optional<View> optView = viewDao.getView(viewDto.getName());
+        if (optView.isPresent()){
+            view = optView.get();
+        }
+        
         view.setCommonTags(viewDto.getCommonTags());
         view.setName(viewDto.getName());
         Filter filter = null;
@@ -119,9 +123,11 @@ public class ViewLogicImpl implements ViewLogic {
         viewDao.createOrUpdateView(view);
     }
 
-    public void delete(Long id) {
-        viewDao.delete(id);
-
+    public void delete(String name) {
+        Optional<View> optView = viewDao.getView(name);
+        if (optView.isPresent()) {
+            viewDao.delete(optView.get().getId());
+        }
     }
 
     public Optional<ViewDto> getView(Long viewId) {
@@ -136,20 +142,11 @@ public class ViewLogicImpl implements ViewLogic {
     }
 
     @Override
-    public Optional<ViewDto> getView(String viewId) {
-        if (NumberUtils.isDigits(viewId)) {
-            return getView(Long.valueOf(viewId));
+    public Optional<ViewDto> getView(String name) {
+        if (NumberUtils.isDigits(name)) {
+            return getView(Long.valueOf(name));
         }
-        //@formatter:off
-            return getViews()
-                    .stream()
-                    .filter(v -> StringUtils.equals(normalizeViewId(v.getName()), normalizeViewId(viewId)))
-                    .findFirst();
-        //@formatter:on        
-    }
-
-    private String normalizeViewId(String input) {
-        return StringUtils.lowerCase(StringUtils.replaceEach(input, new String[] { " ", "_" }, new String[] { "-", "-" }));
+        return OptionalConverter.convert(viewDao.getView(name), viewConverter);
     }
 
     @Override
@@ -175,8 +172,8 @@ public class ViewLogicImpl implements ViewLogic {
         timings.put(8L, System.currentTimeMillis() - now);
         sortViewResult(viewResult);
         timings.put(9L, System.currentTimeMillis() - now);
-        if (view.getId() != null && view.getId() > 0) {
-            viewDao.notifyRequested(view.getId(), System.currentTimeMillis() - now);
+        if (StringUtils.isNotEmpty(view.getName())) {
+            viewDao.notifyRequested(view.getName(), System.currentTimeMillis() - now);
         }
         timings.put(10L, System.currentTimeMillis() - now);
         log.debug("Timings for view [{}] are [{}]", view, timings);
@@ -186,21 +183,16 @@ public class ViewLogicImpl implements ViewLogic {
     private List<InstanceStateDto> getInstanceStatesForView(ViewDto view) {
         FilterDto filter = view.getFilter();
         if (filter == null) {
-            log.debug("No filter defined, returning results for new Filter");
+            log.debug("No filter defined for view [{}], returning results for new Filter", view);
             return instanceStateLogic.getInstanceStates(new FilterDto());
         }
 
         if (filter.getId() == null || filter.getId() == 0) {
-            log.debug("Filter is defined, but has no id. Returning results for given filter");
+            log.debug("Filter is defined for view [{}], but has no id. Returning results for given filter", view);
             return instanceStateLogic.getInstanceStates(filter);
         }
-        log.debug("Validating if filterdata is still up to date");
-        if (isFilterDataExpired(filter)) {
-            log.debug("FilterDate needs to be updated, scheduling update...");
-            filterLogic.scheduleUpdate(filter.getId());
-        }
 
-        log.debug("Returning results based on subscribed instances to filter.");
+        log.debug("Returning results based on subscribed instances to filter for view [{}].", view);
         return instanceStateLogic.getInstanceStates(filter.getId());
     }
 
@@ -223,7 +215,8 @@ public class ViewLogicImpl implements ViewLogic {
                     .forEach(instanceState -> {
                 InstanceDto instance = instanceState.getInstance();
                 StateDto state = instanceState.getState();
-                if (StringUtils.isNotEmpty(state.getDescription()) && (SysStateStringUtils.isTagMatch(instance.getTags(), commonDescriptionTags) || StringUtils.isEmpty(commonDescriptionTags))) {
+                if (StringUtils.isNotEmpty(state.getDescription())
+                        && (SysStateStringUtils.isTagMatch(instance.getTags(), commonDescriptionTags) || StringUtils.isEmpty(commonDescriptionTags))) {
                     descriptions.add(state.getDescription());
                 }
                 log.trace("Adding instance [{}] to projectEnvironment [{}]", instance, projectEnvironment);
@@ -264,12 +257,6 @@ public class ViewLogicImpl implements ViewLogic {
 
     private Set<ProjectEnvironmentDto> getAllProjectEnvironmentsFromInstances(List<InstanceStateDto> instanceStates) {
         return instanceStates.stream().map(instanceState -> instanceState.getInstance().getProjectEnvironment()).distinct().collect(Collectors.toSet());
-    }
-
-    private boolean isFilterDataExpired(FilterDto filter) {
-        DateTime threeMinutesAgo = new DateTime(new Date()).minusMinutes(3);
-        // Filter has never been synced, or has been synced more then 3 minutes ago.
-        return filter.getLastSyncDate() == null || new DateTime(filter.getLastSyncDate()).isBefore(threeMinutesAgo);
     }
 
 }

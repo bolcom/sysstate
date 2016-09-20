@@ -6,7 +6,6 @@
 		
 		<h1>Delete Text</h1>
 		<sf:form commandName="text" method="POST">
-			<sf:hidden path="id"/>
 			Name: <sf:input path="name"  disabled="true"/><sf:errors path="name"/><br/>
 			<input type="submit" value="OK" />
 		</sf:form>

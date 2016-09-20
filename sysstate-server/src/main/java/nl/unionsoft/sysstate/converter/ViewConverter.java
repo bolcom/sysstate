@@ -28,7 +28,6 @@ public class ViewConverter implements Converter<ViewDto, View> {
         ViewDto result = null;
         if (view != null) {
             result = new ViewDto();
-            result.setId(view.getId());
             result.setName(view.getName());
             result.setTemplate(templateConverter.convert(view.getTemplate()));
             result.setLastRequestDate(view.getLastRequestDate());

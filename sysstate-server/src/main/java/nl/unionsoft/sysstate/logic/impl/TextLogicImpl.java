@@ -1,19 +1,20 @@
 package nl.unionsoft.sysstate.logic.impl;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.springframework.stereotype.Service;
 
 import nl.unionsoft.common.converter.Converter;
 import nl.unionsoft.common.converter.ListConverter;
 import nl.unionsoft.sysstate.common.dto.TextDto;
 import nl.unionsoft.sysstate.common.logic.TextLogic;
+import nl.unionsoft.sysstate.converter.OptionalConverter;
 import nl.unionsoft.sysstate.dao.impl.TextDao;
 import nl.unionsoft.sysstate.domain.Text;
-
-import org.springframework.stereotype.Service;
 
 @Service("textLogic")
 public class TextLogicImpl implements TextLogic {
@@ -30,21 +31,20 @@ public class TextLogicImpl implements TextLogic {
         return ListConverter.convert(textConverter, textDao.getTexts());
     }
 
-    public TextDto getText(Long textId) {
-        return textConverter.convert(textDao.getText(textId));
+    public Optional<TextDto> getText(String name) {
+        return OptionalConverter.convert(textDao.getText(name), textConverter);
     }
 
     public void createOrUpdateText(TextDto dto) {
         final Text text = new Text();
-        text.setId(dto.getId());
         text.setTags(dto.getTags());
         text.setName(dto.getName());
         text.setText(dto.getText());
         textDao.createOrUpdateText(text);
     }
 
-    public void delete(Long textId) {
-        textDao.delete(textId);
+    public void delete(String name) {
+        textDao.delete(name);
     }
 
     @Override

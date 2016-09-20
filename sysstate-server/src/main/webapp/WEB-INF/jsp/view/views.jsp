@@ -31,14 +31,14 @@
 					Last request time: ${view.lastRequestTime}ms
 				</td>
 				<td>
-					<sc:authorize url="/view/${view.id}/update">
-						<a href="${view.id}/update.html">Update</a> |
+					<sc:authorize url="/view/${view.name}/update">
+						<a href="${view.name}/update.html">Update</a> |
 					</sc:authorize>
-					<sc:authorize url="/view/${view.id}/delete">
-						<a href="${view.id}/delete.html">Delete</a> |
+					<sc:authorize url="/view/${view.name}/delete">
+						<a href="${view.name}/delete.html">Delete</a> |
 					</sc:authorize>
-					<sc:authorize url="/view/${view.id}/index">
-						<a href="${view.id}/index.html" title="Index">Index</a>
+					<sc:authorize url="/view/${view.name}/index">
+						<a href="${view.name}/index.html" title="Index">Index</a>
 					</sc:authorize>
 				</td>
 			</tr>

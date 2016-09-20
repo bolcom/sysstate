@@ -80,7 +80,9 @@ class XPathStateResolverSpec extends Specification{
         1 * statusLine.getStatusCode() >> 200
         1 * httpResponse.getEntity() >> httpEntity
         1 * httpEntity.getContent() >> getClass().getResourceAsStream("/nl/unionsoft/sysstate/plugins/groovy/basic/selfdiagnoseresults.xml")
-        1 * textLogic.getText(1L) >> textDto
+        1 * textLogic.getText("1") >> Optional.of(textDto)
+        
+        println(state.getMessage())
         state.state == StateType.STABLE
         state.description == '90.0.3.73'
     }

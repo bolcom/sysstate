@@ -18,6 +18,8 @@ import nl.unionsoft.sysstate.sysstate_1_0.ProjectEnvironment;
 import nl.unionsoft.sysstate.sysstate_1_0.ProjectList;
 import nl.unionsoft.sysstate.sysstate_1_0.Resource;
 import nl.unionsoft.sysstate.sysstate_1_0.ResourceList;
+import nl.unionsoft.sysstate.sysstate_1_0.Text;
+import nl.unionsoft.sysstate.sysstate_1_0.TextList;
 
 public interface SysState {
 
@@ -117,5 +119,22 @@ public interface SysState {
     @DELETE
     @Path("/api/resource/{resourceManager}/{name}")
     void deleteResource(@PathParam("resourceManager") String resourceManager, @PathParam("name") String name);
+
+    @GET
+    @Path("/api/text")
+    TextList getTexts();
+
+    @GET
+    @Path("/api/text/{name}")
+    Text getText(@PathParam("name") String name);
+    
+    @PUT
+    @Path("/api/text")    
+    void createOrUpdateText(Text text);
+
+    @DELETE
+    @Path("/api/text/{name}")
+    void deleteText(@PathParam("name") String name);
+
     
 }

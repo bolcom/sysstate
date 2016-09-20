@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -26,7 +27,7 @@ public class Text {
     @Column(name = "TAGS", nullable = true, length = 512)
     private String tags;
 
-    @Column(name = "NAME", nullable = true, length = 512)
+    @Column(name = "NAME", nullable = true, length = 512, unique = true)
     private String name;
 
     @Lob()
