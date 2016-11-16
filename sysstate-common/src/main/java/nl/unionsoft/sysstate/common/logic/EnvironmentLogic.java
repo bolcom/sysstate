@@ -1,6 +1,7 @@
 package nl.unionsoft.sysstate.common.logic;
 
 import java.util.List;
+import java.util.Optional;
 
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 
@@ -14,5 +15,7 @@ public interface EnvironmentLogic {
 
     public void delete(Long environmentId);
 
-    public EnvironmentDto getEnvironmentByName(String name);
+    public Optional<EnvironmentDto> getEnvironmentByName(String name);
+    
+    public EnvironmentDto findOrCreateEnvironment(String name);
 }

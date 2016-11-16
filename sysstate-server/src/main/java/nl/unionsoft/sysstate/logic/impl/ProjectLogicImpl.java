@@ -2,9 +2,16 @@ package nl.unionsoft.sysstate.logic.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import nl.unionsoft.common.converter.Converter;
 import nl.unionsoft.common.converter.ListConverter;
@@ -18,13 +25,6 @@ import nl.unionsoft.sysstate.domain.Environment;
 import nl.unionsoft.sysstate.domain.Instance;
 import nl.unionsoft.sysstate.domain.Project;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service("projectLogic")
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -100,15 +100,25 @@ public class ProjectLogicImpl implements ProjectLogic {
         }
     }
 
-    public ProjectDto getProjectByName(final String name) {
-        return projectConverter.convert(projectDao.getProjectByName(name));
+    public Optional<ProjectDto> getProjectByName(final String name) {
+        return Optional.ofNullable(projectConverter.convert(projectDao.getProjectByName(name)));
     }
 
     public List<ProjectDto> getProjects() {
         return ListConverter.convert(projectConverter, projectDao.getProjects());
     }
 
-
-
+    @Override
+    public ProjectDto findOrCreateProject(String projectName) {
+        Optional<ProjectDto> optProject = getProjectByName(projectName);
+        if (optProject.isPresent()) {
+            return optProject.get();
+        }
+        LOG.info("There's no project defined for projectName [{}], creating it...", projectName);
+        ProjectDto project = new ProjectDto();
+        project.setName(projectName);
+        createOrUpdateProject(project);
+        return project;
+    }
 
 }

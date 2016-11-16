@@ -19,6 +19,10 @@ import org.apache.http.HttpEntity
 @Named("xPathStateResolver")
 class XPathStateResolver extends HttpStateResolverImpl {
 
+    public static final String PREDEFINED_XPATH = "predefinedXpath"
+
+    private static final String XPATH = "xpath"
+
     TextLogic textLogic;
 
     @Inject
@@ -55,11 +59,11 @@ class XPathStateResolver extends HttpStateResolverImpl {
 
     public String getXpath(Map<String, String> configuration){
 
-        if (configuration.get("xpath")){
-            return configuration.get("xpath");
+        if (configuration.get(XPATH)){
+            return configuration.get(XPATH);
         }
 
-        def predefinedXpath = configuration.get("predefinedXpath")
+        def predefinedXpath = configuration.get(PREDEFINED_XPATH)
         if (predefinedXpath){
             Optional<TextDto> optText = textLogic.getText(predefinedXpath)
             if (optText.isPresent()){

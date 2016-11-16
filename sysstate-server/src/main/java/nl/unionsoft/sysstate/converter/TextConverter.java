@@ -16,6 +16,7 @@ public class TextConverter implements Converter<TextDto, Text> {
             result.setTags(text.getTags());
             result.setText(text.getText());
             result.setName(text.getName());
+            result.setLastUpdated(text.getLastUpdated());
         }
         return result;
     }

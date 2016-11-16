@@ -67,7 +67,7 @@ public class HttpClientResourceManager implements ResourceManager<HttpClient> {
         return result;
     }
 
-    @Scheduled(cron = "* */1 * * * ?")
+    @Scheduled(cron = "* */60 * * * ?")
     public void closeIdleConnections() {
         for (Entry<String, HttpClient> entry : httpClients.entrySet()) {
             LOG.debug("Closing idle httpClient Connections for client '{}'", entry.getKey());

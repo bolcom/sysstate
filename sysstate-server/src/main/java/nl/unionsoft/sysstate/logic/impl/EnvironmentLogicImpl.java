@@ -1,6 +1,7 @@
 package nl.unionsoft.sysstate.logic.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -8,6 +9,7 @@ import javax.inject.Named;
 import nl.unionsoft.common.converter.Converter;
 import nl.unionsoft.common.converter.ListConverter;
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
+import nl.unionsoft.sysstate.common.dto.ProjectDto;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.dao.EnvironmentDao;
@@ -26,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("environmentLogic")
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class EnvironmentLogicImpl implements EnvironmentLogic {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(EnvironmentLogicImpl.class);
 
     @Inject
     @Named("environmentDao")
@@ -62,8 +66,8 @@ public class EnvironmentLogicImpl implements EnvironmentLogic {
         environmentDao.delete(environmentId);
     }
 
-    public EnvironmentDto getEnvironmentByName(final String name) {
-        return environmentConverter.convert(environmentDao.getEnvironmentByName(name));
+    public Optional<EnvironmentDto> getEnvironmentByName(final String name) {
+        return Optional.ofNullable(environmentConverter.convert(environmentDao.getEnvironmentByName(name)));
     }
 
     public List<EnvironmentDto> getEnvironments() {
@@ -101,6 +105,22 @@ public class EnvironmentLogicImpl implements EnvironmentLogic {
         }
         return environment.getId();
 
+    }
+
+
+
+    @Override
+    public EnvironmentDto findOrCreateEnvironment(String name) {
+
+        Optional<EnvironmentDto> optEnvironment = getEnvironmentByName(name);
+        if (optEnvironment.isPresent()) {
+            return optEnvironment.get();
+        }
+        LOG.info("There's no environment defined for environmentName [{}], creating it...", name);
+        EnvironmentDto environment = new EnvironmentDto();
+        environment.setName(name);
+        createOrUpdate(environment);
+        return environment;
     }
 
 }

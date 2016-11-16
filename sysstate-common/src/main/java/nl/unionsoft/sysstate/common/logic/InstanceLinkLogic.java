@@ -12,6 +12,6 @@ public interface InstanceLinkLogic {
     
     public void unlink(Long fromInstanceId, Long toInstanceId, String name);
     
-    public List<InstanceLinkDto> getInstanceLinks(Long instanceId);
+    public List<InstanceLinkDto> getInstanceLinks(Long instanceId); 
     
 }
