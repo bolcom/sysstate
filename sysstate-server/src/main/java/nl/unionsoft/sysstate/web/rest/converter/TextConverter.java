@@ -9,7 +9,7 @@ import nl.unionsoft.common.converter.Converter;
 import nl.unionsoft.sysstate.common.dto.TextDto;
 import nl.unionsoft.sysstate.sysstate_1_0.Text;
 
-@Service("textResourceConverter")
+@Service("restTextConverter")
 public class TextConverter implements Converter<Text, TextDto> {
 
     @Override

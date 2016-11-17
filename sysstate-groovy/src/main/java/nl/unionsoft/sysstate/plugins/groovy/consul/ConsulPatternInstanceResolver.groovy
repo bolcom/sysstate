@@ -43,8 +43,6 @@ abstract class ConsulPatternInstanceResolver extends InstanceStateResolver {
 
     public List<InstanceDto> createOrUpdateInstances(InstanceDto parent, List<InstanceDto> childInstances) {
         def services = getServices(parent.getConfiguration())
-
-
         def validInstanceIds = []
 
         def environmentIndex = (properties["environmentIndex"] ? properties["environmentIndex"] : '1') as int
@@ -92,7 +90,7 @@ abstract class ConsulPatternInstanceResolver extends InstanceStateResolver {
     abstract void configure(InstanceDto instance, ProjectDto project, EnvironmentDto environment, InstanceDto parent)
 
     def getServices(Map<String, String> properties){
-        HttpClient httpClient = resourceLogic.getResourceInstance(HttpConstants.RESOURCE_MANAGER_NAME, StringUtils.defaultIfEmpty(properties.get("httpClientId"), HttpConstants.DEFAULT_RESOURCE));
+        HttpClient httpClient = resourceLogic.getResourceInstance(HttpConstants.RESOURCE_MANAGER_NAME, StringUtils.defaultIfEmpty(properties.get(HttpConstants.HTTP_CLIENT_ID), HttpConstants.DEFAULT_RESOURCE));
         HttpEntity httpEntity = null;
         try {
             def serverUrl = properties.get("serverUrl") ? properties.get("serverUrl") : 'http://localhost:8500'

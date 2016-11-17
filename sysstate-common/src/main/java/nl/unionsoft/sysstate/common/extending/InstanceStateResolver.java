@@ -42,6 +42,7 @@ public abstract class InstanceStateResolver implements StateResolver {
         deleteNoLongerValidInstances(updatedInstances, childInstances);
         deleteEnvironmentsWithoutInstances();
         state.setState(StateType.STABLE);
+        state.setDescription("OK");
 
     }
 

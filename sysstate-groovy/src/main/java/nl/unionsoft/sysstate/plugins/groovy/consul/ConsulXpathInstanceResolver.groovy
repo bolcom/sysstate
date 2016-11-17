@@ -14,8 +14,8 @@ import nl.unionsoft.sysstate.common.logic.ResourceLogic
 import nl.unionsoft.sysstate.common.logic.TemplateLogic
 import nl.unionsoft.sysstate.plugins.groovy.basic.XPathStateResolver
 import nl.unionsoft.sysstate.plugins.http.HttpStateResolverImpl
+import nl.unionsoft.sysstate.plugins.http.HttpConstants
 
-import org.apache.commons.lang.text.StrSubstitutor
 @Named("consulXpathInstanceResolver")
 class ConsulXpathInstanceResolver extends ConsulPatternInstanceResolver{
 
@@ -34,15 +34,20 @@ class ConsulXpathInstanceResolver extends ConsulPatternInstanceResolver{
 
     @Override
     public void configure(InstanceDto instance, ProjectDto project, EnvironmentDto environment, InstanceDto parent) {
+        def url = getUrl(parent, project, environment)
+        instance.homepageUrl= url;
+        instance.configuration[HttpStateResolverImpl.URL] = url;
+        instance.configuration[XPathStateResolver.XPATH] = parent.configuration["child_${XPathStateResolver.XPATH}"]
+        instance.configuration[XPathStateResolver.PREDEFINED_XPATH] = parent.configuration["child_${XPathStateResolver.PREDEFINED_XPATH}"]
+        instance.configuration[HttpConstants.HTTP_CLIENT_ID] = parent.configuration["child_${HttpConstants.HTTP_CLIENT_ID}"]
+        instance.tags = parent.configuration["child_tags"] ? parent.configuration['child_tags'] : 'consul'
+    }
+
+    private String getUrl(InstanceDto parent, ProjectDto project, EnvironmentDto environment) {
         def urlTemplate = parent.configuration['urlTemplate']
         assert urlTemplate, "No urlTemplate defined"
         StringWriter stringWriter = new StringWriter();
         templateLogic.writeTemplate(urlTemplate, ['project':project, 'environment' : environment], stringWriter)
-        def url = stringWriter.toString()
-        instance.homepageUrl= url;
-        instance.configuration[HttpStateResolverImpl.URL] = url;
-        instance.configuration[XPathStateResolver.XPATH] = parent.configuration[XPathStateResolver.XPATH]
-        instance.configuration[XPathStateResolver.PREDEFINED_XPATH] = parent.configuration[XPathStateResolver.PREDEFINED_XPATH]
-        instance.tags = parent.configuration["tags"] ? parent.configuration['tags'] : 'consul'
+        return stringWriter.toString()
     }
 }
