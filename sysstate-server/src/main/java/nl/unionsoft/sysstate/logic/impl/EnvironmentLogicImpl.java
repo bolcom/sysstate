@@ -21,6 +21,7 @@ import nl.unionsoft.sysstate.domain.ProjectEnvironment;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,6 +79,17 @@ public class EnvironmentLogicImpl implements EnvironmentLogic {
         return environmentConverter.convert(environmentDao.getEnvironment(environmentId));
     }
 
+    @Scheduled(initialDelay=10000, fixedRate=60000)
+    public void deleteEnvironmentsWithoutInstances() {
+        LOG.info("Deleting Environments without instances...");
+        getEnvironments().stream().forEach(environment -> {
+            if (instanceLogic.getInstancesForEnvironment(environment.getId()).isEmpty()) {
+                LOG.info("Deleting environment with id [{}] since it is no longer used.", environment.getId());
+                delete(environment.getId());
+            }
+        });
+    }
+    
     public Long createOrUpdate(final EnvironmentDto environmentDto) {
 
         Environment environment = null;

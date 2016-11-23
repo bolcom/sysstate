@@ -40,21 +40,8 @@ public abstract class InstanceStateResolver implements StateResolver {
         List<InstanceDto> updatedInstances = createOrUpdateInstances(instance, childInstances);
         updatedInstances.stream().forEach( child -> instanceLinkLogic.link(instance.getId(),child.getId(), "child"));
         deleteNoLongerValidInstances(updatedInstances, childInstances);
-        deleteEnvironmentsWithoutInstances();
         state.setState(StateType.STABLE);
         state.setDescription("OK");
-
-    }
-
-    private void deleteEnvironmentsWithoutInstances() {
-        log.info("Deleting Environments without instances...");
-        environmentLogic.getEnvironments().stream().forEach(environment -> {
-            if (instanceLogic.getInstancesForEnvironment(environment.getId()).isEmpty()) {
-                log.info("Deleting environment with id [${environment.id}] since it is no longer used.");
-                environmentLogic.delete(environment.getId());
-            }
-        });
-
     }
 
     private void deleteNoLongerValidInstances(List<InstanceDto> updatedInstances, List<InstanceDto> children) {

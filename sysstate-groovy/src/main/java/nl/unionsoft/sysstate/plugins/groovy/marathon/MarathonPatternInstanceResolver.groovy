@@ -86,15 +86,14 @@ class MarathonPatternInstanceResolver extends InstanceStateResolver{
                     validInstances << foundChild
                 } else {
                     log.debug("No child [${foundChild}] has been found for reference [${reference}], creating new...")
-                    def childInstanceId = createInstance(reference, component, serverUrl, ['applicationPath':app['id'],'ignoreHealthStatus':'false','serverUrl':serverUrl], tags, project, environment)
-                    validInstances << childInstanceId
+                    validInstances << createInstance(reference, component, serverUrl, ['applicationPath':app['id'],'ignoreHealthStatus':'false','serverUrl':serverUrl], tags, project, environment)
                 }
             }
         }
         return validInstances
     }
 
-    long createInstance(def reference, def component, def serverUrl, def configuration, def tags, ProjectDto project, EnvironmentDto environment) {
+    def createInstance(def reference, def component, def serverUrl, def configuration, def tags, ProjectDto project, EnvironmentDto environment) {
         InstanceDto childInstance = instanceLogic.generateInstanceDto("marathonAppStateResolver", project.id, environment.id)
         childInstance.name = component
         childInstance.reference = reference
