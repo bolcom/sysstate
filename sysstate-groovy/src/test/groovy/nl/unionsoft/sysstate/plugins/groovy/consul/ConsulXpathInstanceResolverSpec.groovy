@@ -83,9 +83,6 @@ class ConsulXpathInstanceResolverSpec extends Specification{
         1 * templateLogic.writeTemplate("asdf", ['project':firstProject, 'environment' : proEnvironment], _)
         1 * templateLogic.writeTemplate("asdf", ['project':secondProject, 'environment' : testEnvironment], _)
         
-        then:
-        1 * environmentLogic.getEnvironments() >> []
-        
         state.state == StateType.STABLE
         state.description == 'OK'
         
