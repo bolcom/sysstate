@@ -79,7 +79,7 @@ public class EnvironmentLogicImpl implements EnvironmentLogic {
         return environmentConverter.convert(environmentDao.getEnvironment(environmentId));
     }
 
-    @Scheduled(initialDelay=10000, fixedRate=60000)
+    @Scheduled(initialDelay=30000, fixedRate=600000)
     public void deleteEnvironmentsWithoutInstances() {
         LOG.info("Deleting Environments without instances...");
         getEnvironments().stream().forEach(environment -> {

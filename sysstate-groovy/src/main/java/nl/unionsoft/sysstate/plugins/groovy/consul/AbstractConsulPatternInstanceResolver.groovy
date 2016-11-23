@@ -81,6 +81,7 @@ abstract class AbstractConsulPatternInstanceResolver extends InstanceStateResolv
             instance.name = reference
             instance.reference = reference
         }
+        instance.refreshTimeout = Long.valueOf(parent.configuration["child_refreshTimeout"] ? parent.configuration['child_refreshTimeout'] : '60000')
         configure(instance, project, environment, parent);
         instanceLogic.createOrUpdateInstance(instance);
         return instance;
