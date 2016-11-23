@@ -70,7 +70,7 @@ public class StateLogicImpl implements StateLogic {
     @Named("pluginLogic")
     private PluginLogic pluginLogic;
     
-    @Scheduled(cron="0 */5 * * * ?")
+    @Scheduled(initialDelay=10000, fixedRate=600000)
     public void clean() {
         LOG.info("Cleaning States...");
         Properties sysstateProperties = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);

@@ -1,5 +1,7 @@
 package nl.unionsoft.sysstate.domain;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Cache;
@@ -34,6 +38,10 @@ public class Text {
     @Column(name = "TEXT", nullable = true)
     private String text;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "lastUpdated", nullable = true)
+    private Date lastUpdated;
+    
     public Long getId() {
         return id;
     }
@@ -66,4 +74,14 @@ public class Text {
         this.name = name;
     }
 
+    public Date getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(Date lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    
+    
 }

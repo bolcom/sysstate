@@ -1,5 +1,6 @@
 package nl.unionsoft.sysstate.logic.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,6 +41,7 @@ public class TextLogicImpl implements TextLogic {
         text.setTags(dto.getTags());
         text.setName(dto.getName());
         text.setText(dto.getText());
+        text.setLastUpdated(new Date());
         textDao.createOrUpdateText(text);
     }
 

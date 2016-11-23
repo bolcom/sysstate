@@ -40,6 +40,7 @@ import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.common.dto.ViewResultDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.common.logic.InstanceStateLogic;
+import nl.unionsoft.sysstate.common.logic.TemplateLogic;
 import nl.unionsoft.sysstate.common.util.SysStateStringUtils;
 import nl.unionsoft.sysstate.converter.OptionalConverter;
 import nl.unionsoft.sysstate.dao.FilterDao;
@@ -49,7 +50,6 @@ import nl.unionsoft.sysstate.domain.Filter;
 import nl.unionsoft.sysstate.domain.Template;
 import nl.unionsoft.sysstate.domain.View;
 import nl.unionsoft.sysstate.logic.FilterLogic;
-import nl.unionsoft.sysstate.logic.TemplateLogic;
 import nl.unionsoft.sysstate.logic.ViewLogic;
 import nl.unionsoft.sysstate.util.CountUtil;
 

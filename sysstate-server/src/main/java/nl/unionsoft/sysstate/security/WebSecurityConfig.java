@@ -127,6 +127,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(toApiPaths("/instance/**")).hasAnyRole(EDITOR.name(), ADMIN.name())
             .antMatchers(toApiPaths("/resource/**")).hasAnyRole(EDITOR.name(), ADMIN.name())
             .antMatchers(toApiPaths("/text/**")).hasAnyRole(EDITOR.name(), ADMIN.name())
+            .antMatchers(toApiPaths("/template/**")).hasAnyRole(EDITOR.name(), ADMIN.name())
             .antMatchers(toApiPaths("/project/**")).hasAnyRole(EDITOR.name(), ADMIN.name())
             .antMatchers(toApiPaths("/environment/**")).hasAnyRole(EDITOR.name(), ADMIN.name())
             .antMatchers(toApiPaths("/scheduler")).permitAll()

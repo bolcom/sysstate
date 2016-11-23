@@ -3,6 +3,7 @@ package nl.unionsoft.sysstate.web.mvc.controller;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -21,12 +22,11 @@ import org.springframework.web.servlet.ModelAndView;
 import nl.unionsoft.sysstate.common.dto.TemplateDto;
 import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.common.dto.ViewResultDto;
+import nl.unionsoft.sysstate.common.logic.TemplateLogic;
 import nl.unionsoft.sysstate.dto.MessageDto;
 import nl.unionsoft.sysstate.logic.MessageLogic;
 import nl.unionsoft.sysstate.logic.PluginLogic;
-import nl.unionsoft.sysstate.logic.TemplateLogic;
 import nl.unionsoft.sysstate.logic.ViewLogic;
-import nl.unionsoft.sysstate.template.WriterException;
 import nl.unionsoft.sysstate.web.lov.TemplateWriterLovResolver;
 
 @Controller()
@@ -64,7 +64,11 @@ public class TemplateController {
     public void renderTemplate(@PathVariable("name") final String name, HttpServletRequest request, HttpServletResponse response) {
         try {
             ViewDto view = viewLogic.getBasicView();
-            TemplateDto template = templateLogic.getTemplate(name);
+            Optional<TemplateDto> optTemplate = templateLogic.getTemplate(name);
+            if (!optTemplate.isPresent()){
+                throw new IllegalStateException("Template with name [" + name + "] does not exist.");
+            }
+            TemplateDto template = optTemplate.get();
             response.addHeader("Content-Type", template.getContentType());
             Map<String, Object> context = new HashMap<String, Object>();
             if (template.getIncludeViewResults()){
@@ -75,8 +79,6 @@ public class TemplateController {
             context.put("contextPath", request.getContextPath());
             templateLogic.writeTemplate(template, context, response.getWriter());
             response.setStatus(HttpServletResponse.SC_OK);
-        } catch (WriterException e) {
-            throw new IllegalStateException(e);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }

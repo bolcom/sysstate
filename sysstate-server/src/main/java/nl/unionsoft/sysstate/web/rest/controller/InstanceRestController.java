@@ -138,9 +138,18 @@ public class InstanceRestController {
 
     public InstanceDto convert(Instance instance) {
         InstanceDto instanceDto = new InstanceDto();
+        instanceDto.setId(instance.getId());
+        
+        if (StringUtils.isNotEmpty(instance.getReference())){
+            log.info("Reference is set to [{}], checking if an instance already exists.", instance.getReference());
+            Optional<InstanceDto> optInstance = instanceLogic.getInstance(instance.getReference());
+            if (optInstance.isPresent()){
+                log.info("Found instance for reference [{}], we'll be updating that instead of creating a new one.", instance.getReference() );
+                instanceDto = optInstance.get();
+            }
+        }
         instanceDto.setEnabled(instance.isEnabled());
         instanceDto.setHomepageUrl(instance.getHomepageUrl());
-        instanceDto.setId(instance.getId());
         instanceDto.setName(instance.getName());
         instanceDto.setPluginClass(instance.getPlugin());
         instanceDto.setReference(instance.getReference());
@@ -149,6 +158,8 @@ public class InstanceRestController {
         instanceDto.setTags(StringUtils.join(instance.getTags(), " "));
         return instanceDto;
     }
+    
+
 
     private ProjectEnvironmentDto getProjectEnvironment(Instance instance) {
 

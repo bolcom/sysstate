@@ -16,6 +16,8 @@ public interface InstanceLogic {
 	public List<InstanceDto> getInstances();
 
 	public Optional<InstanceDto> getInstance(Long instanceId);
+	
+	public Optional<InstanceDto> getInstance(String reference);
 
 	public Long createOrUpdateInstance(InstanceDto instance);
 

@@ -42,7 +42,7 @@ public class HttpStateResolverImpl implements StateResolver {
 
     public void setState(final InstanceDto instance, final StateDto state) {
         Map<String, String> properties = instance.getConfiguration();
-        HttpClient httpClient = resourceLogic.getResourceInstance(HttpConstants.RESOURCE_MANAGER_NAME, StringUtils.defaultIfEmpty(properties.get("httpClientId"), HttpConstants.DEFAULT_RESOURCE));
+        HttpClient httpClient = resourceLogic.getResourceInstance(HttpConstants.RESOURCE_MANAGER_NAME, StringUtils.defaultIfEmpty(properties.get(HttpConstants.HTTP_CLIENT_ID), HttpConstants.DEFAULT_RESOURCE));
         state.setState(StateType.STABLE);
         LOG.debug("Preparing httpRequest...");
 

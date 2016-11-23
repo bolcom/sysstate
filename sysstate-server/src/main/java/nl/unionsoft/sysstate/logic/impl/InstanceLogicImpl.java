@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -150,8 +151,8 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         final long refreshTimeout = instance.getRefreshTimeout();
         long period = refreshTimeout < 30000 ? 30000 : refreshTimeout;
         UpdateInstanceJob updateInstanceJob = new UpdateInstanceJob(this, stateLogic, instanceId);
-          Date bitInTheFuture = Date.from(LocalDateTime.now().plusSeconds(10).atZone(ZoneId.systemDefault()).toInstant());
-          instanceTasks.put(instanceId, scheduler.scheduleAtFixedRate(updateInstanceJob, bitInTheFuture, period));
+        Date bitInTheFuture = Date.from(LocalDateTime.now().plusSeconds(10).atZone(ZoneId.systemDefault()).toInstant());
+        instanceTasks.put(instanceId, scheduler.scheduleAtFixedRate(updateInstanceJob, bitInTheFuture, period));
     }
 
     public void removeTriggerJob(final long instanceId) {
@@ -217,17 +218,6 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     private Instance getInstanceForDto(InstanceDto dto) {
         Long instanceId = dto.getId();
         if (instanceId == null) {
-            // Id is not set, try to fetch based on reference.
-            String reference = dto.getReference();
-            if (StringUtils.isNotEmpty(reference)) {
-                logger.info("No ID is set, but reference [{}] is. Trying to resolve instance using reference.", reference);
-                Optional<Instance> optInstance = instanceDao.getInstanceByReference(reference);
-                if (optInstance.isPresent()) {
-                    logger.info("Returning found for reference [{}]", reference);
-                    return optInstance.get();
-                }
-            }
-            logger.info("Returning new instance");
             return new Instance();
         } else {
             logger.info("Instance [{}] has an Id, try to look instance up.", dto);
@@ -242,6 +232,17 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     public void delete(final Long instanceId) {
         instanceDao.delete(instanceId);
         removeTriggerJob(instanceId);
+    }
+
+    @Scheduled(initialDelay=10000, fixedRate=60000)
+    public void purgeOldJobs() {
+        logger.info("Purging old instance jobs...");
+        instanceTasks.forEach((instanceId, scheduledFuture) -> {
+            if (!instanceDao.getInstance(instanceId).isPresent()) {
+                logger.info("Cancelling job for non-existing instance who had id [{}]", instanceId);
+                scheduledFuture.cancel(true);
+            }
+        });
     }
 
     public List<InstanceDto> getInstancesForProjectAndEnvironment(final String projectPrefix, final String environmentPrefix) {
@@ -342,6 +343,11 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         List<Instance> instances = instanceDao.getInstances(filterId);
         filterDao.notifyFilterQueried(filterId, System.currentTimeMillis() - now);
         return instances.parallelStream().map(i -> instanceConverter.convert(i)).collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<InstanceDto> getInstance(String reference) {
+        return OptionalConverter.convert(instanceDao.getInstanceByReference(reference), instanceConverter);
     }
 
 }

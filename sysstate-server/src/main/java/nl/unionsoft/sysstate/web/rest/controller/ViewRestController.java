@@ -36,9 +36,8 @@ public class ViewRestController {
         Optional<ViewDto> optView = viewLogic.getView(viewId);
         if (optView.isPresent()) {
             return ecoSystemConverter.convert( viewLogic.getViewResults(optView.get()));
-        } else {
-            return ecoSystemConverter.convert( viewLogic.getViewResults(viewLogic.getBasicView()));
         }
+       return new EcoSystem();
     }
 
 }

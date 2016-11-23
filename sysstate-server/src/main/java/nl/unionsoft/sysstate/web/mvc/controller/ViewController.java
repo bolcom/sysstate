@@ -27,11 +27,10 @@ import nl.unionsoft.sysstate.common.dto.TemplateDto;
 import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
+import nl.unionsoft.sysstate.common.logic.TemplateLogic;
 import nl.unionsoft.sysstate.logic.FilterLogic;
 import nl.unionsoft.sysstate.logic.PluginLogic;
-import nl.unionsoft.sysstate.logic.TemplateLogic;
 import nl.unionsoft.sysstate.logic.ViewLogic;
-import nl.unionsoft.sysstate.template.WriterException;
 
 @Controller()
 public class ViewController {
@@ -109,8 +108,6 @@ public class ViewController {
             context.put("view", view);
             templateLogic.writeTemplate(template, context, response.getWriter());
             response.setStatus(HttpServletResponse.SC_OK);
-        } catch (WriterException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

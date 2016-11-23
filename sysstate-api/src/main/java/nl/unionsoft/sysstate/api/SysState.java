@@ -18,6 +18,8 @@ import nl.unionsoft.sysstate.sysstate_1_0.ProjectEnvironment;
 import nl.unionsoft.sysstate.sysstate_1_0.ProjectList;
 import nl.unionsoft.sysstate.sysstate_1_0.Resource;
 import nl.unionsoft.sysstate.sysstate_1_0.ResourceList;
+import nl.unionsoft.sysstate.sysstate_1_0.Template;
+import nl.unionsoft.sysstate.sysstate_1_0.TemplateList;
 import nl.unionsoft.sysstate.sysstate_1_0.Text;
 import nl.unionsoft.sysstate.sysstate_1_0.TextList;
 
@@ -135,6 +137,22 @@ public interface SysState {
     @DELETE
     @Path("/api/text/{name}")
     void deleteText(@PathParam("name") String name);
+    
+    @GET
+    @Path("/api/template")
+    TemplateList getTemplates();
+
+    @GET
+    @Path("/api/template/{name}")
+    Template getTemplate(@PathParam("name") String name);
+    
+    @PUT
+    @Path("/api/template")    
+    void createOrUpdateTemplate(Template template);
+
+    @DELETE
+    @Path("/api/template/{name}")
+    void deleteTemplate(@PathParam("name") String name);
 
     
 }

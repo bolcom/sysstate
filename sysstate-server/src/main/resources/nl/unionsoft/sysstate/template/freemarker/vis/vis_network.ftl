@@ -6,7 +6,7 @@
 	
 	(function worker() {
 		$.ajax({
-			url : "${contextPath}/services/view/${view.id!'0'}/ecosystem",
+			url : "${contextPath}/services/view/${view.name}/ecosystem",
 			success : function(data) {
 				handleData(data);
 			},

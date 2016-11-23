@@ -1,18 +1,17 @@
 package nl.unionsoft.sysstate.web.lov;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.springframework.stereotype.Service;
+
 import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
 import nl.unionsoft.sysstate.common.dto.TemplateDto;
 import nl.unionsoft.sysstate.common.extending.ListOfValueResolver;
-import nl.unionsoft.sysstate.domain.Template;
-import nl.unionsoft.sysstate.logic.TemplateLogic;
-
-import org.springframework.stereotype.Service;
+import nl.unionsoft.sysstate.common.logic.TemplateLogic;
 
 @Service("templateLovResolver")
 public class TemplateLovResolver implements ListOfValueResolver {
@@ -22,10 +21,6 @@ public class TemplateLovResolver implements ListOfValueResolver {
     private TemplateLogic templateLogic;
 
     public Map<String, String> getListOfValues(final PropertyMetaValue propertyMetaValue) {
-        Map<String, String> results = new LinkedHashMap<String, String>();
-        for (TemplateDto template : templateLogic.getTemplates()) {
-            results.put(String.valueOf(template.getId()), template.getName());
-        }
-        return results;
+        return templateLogic.getTemplates().stream().collect(Collectors.toMap(TemplateDto::getName, TemplateDto::getName));
     }
 }
