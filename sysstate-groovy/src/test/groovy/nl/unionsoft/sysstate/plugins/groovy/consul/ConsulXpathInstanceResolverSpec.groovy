@@ -45,15 +45,16 @@ class ConsulXpathInstanceResolverSpec extends Specification{
         given:
         InstanceDto instance = new InstanceDto();
         instance.setConfiguration([
-            "httpClientId" : "test",
-            "serverUrl"    : "http://localhost:8500",
-            "urlTemplate"  : "asdf"
+            "httpClientId"    : "test",
+            "serverUrl"       : "http://localhost:8500",
+            "urlTemplate"     : "asdf",
+            "servicesPattern" : "([a-z].*)-(wiz[a-z].*)-.*"
         ])
 
         StateDto state = new StateDto();
 
-        def firstProject = new ProjectDto('name' : 'FIRST', 'id':1)
-        def secondProject = new ProjectDto('name': 'SECOND', 'id':2)
+        def firstProject = new ProjectDto('name' : 'WIZFIRST', 'id':1)
+        def secondProject = new ProjectDto('name': 'WIZSECOND', 'id':2)
         
         def proEnvironment = new EnvironmentDto('name' : 'PRO', 'id' : 1)
         def testEnvironment = new EnvironmentDto('name' : 'TEST', 'id' : 2)
@@ -74,8 +75,8 @@ class ConsulXpathInstanceResolverSpec extends Specification{
         1 * httpEntity.getContent() >> getClass().getResourceAsStream("/nl/unionsoft/sysstate/plugins/groovy/consul/services.json")
         
         then:
-        1 * projectLogic.findOrCreateProject("FIRST") >> firstProject 
-        1 * projectLogic.findOrCreateProject("SECOND") >> secondProject
+        1 * projectLogic.findOrCreateProject("WIZFIRST") >> firstProject 
+        1 * projectLogic.findOrCreateProject("WIZSECOND") >> secondProject
         1 * environmentLogic.findOrCreateEnvironment('PRO') >> proEnvironment
         1 * environmentLogic.findOrCreateEnvironment('TEST') >> testEnvironment
         2 * instanceLogic.generateInstanceDto("xPathStateResolver", _, _) >> new InstanceDto()

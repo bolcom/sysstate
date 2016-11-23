@@ -17,7 +17,7 @@ import nl.unionsoft.sysstate.plugins.http.HttpStateResolverImpl
 import nl.unionsoft.sysstate.plugins.http.HttpConstants
 
 @Named("consulXpathInstanceResolver")
-class ConsulXpathInstanceResolver extends ConsulPatternInstanceResolver{
+class ConsulXpathInstanceResolver extends AbstractConsulPatternInstanceResolver{
 
     private final TemplateLogic templateLogic;
 

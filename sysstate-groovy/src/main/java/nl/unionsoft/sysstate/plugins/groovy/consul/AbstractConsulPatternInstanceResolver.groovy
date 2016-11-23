@@ -26,28 +26,30 @@ import org.apache.http.util.EntityUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-abstract class ConsulPatternInstanceResolver extends InstanceStateResolver {
+abstract class AbstractConsulPatternInstanceResolver extends InstanceStateResolver {
 
     ResourceLogic resourceLogic
     ProjectLogic projectLogic
 
     @Inject
-    public ConsulPatternInstanceResolver(ResourceLogic resourceLogic, ProjectLogic projectLogic, EnvironmentLogic environmentLogic, InstanceLogic instanceLogic, InstanceLinkLogic instanceLinkLogic) {
+    public AbstractConsulPatternInstanceResolver(ResourceLogic resourceLogic, ProjectLogic projectLogic, EnvironmentLogic environmentLogic, InstanceLogic instanceLogic, InstanceLinkLogic instanceLinkLogic) {
         super(instanceLinkLogic, instanceLogic, environmentLogic)
         this.resourceLogic = resourceLogic;
         this.projectLogic = projectLogic;
     }
 
 
-    private static final Logger log = LoggerFactory.getLogger(ConsulPatternInstanceResolver.class);
+    private static final Logger log = LoggerFactory.getLogger(AbstractConsulPatternInstanceResolver.class);
 
     public List<InstanceDto> createOrUpdateInstances(InstanceDto parent, List<InstanceDto> childInstances) {
-        def services = getServices(parent.getConfiguration())
+        
+        def configuration = parent.getConfiguration()
+        def services = getServices(configuration)
         def validInstanceIds = []
 
-        def environmentIndex = (properties["environmentIndex"] ? properties["environmentIndex"] : '1') as int
-        def applicationIndex = (properties["applicationIndex"] ? properties["applicationIndex"] : '2') as int
-        def servicesPattern = properties["servicesPattern"] ? properties["servicesPattern"] : '([a-z].*)-([a-z].*)-.*'
+        def environmentIndex = (configuration["environmentIndex"] ? configuration["environmentIndex"] : '1') as int
+        def applicationIndex = (configuration["applicationIndex"] ? configuration["applicationIndex"] : '2') as int
+        def servicesPattern = configuration["servicesPattern"] ? configuration["servicesPattern"] : '([a-z].*)-([a-z].*)-.*'
 
         def instances = [];
         services.each { serviceName,tags ->
@@ -89,11 +91,11 @@ abstract class ConsulPatternInstanceResolver extends InstanceStateResolver {
 
     abstract void configure(InstanceDto instance, ProjectDto project, EnvironmentDto environment, InstanceDto parent)
 
-    def getServices(Map<String, String> properties){
-        HttpClient httpClient = resourceLogic.getResourceInstance(HttpConstants.RESOURCE_MANAGER_NAME, StringUtils.defaultIfEmpty(properties.get(HttpConstants.HTTP_CLIENT_ID), HttpConstants.DEFAULT_RESOURCE));
+    def getServices(Map<String, String> configuration){
+        HttpClient httpClient = resourceLogic.getResourceInstance(HttpConstants.RESOURCE_MANAGER_NAME, StringUtils.defaultIfEmpty(configuration.get(HttpConstants.HTTP_CLIENT_ID), HttpConstants.DEFAULT_RESOURCE));
         HttpEntity httpEntity = null;
         try {
-            def serverUrl = properties.get("serverUrl") ? properties.get("serverUrl") : 'http://localhost:8500'
+            def serverUrl = configuration.get("serverUrl") ? configuration.get("serverUrl") : 'http://localhost:8500'
             final HttpGet httpGet = new HttpGet("${serverUrl.trim()}/v1/catalog/services");
             final HttpResponse httpResponse = httpClient.execute(httpGet);
             final StatusLine statusLine = httpResponse.getStatusLine();
