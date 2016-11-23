@@ -30,6 +30,9 @@ public interface InstanceLogic {
 	public List<InstanceDto> getInstancesForProjectEnvironment(Long projectEnvironmentId);
 
 	public List<InstanceDto> getInstancesForEnvironment(Long environmentId);
+	
+	public void purgeOldJobs();
+	
 
 	/**
 	 * Gets instances for a custom filter
