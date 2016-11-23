@@ -18,4 +18,7 @@ public interface EnvironmentLogic {
     public Optional<EnvironmentDto> getEnvironmentByName(String name);
     
     public EnvironmentDto findOrCreateEnvironment(String name);
+    
+    public void deleteEnvironmentsWithoutInstances();
+    
 }

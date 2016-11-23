@@ -5,11 +5,13 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
@@ -237,12 +239,16 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     @Scheduled(initialDelay=10000, fixedRate=60000)
     public void purgeOldJobs() {
         logger.info("Purging old instance jobs...");
+        Set<Long> cancelledJobKeys = new HashSet<Long>();
         instanceTasks.forEach((instanceId, scheduledFuture) -> {
             if (!instanceDao.getInstance(instanceId).isPresent()) {
                 logger.info("Cancelling job for non-existing instance who had id [{}]", instanceId);
                 scheduledFuture.cancel(true);
+                cancelledJobKeys.add(instanceId);
             }
         });
+        cancelledJobKeys.forEach( key -> instanceTasks.remove(key));
+        logger.info("Purged & cancelled [{}] jobs..", cancelledJobKeys.size());
     }
 
     public List<InstanceDto> getInstancesForProjectAndEnvironment(final String projectPrefix, final String environmentPrefix) {
@@ -265,7 +271,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         final InstanceDto instance = new InstanceDto();
         instance.setPluginClass(type);
         instance.setEnabled(true);
-        instance.setRefreshTimeout(10000);
+        instance.setRefreshTimeout(60000);
         if (environmentId != null) {
             final EnvironmentDto environment = environmentLogic.getEnvironment(environmentId);
             if (environment != null) {
