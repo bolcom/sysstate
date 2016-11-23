@@ -96,7 +96,8 @@ abstract class AbstractConsulPatternInstanceResolver extends InstanceStateResolv
         HttpEntity httpEntity = null;
         try {
             def serverUrl = configuration.get("serverUrl") ? configuration.get("serverUrl") : 'http://localhost:8500'
-            final HttpGet httpGet = new HttpGet("${serverUrl.trim()}/v1/catalog/services");
+            def dataCenter = configuration.get("dataCenter") ? configuration.get("dataCenter") : '' 
+            final HttpGet httpGet = new HttpGet("${serverUrl.trim()}/v1/catalog/services?dc=${dataCenter}");
             final HttpResponse httpResponse = httpClient.execute(httpGet);
             final StatusLine statusLine = httpResponse.getStatusLine();
             httpEntity = httpResponse.getEntity();
