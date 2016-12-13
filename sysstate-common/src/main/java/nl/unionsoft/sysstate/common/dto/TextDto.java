@@ -1,19 +1,13 @@
 package nl.unionsoft.sysstate.common.dto;
 
+import java.util.Date;
+
 public class TextDto {
 
-    private Long id;
     private String tags;
     private String name;
     private String text;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private Date lastUpdated;
 
     public String getTags() {
         return tags;
@@ -39,4 +33,14 @@ public class TextDto {
         this.name = name;
     }
 
+    public Date getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(Date lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    
+    
 }

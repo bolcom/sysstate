@@ -1,18 +1,26 @@
 package nl.unionsoft.sysstate.domain;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
-@Table(name = "SSE_TEXT")
+@Table(name = "SSE_TEXT",indexes = { 
+        @Index(columnList = "NAME")
+        })
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Text {
     @Id
@@ -23,13 +31,17 @@ public class Text {
     @Column(name = "TAGS", nullable = true, length = 512)
     private String tags;
 
-    @Column(name = "NAME", nullable = true, length = 512)
+    @Column(name = "NAME", nullable = true, length = 512, unique = true)
     private String name;
 
     @Lob()
     @Column(name = "TEXT", nullable = true)
     private String text;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "lastUpdated", nullable = true)
+    private Date lastUpdated;
+    
     public Long getId() {
         return id;
     }
@@ -62,4 +74,14 @@ public class Text {
         this.name = name;
     }
 
+    public Date getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(Date lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    
+    
 }

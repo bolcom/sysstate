@@ -5,8 +5,8 @@ import javax.inject.Named;
 import javax.validation.Valid;
 
 import nl.unionsoft.sysstate.common.dto.TextDto;
+import nl.unionsoft.sysstate.common.logic.TextLogic;
 import nl.unionsoft.sysstate.domain.Text;
-import nl.unionsoft.sysstate.logic.TextLogic;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -36,23 +36,23 @@ public class TextController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/text/{textId}/update", method = RequestMethod.GET)
-    public ModelAndView getUpdate(@PathVariable("textId") final Long textId) {
+    @RequestMapping(value = "/text/{name}/update", method = RequestMethod.GET)
+    public ModelAndView getUpdate(@PathVariable("name") final String name) {
         final ModelAndView modelAndView = new ModelAndView("create-update-text-manager");
-        modelAndView.addObject("text", textLogic.getText(textId));
+        modelAndView.addObject("text", textLogic.getText(name));
         return modelAndView;
     }
 
-    @RequestMapping(value = "/text/{textId}/delete", method = RequestMethod.GET)
-    public ModelAndView getDelete(@PathVariable("textId") final Long textId) {
+    @RequestMapping(value = "/text/{name}/delete", method = RequestMethod.GET)
+    public ModelAndView getDelete(@PathVariable("name") final String name) {
         final ModelAndView modelAndView = new ModelAndView("delete-text-manager");
-        modelAndView.addObject("text", textLogic.getText(textId));
+        modelAndView.addObject("text", textLogic.getText(name));
         return modelAndView;
     }
 
-    @RequestMapping(value = "/text/{textId}/delete", method = RequestMethod.POST)
-    public ModelAndView handleDelete(@Valid @ModelAttribute("text") final TextDto text, final BindingResult bindingResult) {
-        textLogic.delete(text.getId());
+    @RequestMapping(value = "/text/{name}/delete", method = RequestMethod.POST)
+    public ModelAndView handleDelete(@PathVariable("name") final String name) {
+        textLogic.delete(name);
         return new ModelAndView("redirect:/filter/index.html");
     }
 
@@ -63,7 +63,6 @@ public class TextController {
         if (bindingResult.hasErrors()) {
             modelAndView = new ModelAndView("create-update-text-manager");
         } else {
-            text.setId(Long.valueOf(0).equals(text.getId()) ? null : text.getId());
             textLogic.createOrUpdateText(text);
             modelAndView = new ModelAndView("redirect:/filter/index.html");
         }

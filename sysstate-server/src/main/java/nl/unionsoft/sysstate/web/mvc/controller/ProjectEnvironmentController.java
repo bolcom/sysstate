@@ -1,13 +1,7 @@
 package nl.unionsoft.sysstate.web.mvc.controller;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.validation.Valid;
-
-import nl.unionsoft.sysstate.common.dto.FilterDto;
-import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
-import nl.unionsoft.sysstate.common.logic.InstanceLogic;
-import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -17,16 +11,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import nl.unionsoft.sysstate.common.dto.FilterDto;
+import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
+import nl.unionsoft.sysstate.common.logic.InstanceStateLogic;
+import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
+
 @Controller()
 public class ProjectEnvironmentController {
 
     @Inject
-    @Named("projectEnvironmentLogic")
     private ProjectEnvironmentLogic projectEnvironmentLogic;
 
     @Inject
-    @Named("instanceLogic")
-    private InstanceLogic instanceLogic;
+    private InstanceStateLogic instanceStateLogic;
 
     @RequestMapping(value = "/projectEnvironment/project/{projectId}/environment/{environmentId}/update", method = RequestMethod.GET)
     public ModelAndView getUpdate(@PathVariable("projectId") final Long projectId, @PathVariable("environmentId") final Long environmentId) {
@@ -36,7 +33,8 @@ public class ProjectEnvironmentController {
     }
 
     @RequestMapping(value = "/projectEnvironment/project/{projectId}/environment/{environmentId}/update", method = RequestMethod.POST)
-    public ModelAndView handleFormUpdate(@Valid @ModelAttribute("projectEnvironment") final ProjectEnvironmentDto projectEnvironment, final BindingResult bindingResult) {
+    public ModelAndView handleFormUpdate(@Valid @ModelAttribute("projectEnvironment") final ProjectEnvironmentDto projectEnvironment,
+            final BindingResult bindingResult) {
         ModelAndView modelAndView = null;
         if (bindingResult.hasErrors()) {
             modelAndView = new ModelAndView("update-project-environment-manager");
@@ -55,7 +53,7 @@ public class ProjectEnvironmentController {
         final FilterDto filter = new FilterDto();
         filter.getEnvironments().add(environmentId);
         filter.getProjects().add(projectId);
-        modelAndView.addObject("instances", instanceLogic.getInstances(filter).getResults());
+        modelAndView.addObject("instanceStates", instanceStateLogic.getInstanceStates(filter));
         return modelAndView;
     }
 

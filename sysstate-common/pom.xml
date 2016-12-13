@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>nl.unionsoft.sysstate</groupId>
 		<artifactId>sysstate</artifactId>
-		<version>1.2.6</version>
+		<version>1.8.7</version>
 	</parent>
 
 	<groupId>nl.unionsoft.sysstate</groupId>
@@ -100,12 +100,61 @@
 
 	</dependencies>
 	<build>
+	  <resources>
+            <resource>
+                <directory>src/main/generated</directory>
+            </resource>
+            <resource>
+                <directory>src/main/xsd</directory>
+            </resource>
+        </resources>
 		<plugins>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
 			</plugin>
+			    <plugin>
+                <groupId>com.sun.tools.xjc.maven2</groupId>
+                <artifactId>maven-jaxb-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>service</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <schemaDirectory>src/main/xsd</schemaDirectory>
+                            <includeSchemas>
+                                <includeSchema>sysstate-1.0.0.xsd</includeSchema>
+                            </includeSchemas>
+                            <generateDirectory>src/main/generated</generateDirectory>
+                            <strict>true</strict>
+                            <verbose>true</verbose>
+                            <extension>true</extension>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+              <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>add-source</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>add-source</goal>
+                            </goals>
+                            <configuration>
+                                <sources>
+                                    <source>src/main/xsd</source>
+                                    <source>src/main/generated</source>
+                                </sources>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
 		</plugins>
 	</build>
 

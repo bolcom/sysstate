@@ -4,33 +4,46 @@ import java.io.Serializable;
 
 public class InstanceLinkDto implements Serializable {
 
-    private static final long serialVersionUID = -3245171821584603449L;
-    private String name;
-    private Long instanceToId;
-    private Long instanceFromId;
+	private static final long serialVersionUID = -3245171821584603449L;
+	private String name;
+	private Long instanceToId;
+	private Long instanceFromId;
+	private Direction direction;
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public Long getInstanceToId() {
-        return instanceToId;
-    }
+	public Long getInstanceToId() {
+		return instanceToId;
+	}
 
-    public void setInstanceToId(Long instanceToId) {
-        this.instanceToId = instanceToId;
-    }
+	public void setInstanceToId(Long instanceToId) {
+		this.instanceToId = instanceToId;
+	}
 
-    public Long getInstanceFromId() {
-        return instanceFromId;
-    }
+	public Long getInstanceFromId() {
+		return instanceFromId;
+	}
 
-    public void setInstanceFromId(Long instanceFromId) {
-        this.instanceFromId = instanceFromId;
-    }
+	public void setInstanceFromId(Long instanceFromId) {
+		this.instanceFromId = instanceFromId;
+	}
+
+	public Direction getDirection() {
+		return direction;
+	}
+
+	public void setDirection(Direction direction) {
+		this.direction = direction;
+	}
+
+	public enum Direction {
+		INCOMMING, OUTGOING;
+	}
 
 }

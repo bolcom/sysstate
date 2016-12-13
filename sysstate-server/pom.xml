@@ -4,7 +4,7 @@
     <parent>
         <groupId>nl.unionsoft.sysstate</groupId>
         <artifactId>sysstate</artifactId>
-        <version>1.2.6</version>
+        <version>1.8.7</version>
     </parent>
 
     <groupId>nl.unionsoft.sysstate</groupId>
@@ -98,12 +98,6 @@
             <artifactId>commons-various</artifactId>
         </dependency>
         <!-- END: UnionSoft Commons -->
-        <!-- START: Quartz -->
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
-        </dependency>
-        <!-- END: Quartz -->
 		<!-- START: Templating Engines -->
 		<!-- 
 		<dependency>
@@ -346,13 +340,7 @@
                 <filtering>true</filtering>
             </resource>
             <resource>
-                <directory>src/main/generated</directory>
-            </resource>
-            <resource>
                 <directory>src/test/groovy</directory>
-            </resource>
-            <resource>
-                <directory>src/main/xsd</directory>
             </resource>
         </resources>
 
@@ -397,28 +385,7 @@
                 </configuration>
 
             </plugin>
-            <plugin>
-                <groupId>com.sun.tools.xjc.maven2</groupId>
-                <artifactId>maven-jaxb-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>service</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <schemaDirectory>src/main/xsd</schemaDirectory>
-                            <includeSchemas>
-                                <includeSchema>sysstate-1.0.0.xsd</includeSchema>
-                            </includeSchemas>
-                            <generateDirectory>src/main/generated</generateDirectory>
-                            <strict>true</strict>
-                            <verbose>true</verbose>
-                            <extension>true</extension>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+        
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>tomcat-maven-plugin</artifactId>
@@ -463,9 +430,7 @@
                             <configuration>
                                 <sources>
                                     <source>src/test/groovy</source>
-                                    <source>src/main/xsd</source>
                                     <source>src/main/webapp</source>
-                                    <source>src/main/generated</source>
                                 </sources>
                             </configuration>
                         </execution>

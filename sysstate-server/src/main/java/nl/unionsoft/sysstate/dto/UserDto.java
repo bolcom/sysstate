@@ -1,7 +1,11 @@
 package nl.unionsoft.sysstate.dto;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang.StringUtils;
 
 public class UserDto {
 
@@ -10,12 +14,13 @@ public class UserDto {
     private String firstName;
     private String lastName;
     private String password;
+    private String token;
     private boolean enabled;
     private String configuration;
-    private List<String> roles;
+    private List<Role> roles;
 
-    public UserDto () {
-        roles = new ArrayList<String>();
+    public UserDto() {
+        roles = new ArrayList<Role>();
     }
 
     public Long getId() {
@@ -74,12 +79,52 @@ public class UserDto {
         this.configuration = configuration;
     }
 
-    public List<String> getRoles() {
+    public List<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<String> roles) {
+    public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    @Override
+    public String toString() {
+        return "UserDto [id=" + id + ", login=" + login + ", firstName=" + firstName + ", lastName=" + lastName + ", enabled=" + enabled + ", roles=" + roles
+                + "]";
+    }
+
+    public enum Role {
+        ADMIN, EDITOR, ANONYMOUS;
+
+        public static boolean isExistingRole(String roleName) {
+            for (Role role : Role.values()) {
+                if (StringUtils.equals(role.name(), roleName)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static List<Role> getAssignableRoles() {
+            //@formatter:off            
+            return Arrays.stream(values())
+                    .filter(r -> !r.equals(Role.ANONYMOUS))
+                    .collect(Collectors.toList());
+            //@formatter:on
+        }
+        
+        public  String prefixedRole()
+        {
+            return "ROLE_" + name(); 
+        }
     }
 
 }

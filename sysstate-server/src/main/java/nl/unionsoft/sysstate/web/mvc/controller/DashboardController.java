@@ -35,7 +35,7 @@ public class DashboardController {
         if (StringUtils.equalsIgnoreCase(where, "instances")) {
             final FilterDto filter = new FilterDto();
             filter.setSearch(search);
-            FilterController.setFilter(session, filter);
+            
             modelAndView = new ModelAndView("redirect:/filter/index.html");
         }
         return modelAndView;

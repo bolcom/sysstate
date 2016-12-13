@@ -1,11 +1,12 @@
 package nl.unionsoft.sysstate.common.dto;
 
+import java.util.Date;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public class ViewDto {
 
-    private Long id;
 
     @NotNull()
     @Size(min = 1, max = 128)
@@ -15,16 +16,15 @@ public class ViewDto {
 
     private String commonTags;
 
+    private Date lastRequestDate;
+
+    private long requestCount;
+
+    private long averageRequestTime;
+
+    private long lastRequestTime;
+
     private FilterDto filter;
-
-    public Long getId() {
-
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -56,6 +56,38 @@ public class ViewDto {
 
     public void setTemplate(TemplateDto template) {
         this.template = template;
+    }
+
+    public Date getLastRequestDate() {
+        return lastRequestDate;
+    }
+
+    public void setLastRequestDate(Date lastRequestDate) {
+        this.lastRequestDate = lastRequestDate;
+    }
+
+    public long getRequestCount() {
+        return requestCount;
+    }
+
+    public void setRequestCount(long requestCount) {
+        this.requestCount = requestCount;
+    }
+
+    public long getAverageRequestTime() {
+        return averageRequestTime;
+    }
+
+    public void setAverageRequestTime(long averageRequestTime) {
+        this.averageRequestTime = averageRequestTime;
+    }
+
+    public long getLastRequestTime() {
+        return lastRequestTime;
+    }
+
+    public void setLastRequestTime(long lastRequestTime) {
+        this.lastRequestTime = lastRequestTime;
     }
 
     @Override
@@ -99,6 +131,11 @@ public class ViewDto {
         } else if (!template.equals(other.template))
             return false;
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "ViewDto [name=" + name + "]";
     }
 
 }

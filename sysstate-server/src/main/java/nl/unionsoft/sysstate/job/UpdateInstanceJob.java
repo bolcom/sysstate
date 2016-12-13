@@ -1,63 +1,50 @@
 package nl.unionsoft.sysstate.job;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
-import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
-import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-
-public class UpdateInstanceJob extends AutowiringJob {
+public class UpdateInstanceJob implements Runnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(UpdateInstanceJob.class);
 
-    @Inject
-    @Named("instanceLogic")
-    private InstanceLogic instanceLogic;
+    private final InstanceLogic instanceLogic;
+    private final StateLogic stateLogic;
 
-    @Inject
-    @Named("stateLogic")
-    private StateLogic stateLogic;
+    private final long instanceId;
 
-    @Inject
-    @Named("stateResolverLogic")
-    private StateResolverLogic stateResolverLogic;
+    public UpdateInstanceJob(InstanceLogic instanceLogic, StateLogic stateLogic, long instanceId) {
+        super();
+        this.instanceLogic = instanceLogic;
+        this.stateLogic = stateLogic;
+        this.instanceId = instanceId;
+    }
 
     @Override
-    public void execute(final JobExecutionContext context, final ApplicationContext applicationContext) throws JobExecutionException {
+    public void run() {
 
-        JobDetail jobDetail = context.getJobDetail();
-        JobDataMap jobDataMap = jobDetail.getJobDataMap();
-        long instanceId = jobDataMap.getLong("instanceId");
-
-        InstanceDto instance = instanceLogic.getInstance(instanceId);
-        if (instance == null) {
+        Optional<InstanceDto> optInstance = instanceLogic.getInstance(instanceId);
+        if (!optInstance.isPresent()) {
             LOG.error("Instance with instanceId [{}] (no longer) exists!", instanceId);
             return;
         }
-        LOG.info("Starting job with instance '{}'", instance);
+
+        InstanceDto instance = optInstance.get();
+        LOG.trace("Starting job with instance '{}'", instance);
         try {
             final StateDto state = stateLogic.requestStateForInstance(instance);
-            finalizeState(instance, state);
-            LOG.info("job for instance '{}' completed, state: {}", instance, state);
+            stateLogic.createOrUpdate(state);
+            LOG.trace("job for instance '{}' completed, state: {}", instance, state);
         } catch (final Exception e) {
-            LOG.error("job for instance '{}' failed, caught Exception!", e);
+            LOG.warn("job for instance '{}' failed, caught Exception!", instance, e);
         }
 
-    }
-
-    private void finalizeState(final InstanceDto instance, final StateDto state) {
-        stateLogic.createOrUpdate(state);
     }
 
 }

@@ -12,20 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import nl.unionsoft.sysstate.Constants;
-import nl.unionsoft.sysstate.common.dto.FilterDto;
-import nl.unionsoft.sysstate.common.dto.TemplateDto;
-import nl.unionsoft.sysstate.common.dto.ViewDto;
-import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
-import nl.unionsoft.sysstate.common.logic.ProjectLogic;
-import nl.unionsoft.sysstate.domain.View;
-import nl.unionsoft.sysstate.logic.EcoSystemLogic;
-import nl.unionsoft.sysstate.logic.FilterLogic;
-import nl.unionsoft.sysstate.logic.PluginLogic;
-import nl.unionsoft.sysstate.logic.TemplateLogic;
-import nl.unionsoft.sysstate.logic.ViewLogic;
-import nl.unionsoft.sysstate.template.WriterException;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -34,6 +20,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+
+import nl.unionsoft.sysstate.Constants;
+import nl.unionsoft.sysstate.common.dto.FilterDto;
+import nl.unionsoft.sysstate.common.dto.TemplateDto;
+import nl.unionsoft.sysstate.common.dto.ViewDto;
+import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
+import nl.unionsoft.sysstate.common.logic.ProjectLogic;
+import nl.unionsoft.sysstate.common.logic.TemplateLogic;
+import nl.unionsoft.sysstate.logic.FilterLogic;
+import nl.unionsoft.sysstate.logic.PluginLogic;
+import nl.unionsoft.sysstate.logic.ViewLogic;
 
 @Controller()
 public class ViewController {
@@ -59,10 +56,6 @@ public class ViewController {
     private TemplateLogic templateLogic;
 
     @Inject
-    @Named("ecoSystemLogic")
-    private EcoSystemLogic ecoSystemLogic;
-
-    @Inject
     @Named("pluginLogic")
     private PluginLogic pluginLogic;
 
@@ -81,7 +74,7 @@ public class ViewController {
         String defaultViewProperty = viewConfiguration.getProperty("defaultView");
         ViewDto view = null;
         if (StringUtils.isNotEmpty(defaultViewProperty)) {
-            Optional<ViewDto> optView = viewLogic.getView(Long.valueOf(defaultViewProperty));
+            Optional<ViewDto> optView = viewLogic.getView(defaultViewProperty);
             if (optView.isPresent()){
                 view = optView.get();    
             }
@@ -92,9 +85,9 @@ public class ViewController {
         writeTemplateForView(response, request, view);
     }
 
-    @RequestMapping(value = "/view/{viewId}/index.html", method = RequestMethod.GET)
-    public void renderIndexView(@PathVariable("viewId") Long viewId, HttpServletRequest request, HttpServletResponse response) {
-        final Optional<ViewDto> optView = viewLogic.getView(viewId);
+    @RequestMapping(value = "/view/{name}/index.html", method = RequestMethod.GET)
+    public void renderIndexView(@PathVariable("name") String name, HttpServletRequest request, HttpServletResponse response) {
+        final Optional<ViewDto> optView = viewLogic.getView(name);
         if (optView.isPresent()){
             writeTemplateForView(response, request, optView.get());
         } else {
@@ -109,14 +102,12 @@ public class ViewController {
             response.addHeader("Content-Type", template.getContentType());
             Map<String, Object> context = new HashMap<String, Object>();
             if (template.getIncludeViewResults()){
-                context.put("viewResult", ecoSystemLogic.getEcoSystem(view));    
+                context.put("viewResult", viewLogic.getViewResults(view));    
             }
             context.put("contextPath", request.getContextPath());
             context.put("view", view);
             templateLogic.writeTemplate(template, context, response.getWriter());
             response.setStatus(HttpServletResponse.SC_OK);
-        } catch (WriterException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -144,24 +135,24 @@ public class ViewController {
         modelAndView.addObject("filters", filterLogic.getFilters());
     }
 
-    @RequestMapping(value = "/view/{viewId}/update", method = RequestMethod.GET)
-    public ModelAndView getUpdate(@PathVariable("viewId") final Long viewId) {
+    @RequestMapping(value = "/view/{name}/update", method = RequestMethod.GET)
+    public ModelAndView getUpdate(@PathVariable("name") final String name) {
         final ModelAndView modelAndView = new ModelAndView("create-update-view-manager");
-        modelAndView.addObject("view", viewLogic.getView(viewId));
+        modelAndView.addObject("view", viewLogic.getView(name));
         addCommons(modelAndView);
         return modelAndView;
     }
 
-    @RequestMapping(value = "/view/{viewId}/delete", method = RequestMethod.GET)
-    public ModelAndView getDelete(@PathVariable("viewId") final Long viewId) {
+    @RequestMapping(value = "/view/{name}/delete", method = RequestMethod.GET)
+    public ModelAndView getDelete(@PathVariable("name") final String name) {
         final ModelAndView modelAndView = new ModelAndView("delete-view-manager");
-        modelAndView.addObject("view", viewLogic.getView(viewId));
+        modelAndView.addObject("view", viewLogic.getView(name));
         return modelAndView;
     }
 
-    @RequestMapping(value = "/view/{viewId}/delete", method = RequestMethod.POST)
-    public ModelAndView handleDelete(@Valid @ModelAttribute("view") final ViewDto view, final BindingResult bindingResult) {
-        viewLogic.delete(view.getId());
+    @RequestMapping(value = "/view/{name}/delete", method = RequestMethod.POST)
+    public ModelAndView handleDelete(@PathVariable("name") final String name) {
+        viewLogic.delete(name);
         return new ModelAndView("redirect:/view/index.html");
     }
 
@@ -173,7 +164,6 @@ public class ViewController {
             modelAndView = new ModelAndView("create-update-view-manager");
             addCommons(modelAndView);
         } else {
-            view.setId(Long.valueOf(0).equals(view.getId()) ? null : view.getId());
             viewLogic.createOrUpdateView(view);
             modelAndView = new ModelAndView("redirect:/view/index.html");
         }

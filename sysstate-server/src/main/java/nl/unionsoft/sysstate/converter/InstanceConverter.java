@@ -23,10 +23,6 @@ public class InstanceConverter implements Converter<InstanceDto, Instance> {
     private ProjectEnvironmentConverter projectEnvironmentConverter;
 
     @Inject
-    @Named("instanceLinkConverter")
-    private InstanceLinkConverter instanceLinkConverter;
-
-    @Inject
     @Named("instancePropertiesConverter")
     private BidirectionalConverter<Map<String, String>, List<InstanceProperty>> instancePropertiesConverter;
 
@@ -48,8 +44,6 @@ public class InstanceConverter implements Converter<InstanceDto, Instance> {
             result.setTags(instance.getTags());
             result.setReference(instance.getReference());
             result.setRefreshTimeout(instance.getRefreshTimeout());
-            result.setOutgoingInstanceLinks(ListConverter.convert(instanceLinkConverter, instance.getOutgoingInstanceLinks()));
-            result.setIncommingInstanceLinks(ListConverter.convert(instanceLinkConverter, instance.getIncommingInstanceLinks()));
         }
         return result;
     }

@@ -24,7 +24,7 @@ public class ViewLovResolver implements ListOfValueResolver {
     public Map<String, String> getListOfValues(final PropertyMetaValue propertyMetaValue) {
         Map<String, String> results = new LinkedHashMap<String, String>();
         for (ViewDto view : viewLogic.getViews()) {
-            results.put(String.valueOf(view.getId()), view.getName());
+            results.put(String.valueOf(view.getName()), view.getName());
         }
         return results;
     }

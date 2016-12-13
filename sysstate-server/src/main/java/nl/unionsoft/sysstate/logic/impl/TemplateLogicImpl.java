@@ -8,20 +8,10 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-
-import nl.unionsoft.common.converter.ListConverter;
-import nl.unionsoft.sysstate.common.dto.TemplateDto;
-import nl.unionsoft.sysstate.converter.OptionalConverter;
-import nl.unionsoft.sysstate.converter.TemplateConverter;
-import nl.unionsoft.sysstate.dao.TemplateDao;
-import nl.unionsoft.sysstate.domain.Template;
-import nl.unionsoft.sysstate.logic.PluginLogic;
-import nl.unionsoft.sysstate.logic.TemplateLogic;
-import nl.unionsoft.sysstate.template.TemplateWriter;
-import nl.unionsoft.sysstate.template.WriterException;
 
 import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
@@ -29,6 +19,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+
+import nl.unionsoft.common.converter.ListConverter;
+import nl.unionsoft.sysstate.common.dto.TemplateDto;
+import nl.unionsoft.sysstate.common.logic.TemplateLogic;
+import nl.unionsoft.sysstate.converter.OptionalConverter;
+import nl.unionsoft.sysstate.converter.TemplateConverter;
+import nl.unionsoft.sysstate.dao.TemplateDao;
+import nl.unionsoft.sysstate.domain.Template;
+import nl.unionsoft.sysstate.template.TemplateWriter;
 
 @Service("templateLogic")
 public class TemplateLogicImpl implements TemplateLogic {
@@ -124,14 +123,14 @@ public class TemplateLogicImpl implements TemplateLogic {
     }
 
     @Override
-    public void writeTemplate(TemplateDto template, Map<String, Object> context, Writer writer) throws WriterException {
+    public void writeTemplate(TemplateDto template, Map<String, Object> context, Writer writer) {
         TemplateWriter templateWriter = applicationContext.getBean(template.getWriter(), TemplateWriter.class);
         templateWriter.writeTemplate(template, writer, context);
     }
 
     @Override
-    public TemplateDto getTemplate(String name)  {
-        return OptionalConverter.fromOptional(templateDao.getTemplate(name), templateConverter);
+    public Optional<TemplateDto> getTemplate(String name) {
+        return OptionalConverter.convert(templateDao.getTemplate(name), templateConverter);
     }
 
     @Override
@@ -146,8 +145,17 @@ public class TemplateLogicImpl implements TemplateLogic {
     }
 
     @Override
-    public Map<String, TemplateWriter> getTemplateWriters() {
-        return applicationContext.getBeansOfType(TemplateWriter.class);
+    public Set<String> getTemplateWriters() {
+        return applicationContext.getBeansOfType(TemplateWriter.class).keySet();
+    }
+
+    @Override
+    public void writeTemplate(String templateName, Map<String, Object> context, Writer writer) {
+        Optional<TemplateDto> optTemplate = getTemplate(templateName);
+        if (!optTemplate.isPresent()) {
+            throw new IllegalStateException("No template found with name [" + templateName + "]");
+        }
+        writeTemplate(optTemplate.get(), context, writer);
     }
 
 }

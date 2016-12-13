@@ -9,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -16,7 +17,7 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
-@Table(name = "SSE_USER")
+@Table(name = "SSE_USER", indexes = { @Index(columnList = "LOGIN") })
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class User {
 
@@ -36,6 +37,9 @@ public class User {
 
     @Column(name = "PASSWORD", nullable = false, length = 255)
     private String password;
+
+    @Column(name = "TOKEN", nullable = true, length = 255)
+    private String token;
 
     @Column(name = "ENABLED", nullable = false)
     private boolean enabled;
@@ -60,6 +64,14 @@ public class User {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public String getPassword() {

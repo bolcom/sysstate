@@ -1,18 +1,14 @@
 package nl.unionsoft.sysstate.plugins.http;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import nl.unionsoft.sysstate.common.dto.InstanceDto;
-import nl.unionsoft.sysstate.common.dto.StateDto;
-import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.extending.StateResolver;
-import nl.unionsoft.sysstate.common.logic.HttpClientLogic;
-import nl.unionsoft.sysstate.common.util.StateUtil;
+import javax.net.ssl.SSLException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
@@ -26,6 +22,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import nl.unionsoft.sysstate.common.dto.InstanceDto;
+import nl.unionsoft.sysstate.common.dto.StateDto;
+import nl.unionsoft.sysstate.common.enums.StateType;
+import nl.unionsoft.sysstate.common.extending.StateResolver;
+import nl.unionsoft.sysstate.common.logic.ResourceLogic;
+import nl.unionsoft.sysstate.common.util.StateUtil;
+
 @Service("httpStateResolver")
 public class HttpStateResolverImpl implements StateResolver {
 
@@ -34,13 +37,12 @@ public class HttpStateResolverImpl implements StateResolver {
     private static final Logger LOG = LoggerFactory.getLogger(HttpStateResolverImpl.class);
 
     @Inject
-    @Named("httpClientLogic")
-    private HttpClientLogic httpClientLogic;
+    @Named("resourceLogic")
+    private ResourceLogic resourceLogic;
 
     public void setState(final InstanceDto instance, final StateDto state) {
         Map<String, String> properties = instance.getConfiguration();
-
-        HttpClient httpClient = httpClientLogic.getHttpClient(StringUtils.defaultIfEmpty(properties.get("httpClientId"), "default"));
+        HttpClient httpClient = resourceLogic.getResourceInstance(HttpConstants.RESOURCE_MANAGER_NAME, StringUtils.defaultIfEmpty(properties.get(HttpConstants.HTTP_CLIENT_ID), HttpConstants.DEFAULT_RESOURCE));
         state.setState(StateType.STABLE);
         LOG.debug("Preparing httpRequest...");
 
@@ -60,24 +62,26 @@ public class HttpStateResolverImpl implements StateResolver {
         try {
             LOG.debug("Executing httpRequest...");
             final HttpResponse httpResponse = httpClient.execute(httpGet);
+            handleHttpResponse(state, properties, httpResponse, instance);
+        } catch (ConnectTimeoutException | SocketTimeoutException e){
+            handleStateForException(state, e, "HTTP TIMEOUT");
+        } catch (UnknownHostException e){
+            handleStateForException(state, e, "UNKNOWN HOST");
+        } catch (SSLException e){
+            handleStateForException(state, e, "SSL EXCEPTION");
+        } catch (final Exception e) {
+            handleStateForException(state, e, "EXCEPTION");
+        } finally {
             final long responseTime = System.currentTimeMillis() - startTime;
             LOG.debug("HttpRequest complete, execution took {} ms", responseTime);
-            state.setResponseTime(responseTime);
-            // FIXME
-            handleHttpResponse(state, properties, httpResponse, instance);
-
-        } catch (ConnectTimeoutException e){
-            state.setState(StateType.ERROR);
-            state.appendMessage(StateUtil.exceptionAsMessage(e));
-            state.setDescription("HTTP TIMEOUT");
-        } catch (UnknownHostException e){
-            state.setState(StateType.ERROR);
-            state.appendMessage(StateUtil.exceptionAsMessage(e));
-            state.setDescription("HTTP HOST");
-        } catch (final Exception e) {
-            LOG.warn("Caught Exception while performing request: {}", e.getMessage(), e);
-            handleStateForException(state, e, startTime);
+            state.setResponseTime(responseTime);            
         }
+    }
+
+    private void handleStateForException(final StateDto state, Exception e, String description) {
+        state.setState(StateType.ERROR);
+        state.appendMessage(StateUtil.exceptionAsMessage(e));
+        state.setDescription(description);
     }
 
     public String processUri(final String uri) {
@@ -88,9 +92,10 @@ public class HttpStateResolverImpl implements StateResolver {
         HttpEntity httpEntity = null;
         try {
             final StatusLine statusLine = httpResponse.getStatusLine();
-            state.setDescription("Status " + statusLine.getStatusCode());
-            httpEntity = httpResponse.getEntity();
             final int statusCode = statusLine.getStatusCode();
+            state.setDescription("Status " +statusCode);
+            httpEntity = httpResponse.getEntity();
+
             if (statusCode >= 300) {
                 if (statusCode >= 400) {
                     state.setState(StateType.ERROR);
@@ -106,12 +111,6 @@ public class HttpStateResolverImpl implements StateResolver {
         }
     }
 
-    private void handleStateForException(final StateDto state, final Exception exception, final Long startTime) {
-        state.setState(StateType.ERROR);
-        state.setDescription(exception.getMessage());
-        state.setResponseTime(System.currentTimeMillis() - startTime);
-        state.appendMessage(StateUtil.exceptionAsMessage(exception));
-    }
 
     public void handleEntity(final HttpEntity httpEntity, final Map<String, String> configuration, final StateDto state, final InstanceDto instance) throws IOException {
 
@@ -123,15 +122,14 @@ public class HttpStateResolverImpl implements StateResolver {
         return StringUtils.substringBefore(homePageUrl, "//") + "//" + StringUtils.substringBetween(homePageUrl, "//", "/");
     }
 
-    public HttpClientLogic getHttpClientLogic() {
-        return httpClientLogic;
+    public ResourceLogic getResourceLogic() {
+        return resourceLogic;
     }
 
-    public void setHttpClientLogic(HttpClientLogic httpClientLogic) {
-        this.httpClientLogic = httpClientLogic;
+    public void setResourceLogic(ResourceLogic resourceLogic) {
+        this.resourceLogic = resourceLogic;
     }
-    
-    
+
     
 
 }

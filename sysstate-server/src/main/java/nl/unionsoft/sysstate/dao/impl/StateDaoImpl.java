@@ -55,6 +55,7 @@ public class StateDaoImpl implements StateDao {
             // @formatter:off
             return Optional.of(entityManager.createNamedQuery("findLastStateForInstance", State.class)
                     .setParameter("instanceId", instanceId)
+                    .setHint("org.hibernate.cacheable", true)
                     .setMaxResults(1)
                     .getSingleResult());
             // @formatter:on
@@ -72,6 +73,7 @@ public class StateDaoImpl implements StateDao {
             return Optional.of(entityManager.createNamedQuery("findLastStateForInstanceWithStateType", State.class)
                     .setParameter("instanceId", instanceId)
                     .setParameter("stateType", stateType)
+                    .setHint("org.hibernate.cacheable", true)
                     .setMaxResults(1)
                     .getSingleResult());
             // @formatter:on

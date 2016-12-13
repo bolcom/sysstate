@@ -136,6 +136,12 @@
 		<put-attribute name="contents" value="/WEB-INF/jsp/plugin/plugins.jsp" />
 		<put-attribute name="page-heading" value="Plugins" />
 	</definition>
+	
+	<!-- Resources -->
+	<definition name="list-resource-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/resource/resources.jsp" />
+		<put-attribute name="page-heading" value="Resources" />
+	</definition>
 
 	<!-- Script -->
 	<definition name="script-manager" extends="manager">
@@ -226,6 +232,11 @@
         <put-attribute name="page-heading" value="Delete Filter" />
     </definition>
 
+	<!-- Account -->
+	<definition name="account-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/account/account.jsp" />
+		<put-attribute name="page-heading" value="Account Manager" />
+	</definition>
 
 	<!-- Users -->
 	<definition name="list-user-manager" extends="manager">
@@ -242,10 +253,19 @@
 		<put-attribute name="contents" value="/WEB-INF/jsp/user/delete.jsp" />
 		<put-attribute name="page-heading" value="Delete User" />
 	</definition>
+	
+	<definition name="token-user-manager" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/user/token.jsp" />
+		<put-attribute name="page-heading" value="User Token" />
+	</definition>
 
 	<!-- Authentication -->
 
 	<definition name="login" template="/WEB-INF/jsp/login.jsp" />
+	<definition name="logout" extends="manager">
+		<put-attribute name="contents" value="/WEB-INF/jsp/logout.jsp" />
+		<put-attribute name="page-heading" value="Confirm Logout" />
+	</definition>
 
 
 	<!-- Queue -->

@@ -14,7 +14,6 @@ import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.dao.EnvironmentDao;
 import nl.unionsoft.sysstate.dao.InstanceDao;
-import nl.unionsoft.sysstate.dao.ListRequestDao;
 import nl.unionsoft.sysstate.dao.ProjectDao;
 import nl.unionsoft.sysstate.dao.ProjectEnvironmentDao;
 import nl.unionsoft.sysstate.dao.StateDao;
@@ -31,10 +30,6 @@ import org.springframework.stereotype.Service;
 @Service("projectEnvironmentLogic")
 @DependsOn({"projectLogic", "environmentLogic"})
 public class ProjectEnvironmentLogicImpl implements ProjectEnvironmentLogic {
-
-    @Inject
-    @Named("listRequestDao")
-    private ListRequestDao listRequestDao;
 
     @Inject
     @Named("filterLogic")
@@ -126,6 +121,11 @@ public class ProjectEnvironmentLogicImpl implements ProjectEnvironmentLogic {
     public ProjectEnvironmentDto getProjectEnvironment(final String projectName, final String environmentName) {
         ProjectEnvironment projectEnvironment = projectEnvironmentDao.getProjectEnvironment(projectName, environmentName);
         return projectEnvironmentConverter.convert(projectEnvironment, true);
+    }
+
+    @Override
+    public ProjectEnvironmentDto getProjectEnvironment(Long projectEnvironmentId) {        
+       return  projectEnvironmentConverter.convert(projectEnvironmentDao.getProjectEnvironment(projectEnvironmentId), true);
     }
 
 }

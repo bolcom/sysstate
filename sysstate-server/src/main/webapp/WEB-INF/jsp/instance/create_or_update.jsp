@@ -34,6 +34,10 @@
 						<jsp:param name="label" value="Name"/>
 					</jsp:include>
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
+						<jsp:param name="path" value="reference"/>
+						<jsp:param name="label" value="Reference"/>
+					</jsp:include>					
+					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 						<jsp:param name="path" value="homepageUrl"/>
 						<jsp:param name="label" value="HomepageUrl"/>
 						<jsp:param name="type" value="textarea"/>

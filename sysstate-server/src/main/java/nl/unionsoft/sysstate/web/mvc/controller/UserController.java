@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import nl.unionsoft.sysstate.domain.User;
 import nl.unionsoft.sysstate.dto.MessageDto;
 import nl.unionsoft.sysstate.dto.UserDto;
+import nl.unionsoft.sysstate.dto.UserDto.Role;
 import nl.unionsoft.sysstate.logic.MessageLogic;
 import nl.unionsoft.sysstate.logic.UserLogic;
 
@@ -53,8 +54,8 @@ public class UserController {
     }
 
     private void addCommonObjects(final ModelAndView modelAndView) {
-    
-        modelAndView.addObject("roles", userLogic.getRoles());
+
+        modelAndView.addObject("roles", Role.getAssignableRoles());
     }
 
     @RequestMapping(value = "/user/create", method = RequestMethod.POST)
@@ -89,11 +90,33 @@ public class UserController {
         try {
             userLogic.delete(userId);
             messageLogic.addUserMessage(new MessageDto("Deleted user succesfully!", MessageDto.GREEN));
-        } catch(final RuntimeException e) {
+        } catch (final RuntimeException e) {
             messageLogic.addUserMessage(new MessageDto("Unable to delete user!", MessageDto.RED));
         }
 
         return new ModelAndView("redirect:/user/index.html");
     }
 
+    @RequestMapping(value = "/user/{userId}/token", method = RequestMethod.GET)
+    public ModelAndView getToken(@PathVariable("userId") final Long userId) {
+        final ModelAndView modelAndView = new ModelAndView("token-user-manager");
+        modelAndView.addObject("user", userLogic.getUser(userId));
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/user/{userId}/token", method = RequestMethod.POST)
+    public ModelAndView resetToken(@PathVariable("userId") final Long userId) {
+
+        try {
+            userLogic.resetToken(userId);
+            messageLogic.addUserMessage(new MessageDto("Token has been reset.", MessageDto.GREEN));
+        } catch (final RuntimeException e) {
+            messageLogic.addUserMessage(new MessageDto("Unable to reset token!", MessageDto.RED));
+        }
+
+        return new ModelAndView("redirect:/user/index.html");
+    }
+
+    
+    
 }

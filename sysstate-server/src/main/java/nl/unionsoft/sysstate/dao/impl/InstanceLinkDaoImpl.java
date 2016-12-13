@@ -16,17 +16,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service("instanceLinkDao")
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-public class InstanceLinkDaoImpl implements InstanceLinkDao{
+public class InstanceLinkDaoImpl implements InstanceLinkDao {
 
     @Inject
     @Named("entityManager")
     private EntityManager entityManager;
-    
+
     @Override
     public void create(Long instanceFromId, Long instanceToId, String name) {
-        
-        List<InstanceLink> instanceLinks = entityManager.createQuery(
-                "FROM InstanceLink ilk " +
+
+        List<InstanceLink> instanceLinks = entityManager.createQuery("FROM InstanceLink ilk " +
                 "WHERE ilk.from.id = :instanceFromId " +
                 "AND ilk.to.id = :instanceToId " +
                 "AND ilk.name = :name", InstanceLink.class)
@@ -34,7 +33,7 @@ public class InstanceLinkDaoImpl implements InstanceLinkDao{
                 .setParameter("instanceToId", instanceToId)
                 .setParameter("name", name)
                 .getResultList();
-        if (instanceLinks.isEmpty()){
+        if (instanceLinks.isEmpty()) {
             InstanceLink instanceLink = new InstanceLink();
             instanceLink.setFrom(entityManager.find(Instance.class, instanceFromId));
             instanceLink.setTo(entityManager.find(Instance.class, instanceToId));
@@ -45,8 +44,7 @@ public class InstanceLinkDaoImpl implements InstanceLinkDao{
 
     @Override
     public void delete(Long instanceFromId, Long instanceToId, String name) {
-        entityManager.createQuery(
-                "DELETE FROM InstanceLink ilk "+ 
+        entityManager.createQuery("DELETE FROM InstanceLink ilk " +
                 "WHERE ilk.from.id = :instanceFromId " +
                 "AND ilk.to.id = :instanceToId " +
                 "AND ilk.name = :name")
@@ -57,17 +55,32 @@ public class InstanceLinkDaoImpl implements InstanceLinkDao{
     }
 
     @Override
-    public List<InstanceLink> retrieve(Long instanceFromId, String name) {
-        return entityManager.createQuery(
-                "FROM InstanceLink ilk " +
+    public List<InstanceLink> getOutgoingInstanceLinks(Long instanceFromId, String name) {
+        return entityManager.createQuery("FROM InstanceLink ilk " +
                 "WHERE ilk.from.id = :instanceFromId " +
                 "AND ilk.name = :name", InstanceLink.class)
+                .setHint("org.hibernate.cacheable", true)
                 .setParameter("instanceFromId", instanceFromId)
                 .setParameter("name", name)
                 .getResultList();
     }
-    
-    
-    
+
+    @Override
+    public List<InstanceLink> getOutgoingInstanceLinks(Long instanceFromId) {
+        return entityManager.createQuery("FROM InstanceLink ilk " +
+                "WHERE ilk.from.id = :instanceFromId ", InstanceLink.class)
+                .setHint("org.hibernate.cacheable", true)
+                .setParameter("instanceFromId", instanceFromId)
+                .getResultList();
+    }
+
+    @Override
+    public List<InstanceLink> getIncommingInstanceLinks(Long instanceToId) {
+        return entityManager.createQuery("FROM InstanceLink ilk " +
+                "WHERE ilk.to.id = :instanceToId ", InstanceLink.class)
+                .setHint("org.hibernate.cacheable", true)
+                .setParameter("instanceToId", instanceToId)
+                .getResultList();
+    }
 
 }

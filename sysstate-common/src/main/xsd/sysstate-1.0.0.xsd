@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema 
+xmlns="http://sysstate.unionsoft.nl/sysstate-1.0.0"
+xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+targetNamespace="http://sysstate.unionsoft.nl/sysstate-1.0.0" elementFormDefault="qualified" jaxb:version="2.1">
+	<xs:annotation>
+		<xs:documentation>
+			Model Descriptor for REST interface.
+		</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="Scheduler">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="load" type="xs:long" minOccurs="1" maxOccurs="1" />
+				<xs:element name="capacity" type="xs:long" minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="ErrorMessage">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="message" type="xs:string" minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="EcoSystem">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="View" minOccurs="1" maxOccurs="1" />
+				<xs:element ref="Project" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="projects" />
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="Environment" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="environments" />
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="ProjectEnvironment" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="projectEnvironments" />
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="Instance" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="instances" />
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="View">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="id" type="xs:string" minOccurs="0" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+
+	<xs:element name="Project">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="id" type="xs:long" minOccurs="0" maxOccurs="1" />
+				<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />	
+				<xs:element name="order" type="xs:int" minOccurs="1" maxOccurs="1" />
+				<xs:element name="tags" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+
+
+	<xs:element name="Environment">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="id" type="xs:long" minOccurs="0" maxOccurs="1" />
+				<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />		
+				<xs:element name="order" type="xs:int" minOccurs="1" maxOccurs="1" />		
+				<xs:element name="tags" type="xs:string" minOccurs="0" maxOccurs="unbounded" />				
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="ProjectEnvironment">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="id" type="xs:long" minOccurs="0" maxOccurs="1" />
+				<xs:element name="state" type="xs:string" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="Project" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="Environment" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="Instance" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="instances" />
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+
+	<xs:element name="InstanceList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Instance" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="instances" />
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>				
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="Instance">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="id" type="xs:long" minOccurs="0" maxOccurs="1" />
+				<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1" />
+				<xs:element name="reference" type="xs:string" minOccurs="0" maxOccurs="1" />				
+				<xs:element name="refreshTimeout" type="xs:int" minOccurs="1" maxOccurs="1" />
+				<xs:element name="homepageUrl" type="xs:string" minOccurs="0" maxOccurs="1" />
+				<xs:element name="enabled" type="xs:boolean" minOccurs="1" maxOccurs="1" />
+				<xs:element name="tags" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element ref="State" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="ProjectEnvironment" minOccurs="0" maxOccurs="1" />
+				<xs:element ref="InstanceLink" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="instanceLinks" />
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="plugin" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element ref="Property" minOccurs="0" maxOccurs="unbounded" >
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="properties"/>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>								
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	
+	<xs:element name="Property">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="key" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="value" type="xs:string" minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="Resource">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="manager" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element ref="Property" minOccurs="0" maxOccurs="unbounded" >
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="properties"/>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>				
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="Text">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="tags" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element name="text" type="xs:string" minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="Template">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="writer" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="contentType" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="resource" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="includeViewResults" type="xs:boolean" minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	
+	<xs:element name="State">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="id" type="xs:long" minOccurs="0" maxOccurs="1" />
+                <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
+				<xs:element name="state" type="xs:string" minOccurs="0" maxOccurs="1" />
+				<xs:element name="message" type="xs:string" minOccurs="0" maxOccurs="1" />
+				<xs:element name="responseTime" type="xs:long" minOccurs="0" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="InstanceLink">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />
+				<xs:element name="instanceId" type="xs:long" minOccurs="1" maxOccurs="1" />
+				<xs:element name="direction" type="InstanceLinkDirection" minOccurs="1" maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:simpleType  name="InstanceLinkDirection">
+	  <xs:restriction base="xs:string">
+	     <xs:enumeration value="INCOMMING"/>
+	     <xs:enumeration value="OUTGOING"/>
+	  </xs:restriction>
+	</xs:simpleType>
+	
+	<xs:element name="ProjectList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Project" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="projects"/>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="EnvironmentList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Environment" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="environments" />
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="ResourceList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Resource" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="resources"/>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+
+	<xs:element name="TextList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Text" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="texts"/>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="TemplateList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Template" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="templates"/>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+
+</xs:schema>

@@ -9,6 +9,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -77,9 +78,12 @@ public class Instance {
 
     @OneToMany(mappedBy = "from", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<InstanceLink> outgoingInstanceLinks;
+    
+    @OneToMany(mappedBy = "instance", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<FilterInstance> filterInstances;
 
     @ManyToOne
-    @JoinColumn(name = "PET_ID", nullable = false)
+    @JoinColumn(name = "PET_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_PROJECT_ENVIRONMENT_INSTANCE"))
     private ProjectEnvironment projectEnvironment;
 
     public Instance() {
@@ -209,5 +213,15 @@ public class Instance {
     public void setOutgoingInstanceLinks(List<InstanceLink> outgoingInstanceLinks) {
         this.outgoingInstanceLinks = outgoingInstanceLinks;
     }
+
+    public List<FilterInstance> getFilterInstances() {
+        return filterInstances;
+    }
+
+    public void setFilterInstances(List<FilterInstance> filterInstances) {
+        this.filterInstances = filterInstances;
+    }
+    
+    
 
 }

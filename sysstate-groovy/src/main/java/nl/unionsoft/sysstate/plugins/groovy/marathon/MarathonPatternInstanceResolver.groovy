@@ -2,48 +2,47 @@ package nl.unionsoft.sysstate.plugins.groovy.marathon
 
 
 import groovy.json.JsonSlurper
-import groovy.text.SimpleTemplateEngine
-import groovy.text.TemplateEngine
+
+import java.util.List;
 
 import javax.inject.Inject
 import javax.inject.Named
 
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto
 import nl.unionsoft.sysstate.common.dto.InstanceDto
-import nl.unionsoft.sysstate.common.dto.InstanceLinkDto
 import nl.unionsoft.sysstate.common.dto.ProjectDto
 import nl.unionsoft.sysstate.common.dto.StateDto
 import nl.unionsoft.sysstate.common.enums.StateType
+import nl.unionsoft.sysstate.common.extending.InstanceStateResolver;
 import nl.unionsoft.sysstate.common.extending.StateResolver
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic
-import nl.unionsoft.sysstate.common.logic.InstanceLinkLogic
+import nl.unionsoft.sysstate.common.logic.InstanceLinkLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic
 import nl.unionsoft.sysstate.common.logic.ProjectLogic
+import nl.unionsoft.sysstate.common.logic.ResourceLogic;
 
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+import com.sun.org.apache.xpath.internal.FoundIndex;
+
 @Named("marathonPatternInstanceResolver")
-class MarathonPatternInstanceResolver implements StateResolver{
+class MarathonPatternInstanceResolver extends InstanceStateResolver{
 
     Logger log = LoggerFactory.getLogger(MarathonPatternInstanceResolver.class);
-    
-    @Inject
-    private InstanceLogic instanceLogic
 
     @Inject
     private ProjectLogic projectLogic
 
     @Inject
-    private EnvironmentLogic environmentLogic
+    public MarathonPatternInstanceResolver(ProjectLogic projectLogic, EnvironmentLogic environmentLogic, InstanceLogic instanceLogic, InstanceLinkLogic instanceLinkLogic) {
+        super(instanceLinkLogic, instanceLogic, environmentLogic)
+        this.projectLogic = projectLogic;
+    }
 
-    @Inject
-    private InstanceLinkLogic instanceLinkLogic
-            
-    @Override
-    public void setState(InstanceDto parent, StateDto state) {
-
+    
+    public List<InstanceDto> createOrUpdateInstances(InstanceDto parent, List<InstanceDto> childInstances){
 
         def properties = parent.getConfiguration()
 
@@ -54,17 +53,17 @@ class MarathonPatternInstanceResolver implements StateResolver{
         def readTimeout = (properties["readTimeout"] ? properties['readTimeout'] : '5000') as int
 
         def environmentTemplate = properties["environmentTemplate"] ? properties['environmentTemplate'] : 'use-${environmentName}'
-                
+
         def serverUrl = properties["serverUrl"].toString().trim()
         def tags = properties["tags"] ? properties['tags'] : 'marathon'
-        
+
         def url = new URL("${serverUrl}/v2/apps/")
         def text = url.getText(["connectTimeout" : connectTimeout, "readTimeout":readTimeout], "UTF-8")
         def result = new JsonSlurper().parseText(text)
-        
-        def validInstanceIds = []
+
+        def validInstances = []
+
         result['apps'].each { app ->
-            
             def appId = app['id']
             def idMatcher = appId =~ idPattern
             if (!idMatcher.matches()){
@@ -75,97 +74,41 @@ class MarathonPatternInstanceResolver implements StateResolver{
             def environmentName = strsub.replace(environmentTemplate)
             def applicationName = idMatcher[0][applicationIndex].toString().toUpperCase();
             if (environmentName && applicationName){
-                log.info("Found app [${app['id']} with environment [${environmentName}] and application [${applicationName}]")
-                def project = findOrCreateProject(applicationName);
-                def environment = findOrCreateEnvironment(environmentName)
+                log.debug("Found app [${app['id']} with environment [${environmentName}] and application [${applicationName}]")
+                def project = projectLogic.findOrCreateProject(applicationName);
+                def environment = environmentLogic.findOrCreateEnvironment(environmentName)
+                def reference = app['id']
                 def component = app['id'].toString().tokenize('/')[-1]
-                log.info("Searching for instance with component [${component}] for applicationName [${applicationName}] and environmentName [${environmentName}]")
-                def projectEnvironmentInstances = instanceLogic.getInstancesForProjectAndEnvironment(applicationName, environmentName)
-                def componentInstances = projectEnvironmentInstances.findAll{InstanceDto i -> i.tags.contains(component)} 
-                if (componentInstances){
-                    log.info("Instance with component [${component}], applicationName [${applicationName}] and environmentName [${environmentName}] is already configured.")
-                    validInstanceIds += componentInstances.collect{InstanceDto i -> i.id}
+                log.debug("Searching for child instance with reference [${reference}]")
+                InstanceDto foundChild = childInstances.find{ InstanceDto child -> child.reference == reference}
+                if (foundChild){
+                    log.debug("Child [${foundChild}] has been found for reference [${reference}]")
+                    validInstances << foundChild
                 } else {
-                    log.info("No instances found for application [${applicationName}], environment [${environmentName}] and component [${component}]! Creating one...")
-                    def childInstanceId = createInstance(component, serverUrl, ['applicationPath':app['id'],'ignoreHealthStatus':'false','serverUrl':serverUrl], tags, project, environment)
-                    instanceLinkLogic.link(parent.id,childInstanceId, "child")
-                    validInstanceIds << childInstanceId
+                    log.debug("No child [${foundChild}] has been found for reference [${reference}], creating new...")
+                    validInstances << createInstance(reference, component, serverUrl, ['applicationPath':app['id'],'ignoreHealthStatus':'false','serverUrl':serverUrl], tags, project, environment)
                 }
             }
         }
-        
-        deleteNoLongerValidInstances(validInstanceIds, parent)
-        deleteEnvironmentsWithtoutInstances()
-        state.setState(StateType.STABLE)
-        
+        return validInstances
     }
-    
-    long createInstance(def component, def serverUrl, def configuration, def tags, ProjectDto project, EnvironmentDto environment) {
+
+    def createInstance(def reference, def component, def serverUrl, def configuration, def tags, ProjectDto project, EnvironmentDto environment) {
         InstanceDto childInstance = instanceLogic.generateInstanceDto("marathonAppStateResolver", project.id, environment.id)
         childInstance.name = component
+        childInstance.reference = reference
         childInstance.homepageUrl= serverUrl
         childInstance.configuration = configuration
         childInstance.tags = [tags, component].join(" ");
         instanceLogic.createOrUpdateInstance(childInstance)
-        return childInstance.id
-    }
-    
-
-    
-    def deleteEnvironmentsWithtoutInstances(){
-        log.info("Deleting Environments without instances...")
-        environmentLogic.getEnvironments().each{ environment ->
-            if (!instanceLogic.getInstancesForEnvironment(environment.id)){
-                log.info("Deleting environment with id [${environment.id}] since it is no longer used.")
-                environmentLogic.delete(environment.id)
-            }
-        }
-    }
-    
-    def deleteNoLongerValidInstances(List validInstanceIds, InstanceDto parentInstance) {
-        log.info("Deleting linked instances that are not in the validInstanceIds list [${validInstanceIds}]")
-        parentInstance.getOutgoingInstanceLinks().findAll{ it.name == 'child'}.each { InstanceLinkDto instanceLink ->
-            def instanceId = instanceLink.instanceToId
-            if (!validInstanceIds.contains(instanceId)){
-                log.info("Deleting instance with id [${instanceId}] sinze it is no longer used.")
-                instanceLogic.delete(instanceId)
-            }
-        }
+        return childInstance
     }
 
-
-
-    def findOrCreateProject(String projectName) {
-        
-        def project = projectLogic.getProjectByName(projectName)
-        if (!project){ 
-            log.info("There's no project defined for projectName [${projectName}], creating it...")
-            project = new ProjectDto()
-            project.name = projectName
-            projectLogic.createOrUpdateProject(project)
-        }
-        return project;
-        
-    }
-
-    def findOrCreateEnvironment(String environmentName) {
-        def environment =environmentLogic.getEnvironmentByName(environmentName) 
-        if (!environment){
-            log.info("There's no environment defined for environmentName [${environmentName}], creating it...")
-            environment = new EnvironmentDto()
-            environment.name = environmentName
-            environmentLogic.createOrUpdate(environment)
-        }
-        return environment
-    }
-    
-    
     @Override
     public String generateHomePageUrl(InstanceDto instance) {
         def properties = instance.getConfiguration()
         return properties["serverUrl"].toString().trim();
     }
-
 }
 
 

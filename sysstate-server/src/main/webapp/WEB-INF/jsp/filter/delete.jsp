@@ -22,12 +22,6 @@
 						<th valign="top">Search:</th>
 						<td><c:out value="${filter.search}" escapeXml="true"/></td>
 					<tr>
-					<tr>
-						<th valign="top">Related Views:</th>
-						<td>
-							<c:forEach var="view" items="${filter.views}" varStatus="vs"><c:out value="${view.name}" escapeXml="true"/>${!vs.last ? ', ': ''}</c:forEach>
-						</td>
-					<tr>					
 					<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
 						<jsp:param name="type" value="submit"/>
 					</jsp:include>		

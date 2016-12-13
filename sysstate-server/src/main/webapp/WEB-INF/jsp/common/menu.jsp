@@ -1,4 +1,4 @@
-\<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
@@ -65,13 +65,15 @@
 
 
 <sc:authentication property="principal" var="user" />
-<ul class="select">
-	<li><a href="${contextPath}/settings/index.html"><b>Settings</b>
-			<!--[if IE 7]><!--></a>
-		<!--<![endif]--></li>
+<sc:authorize url="/settings/index">
+	<ul class="select">
+		<li><a href="${contextPath}/settings/index.html"><b>Settings</b>
+				<!--[if IE 7]><!--></a>
+			<!--<![endif]--></li>
+		</ul>
 	</ul>
-</ul>
-<div class="nav-divider">&nbsp;</div>
+	<div class="nav-divider">&nbsp;</div>
+</sc:authorize>
 
 <ul class="select">
 	<li><a href="${contextPath}/index.html" target="_BLANK""><b>Site</b>

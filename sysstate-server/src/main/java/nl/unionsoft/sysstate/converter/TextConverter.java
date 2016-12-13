@@ -13,10 +13,10 @@ public class TextConverter implements Converter<TextDto, Text> {
         TextDto result = null;
         if (text != null) {
             result = new TextDto();
-            result.setId(text.getId());
             result.setTags(text.getTags());
             result.setText(text.getText());
             result.setName(text.getName());
+            result.setLastUpdated(text.getLastUpdated());
         }
         return result;
     }

@@ -12,233 +12,192 @@ import javax.validation.constraints.Size;
 
 public class InstanceDto implements Serializable {
 
-    private static final long serialVersionUID = -4695232477842680459L;
+	private static final long serialVersionUID = -4695232477842680459L;
 
-    private Long id;
+	private Long id;
 
-    private static final int minRefreshTimeOut = 10000;
-    @NotNull()
-    @Size(min = 1, max = 15)
-    private String name;
+	private static final int minRefreshTimeOut = 10000;
+	@NotNull()
+	@Size(min = 1, max = 15)
+	private String name;
 
-    private String reference;
+	private String reference;
 
-    private StateDto state;
+	private String homepageUrl;
 
-    private String homepageUrl;
+	private Map<String, String> configuration;
 
-    private Map<String, String> configuration;
+	@NotNull()
+	@Size(min = 1)
+	private String pluginClass;
+	private boolean enabled;
+	private String tags;
 
-    @NotNull()
-    @Size(min = 1)
-    private String pluginClass;
-    private boolean enabled;
-    private String tags;
+	@Min(minRefreshTimeOut)
+	private int refreshTimeout;
 
-    @Min(minRefreshTimeOut)
-    private int refreshTimeout;
 
-    private StateDto lastStable;
-    private StateDto lastUnstable;
-    private StateDto lastError;
-    private StateDto lastPending;
-    private StateDto lastDisabled;
 
-    private List<InstanceLinkDto> incommingInstanceLinks;
-    private List<InstanceLinkDto> outgoingInstanceLinks;
+	@NotNull()
+	private ProjectEnvironmentDto projectEnvironment;
 
-    @NotNull()
-    private ProjectEnvironmentDto projectEnvironment;
+	public InstanceDto() {
+		configuration = new LinkedHashMap<String, String>();
+		refreshTimeout = 10000;
+	}
 
-    public InstanceDto() {
-        configuration = new LinkedHashMap<String, String>();
-        incommingInstanceLinks = new ArrayList<InstanceLinkDto>();
-        outgoingInstanceLinks = new ArrayList<InstanceLinkDto>();
-        refreshTimeout = 10000;
-    }
+	public ProjectEnvironmentDto getProjectEnvironment() {
+		return projectEnvironment;
+	}
 
-    public ProjectEnvironmentDto getProjectEnvironment() {
-        return projectEnvironment;
-    }
+	public void setProjectEnvironment(final ProjectEnvironmentDto projectEnvironment) {
+		this.projectEnvironment = projectEnvironment;
+	}
 
-    public void setProjectEnvironment(final ProjectEnvironmentDto projectEnvironment) {
-        this.projectEnvironment = projectEnvironment;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setName(final String name) {
+		this.name = name;
+	}
 
-    public void setName(final String name) {
-        this.name = name;
-    }
+	public String getHomepageUrl() {
+		return homepageUrl;
+	}
 
-    public StateDto getState() {
-        return state;
-    }
+	public void setHomepageUrl(final String homepageUrl) {
+		this.homepageUrl = homepageUrl;
+	}
 
-    public void setState(final StateDto state) {
-        this.state = state;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getHomepageUrl() {
-        return homepageUrl;
-    }
+	public void setId(final Long id) {
+		this.id = id;
+	}
 
-    public void setHomepageUrl(final String homepageUrl) {
-        this.homepageUrl = homepageUrl;
-    }
+	public String getPluginClass() {
+		return pluginClass;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public void setPluginClass(final String pluginClass) {
+		this.pluginClass = pluginClass;
+	}
 
-    public void setId(final Long id) {
-        this.id = id;
-    }
+	public boolean isEnabled() {
+		return enabled;
+	}
 
-    public String getPluginClass() {
-        return pluginClass;
-    }
+	public void setEnabled(final boolean enabled) {
+		this.enabled = enabled;
+	}
 
-    public void setPluginClass(final String pluginClass) {
-        this.pluginClass = pluginClass;
-    }
+	public int getRefreshTimeout() {
+		return refreshTimeout;
+	}
 
-    public boolean isEnabled() {
-        return enabled;
-    }
+	public void setRefreshTimeout(final int refreshTimeout) {
+		if (refreshTimeout <= minRefreshTimeOut) {
+			this.refreshTimeout = minRefreshTimeOut;
+		} else {
+			this.refreshTimeout = refreshTimeout;
+		}
 
-    public void setEnabled(final boolean enabled) {
-        this.enabled = enabled;
-    }
+	}
 
-    public int getRefreshTimeout() {
-        return refreshTimeout;
-    }
+	public String getTags() {
+		return tags;
+	}
 
-    public void setRefreshTimeout(final int refreshTimeout) {
-        if (refreshTimeout <= minRefreshTimeOut) {
-            this.refreshTimeout = minRefreshTimeOut;
-        } else {
-            this.refreshTimeout = refreshTimeout;
-        }
+	public void setTags(final String tags) {
+		this.tags = tags;
+	}
 
-    }
+	@Override
+	public String toString() {
+		return "InstanceDto [id=" + id + ", name=" + name + "]";
+	}
 
-    public String getTags() {
-        return tags;
-    }
+	
 
-    public void setTags(final String tags) {
-        this.tags = tags;
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((configuration == null) ? 0 : configuration.hashCode());
+		result = prime * result + (enabled ? 1231 : 1237);
+		result = prime * result + ((homepageUrl == null) ? 0 : homepageUrl.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((pluginClass == null) ? 0 : pluginClass.hashCode());
+		result = prime * result + ((reference == null) ? 0 : reference.hashCode());
+		result = prime * result + refreshTimeout;
+		result = prime * result + ((tags == null) ? 0 : tags.hashCode());
+		return result;
+	}
 
-    public StateDto getLastStable() {
-        return lastStable;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		InstanceDto other = (InstanceDto) obj;
+		if (configuration == null) {
+			if (other.configuration != null)
+				return false;
+		} else if (!configuration.equals(other.configuration))
+			return false;
+		if (enabled != other.enabled)
+			return false;
+		if (homepageUrl == null) {
+			if (other.homepageUrl != null)
+				return false;
+		} else if (!homepageUrl.equals(other.homepageUrl))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (pluginClass == null) {
+			if (other.pluginClass != null)
+				return false;
+		} else if (!pluginClass.equals(other.pluginClass))
+			return false;
+		if (reference == null) {
+			if (other.reference != null)
+				return false;
+		} else if (!reference.equals(other.reference))
+			return false;
+		if (refreshTimeout != other.refreshTimeout)
+			return false;
+		if (tags == null) {
+			if (other.tags != null)
+				return false;
+		} else if (!tags.equals(other.tags))
+			return false;
+		return true;
+	}
 
-    public void setLastStable(final StateDto lastStable) {
-        this.lastStable = lastStable;
-    }
+	public Map<String, String> getConfiguration() {
+		return configuration;
+	}
 
-    public StateDto getLastUnstable() {
-        return lastUnstable;
-    }
+	public void setConfiguration(Map<String, String> configuration) {
+		this.configuration = configuration;
+	}
 
-    public void setLastUnstable(final StateDto lastUnstable) {
-        this.lastUnstable = lastUnstable;
-    }
+	public String getReference() {
+		return reference;
+	}
 
-    public StateDto getLastError() {
-        return lastError;
-    }
+	public void setReference(String reference) {
+		this.reference = reference;
+	}
 
-    public void setLastError(final StateDto lastError) {
-        this.lastError = lastError;
-    }
-
-    public StateDto getLastPending() {
-        return lastPending;
-    }
-
-    public void setLastPending(final StateDto lastPending) {
-        this.lastPending = lastPending;
-    }
-
-    public StateDto getLastDisabled() {
-        return lastDisabled;
-    }
-
-    public void setLastDisabled(final StateDto lastDisabled) {
-        this.lastDisabled = lastDisabled;
-    }
-
-    @Override
-    public String toString() {
-        return "InstanceDto [id=" + id + ", name=" + name + "]";
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((pluginClass == null) ? 0 : pluginClass.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final InstanceDto other = (InstanceDto) obj;
-        if (pluginClass == null) {
-            if (other.pluginClass != null) {
-                return false;
-            }
-        } else if (!pluginClass.equals(other.pluginClass)) {
-            return false;
-        }
-        return true;
-    }
-
-    public Map<String, String> getConfiguration() {
-        return configuration;
-    }
-
-    public void setConfiguration(Map<String, String> configuration) {
-        this.configuration = configuration;
-    }
-
-    public String getReference() {
-        return reference;
-    }
-
-    public void setReference(String reference) {
-        this.reference = reference;
-    }
-
-    public List<InstanceLinkDto> getIncommingInstanceLinks() {
-        return incommingInstanceLinks;
-    }
-
-    public void setIncommingInstanceLinks(List<InstanceLinkDto> incommingInstanceLinks) {
-        this.incommingInstanceLinks = incommingInstanceLinks;
-    }
-
-    public List<InstanceLinkDto> getOutgoingInstanceLinks() {
-        return outgoingInstanceLinks;
-    }
-
-    public void setOutgoingInstanceLinks(List<InstanceLinkDto> outgoingInstanceLinks) {
-        this.outgoingInstanceLinks = outgoingInstanceLinks;
-    }
 
 }

@@ -201,8 +201,8 @@ $('#d').trigger('change');
 		})();
 
 		function handleData(data){
-			var load = data.scheduler.load;
-			var capacity = data.scheduler.capacity;
+			var load = data.load;
+			var capacity = data.capacity;
 			var percentageLoad = Math.round((load/capacity)*100);
 			$('span#scheduler').css("width",percentageLoad + "%");
 		}
@@ -249,15 +249,11 @@ $('#d').trigger('change');
 			
 			<!--  start top-search--> 
 			<div id="top-search">
-				<form action="${contextPath}/manager/search.html" method="post" id="search-all-form">
+				<form action="${contextPath}/filter/index.html" method="get" id="search-all-form">
+					<sc:csrfInput/>
 					<table border="0" cellpadding="0" cellspacing="0">
 						<tr>
 							<td><input type="text" name="search" value="Search" onblur="if (this.value=='') { this.value='Search'; }" onfocus="if (this.value=='Search') { this.value=''; }" class="top-search-inp" /></td>
-							<td>
-								<select  class="styledselect" name="where">
-									<option value="instances">Instances</option>
-								</select> 
-							</td>
 							<td>
 								<input type="image" src="${contextPath}/images/shared/top_search_btn.gif" id="search-all-form-submit" />
 							</td>
@@ -303,13 +299,11 @@ $('#d').trigger('change');
 						<c:choose>
 							<c:when test="${not empty user && user != 'anonymousUser'}">
 								<a href="${contextPath}/logout.html" id="acc-settings">Logout</a>
+								<div class="clear">&nbsp;</div>
+								<div class="acc-line">&nbsp;</div>
+								<a href="${contextPath}/account/index.html" id="acc-settings">Settings</a>
 								<!-- 
-								<a href="" id="acc-settings">Settings</a>
-								<div class="clear">&nbsp;</div>
-								<div class="acc-line">&nbsp;</div>
 								<a href="" id="acc-details">Personal details </a>
-								<div class="clear">&nbsp;</div>
-								<div class="acc-line">&nbsp;</div>
 								<a href="" id="acc-project">Project details</a>
 								<div class="clear">&nbsp;</div>
 								<div class="acc-line">&nbsp;</div>
