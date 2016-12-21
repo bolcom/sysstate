@@ -1,5 +1,10 @@
 package nl.unionsoft.sysstate.plugins.http;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -8,26 +13,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.params.ConnRoutePNames;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.DefaultRedirectStrategy;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.ssl.SSLContexts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -53,11 +64,7 @@ public class HttpClientResourceManager implements ResourceManager<HttpClient> {
     public HttpClient getResource(ResourceDto resource) {
         HttpClient result = httpClients.get(resource.getName());
         if (result == null) {
-            try {
-                result = createHttpClient(resource.getConfiguration());
-            } catch (KeyManagementException | NoSuchAlgorithmException e) {
-                throw new IllegalStateException("Could not create HttpClient for resource [" + resource + "]", e);
-            }
+            result = createHttpClientNew(resource.getConfiguration());
             HttpClient old = httpClients.putIfAbsent(resource.getName(), result);
             if (old != null) {
                 result = old;
@@ -67,7 +74,8 @@ public class HttpClientResourceManager implements ResourceManager<HttpClient> {
         return result;
     }
 
-    @Scheduled(initialDelay=10000, fixedRate=60000)
+    @Scheduled(initialDelay = 10000, fixedRate = 60000)
+    @SuppressWarnings("deprecation")
     public void closeIdleConnections() {
         for (Entry<String, HttpClient> entry : httpClients.entrySet()) {
             LOG.debug("Closing idle httpClient Connections for client '{}'", entry.getKey());
@@ -78,51 +86,67 @@ public class HttpClientResourceManager implements ResourceManager<HttpClient> {
         }
     }
 
-    private HttpClient createHttpClient(Map<String, String> configuration) throws KeyManagementException, NoSuchAlgorithmException {
+    private HttpClient createHttpClientNew(Map<String, String> configuration) {
+
+        RequestConfig requestConfig = createRequestConfig(configuration);
+
+        LayeredConnectionSocketFactory sslSocketFactory = createSslSocketFactory(configuration);
+
+        HttpClientBuilder builder = HttpClientBuilder.create()
+                .setSSLSocketFactory(sslSocketFactory)
+                .setConnectionManager(createConnectionManager(sslSocketFactory))
+                .setDefaultRequestConfig(requestConfig);
+
+        getProxyHost(configuration).ifPresent(proxyHost -> builder.setProxy(proxyHost));
+
+        return builder.build();
+
+    }
+
+    private HttpClientConnectionManager createConnectionManager(LayeredConnectionSocketFactory sslSocketFactory) {
+        Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory> create()
+                .register("https", sslSocketFactory)
+                .register("http", PlainConnectionSocketFactory.getSocketFactory())
+                .build();
+        return new PoolingHttpClientConnectionManager(registry);
+    }
+
+    private Optional<HttpHost> getProxyHost(Map<String, String> configuration) {
+        String proxyHost = configuration.get("proxyHost");
+        if (StringUtils.isNotBlank(proxyHost)) {
+            int proxyPort = Integer.valueOf(StringUtils.defaultIfEmpty(configuration.get("proxyPort"), "0"));
+            return Optional.of(new HttpHost(proxyHost, proxyPort));
+        }
+        return Optional.empty();
+
+    }
+
+    private RequestConfig createRequestConfig(Map<String, String> configuration) {
         int connectionTimeoutMillis = Integer.valueOf(StringUtils.defaultIfEmpty(configuration.get("connectionTimeoutMillis"), DEFAULT_CONN_TIMEOUT_MILLIS));
         int socketTimeoutMillis = Integer.valueOf(StringUtils.defaultIfEmpty(configuration.get("socketTimeoutMillis"), DEFAULT_SOCK_TIMEOUT_MILLIS));
-        int proxyPort = Integer.valueOf(StringUtils.defaultIfEmpty(configuration.get("proxyPort"), "0"));
-        String proxyHost = configuration.get("proxyHost");
-        LOG.info("HttpClient settings are: connectionTimeoutMillis={},socketTimeoutMillis={}, proxyPort={}, proxyHost={}", new Object[] {
-                connectionTimeoutMillis, socketTimeoutMillis, proxyPort, proxyHost });
-        return createHttpClient(connectionTimeoutMillis, socketTimeoutMillis, proxyHost, proxyPort);
+        return RequestConfig.custom()
+                .setConnectTimeout(connectionTimeoutMillis)
+                .setConnectionRequestTimeout(socketTimeoutMillis)
+                .build();
     }
 
-    private DefaultHttpClient createHttpClient(int connectionTimeoutMillis, int socketTimeoutMillis, String proxyHost, int proxyPort)
-            throws KeyManagementException, NoSuchAlgorithmException {
-
-        final PoolingClientConnectionManager connectionManager = new PoolingClientConnectionManager();
-        final BasicHttpParams basicHttpParams = new BasicHttpParams();
-        if (StringUtils.isNotEmpty(proxyHost) && proxyPort > 0) {
-            HttpHost proxy = new HttpHost(proxyHost, proxyPort);
-            basicHttpParams.setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+    private LayeredConnectionSocketFactory createSslSocketFactory(Map<String, String> configuration) {
+        SSLContext sslcontext = getSslContext(configuration);
+        if (Boolean.valueOf(configuration.get("sniHack"))) {
+            return createSNIHackSocketFactory(sslcontext);
         }
-        setConnectionTimeout(connectionTimeoutMillis, basicHttpParams);
-        setSocketTimeout(socketTimeoutMillis, basicHttpParams);
-        setTrustManager(connectionManager);
-        DefaultHttpClient defaultHttpClient = new DefaultHttpClient(connectionManager, basicHttpParams);
-        defaultHttpClient.setRedirectStrategy(new DefaultRedirectStrategy());
-        // defaultHttpClient.getCredentialsProvider().setCredentials(
-        // new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
-        // new UsernamePasswordCredentials("harry", "Potter"));
-        return defaultHttpClient;
+
+        return new SSLConnectionSocketFactory(sslcontext);
     }
 
-    private void setConnectionTimeout(final int connectionTimeoutMillis, final BasicHttpParams basicHttpParams) {
-        if (connectionTimeoutMillis > 0) {
-            LOG.info("Setting connectionTimeoutMillis to '{}'", connectionTimeoutMillis);
-            HttpConnectionParams.setConnectionTimeout(basicHttpParams, connectionTimeoutMillis);
+    private SSLContext getSslContext(Map<String, String> configuration) {
+        if (Boolean.valueOf(configuration.get("trustManagerAllowAll"))) {
+            return createAllAllowingSslContext();
         }
+        return SSLContexts.createDefault();
     }
 
-    private void setSocketTimeout(final int socketTimeoutMillis, final BasicHttpParams basicHttpParams) {
-        if (socketTimeoutMillis > 0) {
-            LOG.info("Setting socketTimeoutMillis to '{}'", socketTimeoutMillis);
-            HttpConnectionParams.setSoTimeout(basicHttpParams, socketTimeoutMillis);
-        }
-    }
-
-    private void setTrustManager(final ClientConnectionManager threadSafeClientConnManager) throws NoSuchAlgorithmException, KeyManagementException {
+    private SSLContext createAllAllowingSslContext() {
         final X509TrustManager trustManager = new X509TrustManager() {
 
             public void checkClientTrusted(X509Certificate[] xcs, String string) throws CertificateException {
@@ -136,21 +160,43 @@ public class HttpClientResourceManager implements ResourceManager<HttpClient> {
             }
         };
 
-        final SSLContext sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(null, new TrustManager[] { trustManager }, null);
-        final SSLSocketFactory sslSocketFactory = new SSLSocketFactory(sslContext);
-        final SchemeRegistry schemaRegistry = threadSafeClientConnManager.getSchemeRegistry();
-        schemaRegistry.register(new Scheme("https", 443, sslSocketFactory));
+        try {
+            final SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, new TrustManager[] { trustManager }, null);
+            return sslContext;
+        } catch (KeyManagementException | NoSuchAlgorithmException e) {
+            throw new IllegalStateException("Unable to init sslContext, caught Exception", e);
+        }
+    }
+
+    private SSLConnectionSocketFactory createSNIHackSocketFactory(SSLContext sslcontext) {
+        return new SSLConnectionSocketFactory(sslcontext) {
+
+            @Override
+            public Socket connectSocket(
+                    int connectTimeout,
+                    Socket socket,
+                    HttpHost host,
+                    InetSocketAddress remoteAddress,
+                    InetSocketAddress localAddress,
+                    HttpContext context) throws IOException, ConnectTimeoutException {
+                if (socket instanceof SSLSocket) {
+                    try {
+                        Method m = SSLSocket.class.getMethod("setHost", String.class);
+                        m.invoke(socket, host.getHostName());
+                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
+                        throw new IllegalStateException("Unable to set host, caught exception", ex);
+                    }
+                }
+                return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
+            }
+
+        };
     }
 
     @Override
     public void update(ResourceDto resource) {
-        try {
-            httpClients.put(resource.getName(), createHttpClient(resource.getConfiguration()));
-        } catch (KeyManagementException | NoSuchAlgorithmException e) {
-            throw new IllegalStateException("Unable to create Http Client", e);
-        }
-
+        httpClients.put(resource.getName(), createHttpClientNew(resource.getConfiguration()));
     }
 
     @Override

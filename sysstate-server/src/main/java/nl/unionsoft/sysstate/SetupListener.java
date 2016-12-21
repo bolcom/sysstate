@@ -2,15 +2,22 @@ package nl.unionsoft.sysstate;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.stereotype.Service;
 
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
+import nl.unionsoft.sysstate.common.dto.TemplateDto;
 import nl.unionsoft.sysstate.common.dto.TextDto;
 import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
@@ -18,15 +25,10 @@ import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
+import nl.unionsoft.sysstate.common.logic.TemplateLogic;
 import nl.unionsoft.sysstate.common.logic.TextLogic;
 import nl.unionsoft.sysstate.logic.FilterLogic;
-import nl.unionsoft.sysstate.logic.TemplateLogic;
 import nl.unionsoft.sysstate.logic.ViewLogic;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.stereotype.Service;
 
 @Service("setupListener")
 public class SetupListener implements InitializingBean {
@@ -97,18 +99,16 @@ public class SetupListener implements InitializingBean {
             LOG.info("Adding default texts...");
             addText("go-selfdiagnose 1.0.2", "xpath xPathStateResolver", "substring-before(substring-after(string(/selfdiagnose/results/result[@task='build information']/@message),': '),',')");
             addText("selfdiagnose-version 1.0", "xpath xPathStateResolver", "normalize-space(string(/selfdiagnose/@version))");
-            
+
             LOG.info("No instances found, creating some default instances...");
             addTestInstance("google", "GOOG", "PROD", createHttpConfiguration("http://www.google.nl"), "http://www.google.nl", "httpStateResolver");
-            addTestInstance("google", "GOOG", "MOCK", createMockConfiguration(18000,StateType.STABLE.name()), "http://www.yahoo.com", "mockStateResolver");
+            addTestInstance("google", "GOOG", "MOCK", createMockConfiguration(18000, StateType.STABLE.name()), "http://www.yahoo.com", "mockStateResolver");
             addTestInstance("yahoo", "YAHO", "PROD", createHttpConfiguration("http://www.yahoo.com"), "http://www.yahoo.com", "httpStateResolver");
             addTestInstance("yahoo", "YAHO", "MOCK", createMockConfiguration(12000, StateType.UNSTABLE.name()), "http://www.yahoo.com", "mockStateResolver");
             addTestInstance("bing", "BING", "PROD", createHttpConfiguration("http://www.bing.com"), "http://www.bing.com", "httpStateResolver");
-            addTestInstance("bing", "BING", "MOCK", createMockConfiguration(6000,StateType.ERROR.name()), "http://www.bing.com", "mockStateResolver");
+            addTestInstance("bing", "BING", "MOCK", createMockConfiguration(6000, StateType.ERROR.name()), "http://www.bing.com", "mockStateResolver");
             addTestInstance("ilse", "ILSE", "PROD", createHttpConfiguration("http://www.ilse.nl"), "http://www.ilse.nl", "httpStateResolver");
-            addTestInstance("ilse", "ILSE", "MOCK", createMockConfiguration(3000,StateType.DISABLED.name()), "http://www.ilse.nl", "mockStateResolver");
-            //addTestInstance("marathon", "ILSE", "MOCK", createMarathonPatternResolverConfiguration("http://path.to.marathon"), "http://path.to.marathon", "marathonPatternInstanceResolver");    
-            
+            addTestInstance("ilse", "ILSE", "MOCK", createMockConfiguration(3000, StateType.DISABLED.name()), "http://www.ilse.nl", "mockStateResolver");
 
             if (filterLogic.getFilters().isEmpty()) {
                 LOG.info("No filters found, creating a default filter...");
@@ -130,12 +130,6 @@ public class SetupListener implements InitializingBean {
         configuration.put("state", state);
         return configuration;
     }
-    
-    private Map<String, String> createMarathonPatternResolverConfiguration(String serverUrl){
-        Map<String, String> configuration = new HashMap<String, String>();
-        configuration.put("serverUrl", serverUrl);
-        return configuration;
-    }
 
     private Map<String, String> createHttpConfiguration(final String url) {
         Map<String, String> configuration = new HashMap<String, String>();
@@ -146,7 +140,11 @@ public class SetupListener implements InitializingBean {
     private void createView(String name, String template, FilterDto filter) {
         ViewDto view = new ViewDto();
         view.setName(name);
-        view.setTemplate(templateLogic.getTemplate(template));
+        Optional<TemplateDto> optTemplate = templateLogic.getTemplate(template);
+        if (!optTemplate.isPresent()) {
+            throw new IllegalStateException("Template does not exist");
+        }
+        view.setTemplate(optTemplate.get());
         view.setFilter(filter);
         viewLogic.createOrUpdateView(view);
     }
@@ -176,15 +174,13 @@ public class SetupListener implements InitializingBean {
         project.setName(name);
         projectLogic.createOrUpdateProject(project);
     }
-    
-    private void addText(String name, String tags, String text){
+
+    private void addText(String name, String tags, String text) {
         TextDto textDto = new TextDto();
         textDto.setName(name);
         textDto.setTags(tags);
         textDto.setText(text);
         textLogic.createOrUpdateText(textDto);
     }
-    
-    
 
 }
