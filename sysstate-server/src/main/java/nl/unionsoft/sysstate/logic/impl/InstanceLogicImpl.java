@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +55,7 @@ import nl.unionsoft.sysstate.domain.Instance;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
 import nl.unionsoft.sysstate.job.UpdateInstanceJob;
 import nl.unionsoft.sysstate.logic.PluginLogic;
+import nl.unionsoft.sysstate.logic.PropertyMetaLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
@@ -118,6 +120,8 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     @Inject
     @Named("instancePropertiesConverter")
     private InstancePropertiesConverter instancePropertiesConverter;
+    
+   
 
     private Map<Long, ScheduledFuture<?>> instanceTasks;
 
@@ -236,7 +240,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         removeTriggerJob(instanceId);
     }
 
-    @Scheduled(initialDelay=10000, fixedRate=60000)
+    @Scheduled(initialDelay = 10000, fixedRate = 60000)
     public void purgeOldJobs() {
         logger.info("Purging old instance jobs...");
         Set<Long> cancelledJobKeys = new HashSet<Long>();
@@ -247,7 +251,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
                 cancelledJobKeys.add(instanceId);
             }
         });
-        cancelledJobKeys.forEach( key -> instanceTasks.remove(key));
+        cancelledJobKeys.forEach(key -> instanceTasks.remove(key));
         logger.info("Purged & cancelled [{}] jobs..", cancelledJobKeys.size());
     }
 
@@ -287,46 +291,8 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return instance;
     }
 
-    @Cacheable("propertyMetaTypeCache")
-    public List<PropertyMetaValue> getPropertyMeta(String type) {
-
-        Object component = pluginLogic.getComponent(type);
-
-        Class<?> componentClass = component.getClass();
-
-        Stack<Class<?>> classStack = new Stack<Class<?>>();
-        Class<?> superClass = componentClass;
-        while (!Object.class.equals(superClass)) {
-            classStack.push(superClass);
-            superClass = superClass.getSuperclass();
-        }
-
-        List<PropertyMetaValue> propertyMetas = new ArrayList<PropertyMetaValue>();
-        while (!classStack.empty()) {
-            Class<?> stackClass = classStack.pop();
-            addPropertyMetasFromPropertyFiles(propertyMetas, stackClass);
-
-        }
-
-        return propertyMetas;
-    }
-
-    private void addPropertyMetasFromPropertyFiles(List<PropertyMetaValue> propertyMetas, Class<?> stackClass) {
-        Map<String, Properties> instanceGroupProperties = PropertyGroupUtil.getGroupProperties(pluginLogic.getPropertiesForClass(stackClass), "instance");
-        for (Entry<String, Properties> entry : instanceGroupProperties.entrySet()) {
-            String id = entry.getKey();
-            Properties properties = entry.getValue();
-            PropertyMetaValue propertyMetaValue = new PropertyMetaValue();
-            propertyMetaValue.setId(id);
-            propertyMetaValue.setTitle(properties.getProperty("title", id));
-            String lovResolver = properties.getProperty("resolver");
-            if (StringUtils.isNotEmpty(lovResolver)) {
-                ListOfValueResolver listOfValueResolver = pluginLogic.getListOfValueResolver(lovResolver);
-                propertyMetaValue.setLov(listOfValueResolver.getListOfValues(propertyMetaValue));
-            }
-            propertyMetas.add(propertyMetaValue);
-        }
-    }
+  
+  
 
     @Override
     public List<InstanceDto> getInstancesForEnvironment(Long environmentId) {

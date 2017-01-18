@@ -1,10 +1,5 @@
 package nl.unionsoft.sysstate.plugins.http;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -18,7 +13,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
@@ -29,7 +23,6 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
@@ -37,7 +30,6 @@ import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContexts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,10 +124,6 @@ public class HttpClientResourceManager implements ResourceManager<HttpClient> {
 
     private LayeredConnectionSocketFactory createSslSocketFactory(Map<String, String> configuration) {
         SSLContext sslcontext = getSslContext(configuration);
-        if (Boolean.valueOf(configuration.get("sniHack"))) {
-            return createSNIHackSocketFactory(sslcontext);
-        }
-
         return new SSLConnectionSocketFactory(sslcontext);
     }
 
@@ -167,31 +155,6 @@ public class HttpClientResourceManager implements ResourceManager<HttpClient> {
         } catch (KeyManagementException | NoSuchAlgorithmException e) {
             throw new IllegalStateException("Unable to init sslContext, caught Exception", e);
         }
-    }
-
-    private SSLConnectionSocketFactory createSNIHackSocketFactory(SSLContext sslcontext) {
-        return new SSLConnectionSocketFactory(sslcontext) {
-
-            @Override
-            public Socket connectSocket(
-                    int connectTimeout,
-                    Socket socket,
-                    HttpHost host,
-                    InetSocketAddress remoteAddress,
-                    InetSocketAddress localAddress,
-                    HttpContext context) throws IOException, ConnectTimeoutException {
-                if (socket instanceof SSLSocket) {
-                    try {
-                        Method m = SSLSocket.class.getMethod("setHost", String.class);
-                        m.invoke(socket, host.getHostName());
-                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {
-                        throw new IllegalStateException("Unable to set host, caught exception", ex);
-                    }
-                }
-                return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
-            }
-
-        };
     }
 
     @Override

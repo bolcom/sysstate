@@ -1,6 +1,8 @@
 package nl.unionsoft.sysstate.web.mvc.controller;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -8,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -18,11 +21,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 import nl.unionsoft.common.param.ParamContextLogicImpl;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
+import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLinkLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectLogic;
+import nl.unionsoft.sysstate.logic.PropertyMetaLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
@@ -35,7 +40,6 @@ public class InstanceController {
     @Inject
     private InstanceLinkLogic instanceLinkLogic;
 
-    
     @Inject
     @Named("stateLogic")
     private StateLogic stateLogic;
@@ -59,6 +63,9 @@ public class InstanceController {
     @Inject
     @Named("paramContextLogic")
     private ParamContextLogicImpl paramContextLogic;
+    
+    @Inject
+    private PropertyMetaLogic propertyMetaLogic;
 
     @RequestMapping(value = "/instance/create", method = RequestMethod.GET)
     public ModelAndView getSelectCreate(final HttpSession session) {
@@ -73,18 +80,23 @@ public class InstanceController {
         final ModelAndView modelAndView = new ModelAndView("create-update-instance-manager");
         InstanceDto instance = instanceLogic.generateInstanceDto(type);
         modelAndView.addObject("instance", instance);
-        modelAndView.addObject("propertyMetas", instanceLogic.getPropertyMeta(type));
+        List<PropertyMetaValue> propertyMetas = propertyMetaLogic.getPropertyMetasForBean(type);
+        instance.setConfiguration(propertyMetas.stream()
+                .filter(pmv -> StringUtils.isNotBlank(pmv.getDefaultValue()))
+                .collect(Collectors.toMap(PropertyMetaValue::getId, PropertyMetaValue::getDefaultValue)));
+        modelAndView.addObject("propertyMetas", propertyMetas);
         addCommons(modelAndView);
         return modelAndView;
     }
 
     @RequestMapping(value = "/instance/{type}/create", method = RequestMethod.POST)
-    public ModelAndView handleFormCreate(@Valid @ModelAttribute("instance") final InstanceDto instance, final BindingResult bindingResult, final HttpServletRequest httpRequest) {
+    public ModelAndView handleFormCreate(@Valid @ModelAttribute("instance") final InstanceDto instance, final BindingResult bindingResult,
+            final HttpServletRequest httpRequest) {
 
         ModelAndView modelAndView = null;
         if (bindingResult.hasErrors()) {
             modelAndView = new ModelAndView("create-update-instance-manager");
-            modelAndView.addObject("propertyMetas", instanceLogic.getPropertyMeta(instance.getPluginClass()));
+            modelAndView.addObject("propertyMetas", propertyMetaLogic.getPropertyMetasForBean(instance.getPluginClass()));
             addCommons(modelAndView);
         } else {
             instance.setId(Long.valueOf(0).equals(instance.getId()) ? null : instance.getId());
@@ -97,9 +109,9 @@ public class InstanceController {
     @RequestMapping(value = "/instance/{instanceId}/details", method = RequestMethod.GET)
     public ModelAndView details(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("details-instance-clear");
-        
-        Optional<InstanceDto> optInstance =  instanceLogic.getInstance(instanceId);
-        if (!optInstance.isPresent()){
+
+        Optional<InstanceDto> optInstance = instanceLogic.getInstance(instanceId);
+        if (!optInstance.isPresent()) {
             throw new IllegalStateException("No instance could be found for instanceId [" + instanceId + "]");
         }
         InstanceDto instance = optInstance.get();
@@ -113,33 +125,34 @@ public class InstanceController {
     @RequestMapping(value = "/instance/{instanceId}/copy", method = RequestMethod.GET)
     public ModelAndView copy(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("copy-update-instance-manager");
-        Optional<InstanceDto> optInstance =  instanceLogic.getInstance(instanceId);
-        if (!optInstance.isPresent()){
+        Optional<InstanceDto> optInstance = instanceLogic.getInstance(instanceId);
+        if (!optInstance.isPresent()) {
             throw new IllegalStateException("No instance could be found for instanceId [" + instanceId + "]");
         }
         InstanceDto source = optInstance.get();
         source.setId(null);
-        modelAndView.addObject("propertyMetas", instanceLogic.getPropertyMeta(source.getPluginClass()));
+        modelAndView.addObject("propertyMetas", propertyMetaLogic.getPropertyMetasForBean(source.getPluginClass()));
         modelAndView.addObject("instance", source);
         addCommons(modelAndView);
         return modelAndView;
     }
 
     @RequestMapping(value = "/instance/{instanceId}/copy", method = RequestMethod.POST)
-    public ModelAndView handleCopy(@Valid @ModelAttribute("instance") final InstanceDto instance, final BindingResult bindingResult, final HttpServletRequest httpRequest) {
+    public ModelAndView handleCopy(@Valid @ModelAttribute("instance") final InstanceDto instance, final BindingResult bindingResult,
+            final HttpServletRequest httpRequest) {
         return handleFormCreate(instance, bindingResult, httpRequest);
     }
 
     @RequestMapping(value = "/instance/{instanceId}/update", method = RequestMethod.GET)
     public ModelAndView getUpdate(@PathVariable("instanceId") final Long instanceId) {
         final ModelAndView modelAndView = new ModelAndView("create-update-instance-manager");
-        Optional<InstanceDto> optInstance =  instanceLogic.getInstance(instanceId);
-        if (!optInstance.isPresent()){
+        Optional<InstanceDto> optInstance = instanceLogic.getInstance(instanceId);
+        if (!optInstance.isPresent()) {
             throw new IllegalStateException("No instance could be found for instanceId [" + instanceId + "]");
         }
-        InstanceDto instance = optInstance.get();        
+        InstanceDto instance = optInstance.get();
         modelAndView.addObject("instance", instance);
-        modelAndView.addObject("propertyMetas", instanceLogic.getPropertyMeta(instance.getPluginClass()));
+        modelAndView.addObject("propertyMetas", propertyMetaLogic.getPropertyMetasForBean(instance.getPluginClass()));
         addCommons(modelAndView);
         return modelAndView;
     }
@@ -152,8 +165,8 @@ public class InstanceController {
 
     @RequestMapping(value = "/instance/{instanceId}/toggle/enabled", method = RequestMethod.GET)
     public ModelAndView toggleEnabled(@PathVariable(value = "instanceId") final Long instanceId) {
-        Optional<InstanceDto> optInstance =  instanceLogic.getInstance(instanceId);
-        if (!optInstance.isPresent()){
+        Optional<InstanceDto> optInstance = instanceLogic.getInstance(instanceId);
+        if (!optInstance.isPresent()) {
             throw new IllegalStateException("No instance could be found for instanceId [" + instanceId + "]");
         }
         InstanceDto instance = optInstance.get();
@@ -183,7 +196,8 @@ public class InstanceController {
     }
 
     @RequestMapping(value = "/instance/{instanceId}/update", method = RequestMethod.POST)
-    public ModelAndView handleFormUpdate(@Valid @ModelAttribute("instance") final InstanceDto instance, final BindingResult bindingResult, final HttpServletRequest httpRequest) {
+    public ModelAndView handleFormUpdate(@Valid @ModelAttribute("instance") final InstanceDto instance, final BindingResult bindingResult,
+            final HttpServletRequest httpRequest) {
         return handleFormCreate(instance, bindingResult, httpRequest);
     }
 

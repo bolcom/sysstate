@@ -27,22 +27,18 @@ import org.slf4j.LoggerFactory
 
 import com.sun.org.apache.xpath.internal.FoundIndex;
 
-@Named("marathonPatternInstanceResolver")
+//@Named("marathonPatternInstanceResolver")
+@Deprecated
 class MarathonPatternInstanceResolver extends InstanceStateResolver{
 
     Logger log = LoggerFactory.getLogger(MarathonPatternInstanceResolver.class);
 
     @Inject
-    private ProjectLogic projectLogic
-
-    @Inject
-    public MarathonPatternInstanceResolver(ProjectLogic projectLogic, EnvironmentLogic environmentLogic, InstanceLogic instanceLogic, InstanceLinkLogic instanceLinkLogic) {
-        super(instanceLinkLogic, instanceLogic, environmentLogic)
-        this.projectLogic = projectLogic;
+    public MarathonPatternInstanceResolver(InstanceLogic instanceLogic, InstanceLinkLogic instanceLinkLogic) {
+        super(instanceLinkLogic, instanceLogic)
     }
-
     
-    public List<InstanceDto> createOrUpdateInstances(InstanceDto parent, List<InstanceDto> childInstances){
+    public List<InstanceDto> generateInstances(InstanceDto parent){
 
         def properties = parent.getConfiguration()
 

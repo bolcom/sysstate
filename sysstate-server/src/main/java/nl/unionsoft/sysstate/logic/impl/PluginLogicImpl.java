@@ -212,8 +212,8 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
         PropertyMetaList propertyMetaList = getPluginPropertyMetaList(name);
         Properties properties = new Properties();
         for (PropertyMetaValue propertyMetaValue : propertyMetaList.getPropertyMetaValues()) {
-            if (StringUtils.isNotEmpty(propertyMetaValue.getValue())) {
-                properties.put(propertyMetaValue.getId(), propertyMetaValue.getValue());
+            if (StringUtils.isNotEmpty(propertyMetaValue.getDefaultValue())) {
+                properties.put(propertyMetaValue.getId(), propertyMetaValue.getDefaultValue());
             }
         }
         return properties;
@@ -235,13 +235,12 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
 
                     String propertyId = entry.getKey();
                     Properties properties = entry.getValue();
-                    PropertyMetaValue propertyMetaValue = new PropertyMetaValue();
-                    propertyMetaValue.setId(propertyId);
-                    propertyMetaValue.setTitle(StringUtils.defaultIfEmpty(properties.getProperty("title"), propertyId));
-                    propertyMetaValue.setNullable(BooleanUtils.toBoolean(properties.getProperty("nullable")));
+                    String title = StringUtils.defaultIfEmpty(properties.getProperty("title"), propertyId);
+                    boolean nullable = BooleanUtils.toBoolean(properties.getProperty("nullable"));
 
                     GroupProperty groupProperty = propertyDao.getGroupProperty(id, propertyId);
-                    propertyMetaValue.setValue(getValueForPropMeta(properties, groupProperty));
+                    String value = getValueForPropMeta(properties, groupProperty);
+                    PropertyMetaValue propertyMetaValue = new PropertyMetaValue(propertyId, title, nullable, value, 0);
 
                     Properties innerProps = propertyMetaValue.getProperties();
                     for (String propKey : properties.stringPropertyNames()) {
@@ -278,7 +277,7 @@ public class PluginLogicImpl implements PluginLogic, ApplicationContextAware, In
         List<PropertyMetaValue> propertyMetaValues = propertyMetaList.getPropertyMetaValues();
         if (propertyMetaValues != null && StringUtils.isNotEmpty(group)) {
             for (PropertyMetaValue propertyMetaValue : propertyMetaValues) {
-                propertyDao.setGroupProperty(group, propertyMetaValue.getId(), propertyMetaValue.getValue());
+                propertyDao.setGroupProperty(group, propertyMetaValue.getId(), propertyMetaValue.getDefaultValue());
             }
         }
     }

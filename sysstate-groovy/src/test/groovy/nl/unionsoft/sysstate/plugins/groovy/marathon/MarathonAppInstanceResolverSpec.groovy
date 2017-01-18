@@ -1,4 +1,4 @@
-package nl.unionsoft.sysstate.plugins.groovy.consul
+package nl.unionsoft.sysstate.plugins.groovy.marathon
 
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto
 import nl.unionsoft.sysstate.common.dto.InstanceDto
@@ -20,10 +20,10 @@ import org.apache.http.client.HttpClient
 
 import spock.lang.Specification
 
-class ConsulXpathInstanceResolverSpec extends Specification{
+class MarathonAppInstanceResolverSpec extends Specification{
 
     
-    ConsulXpathInstanceResolver consulPatternInstanceResolver;
+    MarathonAppInstanceResolver marathonAppInstanceResolver;
     
     InstanceLogic instanceLogic = Mock()
     InstanceLinkLogic instanceLinkLogic = Mock()
@@ -36,17 +36,17 @@ class ConsulXpathInstanceResolverSpec extends Specification{
     HttpEntity httpEntity = Mock(HttpEntity)
     
     void setup() {
-        consulPatternInstanceResolver = new ConsulXpathInstanceResolver( instanceLogic,  instanceLinkLogic,  resourceLogic,  templateLogic)
+        marathonAppInstanceResolver = new MarathonAppInstanceResolver( instanceLogic,  instanceLinkLogic,  resourceLogic,  templateLogic)
     }
     
-    def 'When I query consul, I expect instances to be created.'() {
+    def 'When I query marathon, I expect instances to be created.'() {
         given:
         InstanceDto instance = new InstanceDto();
         instance.setConfiguration([
-            "httpClientId"    : "test",
-            "serverUrl"       : "http://localhost:8500",
-            "urlTemplate"     : "asdf",
-            "servicesPattern" : "(?<environment>[a-z].*)-(?<application>wiz[a-z].*)-.*"
+            "httpClientId"        : "test",
+            "serverUrl"           : "http://localhost:8500",
+            "environmentTemplate" : "use-\${environmentName}",
+            "idPattern"     : '/(?<environment>[a-z]*-[0-9]*|[a-z]*)(?:.*-|/)(?<application>[a-z]*)(?:/|$)(.*)'
         ])
         StateDto state = new StateDto();
 
@@ -57,7 +57,7 @@ class ConsulXpathInstanceResolverSpec extends Specification{
         def testEnvironment = new EnvironmentDto('name' : 'TEST', 'id' : 2)
         
         when:
-        consulPatternInstanceResolver.setState(instance, state)
+        marathonAppInstanceResolver.setState(instance, state)
 
         then:
         

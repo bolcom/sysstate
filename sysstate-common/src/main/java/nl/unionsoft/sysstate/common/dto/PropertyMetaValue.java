@@ -1,45 +1,43 @@
 package nl.unionsoft.sysstate.common.dto;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 public class PropertyMetaValue {
 
-    private String id;
-    private String value;
-    private String title;
-    private boolean nullable;
+    private final String id;
+    private final String defaultValue;
+    private final String title;
+    private final boolean nullable;
+    private final Integer order;
 
     private Properties properties;
     private Map<String, String> lov;
 
-    public PropertyMetaValue() {
-        nullable = false;
-        properties = new Properties();
+    public PropertyMetaValue(String id, String title, boolean nullable, String defaultValue, Integer order) {
+
+        this.id = id;
+        this.title = title;
+        this.nullable = nullable;
+        this.defaultValue = defaultValue;
+
+        this.properties = new Properties();
+        this.lov = new HashMap<>();
+        this.order = order;
+
     }
 
     public String getId() {
         return id;
     }
 
-    public void setId(final String id) {
-        this.id = id;
-    }
-
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(final String title) {
-        this.title = title;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(final String value) {
-        this.value = value;
+    public String getDefaultValue() {
+        return defaultValue;
     }
 
     public Map<String, String> getLov() {
@@ -50,34 +48,20 @@ public class PropertyMetaValue {
         this.lov = lov;
     }
 
-    /**
-     * @return the nullable
-     */
     public boolean isNullable() {
         return nullable;
     }
 
-    /**
-     * @param nullable
-     *            the nullable to set
-     */
-    public void setNullable(final boolean nullable) {
-        this.nullable = nullable;
-    }
-
-    /**
-     * @return the properties
-     */
     public Properties getProperties() {
         return properties;
     }
 
-    /**
-     * @param properties
-     *            the properties to set
-     */
     public void setProperties(final Properties properties) {
         this.properties = properties;
+    }
+
+    public Integer getOrder() {
+        return order;
     }
 
 }

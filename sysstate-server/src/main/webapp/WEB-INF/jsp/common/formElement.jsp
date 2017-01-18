@@ -26,7 +26,7 @@
 					<c:set var="label" value="${param.label}"/>
 					<c:set var="path" value="${param.path}"/>
 					<c:set var="comments" value="${param.comments}"/>
-					<th valign="top"><c:out  value="${label}"/>:</th>
+					<th valign="top" class="label"><c:out  value="${label}"/>:</th>
 					<td>
 						<c:choose>
 							<c:when test="${type == 'input' || type == 'null' || empty type}">
