@@ -2,23 +2,20 @@ package nl.unionsoft.sysstate.plugins.groovy.consul
 
 import groovy.json.JsonSlurper
 
-import java.util.regex.Matcher;
+import java.util.regex.Matcher
 
-import javax.inject.Inject;
-import javax.inject.Named
+import javax.inject.Inject
 
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto
 import nl.unionsoft.sysstate.common.dto.InstanceDto
 import nl.unionsoft.sysstate.common.dto.ProjectDto
-import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
+import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto
 import nl.unionsoft.sysstate.common.extending.InstanceStateResolver
-import nl.unionsoft.sysstate.common.logic.EnvironmentLogic
-import nl.unionsoft.sysstate.common.logic.InstanceLinkLogic
-import nl.unionsoft.sysstate.common.logic.InstanceLogic
-import nl.unionsoft.sysstate.common.logic.ProjectLogic
+import nl.unionsoft.sysstate.common.logic.RelationalInstanceLogic
 import nl.unionsoft.sysstate.common.logic.ResourceLogic
+import nl.unionsoft.sysstate.plugins.groovy.http.JsonSlurperHttpGetCallback
 import nl.unionsoft.sysstate.plugins.http.HttpConstants
-import nl.unionsoft.sysstate.sysstate_1_0.ProjectEnvironment;
+import nl.unionsoft.sysstate.plugins.http.HttpGetBuilder
 
 import org.apache.commons.lang.StringUtils
 import org.apache.http.HttpEntity
@@ -35,8 +32,8 @@ abstract class AbstractConsulPatternInstanceResolver extends InstanceStateResolv
     ResourceLogic resourceLogic
 
     @Inject
-    public AbstractConsulPatternInstanceResolver(InstanceLogic instanceLogic, InstanceLinkLogic instanceLinkLogic,ResourceLogic resourceLogic) {
-        super(instanceLinkLogic, instanceLogic)
+    public AbstractConsulPatternInstanceResolver(RelationalInstanceLogic relationalInstanceLogic,ResourceLogic resourceLogic) {
+        super(relationalInstanceLogic)
         this.resourceLogic = resourceLogic;
     }
 
@@ -86,22 +83,15 @@ abstract class AbstractConsulPatternInstanceResolver extends InstanceStateResolv
     abstract void configure(InstanceDto instance, InstanceDto parent)
 
     def getServices(Map<String, String> configuration){
-        HttpClient httpClient = resourceLogic.getResourceInstance(HttpConstants.RESOURCE_MANAGER_NAME, StringUtils.defaultIfEmpty(configuration.get(HttpConstants.HTTP_CLIENT_ID), HttpConstants.DEFAULT_RESOURCE));
-        HttpEntity httpEntity = null;
-        try {
-            def serverUrl = configuration.get("serverUrl") ? configuration.get("serverUrl") : 'http://localhost:8500'
-            def dataCenter = configuration.get("dataCenter") ? configuration.get("dataCenter") : ''
-            final HttpGet httpGet = new HttpGet("${serverUrl.trim()}/v1/catalog/services?dc=${dataCenter}");
-            final HttpResponse httpResponse = httpClient.execute(httpGet);
-            final StatusLine statusLine = httpResponse.getStatusLine();
-            httpEntity = httpResponse.getEntity();
 
-            final int statusCode = statusLine.getStatusCode();
-            assert statusCode == 200, "Unable to perform request, got statusCode [${statusCode}] instead of 200"
-            return new JsonSlurper().parse(httpEntity.getContent());
-        } finally {
-            EntityUtils.consume(httpEntity);
-        }
+
+        HttpClient httpClient = resourceLogic.getResourceInstance(HttpConstants.RESOURCE_MANAGER_NAME, StringUtils.defaultIfEmpty(configuration.get(HttpConstants.HTTP_CLIENT_ID), HttpConstants.DEFAULT_RESOURCE));
+        def serverUrl = configuration.get("serverUrl") ? configuration.get("serverUrl") : 'http://localhost:8500'
+        def dataCenter = configuration.get("dataCenter") ? configuration.get("dataCenter") : ''
+
+        return  new HttpGetBuilder(httpClient, "${serverUrl.trim()}/v1/catalog/services?dc=${dataCenter}")
+                .withBasicAuthentication( configuration.get("userName"), configuration.get("password"))
+                .execute(new JsonSlurperHttpGetCallback());
     }
 
 

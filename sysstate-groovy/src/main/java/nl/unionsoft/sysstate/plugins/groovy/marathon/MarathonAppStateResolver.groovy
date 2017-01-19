@@ -9,8 +9,10 @@ import nl.unionsoft.sysstate.common.dto.InstanceDto
 import nl.unionsoft.sysstate.common.dto.StateDto
 import nl.unionsoft.sysstate.common.enums.StateType
 import nl.unionsoft.sysstate.common.extending.StateResolver
-import nl.unionsoft.sysstate.common.logic.ResourceLogic;
+import nl.unionsoft.sysstate.common.logic.ResourceLogic
+import nl.unionsoft.sysstate.plugins.groovy.http.JsonSlurperHttpGetCallback
 import nl.unionsoft.sysstate.plugins.http.HttpConstants
+import nl.unionsoft.sysstate.plugins.http.HttpGetBuilder
 
 import org.apache.commons.lang.StringUtils
 import org.apache.http.HttpEntity
@@ -79,21 +81,12 @@ class MarathonAppStateResolver implements StateResolver{
     def getAppResults(Map<String, String> configuration){
         def applicationPath = configuration.get("applicationPath");
         HttpClient httpClient = resourceLogic.getResourceInstance(HttpConstants.RESOURCE_MANAGER_NAME, StringUtils.defaultIfEmpty(configuration.get(HttpConstants.HTTP_CLIENT_ID), HttpConstants.DEFAULT_RESOURCE));
-        HttpEntity httpEntity = null;
-        try {
-            def serverUrl = configuration.get("serverUrl") 
-            assert serverUrl,"No serverUrl defined."
-            def dataCenter = configuration.get("dataCenter") ? configuration.get("dataCenter") : ''
-            final HttpGet httpGet = new HttpGet("${serverUrl}/v2/apps/${applicationPath}");
-            final HttpResponse httpResponse = httpClient.execute(httpGet);
-            final StatusLine statusLine = httpResponse.getStatusLine();
-            httpEntity = httpResponse.getEntity();
 
-            final int statusCode = statusLine.getStatusCode();
-            assert statusCode == 200, "Unable to perform request, got statusCode [${statusCode}] instead of 200"
-            return new JsonSlurper().parse(httpEntity.getContent());
-        } finally {
-            EntityUtils.consume(httpEntity);
-        }
+        def serverUrl = configuration.get("serverUrl")
+        assert serverUrl,"No serverUrl defined."
+
+        return  new HttpGetBuilder(httpClient, "${serverUrl}/v2/apps/${applicationPath}")
+                .withBasicAuthentication( configuration.get("userName"), configuration.get("password"))
+                .execute(new JsonSlurperHttpGetCallback());
     }
 }

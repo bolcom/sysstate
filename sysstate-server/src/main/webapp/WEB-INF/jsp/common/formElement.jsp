@@ -58,8 +58,9 @@
 								<c:set var="multi" value="${param.multi}"/>
 								<c:set var="size" value="${param.size}"/>
 								<c:set var="itemLabel" value="${param.itemLabel}"/>
-								<c:set var="itemValue" value="${param.itemValue}"/>																
+								<c:set var="itemValue" value="${param.itemValue}"/>
 								<c:set var="allowEmpty" value="${param.allowEmpty == 'true'}"/>
+								
 								<c:set var="list" value="${requestScope[param.items]}"/>
 								<sf:select path="${path}" multiple="${multi == 'true'}" size="${size }" cssClass="${multi != 'true' ? 'styledselect_form_1' : ''}" >
 									<c:if test="${allowEmpty }">

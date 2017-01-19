@@ -2,7 +2,6 @@ package nl.unionsoft.sysstate.logic.impl;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,21 +9,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Set;
-import java.util.Stack;
 import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -38,12 +33,9 @@ import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
-import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
-import nl.unionsoft.sysstate.common.extending.ListOfValueResolver;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
-import nl.unionsoft.sysstate.common.util.PropertyGroupUtil;
 import nl.unionsoft.sysstate.converter.InstancePropertiesConverter;
 import nl.unionsoft.sysstate.converter.OptionalConverter;
 import nl.unionsoft.sysstate.converter.StateConverter;
@@ -55,7 +47,6 @@ import nl.unionsoft.sysstate.domain.Instance;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
 import nl.unionsoft.sysstate.job.UpdateInstanceJob;
 import nl.unionsoft.sysstate.logic.PluginLogic;
-import nl.unionsoft.sysstate.logic.PropertyMetaLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
@@ -176,6 +167,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return OptionalConverter.convert(instanceDao.getInstance(instanceId), instanceConverter);
     }
 
+    
     public Long createOrUpdateInstance(final InstanceDto dto) {
         Instance instance = getInstanceForDto(dto);
 
@@ -187,7 +179,12 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         instance.setReference(dto.getReference());
         instance.setRefreshTimeout(dto.getRefreshTimeout());
 
-        final ProjectEnvironment projectEnvironment = getProjectEnvironmentFromDto(dto.getProjectEnvironment());
+        final Optional<ProjectEnvironment> optProjectEnvironment = getProjectEnvironmentFromDto(dto.getProjectEnvironment());
+        if (!optProjectEnvironment.isPresent()){
+            throw new IllegalStateException("Undefined projectEnvironment [" + dto.getProjectEnvironment() + "] ");
+        }
+        
+        ProjectEnvironment projectEnvironment = optProjectEnvironment.get();
         if (instance.getProjectEnvironment() == null || !instance.getProjectEnvironment().getId().equals(projectEnvironment.getId())) {
             // ProjectEnvironment changed or null
             instance.setProjectEnvironment(projectEnvironment);
@@ -207,17 +204,17 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return instance.getId();
     }
 
-    private ProjectEnvironment getProjectEnvironmentFromDto(ProjectEnvironmentDto dto) {
+    private Optional<ProjectEnvironment> getProjectEnvironmentFromDto(ProjectEnvironmentDto dto) {
         if (dto.getId() != null) {
-            return projectEnvironmentDao.getProjectEnvironment(dto.getId());
+            return Optional.ofNullable(projectEnvironmentDao.getProjectEnvironment(dto.getId()));
         }
         if (dto.getProject().getId() != null && dto.getEnvironment().getId() != null) {
-            return projectEnvironmentDao.getProjectEnvironment(dto.getProject().getId(), dto.getEnvironment().getId());
+            return Optional.ofNullable(projectEnvironmentDao.getProjectEnvironment(dto.getProject().getId(), dto.getEnvironment().getId()));
         }
         if (StringUtils.isNotEmpty(dto.getProject().getName()) && StringUtils.isNotEmpty(dto.getEnvironment().getName())) {
-            return projectEnvironmentDao.getProjectEnvironment(dto.getProject().getName(), dto.getEnvironment().getName());
+            return Optional.ofNullable(projectEnvironmentDao.getProjectEnvironment(dto.getProject().getName(), dto.getEnvironment().getName()));
         }
-        throw new IllegalArgumentException("Unable to determine find existing projectEnvironment for  [" + dto + "]");
+       return Optional.empty();
 
     }
 
@@ -321,5 +318,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     public Optional<InstanceDto> getInstance(String reference) {
         return OptionalConverter.convert(instanceDao.getInstanceByReference(reference), instanceConverter);
     }
+
+ 
 
 }

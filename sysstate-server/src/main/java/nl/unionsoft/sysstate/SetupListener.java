@@ -101,14 +101,14 @@ public class SetupListener implements InitializingBean {
             addText("selfdiagnose-version 1.0", "xpath xPathStateResolver", "normalize-space(string(/selfdiagnose/@version))");
 
             LOG.info("No instances found, creating some default instances...");
-            addTestInstance("google", "GOOG", "PROD", createHttpConfiguration("http://www.google.nl"), "http://www.google.nl", "httpStateResolver");
-            addTestInstance("google", "GOOG", "MOCK", createMockConfiguration(18000, StateType.STABLE.name()), "http://www.yahoo.com", "mockStateResolver");
-            addTestInstance("yahoo", "YAHO", "PROD", createHttpConfiguration("http://www.yahoo.com"), "http://www.yahoo.com", "httpStateResolver");
-            addTestInstance("yahoo", "YAHO", "MOCK", createMockConfiguration(12000, StateType.UNSTABLE.name()), "http://www.yahoo.com", "mockStateResolver");
-            addTestInstance("bing", "BING", "PROD", createHttpConfiguration("http://www.bing.com"), "http://www.bing.com", "httpStateResolver");
-            addTestInstance("bing", "BING", "MOCK", createMockConfiguration(6000, StateType.ERROR.name()), "http://www.bing.com", "mockStateResolver");
-            addTestInstance("ilse", "ILSE", "PROD", createHttpConfiguration("http://www.ilse.nl"), "http://www.ilse.nl", "httpStateResolver");
-            addTestInstance("ilse", "ILSE", "MOCK", createMockConfiguration(3000, StateType.DISABLED.name()), "http://www.ilse.nl", "mockStateResolver");
+//            addTestInstance("google", "GOOG", "PROD", createHttpConfiguration("http://www.google.nl"), "http://www.google.nl", "httpStateResolver");
+//            addTestInstance("google", "GOOG", "MOCK", createMockConfiguration(18000, StateType.STABLE.name()), "http://www.yahoo.com", "mockStateResolver");
+//            addTestInstance("yahoo", "YAHO", "PROD", createHttpConfiguration("http://www.yahoo.com"), "http://www.yahoo.com", "httpStateResolver");
+//            addTestInstance("yahoo", "YAHO", "MOCK", createMockConfiguration(12000, StateType.UNSTABLE.name()), "http://www.yahoo.com", "mockStateResolver");
+//            addTestInstance("bing", "BING", "PROD", createHttpConfiguration("http://www.bing.com"), "http://www.bing.com", "httpStateResolver");
+//            addTestInstance("bing", "BING", "MOCK", createMockConfiguration(6000, StateType.ERROR.name()), "http://www.bing.com", "mockStateResolver");
+//            addTestInstance("ilse", "ILSE", "PROD", createHttpConfiguration("http://www.ilse.nl"), "http://www.ilse.nl", "httpStateResolver");
+//            addTestInstance("ilse", "ILSE", "MOCK", createMockConfiguration(3000, StateType.DISABLED.name()), "http://www.ilse.nl", "mockStateResolver");
 
             if (filterLogic.getFilters().isEmpty()) {
                 LOG.info("No filters found, creating a default filter...");

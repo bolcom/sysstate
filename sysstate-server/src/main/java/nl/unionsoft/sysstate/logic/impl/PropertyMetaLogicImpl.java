@@ -102,7 +102,7 @@ public class PropertyMetaLogicImpl implements PropertyMetaLogic {
         String value = properties.getProperty("default");
         Integer order = Integer.valueOf(properties.getProperty("order", "100"));
         Boolean nullable = BooleanUtils.toBoolean(properties.getProperty("nullable"));
-
+        System.out.println(title + ": " + nullable);
         PropertyMetaValue propertyMetaValue = new PropertyMetaValue(id, title, nullable, value, order);
         String lovResolver = properties.getProperty("resolver");
         if (StringUtils.isNotEmpty(lovResolver)) {

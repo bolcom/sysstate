@@ -96,4 +96,11 @@ public class ProjectDto implements Serializable {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "ProjectDto [id=" + id + ", name=" + name + "]";
+    }
+    
+    
+
 }

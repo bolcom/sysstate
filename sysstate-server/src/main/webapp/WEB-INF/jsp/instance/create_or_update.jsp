@@ -58,6 +58,7 @@
 							</c:if>
 						
 							<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
+							    <jsp:param name="allowEmpty" value="${propertyMeta.nullable }"/>
 								<jsp:param name="path" value="configuration['${propertyMeta.id}']"/>
 								<jsp:param name="label" value="${propertyMeta.title}"/>
 								<jsp:param name="cols" value="80"/>

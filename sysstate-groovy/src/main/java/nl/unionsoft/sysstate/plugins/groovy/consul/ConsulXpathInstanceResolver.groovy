@@ -10,6 +10,7 @@ import nl.unionsoft.sysstate.common.logic.EnvironmentLogic
 import nl.unionsoft.sysstate.common.logic.InstanceLinkLogic
 import nl.unionsoft.sysstate.common.logic.InstanceLogic
 import nl.unionsoft.sysstate.common.logic.ProjectLogic
+import nl.unionsoft.sysstate.common.logic.RelationalInstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ResourceLogic
 import nl.unionsoft.sysstate.common.logic.TemplateLogic
 import nl.unionsoft.sysstate.plugins.groovy.basic.XPathStateResolver
@@ -22,8 +23,8 @@ class ConsulXpathInstanceResolver extends AbstractConsulPatternInstanceResolver{
     private final TemplateLogic templateLogic;
 
     @Inject
-    public ConsulXpathInstanceResolver(InstanceLogic instanceLogic, InstanceLinkLogic instanceLinkLogic, ResourceLogic resourceLogic, TemplateLogic templateLogic){
-        super(instanceLogic, instanceLinkLogic, resourceLogic)
+    public ConsulXpathInstanceResolver(RelationalInstanceLogic relationalInstanceLogic, ResourceLogic resourceLogic, TemplateLogic templateLogic){
+        super(relationalInstanceLogic, resourceLogic)
         this.templateLogic = templateLogic;
     }
 
