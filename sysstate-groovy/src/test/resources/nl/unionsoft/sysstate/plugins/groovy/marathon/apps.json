@@ -1,6 +1,9 @@
+
 {
-	"consul": [],
-	"pro-wizfirst-app": [],
-	"test-wizsecond-app": [],
-	"test-nizthird-app": []
+	"apps": [{
+		"id": "/alpha-first/first"
+	},
+	{
+        "id": "/beta-second/second"
+    }]
 }
