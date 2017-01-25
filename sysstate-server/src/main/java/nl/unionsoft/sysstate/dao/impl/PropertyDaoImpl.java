@@ -1,22 +1,23 @@
 package nl.unionsoft.sysstate.dao.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
-import nl.unionsoft.sysstate.dao.PropertyDao;
-import nl.unionsoft.sysstate.domain.GroupProperty;
-import nl.unionsoft.sysstate.domain.Instance;
-import nl.unionsoft.sysstate.domain.InstanceProperty;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import nl.unionsoft.sysstate.dao.PropertyDao;
+import nl.unionsoft.sysstate.domain.GroupProperty;
+import nl.unionsoft.sysstate.domain.Instance;
+import nl.unionsoft.sysstate.domain.InstanceProperty;
 
 @Service("propertyDao")
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -26,29 +27,23 @@ public class PropertyDaoImpl implements PropertyDao {
     @Named("entityManager")
     private EntityManager entityManager;
 
-    public void setInstanceProperty(final Instance instance, final String key, final String value) {
+    public void setInstanceProperties(final Instance instance, Map<String, String> values) {
 
-        try {
-            // @formatter:off
-            InstanceProperty result=  entityManager.createQuery(
-                    "FROM InstanceProperty" +
-                            " WHERE instance = :instance " +
-                            "AND key = :key", InstanceProperty.class)
-                            .setParameter("instance", instance)
-                            .setParameter("key", key)
-                            .getSingleResult();
-            // @formatter: on
-            result.setValue(value);
-        } catch (final NoResultException nre) {
+        entityManager.createQuery("DELETE FROM InstanceProperty WHERE instance = :instance")
+                .setParameter("instance", instance)
+                .executeUpdate();
+
+        values.entrySet().stream().forEach(entry -> {
             InstanceProperty result = new InstanceProperty();
-            result.setKey(key);
-            result.setValue(value);
+            result.setKey(entry.getKey());
+            result.setValue(entry.getValue());
             result.setInstance(instance);
             instance.getInstanceProperties().add(result);
             entityManager.persist(result);
-        }
-    }
 
+        });
+
+    }
 
     public void setGroupProperty(String group, String key, String value) {
         try {

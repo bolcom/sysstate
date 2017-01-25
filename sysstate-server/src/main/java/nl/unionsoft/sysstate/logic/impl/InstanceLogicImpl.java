@@ -191,13 +191,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         }
 
         instanceDao.createOrUpdate(instance);
-
-        Map<String, String> configuration = dto.getConfiguration();
-        if (configuration != null) {
-            for (Entry<String, String> entry : configuration.entrySet()) {
-                propertyDao.setInstanceProperty(instance, entry.getKey(), entry.getValue());
-            }
-        }
+        propertyDao.setInstanceProperties(instance, dto.getConfiguration());
         updateTriggerJob(instance);
 
         dto.setId(instance.getId());
