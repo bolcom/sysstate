@@ -10,6 +10,7 @@ import nl.unionsoft.sysstate.common.logic.EnvironmentLogic
 import nl.unionsoft.sysstate.common.logic.InstanceLinkLogic
 import nl.unionsoft.sysstate.common.logic.InstanceLogic
 import nl.unionsoft.sysstate.common.logic.ProjectLogic
+import nl.unionsoft.sysstate.common.logic.RelationalInstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ResourceLogic
 import nl.unionsoft.sysstate.common.logic.TemplateLogic
 import nl.unionsoft.sysstate.plugins.groovy.basic.XPathStateResolver
@@ -22,19 +23,15 @@ class ConsulXpathInstanceResolver extends AbstractConsulPatternInstanceResolver{
     private final TemplateLogic templateLogic;
 
     @Inject
-    public ConsulXpathInstanceResolver(ResourceLogic resourceLogic, ProjectLogic projectLogic, EnvironmentLogic environmentLogic, InstanceLogic instanceLogic, InstanceLinkLogic instanceLinkLogic, TemplateLogic templateLogic){
-        super(resourceLogic, projectLogic, environmentLogic, instanceLogic, instanceLinkLogic)
+    public ConsulXpathInstanceResolver(RelationalInstanceLogic relationalInstanceLogic, ResourceLogic resourceLogic, TemplateLogic templateLogic){
+        super(relationalInstanceLogic, resourceLogic)
         this.templateLogic = templateLogic;
     }
 
     @Override
-    public String getType() {
-        return "xPathStateResolver";
-    }
-
-    @Override
-    public void configure(InstanceDto instance, ProjectDto project, EnvironmentDto environment, InstanceDto parent) {
-        def url = getUrl(parent, project, environment)
+    public void configure(InstanceDto instance, InstanceDto parent) {
+        def url = getUrl(parent, instance.projectEnvironment.project, instance.projectEnvironment.environment)
+        instance.pluginClass = "xPathStateResolver"
         instance.homepageUrl= url;
         instance.configuration[HttpStateResolverImpl.URL] = url;
         instance.configuration[XPathStateResolver.XPATH] = parent.configuration["child_${XPathStateResolver.XPATH}"]
@@ -44,7 +41,7 @@ class ConsulXpathInstanceResolver extends AbstractConsulPatternInstanceResolver{
     }
 
     private String getUrl(InstanceDto parent, ProjectDto project, EnvironmentDto environment) {
-        def urlTemplate = parent.configuration['urlTemplate']
+        def urlTemplate = parent.configuration['child_urlTemplate']
         assert urlTemplate, "No urlTemplate defined"
         StringWriter stringWriter = new StringWriter();
         templateLogic.writeTemplate(urlTemplate, ['project':project, 'environment' : environment], stringWriter)

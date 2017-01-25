@@ -40,7 +40,7 @@ public class PropertyMetaList {
         PropertyMetaValue propertyMeta = get(id);
         if (propertyMeta instanceof PropertyMetaValue) {
             PropertyMetaValue propertyMetaValue = (PropertyMetaValue) propertyMeta;
-            result = propertyMetaValue.getValue();
+            result = propertyMetaValue.getDefaultValue();
         }
         return result;
     }

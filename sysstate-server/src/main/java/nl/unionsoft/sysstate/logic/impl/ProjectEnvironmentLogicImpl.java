@@ -13,7 +13,6 @@ import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
 import nl.unionsoft.sysstate.dao.EnvironmentDao;
-import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.dao.ProjectDao;
 import nl.unionsoft.sysstate.dao.ProjectEnvironmentDao;
 import nl.unionsoft.sysstate.dao.StateDao;
@@ -47,9 +46,6 @@ public class ProjectEnvironmentLogicImpl implements ProjectEnvironmentLogic {
     @Named("environmentDao")
     private EnvironmentDao environmentDao;
 
-    @Inject
-    @Named("instanceDao")
-    private InstanceDao instanceDao;
 
     @Inject
     @Named("stateDao")

@@ -54,6 +54,5 @@ public interface InstanceLogic {
 
 	public void removeTriggerJob(final long instanceId);
 
-	public List<PropertyMetaValue> getPropertyMeta(String type);
 
 }

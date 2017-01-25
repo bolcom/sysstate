@@ -2,37 +2,47 @@ package nl.unionsoft.sysstate.plugins.groovy.marathon
 
 import groovy.json.JsonSlurper
 
+import javax.inject.Inject
 import javax.inject.Named
 
 import nl.unionsoft.sysstate.common.dto.InstanceDto
 import nl.unionsoft.sysstate.common.dto.StateDto
 import nl.unionsoft.sysstate.common.enums.StateType
 import nl.unionsoft.sysstate.common.extending.StateResolver
+import nl.unionsoft.sysstate.common.logic.ResourceLogic
+import nl.unionsoft.sysstate.plugins.groovy.http.JsonSlurperHttpGetCallback
+import nl.unionsoft.sysstate.plugins.http.HttpConstants
+import nl.unionsoft.sysstate.plugins.http.HttpGetBuilder
+
+import org.apache.commons.lang.StringUtils
+import org.apache.http.HttpEntity
+import org.apache.http.HttpResponse
+import org.apache.http.StatusLine
+import org.apache.http.client.HttpClient
+import org.apache.http.client.methods.HttpGet
+import org.apache.http.util.EntityUtils
 
 @Named("marathonAppStateResolver")
 class MarathonAppStateResolver implements StateResolver{
 
+    private ResourceLogic resourceLogic;
+
+    @Inject
+    public MarathonAppStateResolver(ResourceLogic resourceLogic) {
+        this.resourceLogic = resourceLogic;
+    }
     @Override
     public void setState(InstanceDto instance, StateDto state) {
 
         Map<String, String> configuration = instance.getConfiguration()
 
-        def applicationPath = configuration.get("applicationPath");
         def ignoreHealthStatus = configuration.get("ignoreHealthStatus").toBoolean()
-        def serverUrl = configuration.get("serverUrl").trim()
-        
-        def connectTimeout = (properties["connectTimeout"] ? properties['connectTimeout'] : '5000') as int
-        def readTimeout = (properties["readTimeout"] ? properties['readTimeout'] : '5000') as int
 
-        assert applicationPath,"No applicationPath defined in properties..."
-        assert serverUrl,"No server defined in properties..."
-
-        def appResults = new JsonSlurper().parseText(new URL("${serverUrl}/v2/apps${applicationPath}").getText(["connectTimeout" : connectTimeout, "readTimeout":readTimeout], "UTF-8"))
-        def app = appResults['app']
+        def app = getAppResults(configuration)['app']
 
         if (app['tasksStaged'] + app['tasksRunning'] == 0){
             state.setState(StateType.ERROR)
-            state.appendMessage("No tasks found for applicationPath [${applicationPath}]")
+            state.appendMessage("No tasks found for applicationPath [${configuration['applicationPath']}]")
             return
         }
 
@@ -65,7 +75,18 @@ class MarathonAppStateResolver implements StateResolver{
 
     @Override
     public String generateHomePageUrl(InstanceDto instance) {
-        // TODO Auto-generated method stub
-        return serverUrl;
+        return instance.configuration.get("serverUrl") ;
+    }
+
+    def getAppResults(Map<String, String> configuration){
+        def applicationPath = configuration.get("applicationPath");
+        HttpClient httpClient = resourceLogic.getResourceInstance(HttpConstants.RESOURCE_MANAGER_NAME, StringUtils.defaultIfEmpty(configuration.get(HttpConstants.HTTP_CLIENT_ID), HttpConstants.DEFAULT_RESOURCE));
+
+        def serverUrl = configuration.get("serverUrl")
+        assert serverUrl,"No serverUrl defined."
+
+        return  new HttpGetBuilder(httpClient, "${serverUrl}/v2/apps/${applicationPath}")
+                .withBasicAuthentication( configuration.get("userName"), configuration.get("password"))
+                .execute(new JsonSlurperHttpGetCallback());
     }
 }

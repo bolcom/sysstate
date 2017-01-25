@@ -96,4 +96,11 @@ public class EnvironmentDto implements Serializable {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "EnvironmentDto [id=" + id + ", name=" + name + "]";
+    }
+
+    
+    
 }

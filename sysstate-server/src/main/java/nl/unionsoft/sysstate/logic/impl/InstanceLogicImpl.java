@@ -2,7 +2,6 @@ package nl.unionsoft.sysstate.logic.impl;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,9 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Set;
-import java.util.Stack;
 import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 
@@ -23,7 +20,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -37,12 +33,9 @@ import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
-import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
-import nl.unionsoft.sysstate.common.extending.ListOfValueResolver;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
-import nl.unionsoft.sysstate.common.util.PropertyGroupUtil;
 import nl.unionsoft.sysstate.converter.InstancePropertiesConverter;
 import nl.unionsoft.sysstate.converter.OptionalConverter;
 import nl.unionsoft.sysstate.converter.StateConverter;
@@ -118,6 +111,8 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     @Inject
     @Named("instancePropertiesConverter")
     private InstancePropertiesConverter instancePropertiesConverter;
+    
+   
 
     private Map<Long, ScheduledFuture<?>> instanceTasks;
 
@@ -172,6 +167,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return OptionalConverter.convert(instanceDao.getInstance(instanceId), instanceConverter);
     }
 
+    
     public Long createOrUpdateInstance(final InstanceDto dto) {
         Instance instance = getInstanceForDto(dto);
 
@@ -183,37 +179,36 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         instance.setReference(dto.getReference());
         instance.setRefreshTimeout(dto.getRefreshTimeout());
 
-        final ProjectEnvironment projectEnvironment = getProjectEnvironmentFromDto(dto.getProjectEnvironment());
+        final Optional<ProjectEnvironment> optProjectEnvironment = getProjectEnvironmentFromDto(dto.getProjectEnvironment());
+        if (!optProjectEnvironment.isPresent()){
+            throw new IllegalStateException("Undefined projectEnvironment [" + dto.getProjectEnvironment() + "] ");
+        }
+        
+        ProjectEnvironment projectEnvironment = optProjectEnvironment.get();
         if (instance.getProjectEnvironment() == null || !instance.getProjectEnvironment().getId().equals(projectEnvironment.getId())) {
             // ProjectEnvironment changed or null
             instance.setProjectEnvironment(projectEnvironment);
         }
 
         instanceDao.createOrUpdate(instance);
-
-        Map<String, String> configuration = dto.getConfiguration();
-        if (configuration != null) {
-            for (Entry<String, String> entry : configuration.entrySet()) {
-                propertyDao.setInstanceProperty(instance, entry.getKey(), entry.getValue());
-            }
-        }
+        propertyDao.setInstanceProperties(instance, dto.getConfiguration());
         updateTriggerJob(instance);
 
         dto.setId(instance.getId());
         return instance.getId();
     }
 
-    private ProjectEnvironment getProjectEnvironmentFromDto(ProjectEnvironmentDto dto) {
+    private Optional<ProjectEnvironment> getProjectEnvironmentFromDto(ProjectEnvironmentDto dto) {
         if (dto.getId() != null) {
-            return projectEnvironmentDao.getProjectEnvironment(dto.getId());
+            return Optional.ofNullable(projectEnvironmentDao.getProjectEnvironment(dto.getId()));
         }
         if (dto.getProject().getId() != null && dto.getEnvironment().getId() != null) {
-            return projectEnvironmentDao.getProjectEnvironment(dto.getProject().getId(), dto.getEnvironment().getId());
+            return Optional.ofNullable(projectEnvironmentDao.getProjectEnvironment(dto.getProject().getId(), dto.getEnvironment().getId()));
         }
         if (StringUtils.isNotEmpty(dto.getProject().getName()) && StringUtils.isNotEmpty(dto.getEnvironment().getName())) {
-            return projectEnvironmentDao.getProjectEnvironment(dto.getProject().getName(), dto.getEnvironment().getName());
+            return Optional.ofNullable(projectEnvironmentDao.getProjectEnvironment(dto.getProject().getName(), dto.getEnvironment().getName()));
         }
-        throw new IllegalArgumentException("Unable to determine find existing projectEnvironment for  [" + dto + "]");
+       return Optional.empty();
 
     }
 
@@ -236,7 +231,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         removeTriggerJob(instanceId);
     }
 
-    @Scheduled(initialDelay=10000, fixedRate=60000)
+    @Scheduled(initialDelay = 10000, fixedRate = 60000)
     public void purgeOldJobs() {
         logger.info("Purging old instance jobs...");
         Set<Long> cancelledJobKeys = new HashSet<Long>();
@@ -247,7 +242,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
                 cancelledJobKeys.add(instanceId);
             }
         });
-        cancelledJobKeys.forEach( key -> instanceTasks.remove(key));
+        cancelledJobKeys.forEach(key -> instanceTasks.remove(key));
         logger.info("Purged & cancelled [{}] jobs..", cancelledJobKeys.size());
     }
 
@@ -287,46 +282,8 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return instance;
     }
 
-    @Cacheable("propertyMetaTypeCache")
-    public List<PropertyMetaValue> getPropertyMeta(String type) {
-
-        Object component = pluginLogic.getComponent(type);
-
-        Class<?> componentClass = component.getClass();
-
-        Stack<Class<?>> classStack = new Stack<Class<?>>();
-        Class<?> superClass = componentClass;
-        while (!Object.class.equals(superClass)) {
-            classStack.push(superClass);
-            superClass = superClass.getSuperclass();
-        }
-
-        List<PropertyMetaValue> propertyMetas = new ArrayList<PropertyMetaValue>();
-        while (!classStack.empty()) {
-            Class<?> stackClass = classStack.pop();
-            addPropertyMetasFromPropertyFiles(propertyMetas, stackClass);
-
-        }
-
-        return propertyMetas;
-    }
-
-    private void addPropertyMetasFromPropertyFiles(List<PropertyMetaValue> propertyMetas, Class<?> stackClass) {
-        Map<String, Properties> instanceGroupProperties = PropertyGroupUtil.getGroupProperties(pluginLogic.getPropertiesForClass(stackClass), "instance");
-        for (Entry<String, Properties> entry : instanceGroupProperties.entrySet()) {
-            String id = entry.getKey();
-            Properties properties = entry.getValue();
-            PropertyMetaValue propertyMetaValue = new PropertyMetaValue();
-            propertyMetaValue.setId(id);
-            propertyMetaValue.setTitle(properties.getProperty("title", id));
-            String lovResolver = properties.getProperty("resolver");
-            if (StringUtils.isNotEmpty(lovResolver)) {
-                ListOfValueResolver listOfValueResolver = pluginLogic.getListOfValueResolver(lovResolver);
-                propertyMetaValue.setLov(listOfValueResolver.getListOfValues(propertyMetaValue));
-            }
-            propertyMetas.add(propertyMetaValue);
-        }
-    }
+  
+  
 
     @Override
     public List<InstanceDto> getInstancesForEnvironment(Long environmentId) {
@@ -355,5 +312,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     public Optional<InstanceDto> getInstance(String reference) {
         return OptionalConverter.convert(instanceDao.getInstanceByReference(reference), instanceConverter);
     }
+
+ 
 
 }

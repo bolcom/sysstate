@@ -1,63 +1,58 @@
 package nl.unionsoft.sysstate.common.extending;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
-import nl.unionsoft.sysstate.common.dto.InstanceLinkDto.Direction;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
-import nl.unionsoft.sysstate.common.logic.InstanceLinkLogic;
-import nl.unionsoft.sysstate.common.logic.InstanceLogic;
+import nl.unionsoft.sysstate.common.logic.RelationalInstanceLogic;
 
 public abstract class InstanceStateResolver implements StateResolver {
 
-    private final Logger log = LoggerFactory.getLogger(InstanceStateResolver.class);
+    private final static Logger log = LoggerFactory.getLogger(InstanceStateResolver.class);
 
-    protected InstanceLinkLogic instanceLinkLogic;
-    protected InstanceLogic instanceLogic;
-    protected EnvironmentLogic environmentLogic;
-    
-    public InstanceStateResolver(InstanceLinkLogic instanceLinkLogic, InstanceLogic instanceLogic, EnvironmentLogic environmentLogic) {
-        this.instanceLinkLogic = instanceLinkLogic;
-        this.instanceLogic = instanceLogic;
-        this.environmentLogic = environmentLogic;
+    private final RelationalInstanceLogic relationalInstanceLogic;
+
+    public InstanceStateResolver(RelationalInstanceLogic relationalInstanceLogic) {
+        this.relationalInstanceLogic = relationalInstanceLogic;
     }
 
     @Override
-    public void setState(InstanceDto instance, StateDto state) {
-        List<InstanceDto> childInstances = instanceLinkLogic.getInstanceLinks(instance.getId())
-                .stream().filter(il -> il.getDirection().equals(Direction.OUTGOING) && il.getName().equals("child"))
-                .map(il -> instanceLogic.getInstance(il.getInstanceToId()))
-                .flatMap(o -> o.isPresent() ? Stream.of(o.get()) : Stream.empty())
-                .collect(Collectors.toList());
+    public void setState(InstanceDto parent, StateDto state) {
+        List<InstanceDto> childInstances = relationalInstanceLogic.getChildInstances(parent);
 
-        List<InstanceDto> updatedInstances = createOrUpdateInstances(instance, childInstances);
-        updatedInstances.stream().forEach( child -> instanceLinkLogic.link(instance.getId(),child.getId(), "child"));
-        deleteNoLongerValidInstances(updatedInstances, childInstances);
+        List<InstanceDto> instances = generateInstances(parent);
+
+        instances.stream().forEach(instance -> {
+            log.debug("Optionally setting id from existing child for instance [{}]", instance);
+            relationalInstanceLogic.findChildInstanceId(childInstances, instance.getReference())
+                    .ifPresent(childInstanceId -> instance.setId(childInstanceId));
+
+            postConfigure(instance, parent);
+
+            relationalInstanceLogic.createOrUpdateInstance(instance, parent);
+
+        });
+
+        relationalInstanceLogic.deleteNoLongerValidInstances(instances, childInstances);
         state.setState(StateType.STABLE);
         state.setDescription("OK");
     }
 
-    private void deleteNoLongerValidInstances(List<InstanceDto> updatedInstances, List<InstanceDto> children) {
-        log.info("Removing children that are not in the list of updatedInstances...");
-        List<Long> validInstanceIds = updatedInstances.stream().map(i -> i.getId()).collect(Collectors.toList());
-        children.stream().forEach(i -> {
-            if (!validInstanceIds.contains(i.getId())) {
-                log.info("Deleting instance with id [${i.id}] sinze it is no longer used.");
-                instanceLogic.delete(i.getId());
-            }
-        });
+    private void postConfigure(InstanceDto instance, InstanceDto parent) {
+        log.debug("Post configuring instance [{}]", instance);
+        Map<String, String> configuration = parent.getConfiguration();
+        instance.setRefreshTimeout(Integer.valueOf(StringUtils.defaultString(configuration.get("child_refreshTimeout"), "60000")));
     }
 
     @Override
     public abstract String generateHomePageUrl(InstanceDto instance);
 
-    public abstract List<InstanceDto> createOrUpdateInstances(InstanceDto parent, List<InstanceDto> children);
+    public abstract List<InstanceDto> generateInstances(InstanceDto parent);
 
 }

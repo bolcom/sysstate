@@ -129,4 +129,9 @@ public class ProjectEnvironmentDto implements Serializable {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "ProjectEnvironmentDto [id=" + id + ", project=" + project + ", environment=" + environment + "]";
+    }
+
 }
