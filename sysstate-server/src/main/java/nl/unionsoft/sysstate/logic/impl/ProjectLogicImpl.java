@@ -95,9 +95,7 @@ public class ProjectLogicImpl implements ProjectLogic {
             }
         }
         projectDao.delete(projectId);
-        for (Long instanceId : instanceIds) {
-            instanceLogic.removeTriggerJob(instanceId);
-        }
+
     }
 
     public Optional<ProjectDto> getProjectByName(final String name) {

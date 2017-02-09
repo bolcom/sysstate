@@ -31,8 +31,6 @@ public interface InstanceLogic {
 
 	public List<InstanceDto> getInstancesForEnvironment(Long environmentId);
 	
-	public void purgeOldJobs();
-	
 
 	/**
 	 * Gets instances for a custom filter
@@ -49,10 +47,9 @@ public interface InstanceLogic {
 	 * @return
 	 */
 	public List<InstanceDto> getInstances(Long filterId);
+	
+	public void refreshInstances();
 
-	public void addTriggerJob(final long instanceId);
-
-	public void removeTriggerJob(final long instanceId);
 
 
 }

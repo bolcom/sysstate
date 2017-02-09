@@ -61,9 +61,6 @@ public class EnvironmentLogicImpl implements EnvironmentLogic {
     }
 
     public void delete(final Long environmentId) {
-        instanceLogic.getInstancesForEnvironment(environmentId).parallelStream().forEach(instance -> {
-            instanceLogic.removeTriggerJob(instance.getId());
-        });
         environmentDao.delete(environmentId);
     }
 

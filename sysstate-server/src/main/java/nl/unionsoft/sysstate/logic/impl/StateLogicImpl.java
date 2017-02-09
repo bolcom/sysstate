@@ -43,6 +43,7 @@ import nl.unionsoft.sysstate.domain.State;
 import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
+import nl.unionsoft.sysstate.logic.WorkLogic;
 
 @Service("stateLogic")
 @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -69,6 +70,8 @@ public class StateLogicImpl implements StateLogic {
     @Inject
     @Named("pluginLogic")
     private PluginLogic pluginLogic;
+    
+
     
     @Scheduled(initialDelay=10000, fixedRate=600000)
     public void clean() {
@@ -254,5 +257,6 @@ public class StateLogicImpl implements StateLogic {
                 .map(Optional::get)
                 .collect(Collectors.toList());
     }
+
 
 }
