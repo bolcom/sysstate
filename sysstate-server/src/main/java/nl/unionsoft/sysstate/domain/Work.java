@@ -1,5 +1,7 @@
 package nl.unionsoft.sysstate.domain;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -9,6 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -35,9 +39,13 @@ public class Work {
     @Column(name = "NODEID", nullable = false, length = 255)
     private String nodeId;
 
-    @Column(name = "STATUS", nullable = true, length = 40)
+    @Column(name = "STATUS", nullable = false, length = 40)
     @Enumerated(EnumType.STRING)
     private WorkStatus state;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "INITIALIZED", nullable = false)
+    private Date initialized;
 
     public Long getId() {
         return id;
@@ -70,7 +78,13 @@ public class Work {
     public void setNodeId(String nodeId) {
         this.nodeId = nodeId;
     }
-    
-    
+
+    public Date getInitialized() {
+        return initialized;
+    }
+
+    public void setInitialized(Date initialized) {
+        this.initialized = initialized;
+    }
 
 }

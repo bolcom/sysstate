@@ -267,6 +267,11 @@
 		<put-attribute name="page-heading" value="Confirm Logout" />
 	</definition>
 
+    <!-- Work -->
+    <definition name="work-manager" extends="manager">
+        <put-attribute name="contents" value="/WEB-INF/jsp/work/index.jsp" />
+        <put-attribute name="page-heading" value="Work" />
+    </definition>
 
 	<!-- Queue -->
 	<definition name="scheduler-manager" extends="manager">

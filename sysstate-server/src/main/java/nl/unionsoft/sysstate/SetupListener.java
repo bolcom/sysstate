@@ -105,10 +105,10 @@ public class SetupListener implements InitializingBean {
 //            addTestInstance("google", "GOOG", "MOCK", createMockConfiguration(18000, StateType.STABLE.name()), "http://www.yahoo.com", "mockStateResolver");
 //            addTestInstance("yahoo", "YAHO", "PROD", createHttpConfiguration("http://www.yahoo.com"), "http://www.yahoo.com", "httpStateResolver");
 //            addTestInstance("yahoo", "YAHO", "MOCK", createMockConfiguration(12000, StateType.UNSTABLE.name()), "http://www.yahoo.com", "mockStateResolver");
-            addTestInstance("bing", "BING", "PROD", createHttpConfiguration("http://www.bing.com"), "http://www.bing.com", "httpStateResolver");
-            addTestInstance("bing", "BING", "MOCK", createMockConfiguration(6000, StateType.ERROR.name()), "http://www.bing.com", "mockStateResolver");
-            addTestInstance("ilse", "ILSE", "PROD", createHttpConfiguration("http://www.ilse.nl"), "http://www.ilse.nl", "httpStateResolver");
-            addTestInstance("ilse", "ILSE", "MOCK", createMockConfiguration(3000, StateType.DISABLED.name()), "http://www.ilse.nl", "mockStateResolver");
+            //addTestInstance("bing", "BING", "PROD", createHttpConfiguration("http://www.bing.com"), "http://www.bing.com", "httpStateResolver", 5000);
+            addTestInstance("bing", "BING", "MOCK", createMockConfiguration(10000, StateType.ERROR.name()), "http://www.bing.com", "mockStateResolver",1000);
+            //addTestInstance("ilse", "ILSE", "PROD", createHttpConfiguration("http://www.ilse.nl"), "http://www.ilse.nl", "httpStateResolver", 20000);
+            //addTestInstance("ilse", "ILSE", "MOCK", createMockConfiguration(60000, StateType.DISABLED.name()), "http://www.ilse.nl", "mockStateResolver", 40000);
 
             if (filterLogic.getFilters().isEmpty()) {
                 LOG.info("No filters found, creating a default filter...");
@@ -150,7 +150,7 @@ public class SetupListener implements InitializingBean {
     }
 
     private void addTestInstance(final String name, final String projectName, final String environmentName, final Map<String, String> configuration,
-            final String homepageUrl, final String plugin) {
+            final String homepageUrl, final String plugin, int refreshTimeout) {
         ProjectEnvironmentDto projectEnvironment = projectEnvironmentLogic.getProjectEnvironment(projectName, environmentName);
         if (projectEnvironment == null) {
             LOG.info("Skipping creating of instance ${}, no projectEnvironment could be found for projectName '{}' and environmentName '{}'", new Object[] {
@@ -163,7 +163,7 @@ public class SetupListener implements InitializingBean {
             instance.setConfiguration(configuration);
             instance.setHomepageUrl(homepageUrl);
             instance.setPluginClass(plugin);
-            instance.setRefreshTimeout(10000);
+            instance.setRefreshTimeout(refreshTimeout);
             instance.setTags("application");
             instanceLogic.createOrUpdateInstance(instance);
         }

@@ -12,8 +12,11 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.print.attribute.standard.PrinterLocation;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.ivy.Main;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
@@ -117,45 +120,6 @@ public class InstanceLogicImpl implements InstanceLogic {
     public InstanceLogicImpl() {
         instanceTasks = new HashMap<>();
     }
-
-    // public void queueForUpdate(final Long instanceId) {
-    //
-    // Optional<Instance> optionalInstance = instanceDao.getInstance(instanceId);
-    // if (!optionalInstance.isPresent()) {
-    // throw new IllegalStateException("No instance could be found for the given instanceId [" + instanceId + "]");
-    // }
-    // updateTriggerJob(optionalInstance.get());
-    // }
-
-    // private void updateTriggerJob(final Instance instance) {
-    // if (instance == null) {
-    // throw new IllegalStateException("Instance is required!");
-    // }
-    // logger.info("Creating or updating queue job for instance with id: {}", instance.getId());
-    // removeTriggerJob(instance.getId());
-    // addTriggerJob(instance.getId());
-    // }
-    //
-    // public void addTriggerJob(final long instanceId) {
-    // Optional<Instance> optionalInstance = instanceDao.getInstance(instanceId);
-    // if (!optionalInstance.isPresent()) {
-    // throw new IllegalStateException("No instance could be found for instanceId [" + instanceId + "]");
-    // }
-    // Instance instance = optionalInstance.get();
-    //
-    // final long refreshTimeout = instance.getRefreshTimeout();
-    // long period = refreshTimeout < 30000 ? 30000 : refreshTimeout;
-    // UpdateInstanceJob updateInstanceJob = new UpdateInstanceJob(this, stateLogic, instanceId);
-    // Date bitInTheFuture = Date.from(LocalDateTime.now().plusSeconds(10).atZone(ZoneId.systemDefault()).toInstant());
-    // instanceTasks.put(instanceId, scheduler.scheduleAtFixedRate(updateInstanceJob, bitInTheFuture, period));
-    // }
-    //
-    // public void removeTriggerJob(final long instanceId) {
-    // ScheduledFuture<?> scheduledFuture = instanceTasks.get(instanceId);
-    // if (scheduledFuture != null) {
-    // scheduledFuture.cancel(true);
-    // }
-    // }
 
     public List<InstanceDto> getInstances() {
         return ListConverter.convert(instanceConverter, instanceDao.getInstances());
@@ -304,10 +268,12 @@ public class InstanceLogicImpl implements InstanceLogic {
     }
 
     @Override
-    @Scheduled(initialDelay = 5000, fixedRate = 5000)
+    @Scheduled(initialDelay = 5000, fixedRate = 500)
     public void refreshInstances() {
-        instanceDao.getInstances()
-                .forEach(instance -> refreshInstance(instanceConverter.convert(instance)));
+        instanceDao.getInstances().stream()
+                .map(instance -> instanceConverter.convert(instance))
+                .filter(instance -> needsToBeUpdated(instance))
+                .forEach(instance -> refreshInstance(instance));
 
     }
 
@@ -321,6 +287,15 @@ public class InstanceLogicImpl implements InstanceLogic {
                                 workLogic.release(workId);
                             });
                 });
+    }
+
+    private boolean needsToBeUpdated(InstanceDto instance) {
+        logger.debug("Checking if instance [{}]  needs to be updated...", instance);
+        StateDto state = stateLogic.getLastStateForInstance(instance);
+        // Returns true if the lastUpdate + the refreshTimeout is before the current time (aka expired)
+        boolean expired = state.getLastUpdate().plusMillis(instance.getRefreshTimeout()).isBefore(new DateTime());
+        logger.debug("Instance [{}] expired: [{}]", instance, expired);
+        return expired;
     }
 
 }

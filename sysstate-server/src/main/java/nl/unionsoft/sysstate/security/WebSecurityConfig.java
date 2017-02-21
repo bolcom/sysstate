@@ -78,7 +78,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/view/**/index*",                                  
                 "/logout*", 
                 "/login*",
-                "/scheduler/**"
+                "/scheduler/**",
+                "/work/**"
                 ).permitAll()
             .antMatchers(HttpMethod.POST,
                 "/manager/search*",

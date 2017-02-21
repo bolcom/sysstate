@@ -1,5 +1,5 @@
 package nl.unionsoft.sysstate.common.enums;
 
 public enum WorkStatus {
-    ACQUIRING, ACQUIRED, RELEASED
+    NEW, ACQUIRING, ACQUIRED, RELEASED
 }
