@@ -9,6 +9,7 @@ import nl.unionsoft.sysstate.common.logic.InstanceLogic
 import nl.unionsoft.sysstate.common.logic.RelationalInstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ResourceLogic
 import nl.unionsoft.sysstate.common.logic.TemplateLogic
+import nl.unionsoft.sysstate.plugins.http.HttpConstants;
 @Named("marathonAppInstanceResolver")
 class MarathonAppInstanceResolver extends AbstractMarathonPatternInstanceResolver{
 
@@ -25,6 +26,7 @@ class MarathonAppInstanceResolver extends AbstractMarathonPatternInstanceResolve
         instance.configuration['serverUrl'] = parent.configuration['child_serverUrl'] ?: parent.configuration['serverUrl']
         instance.configuration['userName'] = parent.configuration['child_userName'] ?: parent.configuration['userName']
         instance.configuration['password'] = parent.configuration['child_password'] ?: parent.configuration['password']
+        instance.configuration[HttpConstants.HTTP_CLIENT_ID] = parent.configuration["child_${HttpConstants.HTTP_CLIENT_ID}"] ?: parent.configuration[HttpConstants.HTTP_CLIENT_ID]
         instance.tags = parent.configuration["child_tags"] ? parent.configuration['child_tags'] : 'marathon'
     }
 }
