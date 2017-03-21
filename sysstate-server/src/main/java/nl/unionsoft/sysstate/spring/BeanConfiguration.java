@@ -22,15 +22,14 @@ public class BeanConfiguration {
     @Bean
     @Inject
     //@formatter:off
-    public DataSource dataSource(
+    public DataSource dataSource(ConnectionFactory connectionFactory,
             @Value("${db.driver}") String driver, 
-            @Value("${db.connectURI}") String connectURI, 
-            @Value("${db.userName}") String userName, @Value("${db.password}") String password, 
-            @Value("${db.minIdle}") int minIdle, @Value("${db.maxIdle}") int maxIdle, @Value("${db.maxActive}") int maxActive,
-            @Value("${db.maxWait}") long maxWait,
+            @Value("${db.minIdle}") int minIdle, @Value("${db.maxIdle}") int maxIdle,
+            @Value("${db.maxActive}") int maxActive, @Value("${db.maxWait}") long maxWait,
             @Value("${db.minEvictableIdleTimeMillis}") long minEvictableIdleTimeMillis, @Value("${db.softMinEvictableIdleTimeMillis}") long softMinEvictableIdleTimeMillis,
             @Value("${db.numTestsPerEvictionRun}") int numTestsPerEvictionRun,@Value("${db.timeBetweenEvictionRunsMillis}") long timeBetweenEvictionRunsMillis,
-            @Value("${db.testOnBorrow}") boolean testOnBorrow, @Value("${db.testOnReturn}") boolean testOnReturn, @Value("${db.testWhileIdle}") boolean testWhileIdle
+            @Value("${db.testOnBorrow}") boolean testOnBorrow, @Value("${db.testOnReturn}") boolean testOnReturn, @Value("${db.testWhileIdle}") boolean testWhileIdle,
+            @Value("${db.validationQuery}") String validationQuery, @Value("${db.validationQueryTimeout}") int validationQueryTimeout
             ) {
         //@formatter:on
         logger.info("Loading driver: {}", driver);
@@ -39,8 +38,7 @@ public class BeanConfiguration {
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException("Unable to load driver, caught ClassNotFoundException", e);
         }
-        logger.info("Creating new datasource for:\n\tURI:{}\n\tUserName:{}", connectURI, userName);
-        final ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(connectURI, userName, password);
+
         final GenericObjectPool connectionPool = new GenericObjectPool(null);
         connectionPool.setMinIdle(minIdle);
         connectionPool.setMaxIdle(maxIdle);
@@ -55,7 +53,18 @@ public class BeanConfiguration {
         connectionPool.setTestOnBorrow(testOnBorrow);
         connectionPool.setTestOnReturn(testOnReturn);
         connectionPool.setTestWhileIdle(testWhileIdle);
+        connectionPool.setFactory(new PoolableConnectionFactory(connectionFactory, connectionPool, null, validationQuery, validationQueryTimeout, false, true));
 
         return new PoolingDataSource(connectionPool);
     }
+
+    @Bean
+    @Inject
+    public ConnectionFactory connectionFactory(
+            @Value("${db.connectURI}") String connectURI,
+            @Value("${db.userName}") String userName, @Value("${db.password}") String password) {
+        logger.info("Creating new ConnectionFactory for connectURI [{}] with userName [{}] and password", connectURI, userName);
+        return new DriverManagerConnectionFactory(connectURI, userName, password);
+    }
+
 }
