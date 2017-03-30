@@ -159,7 +159,6 @@ public class InstanceLogicImpl implements InstanceLogic {
         instanceDao.delete(instanceId);
     }
 
-
     public List<InstanceDto> getInstancesForProjectAndEnvironment(final String projectPrefix, final String environmentPrefix) {
         return ListConverter.convert(instanceConverter, instanceDao.getInstancesForProjectAndEnvironment(projectPrefix, environmentPrefix));
     }
@@ -218,9 +217,9 @@ public class InstanceLogicImpl implements InstanceLogic {
     }
 
     @Override
-    public void queueForUpdate(Long instanceId) {
-        // TODO Auto-generated method stub
-
+    public void refreshInstance(Long instanceId) {
+        logger.debug("Forcing refresh of instance with id [{}]", instanceId);
+        getInstance(instanceId).ifPresent(this::refreshInstance);
     }
 
     @Override
@@ -231,19 +230,17 @@ public class InstanceLogicImpl implements InstanceLogic {
                 .map(instance -> instanceConverter.convert(instance))
                 .filter(instance -> needsToBeUpdated(instance))
                 .forEach(instance -> refreshInstance(instance));
+        logger.debug("Done refreshing instances...");
 
     }
 
     private void refreshInstance(InstanceDto instance) {
         String reference = String.format("instance-%s", instance.getId());
         workLogic.aquireWorkLock(reference)
-                .ifPresent(workId -> {
-                    CompletableFuture.supplyAsync(() -> stateLogic.requestStateForInstance(instance))
-                            .thenApply(state -> stateLogic.createOrUpdate(state))
-                            .whenComplete((it, err) -> {
-                                workLogic.release(workId);
-                            });
-                });
+                .map(workId -> stateLogic.requestStateForInstance(instance)
+                        .thenApply(state -> stateLogic.createOrUpdate(state))
+                        .whenComplete((it, err) -> workLogic.release(workId)));
+
     }
 
     private boolean needsToBeUpdated(InstanceDto instance) {

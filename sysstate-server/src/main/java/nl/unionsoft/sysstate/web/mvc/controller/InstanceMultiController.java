@@ -47,7 +47,7 @@ public class InstanceMultiController {
                         messageLogic.addUserMessage(new MessageDto("Instance with id '" + instanceId + "' enabled!", MessageDto.GREEN));
                     }
                     instanceLogic.createOrUpdateInstance(instance);
-                    instanceLogic.queueForUpdate(instanceId);
+                    instanceLogic.refreshInstance(instanceId);
                 }
             }
         }
@@ -59,7 +59,7 @@ public class InstanceMultiController {
     public ModelAndView refresh(@RequestParam("instanceId") Long[] instanceIds) {
         if (instanceIds != null) {
             for (final Long instanceId : instanceIds) {
-                instanceLogic.queueForUpdate(instanceId);
+                instanceLogic.refreshInstance(instanceId);
                 messageLogic.addUserMessage(new MessageDto("Instance with id '" + instanceId + "' queued for update!", MessageDto.GREEN));
             }
         }

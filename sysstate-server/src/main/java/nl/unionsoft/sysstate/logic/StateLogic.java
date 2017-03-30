@@ -3,6 +3,7 @@ package nl.unionsoft.sysstate.logic;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
@@ -15,7 +16,7 @@ public interface StateLogic {
 
     public StateDto createOrUpdate(StateDto state);
 
-    public StateDto requestStateForInstance(InstanceDto instance);
+    public CompletableFuture<StateDto> requestStateForInstance(InstanceDto instance);
 
     public StateDto requestState(String pluginClass, Map<String, String> configuration);
 

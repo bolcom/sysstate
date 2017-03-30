@@ -23,7 +23,7 @@ public interface InstanceLogic {
 
 	public void delete(Long instanceId);
 
-	public void queueForUpdate(final Long instanceId);
+	public void refreshInstance(final Long instanceId);
 
 	public List<InstanceDto> getInstancesForProjectAndEnvironment(String projectPrefix, String environmentPrefix);
 

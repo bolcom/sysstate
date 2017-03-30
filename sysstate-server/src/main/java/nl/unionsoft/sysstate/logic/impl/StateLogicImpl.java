@@ -20,6 +20,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -136,7 +137,8 @@ public class StateLogicImpl implements StateLogic {
         return dto;
     }
 
-    public StateDto requestStateForInstance(final InstanceDto instance) {
+    @Async
+    public CompletableFuture<StateDto> requestStateForInstance(final InstanceDto instance) {
 
         final StateDto state = new StateDto();
         state.setInstance(instance);
@@ -154,7 +156,7 @@ public class StateLogicImpl implements StateLogic {
             updateState(state, pluginClass, instance);
         }
 
-        return state;
+        return CompletableFuture.completedFuture(state);
     }
 
     private void setDisabled(StateDto state, String message) {
@@ -236,7 +238,11 @@ public class StateLogicImpl implements StateLogic {
     public StateDto getLastStateForInstance(InstanceDto instance, StateBehaviour stateBehaviour) {
         switch (stateBehaviour) {
             case DIRECT:
-                return requestStateForInstance(instance);
+                try {
+                    return requestStateForInstance(instance).get();
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new IllegalStateException("Unable to get state for instance", e);
+                }
             case CACHED:
                 Optional<State> optStateDto = stateDao.getLastStateForInstance(instance.getId());
                 if (!optStateDto.isPresent()) {

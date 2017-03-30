@@ -159,7 +159,7 @@ public class InstanceController {
 
     @RequestMapping(value = "/instance/{instanceId}/refresh", method = RequestMethod.GET)
     public ModelAndView refresh(@PathVariable(value = "instanceId") final Long instanceId) {
-        instanceLogic.queueForUpdate(instanceId);
+        instanceLogic.refreshInstance(instanceId);
         return new ModelAndView("redirect:/filter/index.html");
     }
 
@@ -172,7 +172,7 @@ public class InstanceController {
         InstanceDto instance = optInstance.get();
         instance.setEnabled(!instance.isEnabled());
         instanceLogic.createOrUpdateInstance(instance);
-        instanceLogic.queueForUpdate(instanceId);
+        instanceLogic.refreshInstance(instanceId);
         return new ModelAndView("redirect:/filter/index.html");
     }
 
