@@ -13,7 +13,9 @@
 
 
 	<task:annotation-driven executor="executor" scheduler="scheduler"/>
-	<task:executor id="executor" pool-size="5"/>
-	<task:scheduler id="scheduler" pool-size="${scheduler.threadCount}"/>
+	
+	<task:executor id="executor" pool-size="${executor.poolSize}"/>
+	
+	<task:scheduler id="scheduler" pool-size="${scheduler.poolSize}"/>
 
 </beans>
