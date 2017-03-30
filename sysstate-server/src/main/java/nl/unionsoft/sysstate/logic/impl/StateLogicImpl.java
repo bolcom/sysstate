@@ -74,7 +74,7 @@ public class StateLogicImpl implements StateLogic {
     @Named("pluginLogic")
     private PluginLogic pluginLogic;
 
-    @Scheduled(initialDelay = 10000, fixedRate = 600000)
+    @Scheduled(cron = "${stateLogic.clean.cron}")
     public void clean() {
         LOG.info("Cleaning States...");
         Properties sysstateProperties = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);

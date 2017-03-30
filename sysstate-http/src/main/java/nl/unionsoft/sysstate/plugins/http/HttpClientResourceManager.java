@@ -66,8 +66,8 @@ public class HttpClientResourceManager implements ResourceManager<HttpClient> {
         return result;
     }
 
-    @Scheduled(initialDelay = 10000, fixedRate = 60000)
     @SuppressWarnings("deprecation")
+    @Scheduled(cron = "${httpClientResourceManager.closeIdleConnections.cron}")
     public void closeIdleConnections() {
         for (Entry<String, HttpClient> entry : httpClients.entrySet()) {
             LOG.debug("Closing idle httpClient Connections for client '{}'", entry.getKey());

@@ -91,7 +91,7 @@ public class FilterLogicImpl implements FilterLogic {
         filterDao.removeInstanceFromFilter(filterId, instanceId);
     }
 
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(cron = "${filterLogic.updateFilterSubscriptions.cron}")
     public void updateFilterSubscriptions() {
         logger.info("Updating filter subscriptions...");
         getFilters().parallelStream().forEach(filter -> {

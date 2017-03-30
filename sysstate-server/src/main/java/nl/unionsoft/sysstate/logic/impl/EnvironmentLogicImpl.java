@@ -76,7 +76,8 @@ public class EnvironmentLogicImpl implements EnvironmentLogic {
         return environmentConverter.convert(environmentDao.getEnvironment(environmentId));
     }
 
-    @Scheduled(initialDelay=30000, fixedRate=600000)
+    
+    @Scheduled(cron = "${environmentLogic.deleteEnvironmentsWithoutInstances.cron}")
     public void deleteEnvironmentsWithoutInstances() {
         LOG.info("Deleting Environments without instances...");
         getEnvironments().stream().forEach(environment -> {

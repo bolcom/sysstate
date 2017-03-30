@@ -12,14 +12,11 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.print.attribute.standard.PrinterLocation;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.ivy.Main;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -27,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import nl.unionsoft.common.converter.Converter;
 import nl.unionsoft.common.converter.ListConverter;
-import nl.unionsoft.common.param.ParamContextLogicImpl;
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
@@ -36,7 +32,6 @@ import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
 import nl.unionsoft.sysstate.common.logic.InstanceLogic;
 import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
-import nl.unionsoft.sysstate.converter.InstancePropertiesConverter;
 import nl.unionsoft.sysstate.converter.OptionalConverter;
 import nl.unionsoft.sysstate.converter.StateConverter;
 import nl.unionsoft.sysstate.dao.FilterDao;
@@ -45,9 +40,7 @@ import nl.unionsoft.sysstate.dao.ProjectEnvironmentDao;
 import nl.unionsoft.sysstate.dao.PropertyDao;
 import nl.unionsoft.sysstate.domain.Instance;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
-import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
-import nl.unionsoft.sysstate.logic.StateResolverLogic;
 import nl.unionsoft.sysstate.logic.WorkLogic;
 
 @Service("instanceLogic")
@@ -59,10 +52,6 @@ public class InstanceLogicImpl implements InstanceLogic {
     @Inject
     @Named("instanceDao")
     private InstanceDao instanceDao;
-
-    @Inject
-    @Named("pluginLogic")
-    private PluginLogic pluginLogic;
 
     @Inject
     @Named("propertyDao")
@@ -77,16 +66,8 @@ public class InstanceLogicImpl implements InstanceLogic {
     private StateLogic stateLogic;
 
     @Inject
-    @Named("scheduler")
-    private TaskScheduler scheduler;
-
-    @Inject
     @Named("instanceConverter")
     private Converter<InstanceDto, Instance> instanceConverter;
-
-    @Inject
-    @Named("stateResolverLogic")
-    private StateResolverLogic stateResolverLogic;
 
     @Inject
     @Named("stateConverter")
@@ -105,20 +86,9 @@ public class InstanceLogicImpl implements InstanceLogic {
     private ProjectEnvironmentDao projectEnvironmentDao;
 
     @Inject
-    @Named("paramContextLogic")
-    private ParamContextLogicImpl paramContextLogic;
-
-    @Inject
-    @Named("instancePropertiesConverter")
-    private InstancePropertiesConverter instancePropertiesConverter;
-
-    @Inject
     private WorkLogic workLogic;
 
-    private Map<Long, ScheduledFuture<?>> instanceTasks;
-
     public InstanceLogicImpl() {
-        instanceTasks = new HashMap<>();
     }
 
     public List<InstanceDto> getInstances() {
@@ -189,20 +159,6 @@ public class InstanceLogicImpl implements InstanceLogic {
         instanceDao.delete(instanceId);
     }
 
-    @Scheduled(initialDelay = 10000, fixedRate = 60000)
-    public void purgeOldJobs() {
-        logger.info("Purging old instance jobs...");
-        Set<Long> cancelledJobKeys = new HashSet<Long>();
-        instanceTasks.forEach((instanceId, scheduledFuture) -> {
-            if (!instanceDao.getInstance(instanceId).isPresent()) {
-                logger.info("Cancelling job for non-existing instance who had id [{}]", instanceId);
-                scheduledFuture.cancel(true);
-                cancelledJobKeys.add(instanceId);
-            }
-        });
-        cancelledJobKeys.forEach(key -> instanceTasks.remove(key));
-        logger.info("Purged & cancelled [{}] jobs..", cancelledJobKeys.size());
-    }
 
     public List<InstanceDto> getInstancesForProjectAndEnvironment(final String projectPrefix, final String environmentPrefix) {
         return ListConverter.convert(instanceConverter, instanceDao.getInstancesForProjectAndEnvironment(projectPrefix, environmentPrefix));
@@ -268,8 +224,9 @@ public class InstanceLogicImpl implements InstanceLogic {
     }
 
     @Override
-    @Scheduled(initialDelay = 5000, fixedRate = 500)
+    @Scheduled(cron = "${instanceLogic.refreshInstances.cron}")
     public void refreshInstances() {
+        logger.debug("Refreshing instances...");
         instanceDao.getInstances().stream()
                 .map(instance -> instanceConverter.convert(instance))
                 .filter(instance -> needsToBeUpdated(instance))
@@ -290,11 +247,11 @@ public class InstanceLogicImpl implements InstanceLogic {
     }
 
     private boolean needsToBeUpdated(InstanceDto instance) {
-        logger.debug("Checking if instance [{}]  needs to be updated...", instance);
+        logger.trace("Checking if instance [{}]  needs to be updated...", instance);
         StateDto state = stateLogic.getLastStateForInstance(instance);
         // Returns true if the lastUpdate + the refreshTimeout is before the current time (aka expired)
         boolean expired = state.getLastUpdate().plusMillis(instance.getRefreshTimeout()).isBefore(new DateTime());
-        logger.debug("Instance [{}] expired: [{}]", instance, expired);
+        logger.trace("Instance [{}] expired: [{}]", instance, expired);
         return expired;
     }
 

@@ -51,30 +51,30 @@ public class WorkLogicImpl implements WorkLogic {
 
     @Override
     public Optional<String> aquireWorkLock(String reference) {
-        logger.debug("Aquiring lock for reference [{}]", reference);
+        logger.trace("Aquiring lock for reference [{}]", reference);
         Work work = workDao.getWork(reference).orElse(createWork(reference));
         if (!isClaimable(work)) {
-            logger.debug("Work cannot be claimed for reference [{}], it is  handled by node [{}], checking if it has expired...", reference, work.getNodeId());
+            logger.trace("Work cannot be claimed for reference [{}], it is  handled by node [{}], checking if it has expired...", reference, work.getNodeId());
             if (!hasExpired(work)) {
-                logger.debug("Work [{}] has not expired. Returning emtpy...", reference);
+                logger.trace("Work [{}] has not expired. Returning emtpy...", reference);
                 return Optional.empty();
             }
-            logger.debug("Work [{}] and node [{}] has expired after a timeout of [{}] seconds. Claiming...", new Object[] { reference, work.getNodeId(),
+            logger.trace("Work [{}] and node [{}] has expired after a timeout of [{}] seconds. Claiming...", new Object[] { reference, work.getNodeId(),
                     timeoutSeconds });
         }
 
-        logger.debug("Work is claimable for reference [{}], will attempt to acquire...", reference);
+        logger.trace("Work is claimable for reference [{}], will attempt to acquire...", reference);
         work.setState(WorkStatus.ACQUIRING);
         work.setNodeId(nodeId);
         workDao.createOrUpdateWork(work);
 
         Work aquiredWork = workDao.getWork(reference).orElseThrow(() -> new IllegalStateException("Work doesn't exist anymore!"));
         if (!isMine(aquiredWork)) {
-            logger.debug("Another node [{}] picked up the work for this reference", aquiredWork.getNodeId());
+            logger.trace("Another node [{}] picked up the work for this reference", aquiredWork.getNodeId());
             return Optional.empty();
         }
 
-        logger.debug("Acquired work for reference [{}] succesfully. Making it final...", reference);
+        logger.trace("Acquired work for reference [{}] succesfully. Making it final...", reference);
         aquiredWork.setState(WorkStatus.ACQUIRED);
         aquiredWork.setInitialized(new Date());
         workDao.createOrUpdateWork(aquiredWork);
@@ -101,7 +101,12 @@ public class WorkLogicImpl implements WorkLogic {
     }
 
     private boolean hasExpired(Work work) {
-        return new DateTime(work.getInitialized()).plusSeconds(timeoutSeconds).isBefore(new DateTime());
+        if (work.getInitialized() == null) {
+            return true;
+        }
+        DateTime now = new DateTime();
+        logger.trace("Checking if work initializationTime [{}] plus [{}] seconds is before [{}]", new Object[] { work.getInitialized(), timeoutSeconds, now });
+        return new DateTime(work.getInitialized()).plusSeconds(timeoutSeconds).isBefore(now);
     }
 
     @Override
