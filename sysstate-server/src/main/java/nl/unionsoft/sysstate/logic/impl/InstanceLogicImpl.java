@@ -218,19 +218,18 @@ public class InstanceLogicImpl implements InstanceLogic {
 
     @Override
     public void refreshInstance(Long instanceId) {
-        logger.debug("Forcing refresh of instance with id [{}]", instanceId);
+        logger.info("Forcing refresh of instance with id [{}]", instanceId);
         getInstance(instanceId).ifPresent(this::refreshInstance);
     }
 
     @Override
     @Scheduled(cron = "${instanceLogic.refreshInstances.cron}")
     public void refreshInstances() {
-        logger.debug("Refreshing instances...");
+        logger.info("Refreshing instances...");
         instanceDao.getInstances().stream()
                 .map(instance -> instanceConverter.convert(instance))
                 .filter(instance -> needsToBeUpdated(instance))
                 .forEach(instance -> refreshInstance(instance));
-        logger.debug("Done refreshing instances...");
 
     }
 
