@@ -24,18 +24,20 @@
 		<!-- END: XMLBeans -->
 
 		<!-- START: Unionsoft Commons -->
-		<dependency>
-			<groupId>nl.unionsoft.commons</groupId>
-			<artifactId>commons-various</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>nl.unionsoft.commons</groupId>
-			<artifactId>commons-list</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>nl.unionsoft.commons</groupId>
-			<artifactId>commons-converter</artifactId>
-		</dependency>
+        <!-- 
+        <dependency>
+            <groupId>nl.unionsoft.commons</groupId>
+            <artifactId>commons-list</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>nl.unionsoft.commons</groupId>
+            <artifactId>commons-converter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>nl.unionsoft.commons</groupId>
+            <artifactId>commons-various</artifactId>
+        </dependency>
+         -->
 		<!-- END: UnionSoft Commons -->
 
 

@@ -2,8 +2,8 @@ package nl.unionsoft.sysstate.converter;
 
 import java.util.Optional;
 
-import nl.unionsoft.common.converter.Converter;
-import nl.unionsoft.common.converter.ConverterWithConfig;
+import nl.unionsoft.commons.converter.Converter;
+import nl.unionsoft.commons.converter.ConverterWithConfig;
 
 public class OptionalConverter {
 

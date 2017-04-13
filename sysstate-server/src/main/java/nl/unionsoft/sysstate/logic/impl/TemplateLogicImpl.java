@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import nl.unionsoft.common.converter.ListConverter;
+import nl.unionsoft.commons.converter.ListConverter;
 import nl.unionsoft.sysstate.common.dto.TemplateDto;
 import nl.unionsoft.sysstate.common.logic.TemplateLogic;
 import nl.unionsoft.sysstate.converter.OptionalConverter;

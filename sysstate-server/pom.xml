@@ -85,6 +85,12 @@
         </dependency>
         <!-- END: Tiles -->
         <!-- START: Unionsoft Commons -->
+		<dependency>
+		    <groupId>com.github.UnionSoft</groupId>
+		    <artifactId>commons-converter</artifactId>
+		    <version>991006</version>
+		</dependency>	
+        <!-- 
         <dependency>
             <groupId>nl.unionsoft.commons</groupId>
             <artifactId>commons-list</artifactId>
@@ -97,6 +103,7 @@
             <groupId>nl.unionsoft.commons</groupId>
             <artifactId>commons-various</artifactId>
         </dependency>
+         -->
         <!-- END: UnionSoft Commons -->
 		<!-- START: Templating Engines -->
 		<!-- 

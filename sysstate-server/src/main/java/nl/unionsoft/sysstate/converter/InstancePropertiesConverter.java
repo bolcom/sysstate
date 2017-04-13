@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import nl.unionsoft.common.converter.BidirectionalConverter;
+import nl.unionsoft.commons.converter.BidirectionalConverter;
 import nl.unionsoft.sysstate.domain.InstanceProperty;
 
 import org.apache.commons.lang.ObjectUtils;

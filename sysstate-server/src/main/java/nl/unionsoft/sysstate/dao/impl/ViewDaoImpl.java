@@ -10,7 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 
-import nl.unionsoft.common.converter.Converter;
+import nl.unionsoft.commons.converter.Converter;
 import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.dao.ViewDao;
 import nl.unionsoft.sysstate.domain.Filter;
