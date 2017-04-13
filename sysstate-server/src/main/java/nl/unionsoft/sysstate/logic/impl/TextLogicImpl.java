@@ -9,8 +9,8 @@ import javax.inject.Named;
 
 import org.springframework.stereotype.Service;
 
-import nl.unionsoft.common.converter.Converter;
-import nl.unionsoft.common.converter.ListConverter;
+import nl.unionsoft.commons.converter.Converter;
+import nl.unionsoft.commons.converter.ListConverter;
 import nl.unionsoft.sysstate.common.dto.TextDto;
 import nl.unionsoft.sysstate.common.logic.TextLogic;
 import nl.unionsoft.sysstate.converter.OptionalConverter;
