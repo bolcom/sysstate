@@ -1,27 +1,26 @@
 package nl.unionsoft.sysstate.plugins.groovy;
 
-import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
 import javax.inject.Inject;
-
-import nl.unionsoft.common.util.PropertiesUtil;
-import nl.unionsoft.sysstate.common.dto.InstanceDto;
-import nl.unionsoft.sysstate.common.dto.StateDto;
-import nl.unionsoft.sysstate.common.extending.TimedStateResolver;
+import javax.inject.Named;
 
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Service;
+
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
+import nl.unionsoft.commons.properties.PropertiesUtil;
+import nl.unionsoft.sysstate.common.dto.InstanceDto;
+import nl.unionsoft.sysstate.common.dto.StateDto;
+import nl.unionsoft.sysstate.common.extending.TimedStateResolver;
 
 
-@Service("groovyStateResolver")
+@Named("groovyStateResolver")
 public class GroovyStateResolverImpl extends TimedStateResolver implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;

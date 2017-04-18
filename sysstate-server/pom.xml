@@ -90,6 +90,12 @@
 		    <artifactId>commons-converter</artifactId>
 		    <version>991006</version>
 		</dependency>	
+        <dependency>
+            <groupId>com.github.UnionSoft</groupId>
+            <artifactId>commons-properties</artifactId>
+            <version>d38da8</version>
+        </dependency>                   
+        
         <!-- 
         <dependency>
             <groupId>nl.unionsoft.commons</groupId>

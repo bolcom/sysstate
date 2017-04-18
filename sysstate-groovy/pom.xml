@@ -32,6 +32,16 @@
 		</dependency>
 
 		<!-- END: SysState -->
+        <!-- START: Unionsoft Commons -->
+		<dependency>
+		    <groupId>com.github.UnionSoft</groupId>
+		    <artifactId>commons-converter</artifactId>
+		</dependency>	
+        <dependency>
+            <groupId>com.github.UnionSoft</groupId>
+            <artifactId>commons-properties</artifactId>
+        </dependency>                   
+        <!-- END: UnionSoft Commons -->		
         <!-- START: Groovy -->
 	        <dependency>
 	            <groupId>org.codehaus.groovy</groupId>
