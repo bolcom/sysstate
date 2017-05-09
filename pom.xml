@@ -64,6 +64,14 @@
 		    <id>jitpack.io</id>
 		    <url>https://jitpack.io</url>
 		</repository>
+ 		<repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-drakandar-libs-release</id>
+            <name>bintray</name>
+            <url>http://dl.bintray.com/drakandar/libs-release</url>
+        </repository>		
 	</repositories>
 
 	<dependencyManagement>
@@ -133,16 +141,25 @@
 			</dependency>
 			<!-- END: Tiles -->
 			<!-- START: Unionsoft Commons -->
+
 			<dependency>
-			    <groupId>com.github.UnionSoft</groupId>
+			    <groupId>nl.unionsoft.commons</groupId>
 			    <artifactId>commons-converter</artifactId>
-			    <version>991006</version>
+			    <version>1.0.0</version>
 			</dependency>
 			<dependency>
-			    <groupId>com.github.UnionSoft</groupId>
+			    <groupId>nl.unionsoft.commons</groupId>
 			    <artifactId>commons-properties</artifactId>
-			    <version>d38da8</version>
+			    <version>1.0.0</version>
 			</dependency>					
+			
+			<dependency>
+			    <groupId>nl.unionsoft.commons</groupId>
+			    <artifactId>commons-properties</artifactId>
+			    <version>1.0.0</version>
+			</dependency>					
+
+				
 			<!-- END: UnionSoft Commons -->
 			<!-- START: Hibernate -->
 			<dependency>

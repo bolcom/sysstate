@@ -34,11 +34,11 @@
 		<!-- END: SysState -->
         <!-- START: Unionsoft Commons -->
 		<dependency>
-		    <groupId>com.github.UnionSoft</groupId>
+		    <groupId>nl.unionsoft.commons</groupId>
 		    <artifactId>commons-converter</artifactId>
 		</dependency>	
         <dependency>
-            <groupId>com.github.UnionSoft</groupId>
+            <groupId>nl.unionsoft.commons</groupId>
             <artifactId>commons-properties</artifactId>
         </dependency>                   
         <!-- END: UnionSoft Commons -->		

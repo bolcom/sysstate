@@ -86,15 +86,13 @@
         <!-- END: Tiles -->
         <!-- START: Unionsoft Commons -->
 		<dependency>
-		    <groupId>com.github.UnionSoft</groupId>
+            <groupId>nl.unionsoft.commons</groupId>
 		    <artifactId>commons-converter</artifactId>
-		    <version>991006</version>
 		</dependency>	
         <dependency>
-            <groupId>com.github.UnionSoft</groupId>
+            <groupId>nl.unionsoft.commons</groupId>
             <artifactId>commons-properties</artifactId>
-            <version>d38da8</version>
-        </dependency>                   
+        </dependency>      
         
         <!-- 
         <dependency>
