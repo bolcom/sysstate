@@ -11,30 +11,13 @@
 	<oxm:xmlbeans-marshaller id="xmlBeansMarshaller" />
 	<!-- END: Marshaller -->
 
-    <bean id="properties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-        <property name="locations">
-            <list>
-                <value>classpath:sysstate.properties</value>
-				<value>classpath:sysstate-test.properties</value>
-				<value>file:sysstate.properties</value>
-				<value>file:${SYSSTATE_HOME}/sysstate.properties</value>
-				<value>file:/.sysstate/sysstate.properties</value>
-            </list>
-        </property>
-        <property name="ignoreResourceNotFound" value="true" />
-
-
-    </bean>
-
 	<bean id="propertyConfigurer" class="nl.unionsoft.sysstate.properties.SysStatePropertyPlaceholderConfigurer">
         <property name="properties" ref="properties" />
 		<property name="searchSystemEnvironment" value="true" />
 		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
 	</bean>
 
-	<bean name="paramContextLogic" class="nl.unionsoft.common.param.ParamContextLogicImpl"  />
-
-	<bean name="criteriaListRequestWorker" class="nl.unionsoft.common.list.worker.impl.CriteriaListRequestWorkerImpl">
+	<bean name="criteriaListRequestWorker" class="nl.unionsoft.commons.list.worker.impl.CriteriaListRequestWorkerImpl">
 		<property name="entityManager" ref="entityManager" />
 	</bean>
 
