@@ -92,7 +92,12 @@
         <dependency>
             <groupId>nl.unionsoft.commons</groupId>
             <artifactId>commons-properties</artifactId>
-        </dependency>      
+        </dependency>
+        <dependency>
+            <groupId>nl.unionsoft.commons</groupId>
+            <artifactId>commons-list</artifactId>
+        </dependency>                   
+
         
         <!-- 
         <dependency>

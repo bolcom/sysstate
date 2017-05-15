@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import nl.unionsoft.common.param.ParamContextLogicImpl;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
 import nl.unionsoft.sysstate.common.logic.EnvironmentLogic;
@@ -60,10 +59,6 @@ public class InstanceController {
     @Named("projectLogic")
     private ProjectLogic projectLogic;
 
-    @Inject
-    @Named("paramContextLogic")
-    private ParamContextLogicImpl paramContextLogic;
-    
     @Inject
     private PropertyMetaLogic propertyMetaLogic;
 

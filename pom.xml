@@ -155,8 +155,8 @@
 			
 			<dependency>
 			    <groupId>nl.unionsoft.commons</groupId>
-			    <artifactId>commons-properties</artifactId>
-			    <version>1.0.0</version>
+			    <artifactId>commons-list</artifactId>
+			    <version>1.0.1</version>
 			</dependency>					
 
 				
