@@ -1,23 +1,25 @@
 package nl.unionsoft.sysstate.plugins.jenkins;
 
-import static nl.unionsoft.sysstate.common.util.XmlUtil.*;
+import static nl.unionsoft.sysstate.common.util.XmlUtil.getCharacterDataFromObjectWithKey;
+import static nl.unionsoft.sysstate.common.util.XmlUtil.getElementWithKeyFromDocument;
 
 import java.util.Map;
+
+import javax.inject.Named;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.xmlbeans.XmlObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.plugins.http.XMLBeanStateResolverImpl;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.xmlbeans.XmlObject;
-import org.springframework.stereotype.Service;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-@Service("jenkinsListViewStateResolver")
+@Named("jenkinsListViewStateResolver")
 public class JenkinsListViewStateResolverImpl extends XMLBeanStateResolverImpl {
 
     @Override

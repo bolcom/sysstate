@@ -2,7 +2,7 @@ package nl.unionsoft.sysstate.plugins.impl.rating;
 
 import java.util.Properties;
 
-import nl.unionsoft.common.util.PropertiesUtil;
+import nl.unionsoft.commons.properties.PropertiesUtil;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.extending.RatingResolver;
 

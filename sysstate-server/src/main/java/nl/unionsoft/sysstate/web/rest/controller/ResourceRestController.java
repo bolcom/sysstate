@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import nl.unionsoft.common.converter.ListConverter;
+import nl.unionsoft.commons.converter.ListConverter;
 import nl.unionsoft.sysstate.common.dto.ResourceDto;
 import nl.unionsoft.sysstate.common.logic.ResourceLogic;
 import nl.unionsoft.sysstate.sysstate_1_0.Property;

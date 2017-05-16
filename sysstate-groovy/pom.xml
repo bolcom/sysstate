@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>nl.unionsoft.sysstate</groupId>
 		<artifactId>sysstate</artifactId>
-		<version>1.9.3</version>
+		<version>1.10.0</version>
 	</parent>
 
 	<groupId>nl.unionsoft.sysstate</groupId>
@@ -32,6 +32,16 @@
 		</dependency>
 
 		<!-- END: SysState -->
+        <!-- START: Unionsoft Commons -->
+		<dependency>
+		    <groupId>nl.unionsoft.commons</groupId>
+		    <artifactId>commons-converter</artifactId>
+		</dependency>	
+        <dependency>
+            <groupId>nl.unionsoft.commons</groupId>
+            <artifactId>commons-properties</artifactId>
+        </dependency>                   
+        <!-- END: UnionSoft Commons -->		
         <!-- START: Groovy -->
 	        <dependency>
 	            <groupId>org.codehaus.groovy</groupId>

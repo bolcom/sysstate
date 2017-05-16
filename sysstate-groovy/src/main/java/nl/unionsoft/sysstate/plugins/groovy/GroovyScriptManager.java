@@ -2,23 +2,20 @@ package nl.unionsoft.sysstate.plugins.groovy;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
-@Service("groovyScriptManager")
+@Named("groovyScriptManager")
 public class GroovyScriptManager implements InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(GroovyScriptManager.class);

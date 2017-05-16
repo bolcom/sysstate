@@ -1,6 +1,6 @@
 package nl.unionsoft.sysstate.converter;
 
-import nl.unionsoft.common.converter.Converter;
+import nl.unionsoft.commons.converter.Converter;
 import nl.unionsoft.sysstate.common.dto.TemplateDto;
 import nl.unionsoft.sysstate.domain.Template;
 

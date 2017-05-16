@@ -3,20 +3,20 @@ package nl.unionsoft.sysstate.plugins.jenkins;
 import static nl.unionsoft.sysstate.common.util.XmlUtil.getCharacterDataFromObjectWithKey;
 
 import java.util.Map;
-import java.util.Properties;
+
+import javax.inject.Named;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.xmlbeans.XmlObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.plugins.http.XMLBeanStateResolverImpl;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.xmlbeans.XmlObject;
-import org.springframework.stereotype.Service;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
-@Service("jenkinsServerStateResolver")
+@Named("jenkinsServerStateResolver")
 public class JenkinsServerStateResolverImpl extends XMLBeanStateResolverImpl {
 
     private static final String API_XML = "/api/xml";

@@ -4,7 +4,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import nl.unionsoft.common.converter.Converter;
+import nl.unionsoft.commons.converter.Converter;
 import nl.unionsoft.sysstate.common.dto.ResourceDto;
 import nl.unionsoft.sysstate.sysstate_1_0.Property;
 import nl.unionsoft.sysstate.sysstate_1_0.Resource;

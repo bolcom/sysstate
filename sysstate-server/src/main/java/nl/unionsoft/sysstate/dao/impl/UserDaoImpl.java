@@ -7,8 +7,8 @@ import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
-import nl.unionsoft.common.converter.Converter;
-import nl.unionsoft.common.converter.ListConverter;
+import nl.unionsoft.commons.converter.Converter;
+import nl.unionsoft.commons.converter.ListConverter;
 import nl.unionsoft.sysstate.dao.UserDao;
 import nl.unionsoft.sysstate.domain.User;
 import nl.unionsoft.sysstate.domain.UserRole;

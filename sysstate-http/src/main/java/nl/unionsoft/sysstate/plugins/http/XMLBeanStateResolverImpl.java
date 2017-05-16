@@ -4,12 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import javax.inject.Named;
 import javax.xml.transform.stream.StreamSource;
-
-import nl.unionsoft.sysstate.common.dto.InstanceDto;
-import nl.unionsoft.sysstate.common.dto.StateDto;
-import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.util.StateUtil;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -20,9 +16,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.UnmarshallingFailureException;
 import org.springframework.oxm.xmlbeans.XmlBeansMarshaller;
-import org.springframework.stereotype.Service;
 
-@Service("xmlBeanStateResolver")
+import nl.unionsoft.sysstate.common.dto.InstanceDto;
+import nl.unionsoft.sysstate.common.dto.StateDto;
+import nl.unionsoft.sysstate.common.enums.StateType;
+import nl.unionsoft.sysstate.common.util.StateUtil;
+
+@Named("xmlBeanStateResolver")
 public abstract class XMLBeanStateResolverImpl extends HttpStateResolverImpl {
     private static final Logger LOG = LoggerFactory.getLogger(XMLBeanStateResolverImpl.class);
 

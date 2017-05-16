@@ -11,9 +11,7 @@ import nl.unionsoft.sysstate.common.dto.TextDto;
 import nl.unionsoft.sysstate.common.extending.ListOfValueResolver;
 import nl.unionsoft.sysstate.common.logic.TextLogic;
 
-import org.springframework.stereotype.Service;
-
-@Service("predefinedXpathsLovResolver")
+@Named("predefinedXpathsLovResolver")
 public class PredefinedXpathsLovResolver implements ListOfValueResolver {
 
     protected final TextLogic textLogic;

@@ -6,7 +6,7 @@
 	<groupId>nl.unionsoft.sysstate</groupId>
 	<packaging>pom</packaging>
 	<artifactId>sysstate</artifactId>
-	<version>1.9.3</version>
+	<version>1.10.0</version>
 
 
 	<modules>
@@ -58,14 +58,20 @@
 		<tomcat.url>http://localhost:8082/manager</tomcat.url>
 	</properties>
 
+
 	<repositories>
 		<repository>
-			<id>unionsoft-release</id>
-			<url>http://repository-unionsoft.forge.cloudbees.com/release/</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
 		</repository>
+ 		<repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-drakandar-libs-release</id>
+            <name>bintray</name>
+            <url>http://dl.bintray.com/drakandar/libs-release</url>
+        </repository>		
 	</repositories>
 
 	<dependencyManagement>
@@ -135,21 +141,25 @@
 			</dependency>
 			<!-- END: Tiles -->
 			<!-- START: Unionsoft Commons -->
+
 			<dependency>
-				<groupId>nl.unionsoft.commons</groupId>
-				<artifactId>commons-list</artifactId>
-				<version>${unionsoft.commons.version}</version>
+			    <groupId>nl.unionsoft.commons</groupId>
+			    <artifactId>commons-converter</artifactId>
+			    <version>1.0.0</version>
 			</dependency>
 			<dependency>
-				<groupId>nl.unionsoft.commons</groupId>
-				<artifactId>commons-converter</artifactId>
-				<version>${unionsoft.commons.version}</version>
-			</dependency>
+			    <groupId>nl.unionsoft.commons</groupId>
+			    <artifactId>commons-properties</artifactId>
+			    <version>1.0.0</version>
+			</dependency>					
+			
 			<dependency>
-				<groupId>nl.unionsoft.commons</groupId>
-				<artifactId>commons-various</artifactId>
-				<version>${unionsoft.commons.version}</version>
-			</dependency>
+			    <groupId>nl.unionsoft.commons</groupId>
+			    <artifactId>commons-list</artifactId>
+			    <version>1.0.1</version>
+			</dependency>					
+
+				
 			<!-- END: UnionSoft Commons -->
 			<!-- START: Hibernate -->
 			<dependency>
@@ -427,11 +437,11 @@
 	        </dependency>
 
 	       	<!-- https://github.com/bolcom/feign-client-provider -->
-	        <dependency>
-			    <groupId>com.bol.feign</groupId>
+			<dependency>
+			    <groupId>com.github.bolcom</groupId>
 			    <artifactId>feign-client-provider</artifactId>
-			    <version>1.1.0</version>
-			</dependency>
+			    <version>d19d40</version>
+			</dependency>		
 			<!-- END: Feign -->
 
 			<!-- START: Jaxb/Json -->

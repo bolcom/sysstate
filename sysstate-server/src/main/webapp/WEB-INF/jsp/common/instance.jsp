@@ -3,7 +3,6 @@
 <%@taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
 <%@taglib prefix="sse" uri="http://www.unionsoft.nl/sse/"%>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@taglib prefix="list" uri="http://www.unionsoft.nl/list/"%>
 <%@taglib prefix="sf" uri="http://www.springframework.org/tags/form" %>
 <%@taglib prefix="sc" uri="http://www.springframework.org/security/tags"%>
 <c:set var="projectEnvironment" value="${instance.projectEnvironment}"/>

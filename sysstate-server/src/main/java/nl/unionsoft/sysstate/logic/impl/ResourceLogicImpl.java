@@ -10,7 +10,7 @@ import javax.inject.Named;
 
 import org.springframework.context.ApplicationContext;
 
-import nl.unionsoft.common.converter.ListConverter;
+import nl.unionsoft.commons.converter.ListConverter;
 import nl.unionsoft.sysstate.common.dto.ResourceDto;
 import nl.unionsoft.sysstate.common.extending.ResourceManager;
 import nl.unionsoft.sysstate.common.logic.ResourceLogic;
