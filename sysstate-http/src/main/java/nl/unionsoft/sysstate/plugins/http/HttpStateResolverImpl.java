@@ -1,7 +1,6 @@
 package nl.unionsoft.sysstate.plugins.http;
 
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Map;
@@ -20,7 +19,6 @@ import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
@@ -29,7 +27,7 @@ import nl.unionsoft.sysstate.common.extending.StateResolver;
 import nl.unionsoft.sysstate.common.logic.ResourceLogic;
 import nl.unionsoft.sysstate.common.util.StateUtil;
 
-@Service("httpStateResolver")
+@Named("httpStateResolver")
 public class HttpStateResolverImpl implements StateResolver {
 
     public static final String URL = "url";

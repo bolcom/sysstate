@@ -1,5 +1,12 @@
 package nl.unionsoft.sysstate.spring;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
+
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
@@ -11,12 +18,18 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 @Configuration
 public class BeanConfiguration {
 
+    private static final String SYSSTATE_TEST_PROPERTIES = "sysstate-test.properties";
+    private static final String SYSSTATE_PROPERTIES = "sysstate.properties";
     private static final Logger logger = LoggerFactory.getLogger(BeanConfiguration.class);
 
     @Bean
@@ -65,6 +78,24 @@ public class BeanConfiguration {
             @Value("${db.userName}") String userName, @Value("${db.password}") String password) {
         logger.info("Creating new ConnectionFactory for connectURI [{}] with userName [{}] and password", connectURI, userName);
         return new DriverManagerConnectionFactory(connectURI, userName, password);
+    }
+
+    @Bean
+    @Inject
+    public Properties properties() throws IOException {
+        PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
+        List<Resource> locations = new ArrayList<>();
+        locations.add(new ClassPathResource(SYSSTATE_PROPERTIES));
+        locations.add(new ClassPathResource(SYSSTATE_TEST_PROPERTIES));
+        locations.add(new FileSystemResource(new File(SYSSTATE_PROPERTIES)));
+        Optional.ofNullable(System.getenv("SYSSTATE_HOME")).ifPresent(value -> {
+            locations.add(new FileSystemResource(new File("value")));
+        });
+        locations.add(new FileSystemResource(new File("/.sysstate/sysstate.properties")));
+        propertiesFactoryBean.setLocations(locations.toArray(new Resource[] {}));
+        propertiesFactoryBean.setIgnoreResourceNotFound(true);
+        propertiesFactoryBean.afterPropertiesSet();
+        return propertiesFactoryBean.getObject();
     }
 
 }

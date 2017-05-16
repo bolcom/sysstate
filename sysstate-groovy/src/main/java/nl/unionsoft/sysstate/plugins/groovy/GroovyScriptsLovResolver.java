@@ -4,13 +4,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import nl.unionsoft.sysstate.common.dto.PropertyMetaValue;
 import nl.unionsoft.sysstate.common.extending.ListOfValueResolver;
 
-import org.springframework.stereotype.Service;
-
-@Service("groovyScriptsLovResolver")
+@Named("groovyScriptsLovResolver")
 public class GroovyScriptsLovResolver implements ListOfValueResolver {
 
 

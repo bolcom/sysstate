@@ -3,8 +3,8 @@ package nl.unionsoft.sysstate.logic;
 import java.util.List;
 import java.util.Optional;
 
-import nl.unionsoft.common.list.model.ListRequest;
-import nl.unionsoft.common.list.model.ListResponse;
+import nl.unionsoft.commons.list.model.ListRequest;
+import nl.unionsoft.commons.list.model.ListResponse;
 import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.common.dto.ViewResultDto;
 

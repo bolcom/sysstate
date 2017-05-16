@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Named;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -34,12 +35,11 @@ import org.apache.http.ssl.SSLContexts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 
 import nl.unionsoft.sysstate.common.dto.ResourceDto;
 import nl.unionsoft.sysstate.common.extending.ResourceManager;
 
-@Service(HttpConstants.RESOURCE_MANAGER_NAME)
+@Named(HttpConstants.RESOURCE_MANAGER_NAME)
 public class HttpClientResourceManager implements ResourceManager<HttpClient> {
 
     private static final String DEFAULT_CONN_TIMEOUT_MILLIS = "45000";

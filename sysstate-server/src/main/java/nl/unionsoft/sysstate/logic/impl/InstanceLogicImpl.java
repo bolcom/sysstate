@@ -85,8 +85,10 @@ public class InstanceLogicImpl implements InstanceLogic {
     @Named("projectEnvironmentDao")
     private ProjectEnvironmentDao projectEnvironmentDao;
 
+
     @Inject
     private WorkLogic workLogic;
+
 
     public InstanceLogicImpl() {
     }

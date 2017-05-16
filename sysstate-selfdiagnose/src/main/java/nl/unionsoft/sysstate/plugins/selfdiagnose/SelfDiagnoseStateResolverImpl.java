@@ -11,27 +11,25 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
-
-import nl.unionsoft.sysstate.common.dto.InstanceDto;
-import nl.unionsoft.sysstate.common.dto.ProjectEnvironmentDto;
-import nl.unionsoft.sysstate.common.dto.StateDto;
-import nl.unionsoft.sysstate.common.enums.StateType;
-import nl.unionsoft.sysstate.common.logic.InstanceLinkLogic;
-import nl.unionsoft.sysstate.common.logic.InstanceLogic;
-import nl.unionsoft.sysstate.common.logic.ProjectEnvironmentLogic;
-import nl.unionsoft.sysstate.plugins.http.XMLBeanStateResolverImpl;
+import javax.inject.Named;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.xmlbeans.XmlObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-@Service("selfDiagnoseStateResolver")
+import nl.unionsoft.sysstate.common.dto.InstanceDto;
+import nl.unionsoft.sysstate.common.dto.StateDto;
+import nl.unionsoft.sysstate.common.enums.StateType;
+import nl.unionsoft.sysstate.common.logic.InstanceLinkLogic;
+import nl.unionsoft.sysstate.common.logic.InstanceLogic;
+import nl.unionsoft.sysstate.plugins.http.XMLBeanStateResolverImpl;
+
+@Named("selfDiagnoseStateResolver")
 public class SelfDiagnoseStateResolverImpl extends XMLBeanStateResolverImpl {
 
     private static final Logger logger = LoggerFactory.getLogger(SelfDiagnoseStateResolverImpl.class);
