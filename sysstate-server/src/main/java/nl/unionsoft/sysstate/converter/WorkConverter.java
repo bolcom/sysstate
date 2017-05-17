@@ -3,7 +3,7 @@ package nl.unionsoft.sysstate.converter;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
-import nl.unionsoft.common.converter.Converter;
+import nl.unionsoft.commons.converter.Converter;
 import nl.unionsoft.sysstate.common.dto.WorkDto;
 import nl.unionsoft.sysstate.domain.Work;
 @Service("workConverter")

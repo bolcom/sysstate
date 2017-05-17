@@ -106,7 +106,7 @@ public class SetupListener implements InitializingBean {
 //            addTestInstance("yahoo", "YAHO", "PROD", createHttpConfiguration("http://www.yahoo.com"), "http://www.yahoo.com", "httpStateResolver");
 //            addTestInstance("yahoo", "YAHO", "MOCK", createMockConfiguration(12000, StateType.UNSTABLE.name()), "http://www.yahoo.com", "mockStateResolver");
             //addTestInstance("bing", "BING", "PROD", createHttpConfiguration("http://www.bing.com"), "http://www.bing.com", "httpStateResolver", 5000);
-            addTestInstance("bing", "BING", "MOCK", createMockConfiguration(10000, StateType.ERROR.name()), "http://www.bing.com", "mockStateResolver",1000);
+            addTestInstance("bing", "BING", "MOCK", createMockConfiguration(30000, StateType.ERROR.name()), "http://www.bing.com", "mockStateResolver",1000);
             //addTestInstance("ilse", "ILSE", "PROD", createHttpConfiguration("http://www.ilse.nl"), "http://www.ilse.nl", "httpStateResolver", 20000);
             //addTestInstance("ilse", "ILSE", "MOCK", createMockConfiguration(60000, StateType.DISABLED.name()), "http://www.ilse.nl", "mockStateResolver", 40000);
 

@@ -7,7 +7,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -44,7 +47,6 @@ import nl.unionsoft.sysstate.logic.StateLogic;
 import nl.unionsoft.sysstate.logic.WorkLogic;
 
 @Service("instanceLogic")
-@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class InstanceLogicImpl implements InstanceLogic {
 
     private static final Logger logger = LoggerFactory.getLogger(InstanceLogicImpl.class);
@@ -85,10 +87,8 @@ public class InstanceLogicImpl implements InstanceLogic {
     @Named("projectEnvironmentDao")
     private ProjectEnvironmentDao projectEnvironmentDao;
 
-
     @Inject
     private WorkLogic workLogic;
-
 
     public InstanceLogicImpl() {
     }
@@ -237,10 +237,15 @@ public class InstanceLogicImpl implements InstanceLogic {
 
     private void refreshInstance(InstanceDto instance) {
         String reference = String.format("instance-%s", instance.getId());
-        workLogic.aquireWorkLock(reference)
-                .map(workId -> stateLogic.requestStateForInstance(instance)
+        workLogic.process(reference, 120, () -> {
+            try {
+                stateLogic.requestStateForInstance(instance)
                         .thenApply(state -> stateLogic.createOrUpdate(state))
-                        .whenComplete((it, err) -> workLogic.release(workId)));
+                        .get(120, TimeUnit.SECONDS);
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                throw new IllegalStateException("Unable to refresh instance", e);
+            }
+        });
 
     }
 

@@ -1,6 +1,5 @@
 package nl.unionsoft.sysstate.dao.impl;
 
-import java.util.Date;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -15,7 +14,7 @@ import nl.unionsoft.sysstate.dao.WorkDao;
 import nl.unionsoft.sysstate.domain.Work;
 
 @Service("workDao")
-@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
 public class WorkDaoImpl implements WorkDao {
 
     private final EntityManager entityManager;

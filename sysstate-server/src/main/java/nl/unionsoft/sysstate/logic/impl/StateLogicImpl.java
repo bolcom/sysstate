@@ -48,9 +48,9 @@ import nl.unionsoft.sysstate.domain.State;
 import nl.unionsoft.sysstate.logic.PluginLogic;
 import nl.unionsoft.sysstate.logic.StateLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
+import nl.unionsoft.sysstate.logic.WorkLogic;
 
 @Service("stateLogic")
-@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class StateLogicImpl implements StateLogic {
 
     private static final Logger LOG = LoggerFactory.getLogger(StateLogicImpl.class);
@@ -75,23 +75,27 @@ public class StateLogicImpl implements StateLogic {
     @Named("pluginLogic")
     private PluginLogic pluginLogic;
 
+    @Inject
+    private WorkLogic workLogic;
+
     @Scheduled(cron = "${stateLogic.clean.cron}")
     public void clean() {
-        LOG.info("Cleaning States...");
-        Properties sysstateProperties = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);
-        String maxDaysToKeepStatesString = sysstateProperties.getProperty("maxDaysToKeepStates");
-        int maxDaysToKeepStates = Constants.MAX_DAYS_TO_KEEP_STATES_VALUE;
-        if (StringUtils.isNumeric(maxDaysToKeepStatesString)) {
-            maxDaysToKeepStates = Integer.valueOf(maxDaysToKeepStatesString);
-        }
+        workLogic.process("stateLogic.clean", 5 * 60, () -> {
+            LOG.info("Cleaning States...");
+            Properties sysstateProperties = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);
+            String maxDaysToKeepStatesString = sysstateProperties.getProperty("maxDaysToKeepStates");
+            int maxDaysToKeepStates = Constants.MAX_DAYS_TO_KEEP_STATES_VALUE;
+            if (StringUtils.isNumeric(maxDaysToKeepStatesString)) {
+                maxDaysToKeepStates = Integer.valueOf(maxDaysToKeepStatesString);
+            }
 
-        if (maxDaysToKeepStates > 0) {
-            LOG.info("Max days to keep states is set to: {}", maxDaysToKeepStates);
-            stateDao.cleanStatesOlderThanDays(maxDaysToKeepStates);
-        } else {
-            LOG.info("Max days to keep states <= 0, skipping cleaning...");
-        }
-
+            if (maxDaysToKeepStates > 0) {
+                LOG.info("Max days to keep states is set to: {}", maxDaysToKeepStates);
+                stateDao.cleanStatesOlderThanDays(maxDaysToKeepStates);
+            } else {
+                LOG.info("Max days to keep states <= 0, skipping cleaning...");
+            }
+        });
     }
 
     public ListResponse<State> getStates(final ListRequest listRequest) {
@@ -178,7 +182,6 @@ public class StateLogicImpl implements StateLogic {
                     throw new IllegalStateException("Result has no state!");
                 }
             }).get(120, TimeUnit.SECONDS);
-
         } catch (final NoSuchBeanDefinitionException e) {
             state.setState(StateType.ERROR);
             state.setDescription("MISSING PLUGIN");

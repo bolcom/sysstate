@@ -25,9 +25,9 @@ import nl.unionsoft.sysstate.dao.FilterDao;
 import nl.unionsoft.sysstate.dao.InstanceDao;
 import nl.unionsoft.sysstate.domain.Filter;
 import nl.unionsoft.sysstate.logic.FilterLogic;
+import nl.unionsoft.sysstate.logic.WorkLogic;
 
 @Service("filterLogic")
-@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class FilterLogicImpl implements FilterLogic {
 
     private static final Logger logger = LoggerFactory.getLogger(FilterLogicImpl.class);
@@ -46,6 +46,9 @@ public class FilterLogicImpl implements FilterLogic {
     @Inject
     @Named("scheduler")
     private TaskScheduler scheduler;
+
+    @Inject
+    private WorkLogic workLogic;
 
     public List<FilterDto> getFilters() {
         return ListConverter.convert(filterConverter, filterDao.getFilters());
@@ -93,20 +96,24 @@ public class FilterLogicImpl implements FilterLogic {
 
     @Scheduled(cron = "${filterLogic.updateFilterSubscriptions.cron}")
     public void updateFilterSubscriptions() {
-        logger.info("Updating filter subscriptions...");
-        getFilters().parallelStream().forEach(filter -> {
-            logger.debug("Validating if filterdata for filter [{}] is still up to date", filter);
-            if (filterDataIsExpired(filter) && filterHasBeenQueriedRecently(filter)) {
-                logger.debug("FilterData for filter [{}] needs to be updated, scheduling update...", filter);
-                try {
-                    updateFilterSubscriptions(filter);
-                } catch (Exception e) {
-                    logger.error("Unable to update filter subscriptions for filter [{}], caught Exception", filter, e);
+        workLogic.process("filterLogic.updateFilterSubscriptions", 5 * 60, () -> {
+            logger.info("Updating filter subscriptions...");
+            getFilters().parallelStream().forEach(filter -> {
+                logger.debug("Validating if filterdata for filter [{}] is still up to date", filter);
+                if (filterDataIsExpired(filter) && filterHasBeenQueriedRecently(filter)) {
+                    logger.debug("FilterData for filter [{}] needs to be updated, scheduling update...", filter);
+                    try {
+                        updateFilterSubscriptions(filter);
+                    } catch (Exception e) {
+                        logger.error("Unable to update filter subscriptions for filter [{}], caught Exception", filter, e);
+                    }
+                } else {
+                    logger.debug("FilterData for filter [{}] is not expired. Skipping scheduled update.", filter);
                 }
-            } else {
-                logger.debug("FilterData for filter [{}] is not expired. Skipping scheduled update.", filter);
-            }
+            });
+
         });
+
     }
 
     @Override

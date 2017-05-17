@@ -38,7 +38,7 @@
 	</category>
 
 	<category name="nl.unionsoft">
-		<priority value="INFO" />
+		<priority value="TRACE" />
 	</category>
 
 </log4j:configuration> 

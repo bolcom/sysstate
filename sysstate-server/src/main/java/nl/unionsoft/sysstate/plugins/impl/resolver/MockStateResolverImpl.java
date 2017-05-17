@@ -33,7 +33,6 @@ public class MockStateResolverImpl implements StateResolver {
 
         state.setDescription(stateStr);
         try {
-
             Thread.sleep(Long.valueOf(StringUtils.defaultIfEmpty(configuration.get("sleep"), "0")));
         } catch (final NumberFormatException e) {
             e.printStackTrace();

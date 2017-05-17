@@ -18,6 +18,7 @@ import nl.unionsoft.sysstate.dao.ProjectEnvironmentDao;
 import nl.unionsoft.sysstate.domain.Environment;
 import nl.unionsoft.sysstate.domain.Project;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
+import nl.unionsoft.sysstate.logic.WorkLogic;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +28,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service("environmentLogic")
-@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class EnvironmentLogicImpl implements EnvironmentLogic {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(EnvironmentLogicImpl.class);
 
     @Inject
@@ -51,6 +51,9 @@ public class EnvironmentLogicImpl implements EnvironmentLogic {
     @Inject
     @Named("instanceLogic")
     private InstanceLogic instanceLogic;
+
+    @Inject
+    private WorkLogic workLogic;
 
     public List<Environment> getEnvironmentEntities() {
         return environmentDao.getEnvironments();
@@ -76,18 +79,20 @@ public class EnvironmentLogicImpl implements EnvironmentLogic {
         return environmentConverter.convert(environmentDao.getEnvironment(environmentId));
     }
 
-    
     @Scheduled(cron = "${environmentLogic.deleteEnvironmentsWithoutInstances.cron}")
     public void deleteEnvironmentsWithoutInstances() {
-        LOG.info("Deleting Environments without instances...");
-        getEnvironments().stream().forEach(environment -> {
-            if (instanceLogic.getInstancesForEnvironment(environment.getId()).isEmpty()) {
-                LOG.info("Deleting environment with id [{}] since it is no longer used.", environment.getId());
-                delete(environment.getId());
-            }
+        workLogic.process("environmentLogic.deleteEnvironmentsWithoutInstances", 5 * 60, () -> {
+            LOG.info("Deleting Environments without instances...");
+            getEnvironments().stream().forEach(environment -> {
+                if (instanceLogic.getInstancesForEnvironment(environment.getId()).isEmpty()) {
+                    LOG.info("Deleting environment with id [{}] since it is no longer used.", environment.getId());
+                    delete(environment.getId());
+                }
+            });
         });
+
     }
-    
+
     public Long createOrUpdate(final EnvironmentDto environmentDto) {
 
         Environment environment = null;
@@ -116,8 +121,6 @@ public class EnvironmentLogicImpl implements EnvironmentLogic {
         return environment.getId();
 
     }
-
-
 
     @Override
     public EnvironmentDto findOrCreateEnvironment(String name) {
