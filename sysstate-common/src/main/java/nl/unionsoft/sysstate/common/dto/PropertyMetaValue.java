@@ -6,14 +6,18 @@ import java.util.Properties;
 
 public class PropertyMetaValue {
 
-    private final String id;
-    private final String defaultValue;
-    private final String title;
-    private final boolean nullable;
-    private final Integer order;
+    private String id;
+    private String defaultValue;
+    private String title;
+    private boolean nullable;
+    private Integer order;
 
     private Properties properties;
     private Map<String, String> lov;
+
+    public PropertyMetaValue() {
+
+    }
 
     public PropertyMetaValue(String id, String title, boolean nullable, String defaultValue, Integer order) {
 
@@ -63,5 +67,27 @@ public class PropertyMetaValue {
     public Integer getOrder() {
         return order;
     }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setNullable(boolean nullable) {
+        this.nullable = nullable;
+    }
+
+    public void setOrder(Integer order) {
+        this.order = order;
+    }
+    
+    
 
 }
