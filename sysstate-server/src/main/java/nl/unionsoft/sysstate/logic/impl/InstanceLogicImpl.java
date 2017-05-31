@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -26,9 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import nl.unionsoft.common.converter.Converter;
-import nl.unionsoft.common.converter.ListConverter;
-import nl.unionsoft.common.param.ParamContextLogicImpl;
+import nl.unionsoft.commons.converter.Converter;
+import nl.unionsoft.commons.converter.ListConverter;
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
@@ -105,14 +103,8 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     private ProjectEnvironmentDao projectEnvironmentDao;
 
     @Inject
-    @Named("paramContextLogic")
-    private ParamContextLogicImpl paramContextLogic;
-
-    @Inject
     @Named("instancePropertiesConverter")
     private InstancePropertiesConverter instancePropertiesConverter;
-    
-   
 
     private Map<Long, ScheduledFuture<?>> instanceTasks;
 
@@ -167,7 +159,6 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return OptionalConverter.convert(instanceDao.getInstance(instanceId), instanceConverter);
     }
 
-    
     public Long createOrUpdateInstance(final InstanceDto dto) {
         Instance instance = getInstanceForDto(dto);
 
@@ -180,10 +171,10 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         instance.setRefreshTimeout(dto.getRefreshTimeout());
 
         final Optional<ProjectEnvironment> optProjectEnvironment = getProjectEnvironmentFromDto(dto.getProjectEnvironment());
-        if (!optProjectEnvironment.isPresent()){
+        if (!optProjectEnvironment.isPresent()) {
             throw new IllegalStateException("Undefined projectEnvironment [" + dto.getProjectEnvironment() + "] ");
         }
-        
+
         ProjectEnvironment projectEnvironment = optProjectEnvironment.get();
         if (instance.getProjectEnvironment() == null || !instance.getProjectEnvironment().getId().equals(projectEnvironment.getId())) {
             // ProjectEnvironment changed or null
@@ -208,7 +199,7 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         if (StringUtils.isNotEmpty(dto.getProject().getName()) && StringUtils.isNotEmpty(dto.getEnvironment().getName())) {
             return Optional.ofNullable(projectEnvironmentDao.getProjectEnvironment(dto.getProject().getName(), dto.getEnvironment().getName()));
         }
-       return Optional.empty();
+        return Optional.empty();
 
     }
 
@@ -282,9 +273,6 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
         return instance;
     }
 
-  
-  
-
     @Override
     public List<InstanceDto> getInstancesForEnvironment(Long environmentId) {
         return ListConverter.convert(instanceConverter, instanceDao.getInstancesForEnvironment(environmentId));
@@ -312,7 +300,5 @@ public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
     public Optional<InstanceDto> getInstance(String reference) {
         return OptionalConverter.convert(instanceDao.getInstanceByReference(reference), instanceConverter);
     }
-
- 
 
 }

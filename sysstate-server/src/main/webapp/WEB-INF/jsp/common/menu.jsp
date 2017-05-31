@@ -3,7 +3,6 @@
 <%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="sse" uri="http://www.unionsoft.nl/sse/"%>
-<%@taglib prefix="list" uri="http://www.unionsoft.nl/list/"%>
 <%@taglib prefix="sc" uri="http://www.springframework.org/security/tags"%>
 <%@taglib prefix="s" uri="http://www.springframework.org/tags"%>
 

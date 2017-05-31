@@ -4,8 +4,8 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
-import nl.unionsoft.common.converter.Converter;
-import nl.unionsoft.common.converter.ConverterWithConfig;
+import nl.unionsoft.commons.converter.Converter;
+import nl.unionsoft.commons.converter.ConverterWithConfig;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.domain.State;

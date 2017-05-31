@@ -5,7 +5,7 @@ import java.util.Arrays;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
-import nl.unionsoft.common.converter.Converter;
+import nl.unionsoft.commons.converter.Converter;
 import nl.unionsoft.sysstate.common.dto.TextDto;
 import nl.unionsoft.sysstate.sysstate_1_0.Text;
 

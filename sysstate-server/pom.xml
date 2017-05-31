@@ -84,21 +84,7 @@
             <artifactId>tiles-template</artifactId>
         </dependency>
         <!-- END: Tiles -->
-        <!-- START: Unionsoft Commons -->
-        <dependency>
-            <groupId>nl.unionsoft.commons</groupId>
-            <artifactId>commons-list</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>nl.unionsoft.commons</groupId>
-            <artifactId>commons-converter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>nl.unionsoft.commons</groupId>
-            <artifactId>commons-various</artifactId>
-        </dependency>
-        <!-- END: UnionSoft Commons -->
-		<!-- START: Templating Engines -->
+   	<!-- START: Templating Engines -->
 		<!-- 
 		<dependency>
 			<groupId>org.apache.velocity</groupId>

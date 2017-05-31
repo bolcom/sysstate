@@ -4,7 +4,6 @@
 <%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
 <%@ taglib prefix="sse" uri="http://www.unionsoft.nl/sse/"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@taglib prefix="list" uri="http://www.unionsoft.nl/list/"%>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
 <%@taglib prefix="sc" uri="http://www.springframework.org/security/tags"%>
 <html xmlns="http://www.w3.org/1999/xhtml">

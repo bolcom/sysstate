@@ -3,8 +3,8 @@ package nl.unionsoft.sysstate.dao;
 import java.util.List;
 import java.util.Optional;
 
-import nl.unionsoft.common.list.model.ListRequest;
-import nl.unionsoft.common.list.model.ListResponse;
+import nl.unionsoft.commons.list.model.ListRequest;
+import nl.unionsoft.commons.list.model.ListResponse;
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.domain.State;
 

@@ -36,20 +36,6 @@
 		</dependency>
 		<!-- END: JSoup -->
 
-		<!-- START: Unionsoft Commons -->
-		<dependency>
-			<groupId>nl.unionsoft.commons</groupId>
-			<artifactId>commons-various</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>nl.unionsoft.commons</groupId>
-			<artifactId>commons-list</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>nl.unionsoft.commons</groupId>
-			<artifactId>commons-converter</artifactId>
-		</dependency>
-		<!-- END: UnionSoft Commons -->
 		<!-- START: SysState -->
 		<dependency>
 			<groupId>nl.unionsoft.sysstate</groupId>
@@ -79,6 +65,10 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
 		</dependency>
+      	<dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>		
 		<dependency>
 			<groupId>javax.inject</groupId>
 			<artifactId>javax.inject</artifactId>

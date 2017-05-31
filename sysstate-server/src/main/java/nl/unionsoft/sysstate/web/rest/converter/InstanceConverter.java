@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import nl.unionsoft.common.converter.Converter;
-import nl.unionsoft.common.converter.ConverterWithConfig;
-import nl.unionsoft.common.converter.ListConverter;
+import nl.unionsoft.commons.converter.Converter;
+import nl.unionsoft.commons.converter.ConverterWithConfig;
+import nl.unionsoft.commons.converter.ListConverter;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
 import nl.unionsoft.sysstate.common.dto.StateDto;
 import nl.unionsoft.sysstate.sysstate_1_0.Instance;

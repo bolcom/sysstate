@@ -1,18 +1,17 @@
 package nl.unionsoft.sysstate.plugins.groovy;
 
-import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
-
 import java.io.PrintStream;
-
-import nl.unionsoft.sysstate.common.extending.ScriptExecutionResult;
-import nl.unionsoft.sysstate.common.extending.ScriptExecutor;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
+
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
+import nl.unionsoft.sysstate.common.extending.ScriptExecutionResult;
+import nl.unionsoft.sysstate.common.extending.ScriptExecutor;
 
 @Service("groovyScriptExecutor")
 public class GroovyScriptExecutor implements ScriptExecutor, ApplicationContextAware {
