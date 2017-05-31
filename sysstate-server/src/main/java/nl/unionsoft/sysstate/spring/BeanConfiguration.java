@@ -91,7 +91,7 @@ public class BeanConfiguration {
         locations.add(new ClassPathResource(SYSSTATE_TEST_PROPERTIES));
         locations.add(new FileSystemResource(new File(SYSSTATE_PROPERTIES)));
         Optional.ofNullable(System.getenv("SYSSTATE_HOME")).ifPresent(value -> {
-            locations.add(new FileSystemResource(new File("value")));
+            locations.add(new FileSystemResource(new File(value, SYSSTATE_PROPERTIES)));
         });
         locations.add(new FileSystemResource(new File("/.sysstate/sysstate.properties")));
         propertiesFactoryBean.setLocations(locations.toArray(new Resource[] {}));
