@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import nl.unionsoft.common.converter.Converter;
+import nl.unionsoft.commons.converter.Converter;
 import nl.unionsoft.sysstate.common.dto.ViewDto;
 import nl.unionsoft.sysstate.common.dto.ViewResultDto;
 import nl.unionsoft.sysstate.logic.PluginLogic;

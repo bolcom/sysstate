@@ -3,11 +3,11 @@ package nl.unionsoft.sysstate.queue;
 import java.util.List;
 import java.util.Properties;
 
-import nl.unionsoft.common.util.PropertiesUtil;
-import nl.unionsoft.sysstate.common.queue.ReferenceRunnable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import nl.unionsoft.commons.properties.PropertiesUtil;
+import nl.unionsoft.sysstate.common.queue.ReferenceRunnable;
 
 public class DiscoveryWorker implements ReferenceRunnable {
 

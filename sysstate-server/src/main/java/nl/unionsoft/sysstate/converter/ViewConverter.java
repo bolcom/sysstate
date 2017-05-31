@@ -3,7 +3,7 @@ package nl.unionsoft.sysstate.converter;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import nl.unionsoft.common.converter.Converter;
+import nl.unionsoft.commons.converter.Converter;
 import nl.unionsoft.sysstate.common.dto.FilterDto;
 import nl.unionsoft.sysstate.common.dto.TemplateDto;
 import nl.unionsoft.sysstate.common.dto.ViewDto;

@@ -32,11 +32,10 @@
 	        	<groupId>com.netflix.feign</groupId>
 	        	<artifactId>feign-jackson</artifactId>
 	        </dependency>
-	       	<!-- https://github.com/bolcom/feign-client-provider -->
-	        <dependency>
-			    <groupId>com.bol.feign</groupId>
+			<dependency>
+			    <groupId>com.github.bolcom</groupId>
 			    <artifactId>feign-client-provider</artifactId>
-			</dependency>
+			</dependency>		
 			<dependency>
 			  <groupId>com.fasterxml.jackson.module</groupId>
 			  <artifactId>jackson-module-jaxb-annotations</artifactId>

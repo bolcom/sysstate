@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
-	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:oxm="http://www.springframework.org/schema/oxm"
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:oxm="http://www.springframework.org/schema/oxm"
 	xsi:schemaLocation="
 	        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 	        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
@@ -11,38 +13,25 @@
 	<oxm:xmlbeans-marshaller id="xmlBeansMarshaller" />
 	<!-- END: Marshaller -->
 
-    <bean id="properties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-        <property name="locations">
-            <list>
-                <value>classpath:sysstate.properties</value>
-				<value>classpath:sysstate-test.properties</value>
-				<value>file:sysstate.properties</value>
-				<value>file:${SYSSTATE_HOME}/sysstate.properties</value>
-				<value>file:/.sysstate/sysstate.properties</value>
-            </list>
-        </property>
-        <property name="ignoreResourceNotFound" value="true" />
 
-
-    </bean>
-
-	<bean id="propertyConfigurer" class="nl.unionsoft.sysstate.properties.SysStatePropertyPlaceholderConfigurer">
-        <property name="properties" ref="properties" />
+	<bean id="propertyConfigurer"
+		class="nl.unionsoft.sysstate.properties.SysStatePropertyPlaceholderConfigurer">
+		<property name="properties" ref="properties" />
 		<property name="searchSystemEnvironment" value="true" />
 		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
 	</bean>
 
-	<bean name="paramContextLogic" class="nl.unionsoft.common.param.ParamContextLogicImpl"  />
 
-	<bean name="criteriaListRequestWorker" class="nl.unionsoft.common.list.worker.impl.CriteriaListRequestWorkerImpl">
+	<bean name="criteriaListRequestWorker"
+		class="nl.unionsoft.commons.list.worker.impl.CriteriaListRequestWorkerImpl">
 		<property name="entityManager" ref="entityManager" />
 	</bean>
 
 	<bean name="pluginLogic" class="nl.unionsoft.sysstate.logic.impl.PluginLogicImpl" />
 
 	<context:component-scan base-package="nl.unionsoft.sysstate">
-		<!-- <context:exclude-filter type="regex" expression="nl.unionsoft.sysstate.plugins*" />
-         -->
+		<!-- <context:exclude-filter type="regex" expression="nl.unionsoft.sysstate.plugins*" 
+			/> -->
 	</context:component-scan>
 
 </beans>

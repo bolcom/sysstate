@@ -21,14 +21,14 @@
 							</jsp:include>						
 							<c:set var="type" value=""/>
 							<c:set var="items" value=""/>
-							<c:if test="${propertyMetaValue.lov != null}">
+							<c:if test="${not empty propertyMetaValue.lov}">
 								<c:set var="type" value="select"/>
 								<c:set var="items" value="lovValues"/>
 								<c:set var="lovValues" value="${propertyMetaValue.lov}" scope="request"/>
 							</c:if>
 								
 							<jsp:include page="/WEB-INF/jsp/common/formElement.jsp">
-								<jsp:param name="path" value="propertyMetaLists[${gccvStatus.index}].propertyMetaValues[${cvStatus.index}].value"/>
+								<jsp:param name="path" value="propertyMetaLists[${gccvStatus.index}].propertyMetaValues[${cvStatus.index}].defaultValue"/>
 								<jsp:param name="type" value="${type}"/>
 								<jsp:param name="items" value="${items}"/>
 								<jsp:param name="label" value="${propertyMetaValue.title}"/>

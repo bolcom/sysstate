@@ -2,7 +2,7 @@ package nl.unionsoft.sysstate.converter;
 
 import java.util.List;
 
-import nl.unionsoft.common.converter.Converter;
+import nl.unionsoft.commons.converter.Converter;
 import nl.unionsoft.sysstate.domain.User;
 import nl.unionsoft.sysstate.domain.UserRole;
 import nl.unionsoft.sysstate.dto.UserDto;

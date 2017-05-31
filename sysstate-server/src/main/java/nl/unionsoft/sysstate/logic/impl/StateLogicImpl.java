@@ -21,8 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import nl.unionsoft.common.list.model.ListRequest;
-import nl.unionsoft.common.list.model.ListResponse;
+import nl.unionsoft.commons.list.model.ListRequest;
+import nl.unionsoft.commons.list.model.ListResponse;
 import nl.unionsoft.sysstate.Constants;
 import nl.unionsoft.sysstate.common.dto.EnvironmentDto;
 import nl.unionsoft.sysstate.common.dto.InstanceDto;
