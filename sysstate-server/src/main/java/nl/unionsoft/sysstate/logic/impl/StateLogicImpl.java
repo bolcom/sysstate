@@ -51,7 +51,7 @@ public class StateLogicImpl implements StateLogic {
     private static final Logger LOG = LoggerFactory.getLogger(StateLogicImpl.class);
 
     @Inject
-    @Named("stateDao")
+    @Named("switchingStateDaoImpl")
     private StateDao stateDao;
 
     @Inject
@@ -69,8 +69,8 @@ public class StateLogicImpl implements StateLogic {
     @Inject
     @Named("pluginLogic")
     private PluginLogic pluginLogic;
-    
-    @Scheduled(initialDelay=10000, fixedRate=600000)
+
+    @Scheduled(initialDelay = 10000, fixedRate = 600000)
     public void clean() {
         LOG.info("Cleaning States...");
         Properties sysstateProperties = pluginLogic.getPluginProperties(Constants.SYSSTATE_PLUGIN_NAME);
@@ -87,10 +87,6 @@ public class StateLogicImpl implements StateLogic {
             LOG.info("Max days to keep states <= 0, skipping cleaning...");
         }
 
-    }
-
-    public ListResponse<State> getStates(final ListRequest listRequest) {
-        return stateDao.getStates(listRequest);
     }
 
     public StateDto createOrUpdate(final StateDto dto) {

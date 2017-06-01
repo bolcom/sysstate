@@ -20,6 +20,5 @@ public interface StateDao {
 
     public List<State> getStates();
 
-    public ListResponse<State> getStates(ListRequest listRequest);
 
 }

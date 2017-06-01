@@ -23,8 +23,9 @@ public class MockStateResolverImpl implements StateResolver {
     public void setState(final InstanceDto instance, final StateDto state) {
         Map<String, String> configuration = instance.getConfiguration();
 
-        String stateStr = StringUtils.defaultIfEmpty(configuration.get("state"), "stable").toUpperCase();
-        if (StringUtils.equalsIgnoreCase("RANDOM", stateStr)) {
+        String stateStr =StringUtils.upperCase(configuration.get("state"));
+        if (StringUtils.isEmpty(stateStr)) {
+            state.appendMessage("No state defined, using random.");
             int pick = random.nextInt(StateType.values().length);
             state.setState(StateType.values()[pick]);
         } else {

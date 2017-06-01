@@ -26,14 +26,14 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
-//@formatter:off
-@Table(name = "SSE_INSTANCE", indexes = { 
-        @Index(columnList = "NAME"), 
+// @formatter:off
+@Table(name = "SSE_INSTANCE", indexes = {
+        @Index(columnList = "NAME"),
         @Index(columnList = "TAGS"),
         @Index(columnList = "HOMEPAGE_URL"),
         @Index(columnList = "PLUGIN")
-        })
-//@formatter:on
+})
+// @formatter:on
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Instance {
 
@@ -78,7 +78,7 @@ public class Instance {
 
     @OneToMany(mappedBy = "from", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<InstanceLink> outgoingInstanceLinks;
-    
+
     @OneToMany(mappedBy = "instance", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<FilterInstance> filterInstances;
 
@@ -88,6 +88,10 @@ public class Instance {
 
     public Instance() {
         instanceProperties = new ArrayList<InstanceProperty>();
+    }
+
+    public Instance(Instance instance) {
+        this.id = instance.id;
     }
 
     /**
@@ -221,7 +225,5 @@ public class Instance {
     public void setFilterInstances(List<FilterInstance> filterInstances) {
         this.filterInstances = filterInstances;
     }
-    
-    
 
 }

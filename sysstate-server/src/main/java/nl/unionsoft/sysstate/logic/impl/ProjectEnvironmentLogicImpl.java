@@ -47,10 +47,7 @@ public class ProjectEnvironmentLogicImpl implements ProjectEnvironmentLogic {
     private EnvironmentDao environmentDao;
 
 
-    @Inject
-    @Named("stateDao")
-    private StateDao stateDao;
-
+    
     @Inject
     @Named("stateConverter")
     private Converter<StateDto, State> stateConverter;

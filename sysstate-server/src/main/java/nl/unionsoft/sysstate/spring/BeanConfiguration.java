@@ -3,9 +3,13 @@ package nl.unionsoft.sysstate.spring;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -19,14 +23,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
+import nl.unionsoft.sysstate.dao.StateDao;
+import nl.unionsoft.sysstate.dao.impl.MapStateDaoImpl;
+import nl.unionsoft.sysstate.dao.impl.SwitchingStateDaoImpl;
+
 @Configuration
 public class BeanConfiguration {
+
+    public static final String MAP_STATE_DAO_IMPL = "mapStateDaoImpl";
 
     private static final Logger logger = LoggerFactory.getLogger(BeanConfiguration.class);
 
@@ -36,17 +47,18 @@ public class BeanConfiguration {
     
     @Bean
     @Inject
-    //@formatter:off
+    // @formatter:off
     public DataSource dataSource(ConnectionFactory connectionFactory,
-            @Value("${db.driver}") String driver, 
+            @Value("${db.driver}") String driver,
             @Value("${db.minIdle}") int minIdle, @Value("${db.maxIdle}") int maxIdle,
             @Value("${db.maxActive}") int maxActive, @Value("${db.maxWait}") long maxWait,
-            @Value("${db.minEvictableIdleTimeMillis}") long minEvictableIdleTimeMillis, @Value("${db.softMinEvictableIdleTimeMillis}") long softMinEvictableIdleTimeMillis,
-            @Value("${db.numTestsPerEvictionRun}") int numTestsPerEvictionRun,@Value("${db.timeBetweenEvictionRunsMillis}") long timeBetweenEvictionRunsMillis,
-            @Value("${db.testOnBorrow}") boolean testOnBorrow, @Value("${db.testOnReturn}") boolean testOnReturn, @Value("${db.testWhileIdle}") boolean testWhileIdle,
-            @Value("${db.validationQuery}") String validationQuery, @Value("${db.validationQueryTimeout}") int validationQueryTimeout
-            ) {
-        //@formatter:on
+            @Value("${db.minEvictableIdleTimeMillis}") long minEvictableIdleTimeMillis,
+            @Value("${db.softMinEvictableIdleTimeMillis}") long softMinEvictableIdleTimeMillis,
+            @Value("${db.numTestsPerEvictionRun}") int numTestsPerEvictionRun, @Value("${db.timeBetweenEvictionRunsMillis}") long timeBetweenEvictionRunsMillis,
+            @Value("${db.testOnBorrow}") boolean testOnBorrow, @Value("${db.testOnReturn}") boolean testOnReturn,
+            @Value("${db.testWhileIdle}") boolean testWhileIdle,
+            @Value("${db.validationQuery}") String validationQuery, @Value("${db.validationQueryTimeout}") int validationQueryTimeout) {
+        // @formatter:on
         logger.info("Loading driver: {}", driver);
         try {
             Class.forName(driver);
@@ -81,7 +93,7 @@ public class BeanConfiguration {
         logger.info("Creating new ConnectionFactory for connectURI [{}] with userName [{}] and password", connectURI, userName);
         return new DriverManagerConnectionFactory(connectURI, userName, password);
     }
-    
+
     @Bean
     @Inject
     public Properties properties() throws IOException {
@@ -99,6 +111,11 @@ public class BeanConfiguration {
         propertiesFactoryBean.afterPropertiesSet();
         return propertiesFactoryBean.getObject();
     }
-
+    
+    @Inject
+    @Bean(name = MAP_STATE_DAO_IMPL)
+    public MapStateDaoImpl mapStateDaoImpl() {
+        return new MapStateDaoImpl(new HashMap<>());
+    }
 
 }

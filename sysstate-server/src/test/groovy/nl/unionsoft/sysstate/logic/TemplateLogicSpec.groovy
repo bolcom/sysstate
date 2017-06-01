@@ -1,7 +1,7 @@
 package nl.unionsoft.sysstate.logic
 
 import org.springframework.context.ApplicationContext;
-
+import nl.unionsoft.sysstate.common.logic.TemplateLogic
 import nl.unionsoft.sysstate.converter.TemplateConverter
 import nl.unionsoft.sysstate.dao.TemplateDao
 import nl.unionsoft.sysstate.logic.impl.TemplateLogicImpl

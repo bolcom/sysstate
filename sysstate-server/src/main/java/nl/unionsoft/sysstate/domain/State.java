@@ -27,18 +27,18 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
-//@formatter:off
-@Table(name = "SSE_STATE",  indexes = { 
-        @Index(columnList = "lastUpdate"), 
+// @formatter:off
+@Table(name = "SSE_STATE", indexes = {
+        @Index(columnList = "lastUpdate"),
         @Index(columnList = "STATE"),
-        })
+})
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @NamedQueries({
-    @NamedQuery(name = "findLastStateForInstance", query = "FROM State WHERE instance.id = :instanceId ORDER BY lastUpdate DESC"),
-    @NamedQuery(name = "findLastStateForInstanceWithStateType", query = "FROM State WHERE instance.id = :instanceId AND state = :stateType ORDER BY lastUpdate DESC")
-    }
-)
-//@formatter:on
+        @NamedQuery(name = "findLastStateForInstance", query = "FROM State WHERE instance.id = :instanceId ORDER BY lastUpdate DESC"),
+        @NamedQuery(name = "findLastStateForInstanceWithStateType",
+                query = "FROM State WHERE instance.id = :instanceId AND state = :stateType ORDER BY lastUpdate DESC")
+})
+// @formatter:on
 public class State {
 
     @Id
@@ -69,10 +69,27 @@ public class State {
 
     @Column(name = "RATING", nullable = false)
     private int rating;
-
+    
     @ManyToOne
     @JoinColumn(name = "ICE_ID", nullable = false, foreignKey = @ForeignKey(name = "FK_INSTANCE_STATE"))
     private Instance instance;
+
+    public State() {
+
+    }
+
+    public State(State state) {
+        this.id = state.id;
+        this.description = state.description;
+        this.creationDate = state.creationDate;
+        this.lastUpdate = state.lastUpdate;
+        this.state = state.state;
+        this.responseTime = state.responseTime;
+        this.message = state.message;
+        this.rating = state.rating;
+        this.instance = new Instance(state.instance);
+    }
+
     
     public String getDescription() {
         return description;
