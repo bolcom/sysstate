@@ -3,13 +3,10 @@ package nl.unionsoft.sysstate.spring;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -23,16 +20,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
-import nl.unionsoft.sysstate.dao.StateDao;
 import nl.unionsoft.sysstate.dao.impl.MapStateDaoImpl;
-import nl.unionsoft.sysstate.dao.impl.SwitchingStateDaoImpl;
 
 @Configuration
 public class BeanConfiguration {
@@ -115,7 +109,7 @@ public class BeanConfiguration {
     @Inject
     @Bean(name = MAP_STATE_DAO_IMPL)
     public MapStateDaoImpl mapStateDaoImpl() {
-        return new MapStateDaoImpl(new HashMap<>());
+        return new MapStateDaoImpl(new ConcurrentHashMap<>());
     }
 
 }

@@ -2,9 +2,12 @@ package nl.unionsoft.sysstate.dao.impl;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.joda.time.DateTime;
 
 import nl.unionsoft.sysstate.common.enums.StateType;
 import nl.unionsoft.sysstate.dao.StateDao;
@@ -54,8 +57,11 @@ public class MapStateDaoImpl implements StateDao {
 
     @Override
     public void cleanStatesOlderThanDays(int nrOfDays) {
-        // TODO Auto-generated method stub
-
+        DateTime minimalDateToKeep = new DateTime().minusDays(nrOfDays); 
+        stateMap.entrySet().stream()
+        .filter(entry -> new DateTime(entry.getValue().getLastUpdate()).isBefore(minimalDateToKeep))
+        .collect(Collectors.toList())
+        .forEach(entry -> stateMap.remove(entry.getKey()));
     }
 
     @Override
