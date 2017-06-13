@@ -49,7 +49,6 @@ import nl.unionsoft.sysstate.logic.StateLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
 @Service("instanceLogic")
-@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class InstanceLogicImpl implements InstanceLogic, InitializingBean {
 
     private static final Logger logger = LoggerFactory.getLogger(InstanceLogicImpl.class);

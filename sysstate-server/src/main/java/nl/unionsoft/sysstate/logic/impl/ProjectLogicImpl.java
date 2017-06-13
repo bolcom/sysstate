@@ -27,7 +27,6 @@ import nl.unionsoft.sysstate.domain.Project;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
 
 @Service("projectLogic")
-@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class ProjectLogicImpl implements ProjectLogic {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProjectLogicImpl.class);

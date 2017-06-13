@@ -26,7 +26,6 @@ import nl.unionsoft.sysstate.domain.Project;
 import nl.unionsoft.sysstate.domain.ProjectEnvironment;
 
 @Service("environmentLogic")
-@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class EnvironmentLogicImpl implements EnvironmentLogic {
     
     private static final Logger LOG = LoggerFactory.getLogger(EnvironmentLogicImpl.class);

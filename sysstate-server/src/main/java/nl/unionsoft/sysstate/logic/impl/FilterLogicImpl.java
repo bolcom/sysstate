@@ -27,7 +27,6 @@ import nl.unionsoft.sysstate.domain.Filter;
 import nl.unionsoft.sysstate.logic.FilterLogic;
 
 @Service("filterLogic")
-@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class FilterLogicImpl implements FilterLogic {
 
     private static final Logger logger = LoggerFactory.getLogger(FilterLogicImpl.class);
