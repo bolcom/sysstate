@@ -45,7 +45,6 @@ import nl.unionsoft.sysstate.logic.StateLogic;
 import nl.unionsoft.sysstate.logic.StateResolverLogic;
 
 @Service("stateLogic")
-@Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class StateLogicImpl implements StateLogic {
 
     private static final Logger LOG = LoggerFactory.getLogger(StateLogicImpl.class);
