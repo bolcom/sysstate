@@ -1,5 +1,6 @@
 package nl.unionsoft.sysstate;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -76,39 +77,26 @@ public class SetupListener implements InitializingBean {
         boolean initialSetup = hasNoProjects && hasNoEnvironments && hasNoInstances;
 
         if (initialSetup) {
-
             LOG.info("No projects found, creating some default projects...");
-            // No projects defined..
-            createProject("GOOG");
-            createProject("YAHO");
-            createProject("BING");
-            createProject("ILSE");
+            String[] projects = new String[] { "ABC", "DEF", "GHI", "RST", "UVW", "XYZ" };
+            Arrays.stream(projects).forEach(this::createProject);
 
-            // No environments defined..
             LOG.info("No environments found, creating some default environments...");
-            EnvironmentDto prd = new EnvironmentDto();
-            prd.setName("PROD");
-            prd.setOrder(10);
-            environmentLogic.createOrUpdate(prd);
+            String[] environments = new String[] { "123", "456", "789", "012", "345", "678" };
+            Arrays.stream(environments).forEach(this::createEnvironment);
 
-            EnvironmentDto mock = new EnvironmentDto();
-            mock.setName("MOCK");
-            mock.setOrder(0);
-            environmentLogic.createOrUpdate(mock);
+            Arrays.stream(projects).forEach(projectName -> {
+                Arrays.stream(environments).forEach(environmentName -> {
+                    String instanceName = String.format("%s/%s", projectName, environmentName);
+                    addTestInstance(instanceName, projectName, environmentName, createMockConfiguration(18000, ""), "http://www.google.nl", "mockStateResolver");
+                });
+            });
 
-            LOG.info("Adding default texts...");
-            addText("go-selfdiagnose 1.0.2", "xpath xPathStateResolver", "substring-before(substring-after(string(/selfdiagnose/results/result[@task='build information']/@message),': '),',')");
-            addText("selfdiagnose-version 1.0", "xpath xPathStateResolver", "normalize-space(string(/selfdiagnose/@version))");
-
-            LOG.info("No instances found, creating some default instances...");
-            addTestInstance("google", "GOOG", "PROD", createHttpConfiguration("http://www.google.nl"), "http://www.google.nl", "httpStateResolver");
-            addTestInstance("google", "GOOG", "MOCK", createMockConfiguration(18000, StateType.STABLE.name()), "http://www.yahoo.com", "mockStateResolver");
-            addTestInstance("yahoo", "YAHO", "PROD", createHttpConfiguration("http://www.yahoo.com"), "http://www.yahoo.com", "httpStateResolver");
-            addTestInstance("yahoo", "YAHO", "MOCK", createMockConfiguration(12000, StateType.UNSTABLE.name()), "http://www.yahoo.com", "mockStateResolver");
-            addTestInstance("bing", "BING", "PROD", createHttpConfiguration("http://www.bing.com"), "http://www.bing.com", "httpStateResolver");
-            addTestInstance("bing", "BING", "MOCK", createMockConfiguration(6000, StateType.ERROR.name()), "http://www.bing.com", "mockStateResolver");
-            addTestInstance("ilse", "ILSE", "PROD", createHttpConfiguration("http://www.ilse.nl"), "http://www.ilse.nl", "httpStateResolver");
-            addTestInstance("ilse", "ILSE", "MOCK", createMockConfiguration(3000, StateType.DISABLED.name()), "http://www.ilse.nl", "mockStateResolver");
+            //
+            // LOG.info("Adding default texts...");
+            // addText("go-selfdiagnose 1.0.2", "xpath xPathStateResolver", "substring-before(substring-after(string(/selfdiagnose/results/result[@task='build
+            // information']/@message),': '),',')");
+            // addText("selfdiagnose-version 1.0", "xpath xPathStateResolver", "normalize-space(string(/selfdiagnose/@version))");
 
             if (filterLogic.getFilters().isEmpty()) {
                 LOG.info("No filters found, creating a default filter...");
@@ -173,6 +161,13 @@ public class SetupListener implements InitializingBean {
         ProjectDto project = new ProjectDto();
         project.setName(name);
         projectLogic.createOrUpdateProject(project);
+    }
+
+    private void createEnvironment(final String name) {
+        EnvironmentDto environment = new EnvironmentDto();
+        environment.setName(name);
+        environment.setEnabled(true);
+        environmentLogic.createOrUpdate(environment);
     }
 
     private void addText(String name, String tags, String text) {
