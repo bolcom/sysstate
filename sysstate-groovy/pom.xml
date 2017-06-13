@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>nl.unionsoft.sysstate</groupId>
 		<artifactId>sysstate</artifactId>
-		<version>1.11.1</version>
+		<version>1.12.0</version>
 	</parent>
 
 	<groupId>nl.unionsoft.sysstate</groupId>
@@ -55,6 +55,12 @@
 	            <version>2.3.0</version>
 	        </dependency>
 	       <!-- END: Groovy -->
+	       
+	       <dependency>
+			    <groupId>com.jayway.jsonpath</groupId>
+			    <artifactId>json-path</artifactId>
+			    <version>2.2.0</version>
+			</dependency>
         
 	</dependencies>
 
