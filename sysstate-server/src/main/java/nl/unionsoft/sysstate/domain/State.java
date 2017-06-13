@@ -41,12 +41,15 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 // @formatter:on
 public class State {
 
+    private static final int MESSAGE_MAX_LENGTH = 4012;
+    private static final int DESCRIPTION_MAX_LENGTH = 20;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "DESCRIPTION", nullable = true, length = 20)
+    @Column(name = "DESCRIPTION", nullable = true, length = DESCRIPTION_MAX_LENGTH)
     private String description;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -64,7 +67,7 @@ public class State {
     @Column(name = "RESPONSE_TIME", nullable = true)
     private long responseTime;
 
-    @Column(name = "MESSAGE", nullable = true, length = 4012)
+    @Column(name = "MESSAGE", nullable = true, length = MESSAGE_MAX_LENGTH)
     private String message;
 
     @Column(name = "RATING", nullable = false)
@@ -81,11 +84,11 @@ public class State {
     public State(State state) {
         this.id = state.id;
         this.description = state.description;
+        this.message = state.message;
         this.creationDate = state.creationDate;
         this.lastUpdate = state.lastUpdate;
         this.state = state.state;
         this.responseTime = state.responseTime;
-        this.message = state.message;
         this.rating = state.rating;
         this.instance = new Instance(state.instance);
     }
@@ -152,7 +155,7 @@ public class State {
     }
 
     public void setMessage(final String message) {
-        this.message = StringUtils.substring(message, 0, 4012);
+        this.message = StringUtils.substring(message, 0, MESSAGE_MAX_LENGTH);
     }
 
     public void appendMessage(final String append) {

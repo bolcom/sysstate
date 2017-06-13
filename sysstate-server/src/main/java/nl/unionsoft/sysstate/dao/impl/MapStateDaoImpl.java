@@ -42,9 +42,7 @@ public class MapStateDaoImpl implements StateDao {
 
     @Override
     public Optional<State> getLastStateForInstance(Long instanceId) {
-
         return sortedStreamForInstance(instanceId).findFirst();
-
     }
 
     @Override
