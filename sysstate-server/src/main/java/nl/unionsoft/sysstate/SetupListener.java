@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -78,17 +79,18 @@ public class SetupListener implements InitializingBean {
 
         if (initialSetup) {
             LOG.info("No projects found, creating some default projects...");
-            String[] projects = new String[] { "ABC", "DEF", "GHI", "RST", "UVW", "XYZ" };
+            String[] projects = new String[] { "ABC", "DEF", "GHI", "JKL", "MNO", "PQR", "STU", "VWX", "YZ" };
             Arrays.stream(projects).forEach(this::createProject);
 
             LOG.info("No environments found, creating some default environments...");
-            String[] environments = new String[] { "123", "456", "789", "012", "345", "678" };
+            String[] environments = new String[] { "123", "456", "789", "012", "345", "678", "901", "234", "567", "890" };
             Arrays.stream(environments).forEach(this::createEnvironment);
 
+            Random rnd = new Random();
             Arrays.stream(projects).forEach(projectName -> {
                 Arrays.stream(environments).forEach(environmentName -> {
                     String instanceName = String.format("%s/%s", projectName, environmentName);
-                    addTestInstance(instanceName, projectName, environmentName, createMockConfiguration(18000, ""), "http://www.google.nl", "mockStateResolver");
+                    addTestInstance(instanceName, projectName, environmentName, createMockConfiguration(rnd.nextInt(10000), ""), "http://www.google.nl", "mockStateResolver");
                 });
             });
 
@@ -119,11 +121,6 @@ public class SetupListener implements InitializingBean {
         return configuration;
     }
 
-    private Map<String, String> createHttpConfiguration(final String url) {
-        Map<String, String> configuration = new HashMap<String, String>();
-        configuration.put("url", url);
-        return configuration;
-    }
 
     private void createView(String name, String template, FilterDto filter) {
         ViewDto view = new ViewDto();
